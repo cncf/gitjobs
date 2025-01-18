@@ -1,1 +1,28 @@
-<h1>Job preview page</h1>
+{% import "common.html" as common %}
+
+<div class="rounded-lg border bg-card text-card-foreground shadow-sm mb-5 h-min flex items-center aligh-center max-w-full py-8 px-4">
+  <span class="relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full min-h-[68px] min-w-[68px]">
+    <img class="aspect-square h-full w-full"
+         alt="Logo company"
+         height="68"
+         width="68"
+         src="/static/images/logo-test.jpg" />
+  </span>
+  <div class="ml-3">
+    <div class="flex items-baseline">
+      <span class="text-xl font-semibold text-primary-900 text-truncate">{{ job_details.title }}</span>
+      <div class="ml-3">{% call common::job_status_badge(status = job_details.status) %}</div>
+    </div>
+    <div class="flex items-center space-x-2 mt-2 color-gray-700">
+      <div class="me-1">
+        <div class="svg-icon size-4 icon-company bg-gray-400"></div>
+      </div>
+      <span>{{ employer_details.company }}</span>
+      <div class="me-1 ms-5">
+        <div class="svg-icon size-4 icon-location bg-gray-400"></div>
+      </div>
+      <span>{{ employer_details.country|display_some }}</span>
+    </div>
+    <p class="text-md color-gray-500 mt-5">{{ job_details.description }}</p>
+  </div>
+</div>

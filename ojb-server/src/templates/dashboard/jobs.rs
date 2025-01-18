@@ -71,6 +71,7 @@ pub(crate) struct JobDetails {
     pub benefits: Option<Vec<String>>,
     pub city: Option<String>,
     pub country: Option<String>,
+    pub job_id: Option<Uuid>,
     pub location_id: Option<Uuid>,
     pub open_source: Option<i32>,
     pub salary: Option<i64>,

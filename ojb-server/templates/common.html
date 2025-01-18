@@ -1,0 +1,147 @@
+{# Spinner -#}
+{% macro spinner(size = 4, extra_styles = None) %}
+  {% let extra_styles_ = extra_styles.unwrap_or("") %}
+
+  <div role="status" class="{{ extra_styles_ }}">
+    <svg aria-hidden="true"
+         class="inline size-{{ size }} text-gray-200 animate-spin fill-primary-600"
+         viewBox="0 0 100 101"
+         fill="none"
+         xmlns="http://www.w3.org/2000/svg">
+      <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor" />
+      <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill" />
+    </svg>
+    <span class="sr-only">Loading...</span>
+  </div>
+{% endmacro spinner %}
+{# End spinner -#}
+
+{# Location -#}
+{% macro location(value = "", required = false) %}
+  <div class="col-span-full">
+    <label for="ts_query" class="block text-sm/6 font-medium text-gray-900">
+      Location
+      {% if required %}(required){% endif %}
+    </label>
+    <div class="mt-2 relative">
+      <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
+        <div class="svg-icon size-4 icon-search bg-gray-300"></div>
+      </div>
+      <input id="ts_query"
+             name="ts_query"
+             hx-get="/locations/search"
+             hx-include="#ts_query"
+             hx-trigger="searchLocations"
+             hx-target="#search-location"
+             hx-indicator=".htmx-indicator"
+             type="text"
+             value="{{ value }}"
+             class="block w-full rounded-md bg-white px-3 py-1.5 ps-10 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary-600 sm:text-sm/6"
+             placeholder="Search location"
+             {% if required %}required{% endif %}>
+      <input type="hidden"
+             name="location_id"
+             id="location_id"
+             {% if required %}required{% endif %}>
+      <div class="htmx-indicator absolute end-2 top-1">{% call spinner(size = 5) %}</div>
+      <div id="search-location" class="absolute z-10 start-0 end-0"></div>
+    </div>
+    <p class="mt-1 text-xs/6 text-gray-600">Lorem ipsum.</p>
+  </div>
+  <script type="module">
+    import {
+      highlightItem
+    } from '/static/js/common/locations.js';
+    import {
+      debounce
+    } from '/static/js/common/common.js';
+
+    const tsQueryInput = document.getElementById('ts_query');
+
+    tsQueryInput.addEventListener('input', debounce(() => {
+      if (tsQueryInput.value.length > 2) {
+        // TODO: hide the search results on click outside
+        htmx.trigger('#ts_query', 'searchLocations');
+      } else {
+        document.getElementById('search-location').innerHTML = "";
+      }
+    }));
+
+    // Handle keyboard events
+    tsQueryInput.addEventListener('keydown', (e) => {
+      switch (e.key) {
+        case 'ArrowDown':
+          highlightItem('down');
+          break;
+        case 'ArrowUp':
+          highlightItem('up');
+          break;
+        case 'Enter':
+          e.preventDefault();
+          const activeItem = document.querySelector('li.active');
+          if (activeItem) {
+            activeItem.querySelector('button').click();
+          }
+          break;
+        default:
+          break;
+      }
+    });
+  </script>
+{% endmacro location %}
+{# End location -#}
+
+{# Markdown editor -#}
+{% macro markdown_editor(id, content = "", required = false) %}
+  <textarea id="{{ id }}" name="{{ id }}" rows="3" required="{{ required }}">{{ content }}</textarea>
+  {# djlint:off #}
+  <script type="module">
+    const easyMDE = new EasyMDE({
+      element: document.getElementById('{{ id }}'),
+      hideIcons: ["side-by-side", "fullscreen", "guide"],
+      showIcons: ["code", "table", "undo", "redo", "horizontal-rule"],
+      forceSync: true,
+    });
+</script>
+  {# djlint:on #}
+{% endmacro markdown_editor %}
+{# End markdown editor -#}
+
+{# Job status badge -#}
+{% macro job_status_badge(status) %}
+  {% match status %}
+  {% when JobStatus::Archived %}
+  <span class="bg-red-100 text-red-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded uppercase">{{ status }}</span>
+  {% when JobStatus::Draft %}
+  <span class="bg-blue-100 text-blue-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded uppercase">{{ status }}</span>
+  {% when JobStatus::Published %}
+  <span class="bg-green-100 text-green-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded uppercase">{{ status }}</span>
+{% endmatch %}
+{% endmacro job_status_badge %}
+{# End job status badge -#}
+
+{# Toggle checkbox #}
+{% macro toggle_checkbox(id, checked = false) %}
+  <input id="toggle_{{ id }}"
+         name="toggle_{{ id }}"
+         value="{{ id }}"
+         type="checkbox"
+         class="sr-only peer"
+         {% if checked %}checked{% endif %}>
+  <input type="hidden" id="{{ id }}" name="{{ id }}" value="{{ checked }}">
+
+  <script>
+    const checkbox = document.getElementById('toggle_{{ id }}');
+    const hiddenInput = document.getElementById('{{ id }}');
+    checkbox.addEventListener('change', () => {
+      hiddenInput.value = checkbox.checked;
+    });
+  </script>
+{% endmacro toggle_checkbox %}
+{# End toggle checkbox #}
+
+{# Select option #}
+{% macro select_option(value, label, selected) %}
+  <option value="{{ value }}" {% if value == selected %}selected{% endif %}>{{ label }}</option>
+{% endmacro select_option %}
+{# End select option #}

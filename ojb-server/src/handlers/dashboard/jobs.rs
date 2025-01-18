@@ -140,5 +140,5 @@ pub(crate) async fn update(
 ) -> Result<impl IntoResponse, HandlerError> {
     db.update_job(&job_id, &job_details).await?;
 
-    Ok((StatusCode::NO_CONTENT, [("HX-Push-Url", "/dashboard/jobs/list")]))
+    Ok(StatusCode::NO_CONTENT)
 }

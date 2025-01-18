@@ -1,6 +1,54 @@
-<h1>Dashboard page</h1>
+{% extends "base.html" %}
 
-{{ content|safe }}
+{% block main %}
+  <div class="container w-full flex flex-wrap mx-auto px-2 pt-28 pb-20">
+    <div class="w-full lg:w-1/6 lg:px-6">
+      <ul class="fw-normal list-none leading-10">
+        {% call item_tab(name = "Jobs", is_active = content.is_jobs(), href = "/dashboard?tab=jobs", extra_styles = Some("mb-5")) %}
+        <li class="uppercase px-3">Settings</li>
+        {% call item_tab(name = "Employer profile", is_active = content.is_settings(), href = "/dashboard?tab=settings", level = 2, extra_styles = Some("mb-3")) %}
+      </ul>
+    </div>
+    <div class="w-full lg:w-5/6 mt-6 lg:mt-0 text-black leading-normal bg-white border rounded-lg">
+      <div id="dashboard-content"
+           class="grid h-full w-full overflow-hidden p-4 sm:p-6 lg:p-8">
+        {# Content -#}
+        {{ content|safe }}
+        {# End Content #}
+      </div>
 
-{{ content.is_jobs() }}
-{{ content.is_settings() }}
+      {# Refresh table button #}
+      <button id="refresh-table"
+              hx-get="/dashboard/jobs/list"
+              hx-target="#dashboard-content"
+              class="hidden">Refresh table</button>
+      {# End refresh table button #}
+    </div>
+  </div>
+{% endblock main %}
+
+{# Item tab #}
+{% macro item_tab(name, is_active, href, level = 1, extra_styles = None ) %}
+  {% let extra_styles_ = extra_styles.unwrap_or("") %}
+
+  {% if is_active %}
+    <li class="bg-gray-500/10 rounded-md font-semibold {{ extra_styles_ }}
+               {% if level + 0 == 1 -%}
+                 uppercase px-3
+               {% else -%}
+                 px-5 text-sm/8
+               {% endif -%}">
+      <a href="{{ href }}" class="flex">{{ name }}</a>
+    </li>
+  {% else %}
+    <li class="rounded-md hover:bg-gray-500/10 hover:font-semibold {{ extra_styles_ }}
+               {% if level + 0 == 1 -%}
+                 uppercase px-3
+               {% else -%}
+                 px-5 text-sm/8
+               {% endif -%}">
+      <a href="{{ href }}" class="flex">{{ name }}</a>
+    </li>
+  {% endif %}
+{% endmacro item_tab %}
+{# End item tab #}

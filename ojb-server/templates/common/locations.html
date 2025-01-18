@@ -1,16 +1,57 @@
-<table>
-  <tr>
-    <th>ID</th>
-    <th>City</th>
-    <th>State</th>
-    <th>Country</th>
-  </tr>
-  {% for l in locations %}
-    <tr>
-      <td>{{ l.location_id }}</td>
-      <td>{{ l.city }}</td>
-      <td>{{ l.state|display_some }}</td>
-      <td>{{ l.country }}</td>
-    </tr>
-  {% endfor %}
-</table>
+<div class="bg-white divide-y divide-gray-100 rounded-lg shadow w-full border mt-1">
+  {% if locations.len() == 0 %}
+    <div class="p-8 text-sm text-gray-600 italic">No locations found</div>
+  {% else %}
+    <ul class="py-2 text-sm text-gray-700 overflow-auto max-h-[180px]">
+      {% for l in locations %}
+        <li class="group" data-index="{{ loop.index }}">
+          <button type="button"
+                  data-location-id="{{ l.location_id }}"
+                  class="btn-location flex items-center px-4 py-2 w-full hover:bg-gray-100 group-[.active]:bg-gray-100">
+            <div class="me-2">
+              <div class="svg-icon size-4 icon-location bg-gray-500"></div>
+            </div>
+            <div class="location-text">{{ l.city }}, {{ l.state|display_some }}, {{ l.country }}</div>
+          </button>
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+</div>
+<script type="module">
+  const input = document.querySelector('input#ts_query');
+  const buttons = document.querySelectorAll('button.btn-location');
+
+  if (buttons) {
+    buttons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        // Add the location to the input
+        const location = btn.querySelector('.location-text').textContent;
+        if (input) {
+          input.value = location;
+          input.blur();
+        }
+
+        // Add the location id to the form
+        const locationId = btn.dataset.locationId;
+        const locationInput = document.getElementById('location_id');
+        if (locationInput) {
+          locationInput.value = locationId;
+        }
+
+        // Clean the search results
+        document.getElementById('search-location').innerHTML = "";
+      });
+
+      // Highlight the item in the list when the user hovers over it
+      btn.addEventListener('mouseover', () => {
+        const activeItem = document.querySelector('li.active');
+        // Remove the class from the active item
+        if (activeItem) {
+          activeItem.classList.remove('active');
+        }
+        btn.closest('li').classList.add('active');
+      });
+    });
+  }
+</script>

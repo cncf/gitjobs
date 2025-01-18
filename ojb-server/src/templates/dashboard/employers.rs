@@ -5,6 +5,8 @@ use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use uuid::Uuid;
 
+use crate::templates::filters;
+
 /// Add employer page template.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
 #[template(path = "dashboard/employers/add.html")]

@@ -1,0 +1,76 @@
+/* Icons */
+.svg-icon {
+  mask-size: 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  mask-position: center;
+}
+
+.icon-caret_down {
+  mask-image: url('/static/images/icons/caret_down.svg');
+  -webkit-mask-image: url('/static/images/icons/caret_down.svg')
+}
+
+.icon-check {
+  mask-image: url('/static/images/icons/check.svg');
+  -webkit-mask-image: url('/static/images/icons/check.svg')
+}
+
+.icon-close {
+  mask-image: url('/static/images/icons/close.svg');
+  -webkit-mask-image: url('/static/images/icons/close.svg')
+}
+
+.icon-company {
+  mask-image: url('/static/images/icons/company.svg');
+  -webkit-mask-image: url('/static/images/icons/company.svg')
+}
+
+.icon-location {
+  mask-image: url('/static/images/icons/location.svg');
+  -webkit-mask-image: url('/static/images/icons/location.svg')
+}
+
+.icon-search {
+  mask-image: url('/static/images/icons/search.svg');
+  -webkit-mask-image: url('/static/images/icons/search.svg')
+}
+/* End icons */
+
+/* EasyMD Editor */
+.EasyMDEContainer .editor-toolbar {
+  border-top-left-radius: 0.375rem;
+  border-top-right-radius: 0.375rem;
+}
+
+.EasyMDEContainer .CodeMirror {
+  border-bottom-left-radius: 0.375rem;
+  border-bottom-right-radius: 0.375rem;
+}
+
+.EasyMDEContainer .CodeMirror-scroll {
+  max-height: 180px;
+  min-height: 180px;
+}
+
+.EasyMDEContainer button {
+  color: rgb(17 24 39 / var(--tw-text-opacity, 1));
+}
+
+.EasyMDEContainer .editor-toolbar {
+  background-color: rgb(249 250 251 / var(--tw-bg-opacity, 1));
+}
+
+.EasyMDEContainer .editor-toolbar button.active, .EasyMDEContainer .editor-toolbar button:hover {
+  background-color: white;
+}
+
+.EasyMDEContainer .cm-spell-error:not(.cm-url):not(.cm-comment):not(.cm-tag):not(.cm-word) {
+  background: transparent;
+}
+
+/* Hide separator when empty block of icons */
+.EasyMDEContainer .editor-toolbar .separator + .separator {
+  display: none;
+}
+/* End EasyMD Editor */

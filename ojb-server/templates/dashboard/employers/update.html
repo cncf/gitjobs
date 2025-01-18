@@ -1,1 +1,92 @@
-<h1>Update employer page</h1>
+{% import "common.html" as common %}
+
+{# Employer form #}
+<form id="employer-form"
+      hx-put="/dashboard/employers/update"
+      hx-ext="no-empty-vals"
+      hx-trigger="submit">
+  <div class="space-y-12">
+    <div class="border-b border-gray-900/10 pb-12">
+      <h2 class="text-base/7 font-semibold text-gray-900">Settings</h2>
+      <p class="mt-1 text-sm/6 text-gray-600">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+      </p>
+      <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+        {# Company name #}
+        <div class="col-span-full">
+          <label for="company" class="block text-sm/6 font-medium text-gray-900">Company name (required)</label>
+          <div class="mt-2">
+            <input type="text"
+                   name="company"
+                   id="company"
+                   value="{{ employer_details.company }}"
+                   class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary-600 sm:text-sm/6"
+                   required>
+          </div>
+          <p class="mt-1 text-xs/6 text-gray-600">Lorem ipsum.</p>
+        </div>
+        {# End Company name #}
+
+        {# Description #}
+        <div class="col-span-full">
+          <label for="description" class="block text-sm/6 font-medium text-gray-900">Description (required)</label>
+          <div class="mt-2">
+            {% call common::markdown_editor(id = "description", content = employer_details.description, required = true) %}
+          </div>
+          <p class="mt-1 text-xs/6 text-gray-600">Lorem ipsum.</p>
+        </div>
+        {# End Description #}
+
+        {# Public #}
+        <div class="col-span-full">
+          <label class="inline-flex items-center cursor-pointer">
+            {% call common::toggle_checkbox(id = "public", checked = employer_details.public) %}
+            <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600">
+            </div>
+            <span class="ms-3 text-sm font-medium text-gray-900">Public</span>
+          </label>
+        </div>
+        {# End Public #}
+
+        {# Location #}
+        {% let location = "{}, {}, {}"|format(employer_details.city|display_some, employer_details.state|display_some, employer_details.country|display_some) %}
+        {% call common::location(value = location) %}
+        {# End location #}
+
+        {# Website url #}
+        <div class="sm:col-span-3">
+          <label for="website_url" class="block text-sm/6 font-medium text-gray-900">Website url</label>
+          <div class="mt-2">
+            <input id="website_url"
+                   name="website_url"
+                   type="url"
+                   value="{%- if let Some(website_url) = employer_details.website_url -%} {{ website_url }} {%- endif -%}"
+                   class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary-600 sm:text-sm/6">
+          </div>
+        </div>
+        {# End Website url #}
+
+        {# Logo url #}
+        <div class="sm:col-span-3">
+          <label for="logo_url" class="block text-sm/6 font-medium text-gray-900">Logo url</label>
+          <div class="mt-2">
+            <input id="logo_url"
+                   name="logo_url"
+                   type="url"
+                   value="{%- if let Some(logo_url) = employer_details.logo_url -%} {{ logo_url }} {%- endif -%}"
+                   class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary-600 sm:text-sm/6">
+          </div>
+        </div>
+        {# End Logo url #}
+
+      </div>
+    </div>
+  </div>
+  <div class="mt-6 flex justify-end items-center">
+    <button type="submit"
+            class="rounded-md bg-primary-700 px-3 py-2 text-sm font-semibold text-white rounded-md hover:bg-primary-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
+      Save
+    </button>
+  </div>
+</form>
+{# End employer form #}

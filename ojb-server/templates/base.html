@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full min-h-screen">
+  <head>
+    <title>Open Job Board</title>
+    <meta name="description"
+          content="Jobs platform for communities and organizations">
+    <meta name="keywords" content="community, organization, jobs, job">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet"
+          href="https://unpkg.com/easymde/dist/easymde.min.css">
+    <link rel="stylesheet" href="/static/styles/index.css" />
+    <script type="text/javascript"
+            src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    <script type="text/javascript"
+            src="https://unpkg.com/htmx.org@2.0.3"
+            integrity="sha384-0895/pl2MU10Hqc6jd4RvrthNlDiE9U1tWmX7WRESftEDRosgxNsQG/Ze9YMRzHq"
+            crossorigin="anonymous"></script>
+    <script type="module" src="/static/js/common/multiselect.js"></script>
+    <script src="https://unpkg.com/easymde/dist/easymde.min.js"></script>
+    <script type="text/javascript">
+      // Tailwind CSS configuration
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: {
+                '50': '#f2f8fd',
+                '100': '#e3effb',
+                '200': '#c1e0f6',
+                '300': '#8bc7ee',
+                '400': '#4daae3',
+                '500': '#268fd1',
+                '600': '#1871b1',
+                '700': '#155e95',
+                '800': '#154e77',
+                '900': '#174163',
+                '950': '#0f2a42',
+              },
+            },
+            fontSize: {
+              filterTitle: '0.8rem',
+            },
+          },
+          fontFamily: {
+            sans: [
+              '"Clarity City", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, Roboto, Ubuntu, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',
+            ],
+          },
+        },
+        future: {
+          hoverOnlyWhenSupported: true,
+        },
+      };
+
+      htmx.defineExtension("no-empty-vals", {
+        encodeParameters: (xhr, parameters, elt) => {
+          // Remove empty values from the parameters
+          for (const key of [...parameters.keys()]) {
+            if (parameters.get(key) === "") {
+              parameters.delete(key);
+            }
+          }
+
+          // Let HTMX encode the parameters
+          return null;
+        }
+      });
+    </script>
+  </head>
+  <body class="flex flex-col min-h-screen">
+    {# Header #}
+    {% include "header.html" %}
+    {# End Header #}
+    {# Main Content #}
+    <main class="flex-grow bg-gray-50">
+      {% block main %}
+      {% endblock main %}
+    </main>
+    {# End Main Content #}
+    {# Footer #}
+    {% include "footer.html" %}
+    {# End Footer #}
+  </body>
+</html>

@@ -1,24 +1,162 @@
-<h1>Jobs list page</h1>
+{% import "common.html" as common %}
 
-<table>
-  <tr>
-    <th>Title</th>
-    <th>City</th>
-    <th>Country</th>
-    <th>Status</th>
-    <th>Created</th>
-    <th>Published</th>
-    <th>Archived</th>
-  </tr>
-  {% for job in jobs %}
-    <tr>
-      <td>{{ job.title }}</td>
-      <td>{{ job.city|display_some }}</td>
-      <td>{{ job.country|display_some_or("-") }}</td>
-      <td>{{ job.status }}</td>
-      <td>{{ job.created_at.format(DATE_FORMAT) }}</td>
-      <td>{{ job.published_at|display_some_date(DATE_FORMAT) }}</td>
-      <td>{{ job.archived_at|display_some_date_or(DATE_FORMAT, "-") }}</td>
-    </tr>
-  {% endfor %}
-</table>
+<div class="flex justify-end mb-6 mb-4">
+  <div class="flex mb-2">
+    <div class="relative">
+      {# Button actions #}
+      <button id="btn-actions"
+              class="group text-primary-700 rounded-md hover:text-white border border-primary-700 hover:bg-primary-900 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-3 py-2"
+              type="button">
+        <div class="flex items-center">
+          Actions
+          <div class="svg-icon size-4 ms-2 icon-caret_down bg-primary-700 group-hover:bg-white"></div>
+        </div>
+      </button>
+      {# End button actions #}
+
+      {# Dropdown actions #}
+      <div id="dropdown-actions"
+           class="absolute hidden z-10 start-0 top-10 w-[200px] bg-white divide-y divide-gray-100 rounded-lg shadow border">
+        <ul class="py-2 text-sm text-gray-700 dark:text-gray-200"
+            aria-labelledby="dropdownDefaultButton">
+          <li data-action="update" class="hidden">
+            <button id="update-button"
+                    hx-get="/dashboard/jobs/???/update?employer=00000000-0000-0000-0000-000000000001"
+                    hx-target="#dashboard-content"
+                    class="w-full text-start px-4 py-2 hover:bg-gray-100">Update</button>
+          </li>
+          <li data-action="publish" class="hidden">
+            <button id="publish-button"
+                    hx-put="/dashboard/jobs/???/publish?employer=00000000-0000-0000-0000-000000000001"
+                    hx-target="#dashboard-content"
+                    class="w-full text-start px-4 py-2 hover:bg-gray-100">Publish</button>
+          </li>
+          <li data-action="delete" class="hidden">
+            <button id="delete-button"
+                    hx-delete="/dashboard/jobs/???/delete?employer=00000000-0000-0000-0000-000000000001"
+                    hx-target="#dashboard-content"
+                    class="w-full text-start px-4 py-2 hover:bg-gray-100">Delete</button>
+          </li>
+          <li data-action="archive" class="hidden">
+            <button id="archive-button"
+                    hx-put="/dashboard/jobs/???/archive?employer=00000000-0000-0000-0000-000000000001"
+                    hx-target="#dashboard-content"
+                    class="w-full text-start px-4 py-2 hover:bg-gray-100">Archive</button>
+          </li>
+          <li id="placeholder-actions">
+            <div class="p-5 text-center italic">
+              Any actions available. Please, select one or more jobs from the list.
+            </div>
+          </li>
+        </ul>
+      </div>
+      {# End dropdown actions #}
+      <script type="module">
+        const btnActions = document.getElementById('btn-actions');
+        const dropdownActions = document.getElementById('dropdown-actions');
+
+        btnActions.addEventListener('click', () => {
+          dropdownActions.classList.toggle('hidden');
+        });
+      </script>
+    </div>
+
+    <div class="divider divider-horizontal mx-3"></div>
+    <button id="add-job-button"
+            hx-get="/dashboard/jobs/add"
+            hx-target="#dashboard-content"
+            class="rounded-md bg-primary-700 px-3 py-2 text-sm font-semibold text-white rounded-md hover:bg-primary-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
+      Add Job
+    </button>
+    <script type="module">
+      const addJobButton = document.getElementById('add-job-button');
+      addJobButton.addEventListener('htmx:afterRequest', () => {
+        history.pushState({}, "Jobs list", '/dashboard?tab=jobs');
+      });
+    </script>
+  </div>
+</div>
+
+{# Jobs Table -#}
+<div class="relative overflow-x-auto">
+  <table class="table-auto w-full text-sm text-left rtl:text-right text-gray-500">
+    <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+      <tr>
+        <th scope="col" class="p-4"></th>
+        <th scope="col" class="px-6 py-3">Title</th>
+        <th scope="col" class="px-6 py-3 w-15">Location</th>
+        <th scope="col" class="px-6 py-3 w-10">Status</th>
+        <th scope="col" class="px-6 py-3 w-10">Created</th>
+        <th scope="col" class="px-6 py-3 w-10">Published</th>
+        <th scope="col" class="px-6 py-3 w-10">Archived</th>
+      </tr>
+    </thead>
+    <tbody id="jobs-list">
+      {% if jobs.len() == 0 %}
+        <tr class="bg-white border-b">
+          <td class="p-8 text-center" colspan="7">Any jobs added yet.</td>
+        </tr>
+      {% else %}
+        {% for job in jobs %}
+          <tr class="bg-white border-b">
+            {# Checkbox #}
+            <td class="w-4 p-4">
+              <div class="flex items-center">
+                <input id="job_{{ job.job_id }}"
+                       name="job_selected"
+                       data-job="{{ job|json }}"
+                       type="radio"
+                       class="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 focus:ring-primary-500 focus:ring-2">
+                <label for="job_{{ job.job_id }}" class="sr-only">Job {{ job.job_id }}</label>
+              </div>
+            </td>
+            {# End checkbox #}
+
+            {# Title job #}
+            <th scope="row" class="px-6 py-4 font-medium text-gray-900">
+              <div class="text-ellipsis">{{ job.title }}</div>
+            </th>
+            {# End title job #}
+
+            {# Location #}
+            <td class="px-6 py-4 whitespace-nowrap">
+              {{ job.city|display_some }}, {{ job.country|display_some_or("-") }}
+            </td>
+            {# End location #}
+
+            {# Status #}
+            <td class="px-6 py-4 whitespace-nowrap">{% call common::job_status_badge(status = job.status) %}</td>
+            {# End status #}
+
+            {# Created date #}
+            <td class="px-6 py-4 whitespace-nowrap">{{ job.created_at.format(DATE_FORMAT) }}</td>
+            {# End created date #}
+
+            {# Published date #}
+            <td class="px-6 py-4 whitespace-nowrap">{{ job.published_at|display_some_date_or(DATE_FORMAT, "-") }}</td>
+            {# End published date #}
+
+            {# Archived date #}
+            <td class="px-6 py-4 whitespace-nowrap">{{ job.archived_at|display_some_date_or(DATE_FORMAT, "-") }}</td>
+            {# End archived date #}
+          </tr>
+        {% endfor %}
+      {% endif %}
+    </tbody>
+
+    <script type="module">
+      import {
+        setupActionsButton
+      } from '/static/js/dashboard/jobs.js';
+
+      const jobSelectionRadios = document.querySelectorAll('#jobs-list input[type="radio"]');
+
+      jobSelectionRadios.forEach((radio) => {
+        radio.addEventListener('change', () => {
+          setupActionsButton();
+        });
+      });
+    </script>
+  </table>
+</div>
+{# End Jobs Table #}

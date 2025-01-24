@@ -6,9 +6,7 @@ use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use uuid::Uuid;
 
-use crate::templates::{filters, helpers::DATE_FORMAT};
-
-use super::settings::EmployerDetails;
+use crate::templates::{dashboard::employers::EmployerDetails, filters, helpers::DATE_FORMAT};
 
 /// Add job page template.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]

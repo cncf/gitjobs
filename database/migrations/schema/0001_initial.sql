@@ -23,6 +23,25 @@ create table job_board (
     updated_at timestamptz
 );
 
+create table "user" (
+    user_id uuid primary key default gen_random_uuid(),
+    job_board_id uuid not null references job_board,
+
+    auth_hash bytea not null check (auth_hash <> ''),
+    created_at timestamptz not null default current_timestamp,
+    email text not null check (email <> ''),
+    email_verified boolean not null default true, -- TODO: set to false when email verification is implemented
+    first_name text not null check (first_name <> ''),
+    last_name text not null check (last_name <> ''),
+    password text not null check (password <> ''),
+    username text not null check (username <> ''),
+
+    unique (email, job_board_id),
+    unique (username, job_board_id)
+);
+
+create index user_job_board_id_idx on "user" (job_board_id);
+
 create table location (
     location_id uuid primary key,
 
@@ -136,7 +155,8 @@ create index tier_job_board_id_idx on employer_tier (job_board_id);
 
 create table employer (
     employer_id uuid primary key default gen_random_uuid(),
-    employer_tier_id uuid not null references employer_tier,
+    employer_tier_id uuid references employer_tier,
+    job_board_id uuid not null references job_board,
     location_id uuid references location,
 
     company text not null check (company <> ''),
@@ -150,7 +170,18 @@ create table employer (
 );
 
 create index employer_employer_tier_id_idx on employer (employer_tier_id);
+create index employer_job_board_id_idx on employer (job_board_id);
 create index employer_location_id_idx on employer (location_id);
+
+create table employer_team (
+    employer_id uuid not null references employer on delete cascade,
+    user_id uuid not null references "user",
+
+    primary key (employer_id, user_id)
+);
+
+create index employer_team_employer_id_idx on employer_team (employer_id);
+create index employer_team_user_id_idx on employer_team (user_id);
 
 create table job_type (
     job_type_id uuid primary key default gen_random_uuid(),
@@ -240,3 +271,10 @@ create table faq (
 );
 
 create index faq_job_board_id_idx on faq (job_board_id);
+
+create table session (
+    session_id text primary key,
+
+    data jsonb not null,
+    expires_at timestamptz not null
+);

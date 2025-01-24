@@ -3,7 +3,7 @@
 use rinja::Template;
 use serde::{Deserialize, Serialize};
 
-use super::{jobs, settings};
+use super::{employers, jobs};
 
 /// Home page template.
 #[derive(Debug, Clone, Template)]
@@ -16,7 +16,7 @@ pub(crate) struct Page {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub(crate) enum Content {
     Jobs(jobs::ListPage),
-    Settings(settings::UpdateEmployerPage),
+    Settings(employers::UpdatePage),
 }
 
 impl Content {

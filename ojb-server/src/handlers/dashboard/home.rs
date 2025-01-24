@@ -14,8 +14,9 @@ use crate::{
     db::DynDB,
     handlers::{error::HandlerError, extractors::EmployerId},
     templates::dashboard::{
+        employers,
         home::{self, Content, Tab},
-        jobs, settings,
+        jobs,
     },
 };
 
@@ -34,7 +35,7 @@ pub(crate) async fn page(
         }
         Tab::Settings => {
             let employer_details = db.get_employer_details(&employer_id).await?;
-            Content::Settings(settings::UpdateEmployerPage { employer_details })
+            Content::Settings(employers::UpdatePage { employer_details })
         }
     };
     let template = home::Page { content };

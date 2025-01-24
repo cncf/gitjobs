@@ -11,7 +11,14 @@ use axum::{
     routing::{delete, get, post, put},
     Router,
 };
+use axum_login::{
+    login_required,
+    tower_sessions::{cookie::SameSite, Expiry, SessionManagerLayer},
+    AuthManagerLayerBuilder,
+};
+use axum_messages::MessagesManagerLayer;
 use rust_embed::Embed;
+use time::Duration;
 use tower::ServiceBuilder;
 use tower_http::{
     set_header::SetResponseHeaderLayer, trace::TraceLayer, validate_request::ValidateRequestHeaderLayer,
@@ -19,9 +26,13 @@ use tower_http::{
 use tracing::instrument;
 
 use crate::{
+    auth::{AuthnBackend, SessionStore},
     config::HttpServerConfig,
     db::DynDB,
-    handlers::{common, dashboard, jobboard},
+    handlers::{
+        auth::{self, LOG_IN_URL},
+        common, dashboard, jobboard,
+    },
 };
 
 /// Default cache duration.
@@ -44,13 +55,22 @@ pub(crate) struct State {
 /// Setup router.
 #[instrument(skip_all)]
 pub(crate) fn setup(cfg: &HttpServerConfig, db: DynDB) -> Router {
+    // Setup auth layer
+    let session_store = SessionStore::new(db.clone());
+    let session_layer = SessionManagerLayer::new(session_store)
+        .with_expiry(Expiry::OnInactivity(Duration::days(7)))
+        .with_http_only(true)
+        .with_same_site(SameSite::Strict)
+        .with_secure(false); // TODO: get from config
+    let authn_backend = AuthnBackend::new(db.clone());
+    let auth_layer = AuthManagerLayerBuilder::new(authn_backend, session_layer).build();
+
     // Setup router
     #[rustfmt::skip]
     let mut router = Router::new()
-        .route("/", get(jobboard::jobs::page))
-        .route("/jobs", get(jobboard::jobs::page))
-        .route("/about", get(jobboard::about::page))
         .route("/dashboard", get(dashboard::home::page))
+        .route("/dashboard/employers/add", get(dashboard::employers::add_page).post(dashboard::employers::add))
+        .route("/dashboard/employers/update", get(dashboard::employers::update_page).put(dashboard::employers::update))
         .route("/dashboard/jobs/list", get(dashboard::jobs::list_page))
         .route("/dashboard/jobs/add", get(dashboard::jobs::add_page).post(dashboard::jobs::add))
         .route("/dashboard/jobs/preview", post(dashboard::jobs::preview_page))
@@ -58,15 +78,23 @@ pub(crate) fn setup(cfg: &HttpServerConfig, db: DynDB) -> Router {
         .route("/dashboard/jobs/{:job_id}/delete", delete(dashboard::jobs::delete))
         .route("/dashboard/jobs/{:job_id}/publish", put(dashboard::jobs::publish))
         .route("/dashboard/jobs/{:job_id}/update", get(dashboard::jobs::update_page).put(dashboard::jobs::update))
-        .route("/dashboard/settings/employer", get(dashboard::settings::update_employer_page).put(dashboard::settings::update_employer))
         .route("/locations/search", get(common::search_locations))
+        .route_layer(login_required!(AuthnBackend, login_url = LOG_IN_URL, redirect_field = "next_url"))
+        .route("/", get(jobboard::jobs::page))
+        .route("/about", get(jobboard::about::page))
         .route("/health-check", get(health_check))
+        .route("/jobs", get(jobboard::jobs::page))
+        .route("/log-in", get(auth::log_in_page).post(auth::log_in))
+        .route("/log-out", get(auth::log_out))
+        .route("/sign-up", get(auth::sign_up_page).post(auth::sign_up))
         .route("/static/{*file}", get(static_handler))
         .layer(SetResponseHeaderLayer::if_not_present(
             CACHE_CONTROL,
             HeaderValue::try_from(format!("max-age={DEFAULT_CACHE_DURATION}")).expect("valid header value"),
         ))
         .layer(ServiceBuilder::new().layer(TraceLayer::new_for_http()))
+        .layer(MessagesManagerLayer)
+        .layer(auth_layer)
         .with_state(State { db });
 
     // Setup basic auth

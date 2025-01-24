@@ -1,13 +1,12 @@
 //! Custom extractors for handlers.
 
-use std::collections::HashMap;
-
 use anyhow::Result;
 use axum::{
-    extract::{FromRequestParts, Query},
+    extract::FromRequestParts,
     http::{header::HOST, request::Parts, StatusCode},
 };
 use cached::proc_macro::cached;
+use tower_sessions::Session;
 use tracing::{error, instrument};
 use uuid::Uuid;
 
@@ -61,6 +60,9 @@ async fn lookup_job_board_id(db: DynDB, host: &str) -> Result<Option<Uuid>> {
     db.get_job_board_id(host).await
 }
 
+/// Key to store the selected employer id in the session.
+pub(crate) const SELECTED_EMPLOYER_ID_KEY: &str = "selected_employer_id";
+
 /// Custom extractor to get the employer id from the request's query string.
 pub(crate) struct EmployerId(pub Uuid);
 
@@ -69,14 +71,14 @@ impl FromRequestParts<router::State> for EmployerId {
 
     #[instrument(skip_all, err(Debug))]
     async fn from_request_parts(parts: &mut Parts, state: &router::State) -> Result<Self, Self::Rejection> {
-        let Ok(query) = Query::<HashMap<String, String>>::from_request_parts(parts, state).await else {
-            return Err((StatusCode::BAD_REQUEST, "error parsing query string"));
+        let Ok(session) = Session::from_request_parts(parts, state).await else {
+            return Err((StatusCode::UNAUTHORIZED, "user not logged in"));
         };
-        let Some(employer_id) = query.get("employer_id") else {
-            return Err((StatusCode::BAD_REQUEST, "missing employer_id parameter"));
-        };
-        let Ok(employer_id) = Uuid::parse_str(employer_id) else {
-            return Err((StatusCode::BAD_REQUEST, "employer_id should be a valid uuid"));
+        let Ok(Some(employer_id)) = session.get(SELECTED_EMPLOYER_ID_KEY).await else {
+            return Err((
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "selected employer_id not found in session",
+            ));
         };
         Ok(EmployerId(employer_id))
     }

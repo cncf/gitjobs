@@ -3,10 +3,11 @@
 use anyhow::Result;
 use async_trait::async_trait;
 use tracing::instrument;
+use uuid::Uuid;
 
 use crate::templates::dashboard::{
+    employers::EmployerDetails,
     jobs::{JobBoard, JobDetails, JobSummary},
-    settings::EmployerDetails,
 };
 
 use super::PgDB;
@@ -14,7 +15,15 @@ use super::PgDB;
 /// Trait that defines some database operations used in the dashboard.
 #[async_trait]
 pub(crate) trait DBDashBoard {
-    /// Add job to the job board.
+    /// Add employer.
+    async fn add_employer(
+        &self,
+        job_board_id: &uuid::Uuid,
+        user_id: &uuid::Uuid,
+        employer: &EmployerDetails,
+    ) -> Result<Uuid>;
+
+    /// Add job.
     async fn add_job(&self, employer_id: &uuid::Uuid, job: &JobDetails) -> Result<()>;
 
     /// Archive job.
@@ -47,6 +56,72 @@ pub(crate) trait DBDashBoard {
 
 #[async_trait]
 impl DBDashBoard for PgDB {
+    /// [DBDashBoard::add_employer]
+    #[instrument(skip(self), err)]
+    async fn add_employer(
+        &self,
+        job_board_id: &uuid::Uuid,
+        user_id: &uuid::Uuid,
+        employer: &EmployerDetails,
+    ) -> Result<Uuid> {
+        let mut db = self.pool.get().await?;
+        let tx = db.transaction().await?;
+
+        // Insert employer
+        let employer_id: Uuid = tx
+            .query_one(
+                "
+                insert into employer (
+                    job_board_id,
+                    company,
+                    description,
+                    public,
+                    location_id,
+                    logo_url,
+                    website_url
+                ) values (
+                    $1::uuid,
+                    $2::text,
+                    $3::text,
+                    $4::bool,
+                    $5::uuid,
+                    $6::text,
+                    $7::text
+                ) returning employer_id;
+                ",
+                &[
+                    &job_board_id,
+                    &employer.company,
+                    &employer.description,
+                    &employer.public,
+                    &employer.location_id,
+                    &employer.logo_url,
+                    &employer.website_url,
+                ],
+            )
+            .await?
+            .get("employer_id");
+
+        // Add user to employer team
+        tx.execute(
+            "
+            insert into employer_team (
+                employer_id,
+                user_id
+            ) values (
+                $1::uuid,
+                $2::uuid
+            );
+            ",
+            &[&employer_id, &user_id],
+        )
+        .await?;
+
+        tx.commit().await?;
+
+        Ok(employer_id)
+    }
+
     /// [DBDashBoard::add_job]
     #[instrument(skip(self), err)]
     async fn add_job(&self, employer_id: &uuid::Uuid, job: &JobDetails) -> Result<()> {

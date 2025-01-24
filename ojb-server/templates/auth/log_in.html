@@ -1,0 +1,23 @@
+<h1>Log In page</h1>
+
+<form method="post" action="/log-in">
+  <fieldset>
+    <legend>User log in</legend>
+    <p>
+      <label for="username">Username</label>
+      <input name="username" id="username" value="" />
+    </p>
+    <p>
+      <label for="password">Password</label>
+      <input name="password" id="password" type="password" value="" />
+    </p>
+  </fieldset>
+
+  <input type="submit" value="login" />
+
+  {% if let Some(next_url) = next_url %}
+    <input type="hidden" name="next_url" value="{{ next_url }}" />
+  {% endif %}
+</form>
+
+{% for message in messages %}<p>{{ message }}</p>{% endfor %}

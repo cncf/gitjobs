@@ -1,15 +1,28 @@
-//! This module defines some templates and types used in the settings page.
+//! This module defines some templates and types used to manage employers
 
 use rinja::Template;
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use uuid::Uuid;
 
+/// Add employer page template.
+#[derive(Debug, Clone, Template, Serialize, Deserialize)]
+#[template(path = "dashboard/employers/add.html")]
+pub(crate) struct AddPage {}
+
 /// Update employer page template.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
-#[template(path = "dashboard/settings/update_employer.html")]
-pub(crate) struct UpdateEmployerPage {
+#[template(path = "dashboard/employers/update.html")]
+pub(crate) struct UpdatePage {
     pub employer_details: EmployerDetails,
+}
+
+/// Employer summary.
+#[skip_serializing_none]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub(crate) struct EmployerSummary {
+    pub employer_id: Uuid,
+    pub company: String,
 }
 
 /// Employer details.

@@ -14,7 +14,7 @@ use axum::{
 use axum_login::{
     login_required,
     tower_sessions::{cookie::SameSite, Expiry, SessionManagerLayer},
-    AuthManagerLayerBuilder,
+    AuthManagerLayer, AuthManagerLayerBuilder,
 };
 use axum_messages::MessagesManagerLayer;
 use rust_embed::Embed;
@@ -57,17 +57,8 @@ pub(crate) struct State {
 /// Setup router.
 #[instrument(skip_all)]
 pub(crate) fn setup(cfg: &HttpServerConfig, db: DynDB) -> Router {
-    // Setup auth layer
-    let session_store = SessionStore::new(db.clone());
-    let moka_store = MokaStore::new(Some(1000));
-    let caching_store = CachingSessionStore::new(moka_store, session_store);
-    let session_layer = SessionManagerLayer::new(caching_store)
-        .with_expiry(Expiry::OnInactivity(Duration::days(7)))
-        .with_http_only(true)
-        .with_same_site(SameSite::Strict)
-        .with_secure(false); // TODO: get from config
-    let authn_backend = AuthnBackend::new(db.clone());
-    let auth_layer = AuthManagerLayerBuilder::new(authn_backend, session_layer).build();
+    // Setup authentication/authorization layer
+    let auth_layer = setup_auth_layer(cfg, db.clone());
 
     // Setup router
     #[rustfmt::skip]
@@ -113,6 +104,34 @@ pub(crate) fn setup(cfg: &HttpServerConfig, db: DynDB) -> Router {
     }
 
     router
+}
+
+/// Setup router authentication/authorization layer.
+#[instrument(skip_all)]
+fn setup_auth_layer(
+    cfg: &HttpServerConfig,
+    db: DynDB,
+) -> AuthManagerLayer<AuthnBackend, CachingSessionStore<MokaStore, SessionStore>> {
+    // Setup session store
+    let session_store = SessionStore::new(db.clone());
+    let moka_store = MokaStore::new(Some(1000));
+    let caching_session_store = CachingSessionStore::new(moka_store, session_store);
+
+    // Setup session layer
+    let secure = if let Some(cookie) = &cfg.cookie {
+        cookie.secure.unwrap_or(true)
+    } else {
+        true
+    };
+    let session_layer = SessionManagerLayer::new(caching_session_store)
+        .with_expiry(Expiry::OnInactivity(Duration::days(7)))
+        .with_http_only(true)
+        .with_same_site(SameSite::Strict)
+        .with_secure(secure);
+
+    // Setup auth layer
+    let authn_backend = AuthnBackend::new(db.clone());
+    AuthManagerLayerBuilder::new(authn_backend, session_layer).build()
 }
 
 /// Handler that takes care of health check requests.

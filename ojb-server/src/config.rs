@@ -43,6 +43,7 @@ impl Config {
 pub(crate) struct HttpServerConfig {
     pub addr: String,
     pub basic_auth: Option<BasicAuth>,
+    pub cookie: Option<CookieConfig>,
 }
 
 /// Basic authentication configuration.
@@ -51,6 +52,12 @@ pub(crate) struct BasicAuth {
     pub enabled: bool,
     pub username: String,
     pub password: String,
+}
+
+/// Cookie configuration.
+#[derive(Debug, Clone, Default, PartialEq, Deserialize, Serialize)]
+pub(crate) struct CookieConfig {
+    pub secure: Option<bool>,
 }
 
 /// Logs configuration.

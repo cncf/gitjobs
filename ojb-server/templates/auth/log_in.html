@@ -1,23 +1,48 @@
-<h1>Log In page</h1>
+{% extends "base.html" %}
 
-<form method="post" action="/log-in">
-  <fieldset>
-    <legend>User log in</legend>
-    <p>
-      <label for="username">Username</label>
-      <input name="username" id="username" value="" />
-    </p>
-    <p>
-      <label for="password">Password</label>
-      <input name="password" id="password" type="password" value="" />
-    </p>
-  </fieldset>
+{% block main %}
+  <div class="container w-full m-auto px-2 py-28">
+    <div class="bg-white p-10 border rounded-lg">
+      <form hx-post="/log-in"
+            hx-trigger="submit"
+            hx-target="body"
+            class="max-w-sm mx-auto">
+        <div class="text-2xl mb-10">Log In</div>
+        <div class="mb-5">
+          <label for="username"
+                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Username</label>
+          <input type="text"
+                 id="username"
+                 name="username"
+                 class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary-600 sm:text-sm/6"
+                 required />
+        </div>
+        <div class="mb-5">
+          <label for="password"
+                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
+          <input type="password"
+                 id="password"
+                 name="password"
+                 class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary-600 sm:text-sm/6"
+                 required />
+        </div>
+        {% if let Some(next_url) = next_url %}
+          <input type="hidden" id="next_url" name="next_url" value="{{ next_url }}" />
+        {% endif %}
+        <button type="submit"
+                class="rounded-md bg-primary-700 px-3 py-2 text-sm font-semibold text-white rounded-md hover:bg-primary-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
+          Submit
+        </button>
+      </form>
 
-  <input type="submit" value="login" />
-
-  {% if let Some(next_url) = next_url %}
-    <input type="hidden" name="next_url" value="{{ next_url }}" />
-  {% endif %}
-</form>
-
-{% for message in messages %}<p>{{ message }}</p>{% endfor %}
+      {# Messages #}
+      {% if messages.len() > 0 %}
+        <div class="p-4 mt-10 text-md max-w-sm mx-auto text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
+             role="alert">
+          {% for message in messages %}<p>{{ message }}</p>{% endfor %}
+        </div>
+      {% endif %}
+      {# End messages #}
+    </div>
+  </div>
+{% endblock main %}

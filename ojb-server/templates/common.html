@@ -36,14 +36,20 @@
              hx-indicator=".htmx-indicator"
              type="text"
              value="{{ value }}"
-             class="block w-full rounded-md bg-white px-3 py-1.5 ps-10 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary-600 sm:text-sm/6"
+             class="peer block w-full rounded-md bg-white px-3 py-1.5 ps-10 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary-600 sm:text-sm/6"
              placeholder="Search location"
              {% if required %}required{% endif %}>
       <input type="hidden"
              name="location_id"
              id="location_id"
+             data-location="{{ value }}"
              {% if required %}required{% endif %}>
-      <div class="htmx-indicator absolute end-2 top-1">{% call spinner(size = 5) %}</div>
+      <div class="htmx-indicator absolute end-10 top-1">{% call spinner(size = 5) %}</div>
+      <div class="absolute end-1.5 top-1.5 peer-placeholder-shown:hidden">
+        <button id="clean-location" type="button" class="mt-[2px]">
+          <div class="svg-icon size-5 bg-gray-400 hover:bg-gray-700 icon-close"></div>
+        </button>
+      </div>
       <div id="search-location" class="absolute z-10 start-0 end-0"></div>
     </div>
     <p class="mt-1 text-xs/6 text-gray-600">Lorem ipsum.</p>
@@ -57,25 +63,45 @@
     } from '/static/js/common/common.js';
 
     const tsQueryInput = document.getElementById('ts_query');
+    const locationIdInput = document.getElementById('location_id');
+    const cleanLocationButton = document.getElementById('clean-location');
 
     tsQueryInput.addEventListener('input', debounce(() => {
       if (tsQueryInput.value.length > 2) {
-        // TODO: hide the search results on click outside
         htmx.trigger('#ts_query', 'searchLocations');
       } else {
         document.getElementById('search-location').innerHTML = "";
       }
     }));
 
+    // Clear search results when focus is lost and clear the input field
+    // if the location id is not set
+    tsQueryInput.addEventListener('focusout', () => {
+      // Delay the execution to allow the user to click on the search results
+      setTimeout(() => {
+        document.getElementById('search-location').innerHTML = "";
+
+        // If the location id is set, set the ts_query input to the location
+        if (locationIdInput.value !== "") {
+          tsQueryInput.value = locationIdInput.dataset.location;
+        } else {
+          tsQueryInput.value = "";
+        }
+      }, 200);
+    });
+
     // Handle keyboard events
     tsQueryInput.addEventListener('keydown', (e) => {
       switch (e.key) {
+        // Highlight the next item in the list
         case 'ArrowDown':
           highlightItem('down');
           break;
+          // Highlight the previous item in the list
         case 'ArrowUp':
           highlightItem('up');
           break;
+          // Select the highlighted item
         case 'Enter':
           e.preventDefault();
           const activeItem = document.querySelector('li.active');
@@ -86,6 +112,14 @@
         default:
           break;
       }
+    });
+
+    // Clear the location
+    cleanLocationButton.addEventListener('click', () => {
+      tsQueryInput.value = "";
+      locationIdInput.value = "";
+      locationIdInput.dataset.location = "";
+      document.getElementById('search-location').innerHTML = "";
     });
   </script>
 {% endmacro location %}

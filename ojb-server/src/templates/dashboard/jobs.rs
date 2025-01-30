@@ -84,6 +84,17 @@ pub(crate) struct JobDetails {
     pub upstream_commitment: Option<i32>,
 }
 
+impl JobDetails {
+    /// Get the salary kind of the job.
+    pub(crate) fn salary_kind(&self) -> SalaryKind {
+        if self.salary_min.is_some() && self.salary_max.is_some() {
+            SalaryKind::Range
+        } else {
+            SalaryKind::Fixed
+        }
+    }
+}
+
 /// Job status.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
@@ -149,6 +160,14 @@ impl std::str::FromStr for JobType {
             _ => Err("invalid job type".to_string()),
         }
     }
+}
+
+/// Salary kind.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub(crate) enum SalaryKind {
+    Fixed,
+    Range,
 }
 
 /// Job workplace.

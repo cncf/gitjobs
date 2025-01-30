@@ -23,6 +23,8 @@ use tower::ServiceBuilder;
 use tower_http::{
     set_header::SetResponseHeaderLayer, trace::TraceLayer, validate_request::ValidateRequestHeaderLayer,
 };
+use tower_sessions::CachingSessionStore;
+use tower_sessions_moka_store::MokaStore;
 use tracing::instrument;
 
 use crate::{
@@ -57,7 +59,9 @@ pub(crate) struct State {
 pub(crate) fn setup(cfg: &HttpServerConfig, db: DynDB) -> Router {
     // Setup auth layer
     let session_store = SessionStore::new(db.clone());
-    let session_layer = SessionManagerLayer::new(session_store)
+    let moka_store = MokaStore::new(Some(1000));
+    let caching_store = CachingSessionStore::new(moka_store, session_store);
+    let session_layer = SessionManagerLayer::new(caching_store)
         .with_expiry(Expiry::OnInactivity(Duration::days(7)))
         .with_http_only(true)
         .with_same_site(SameSite::Strict)

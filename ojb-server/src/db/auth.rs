@@ -4,7 +4,7 @@
 use anyhow::Result;
 use async_trait::async_trait;
 use axum_login::tower_sessions::session;
-use tracing::instrument;
+use tracing::{instrument, trace};
 use uuid::Uuid;
 
 use crate::{
@@ -43,6 +43,8 @@ impl DBAuth for PgDB {
     /// [DBAuth::create_session]
     #[instrument(skip(self), err)]
     async fn create_session(&self, record: &session::Record) -> Result<()> {
+        trace!("creating session in database");
+
         let db = self.pool.get().await?;
         db.execute(
             "
@@ -70,6 +72,8 @@ impl DBAuth for PgDB {
     /// [DBAuth::delete_session]
     #[instrument(skip(self), err)]
     async fn delete_session(&self, session_id: &session::Id) -> Result<()> {
+        trace!("deleting session from database");
+
         let db = self.pool.get().await?;
         db.execute(
             "delete from session where session_id = $1::text;",
@@ -83,6 +87,8 @@ impl DBAuth for PgDB {
     /// [DBAuth::get_session]
     #[instrument(skip(self), err)]
     async fn get_session(&self, session_id: &session::Id) -> Result<Option<session::Record>> {
+        trace!("getting session from database");
+
         let db = self.pool.get().await?;
         let row = db
             .query_opt(
@@ -106,6 +112,8 @@ impl DBAuth for PgDB {
     /// [DBAuth::get_user_by_id]
     #[instrument(skip(self), err)]
     async fn get_user_by_id(&self, user_id: &Uuid) -> Result<Option<User>> {
+        trace!("getting user (by id) from database");
+
         let db = self.pool.get().await?;
         let user = db
             .query_opt(
@@ -142,6 +150,8 @@ impl DBAuth for PgDB {
     /// [DBAuth::get_user_by_username]
     #[instrument(skip(self), err)]
     async fn get_user_by_username(&self, job_board_id: &Uuid, username: &str) -> Result<Option<User>> {
+        trace!("getting user (by username) from database");
+
         let db = self.pool.get().await?;
         let user = db
             .query_opt(
@@ -180,6 +190,8 @@ impl DBAuth for PgDB {
     /// [DBAuth::sign_up_user]
     #[instrument(skip(self), err)]
     async fn sign_up_user(&self, job_board_id: &Uuid, user: &NewUser) -> Result<()> {
+        trace!("signing up user in database");
+
         let db = self.pool.get().await?;
         db.execute(
             r#"
@@ -219,6 +231,8 @@ impl DBAuth for PgDB {
     /// [DBAuth::update_session]
     #[instrument(skip(self), err)]
     async fn update_session(&self, record: &session::Record) -> Result<()> {
+        trace!("updating session in database");
+
         let db = self.pool.get().await?;
         db.execute(
             "

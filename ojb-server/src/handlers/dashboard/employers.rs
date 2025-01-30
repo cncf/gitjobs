@@ -2,7 +2,7 @@
 
 use anyhow::Result;
 use axum::{
-    extract::State,
+    extract::{Path, State},
     http::StatusCode,
     response::{Html, IntoResponse},
     Form,
@@ -10,6 +10,7 @@ use axum::{
 use rinja::Template;
 use tower_sessions::Session;
 use tracing::instrument;
+use uuid::Uuid;
 
 use crate::{
     auth::AuthSession,
@@ -63,6 +64,19 @@ pub(crate) async fn add(
     session.insert("selected_employer_id", employer_id).await?;
 
     Ok(StatusCode::CREATED)
+}
+
+/// Handler that selects an employer.
+#[instrument(skip_all, err)]
+pub(crate) async fn select(
+    session: Session,
+    Path(employer_id): Path<Uuid>,
+) -> Result<impl IntoResponse, HandlerError> {
+    // TODO: check if the user is part of the employer's team
+
+    session.insert("selected_employer_id", employer_id).await?;
+
+    Ok(StatusCode::NO_CONTENT)
 }
 
 /// Handler that updates an employer.

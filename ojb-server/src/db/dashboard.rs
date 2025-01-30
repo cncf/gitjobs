@@ -6,7 +6,7 @@ use tracing::instrument;
 use uuid::Uuid;
 
 use crate::templates::dashboard::{
-    employers::EmployerDetails,
+    employers::{EmployerDetails, EmployerSummary},
     jobs::{JobBoard, JobDetails, JobSummary},
 };
 
@@ -40,6 +40,9 @@ pub(crate) trait DBDashBoard {
 
     /// Get job details.
     async fn get_job_details(&self, job_id: &uuid::Uuid) -> Result<JobDetails>;
+
+    /// Get user employers.
+    async fn get_user_employers(&self, user_id: &Uuid) -> Result<Vec<EmployerSummary>>;
 
     /// List employer jobs.
     async fn list_employer_jobs(&self, employer_id: &uuid::Uuid) -> Result<Vec<JobSummary>>;
@@ -351,6 +354,31 @@ impl DBDashBoard for PgDB {
         };
 
         Ok(job_details)
+    }
+
+    /// [DBAuth::get_user_employers]
+    #[instrument(skip(self), err)]
+    async fn get_user_employers(&self, user_id: &Uuid) -> Result<Vec<EmployerSummary>> {
+        let db = self.pool.get().await?;
+        let employers = db
+            .query(
+                "
+                    select employer_id, company
+                    from employer e
+                    join employer_team et using (employer_id)
+                    where et.user_id = $1::uuid;
+                    ",
+                &[&user_id],
+            )
+            .await?
+            .into_iter()
+            .map(|row| EmployerSummary {
+                employer_id: row.get("employer_id"),
+                company: row.get("company"),
+            })
+            .collect();
+
+        Ok(employers)
     }
 
     /// [DBDashBoard::list_employer_jobs]

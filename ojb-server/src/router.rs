@@ -71,6 +71,7 @@ pub(crate) fn setup(cfg: &HttpServerConfig, db: DynDB) -> Router {
         .route("/dashboard", get(dashboard::home::page))
         .route("/dashboard/employers/add", get(dashboard::employers::add_page).post(dashboard::employers::add))
         .route("/dashboard/employers/update", get(dashboard::employers::update_page).put(dashboard::employers::update))
+        .route("/dashboard/employers/{:employer_id}/select", put(dashboard::employers::select))
         .route("/dashboard/jobs/list", get(dashboard::jobs::list_page))
         .route("/dashboard/jobs/add", get(dashboard::jobs::add_page).post(dashboard::jobs::add))
         .route("/dashboard/jobs/preview", post(dashboard::jobs::preview_page))

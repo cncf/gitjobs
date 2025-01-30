@@ -10,7 +10,6 @@ use uuid::Uuid;
 use crate::{
     auth::{NewUser, User},
     db::PgDB,
-    templates::dashboard::employers::EmployerSummary,
 };
 
 /// Trait that defines some database operations used for authentication and
@@ -31,9 +30,6 @@ pub(crate) trait DBAuth {
 
     /// Get user by username.
     async fn get_user_by_username(&self, job_board_id: &Uuid, username: &str) -> Result<Option<User>>;
-
-    /// Get user employers.
-    async fn get_user_employers(&self, user_id: &Uuid) -> Result<Vec<EmployerSummary>>;
 
     /// Sign up a new user.
     async fn sign_up_user(&self, job_board_id: &Uuid, user: &NewUser) -> Result<()>;
@@ -179,30 +175,6 @@ impl DBAuth for PgDB {
             });
 
         Ok(user)
-    }
-
-    /// [DBAuth::get_user_employers]
-    #[instrument(skip(self), err)]
-    async fn get_user_employers(&self, user_id: &Uuid) -> Result<Vec<EmployerSummary>> {
-        let db = self.pool.get().await?;
-        let employers = db
-            .query(
-                "
-                select employer_id, company
-                from employer
-                where user_id = $1::uuid;
-                ",
-                &[&user_id],
-            )
-            .await?
-            .into_iter()
-            .map(|row| EmployerSummary {
-                employer_id: row.get("employer_id"),
-                company: row.get("company"),
-            })
-            .collect();
-
-        Ok(employers)
     }
 
     /// [DBAuth::sign_up_user]

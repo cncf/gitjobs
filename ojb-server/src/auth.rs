@@ -9,7 +9,7 @@ use password_auth::verify_password;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::{db::DynDB, templates::dashboard::employers::EmployerSummary};
+use crate::db::DynDB;
 
 /// Wrapper around `anyhow::Error` to represent auth errors.
 #[derive(thiserror::Error, Debug)]
@@ -24,7 +24,6 @@ pub(crate) struct User {
     pub auth_hash: Vec<u8>,
     pub email: String,
     pub email_verified: bool,
-    pub employers: Vec<EmployerSummary>,
     pub first_name: String,
     pub last_name: String,
     pub password: String,

@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 
 {% block main %}
+  Employers: {{ employers|json }}
+  Selected employer: {{ selected_employer_id.unwrap_or_default() }}
+  Is employer initial setup: {{ content.is_employer_initial_setup() }}
+
   <div class="container w-full flex flex-wrap mx-auto px-2 pt-28 pb-20">
     <div class="w-full lg:w-1/6 lg:px-6">
       <ul class="fw-normal list-none leading-10">

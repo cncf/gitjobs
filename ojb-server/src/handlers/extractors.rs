@@ -63,10 +63,11 @@ async fn lookup_job_board_id(db: DynDB, host: &str) -> Result<Option<Uuid>> {
 /// Key to store the selected employer id in the session.
 pub(crate) const SELECTED_EMPLOYER_ID_KEY: &str = "selected_employer_id";
 
-/// Custom extractor to get the employer id from the request's query string.
-pub(crate) struct EmployerId(pub Uuid);
+/// Custom extractor to get the selected employer id from the session. It
+/// returns the employer id as an option.
+pub(crate) struct SelectedEmployerIdOptional(pub Option<Uuid>);
 
-impl FromRequestParts<router::State> for EmployerId {
+impl FromRequestParts<router::State> for SelectedEmployerIdOptional {
     type Rejection = (StatusCode, &'static str);
 
     #[instrument(skip_all, err(Debug))]
@@ -74,12 +75,29 @@ impl FromRequestParts<router::State> for EmployerId {
         let Ok(session) = Session::from_request_parts(parts, state).await else {
             return Err((StatusCode::UNAUTHORIZED, "user not logged in"));
         };
-        let Ok(Some(employer_id)) = session.get(SELECTED_EMPLOYER_ID_KEY).await else {
+        let Ok(employer_id) = session.get(SELECTED_EMPLOYER_ID_KEY).await else {
             return Err((
                 StatusCode::INTERNAL_SERVER_ERROR,
-                "selected employer_id not found in session",
+                "error getting selected employer from session",
             ));
         };
-        Ok(EmployerId(employer_id))
+        Ok(SelectedEmployerIdOptional(employer_id))
+    }
+}
+
+/// Custom extractor to get the selected employer id from the session. An error
+/// is returned if the employer id is not found in the session.
+pub(crate) struct SelectedEmployerIdRequired(pub Uuid);
+
+impl FromRequestParts<router::State> for SelectedEmployerIdRequired {
+    type Rejection = (StatusCode, &'static str);
+
+    #[instrument(skip_all, err(Debug))]
+    async fn from_request_parts(parts: &mut Parts, state: &router::State) -> Result<Self, Self::Rejection> {
+        match SelectedEmployerIdOptional::from_request_parts(parts, state).await {
+            Ok(SelectedEmployerIdOptional(Some(employer_id))) => Ok(SelectedEmployerIdRequired(employer_id)),
+            Ok(SelectedEmployerIdOptional(None)) => Err((StatusCode::BAD_REQUEST, "missing employer id")),
+            Err(err) => Err(err),
+        }
     }
 }

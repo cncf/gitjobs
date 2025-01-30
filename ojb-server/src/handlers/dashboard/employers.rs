@@ -16,7 +16,7 @@ use crate::{
     db::DynDB,
     handlers::{
         error::HandlerError,
-        extractors::{EmployerId, JobBoardId},
+        extractors::{JobBoardId, SelectedEmployerIdRequired},
     },
     templates::dashboard::employers,
 };
@@ -35,7 +35,7 @@ pub(crate) async fn add_page(State(_db): State<DynDB>) -> Result<impl IntoRespon
 #[instrument(skip_all, err)]
 pub(crate) async fn update_page(
     State(db): State<DynDB>,
-    EmployerId(employer_id): EmployerId,
+    SelectedEmployerIdRequired(employer_id): SelectedEmployerIdRequired,
 ) -> Result<impl IntoResponse, HandlerError> {
     let employer_details = db.get_employer_details(&employer_id).await?;
     let template = employers::UpdatePage { employer_details };
@@ -69,7 +69,7 @@ pub(crate) async fn add(
 #[instrument(skip_all, err)]
 pub(crate) async fn update(
     State(db): State<DynDB>,
-    EmployerId(employer_id): EmployerId,
+    SelectedEmployerIdRequired(employer_id): SelectedEmployerIdRequired,
     Form(employer_details): Form<employers::EmployerDetails>,
 ) -> Result<impl IntoResponse, HandlerError> {
     db.update_employer(&employer_id, &employer_details).await?;

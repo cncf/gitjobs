@@ -11,8 +11,9 @@ use rinja::Template;
 use tracing::instrument;
 
 use crate::{
+    auth::AuthSession,
     db::DynDB,
-    handlers::{error::HandlerError, extractors::EmployerId},
+    handlers::{error::HandlerError, extractors::SelectedEmployerIdOptional},
     templates::dashboard::{
         employers,
         home::{self, Content, Tab},
@@ -23,22 +24,36 @@ use crate::{
 /// Handler that returns the dashboard home page.
 #[instrument(skip_all, err)]
 pub(crate) async fn page(
+    auth_session: AuthSession,
     State(db): State<DynDB>,
     Query(query): Query<HashMap<String, String>>,
-    EmployerId(employer_id): EmployerId,
+    SelectedEmployerIdOptional(employer_id): SelectedEmployerIdOptional,
 ) -> Result<impl IntoResponse, HandlerError> {
-    let tab: Tab = query.get("tab").into();
+    let mut tab: Tab = query.get("tab").into();
+    if employer_id.is_none() {
+        tab = Tab::EmployerInitialSetup;
+    }
+
     let content = match tab {
+        Tab::EmployerInitialSetup => Content::EmployerInitialSetup(employers::InitialSetupPage {}),
         Tab::Jobs => {
-            let jobs = db.list_employer_jobs(&employer_id).await?;
+            let jobs = db.list_employer_jobs(&employer_id.expect("to be some")).await?;
             Content::Jobs(jobs::ListPage { jobs })
         }
         Tab::Settings => {
-            let employer_details = db.get_employer_details(&employer_id).await?;
+            let employer_details = db.get_employer_details(&employer_id.expect("to be some")).await?;
             Content::Settings(employers::UpdatePage { employer_details })
         }
     };
-    let template = home::Page { content };
+
+    let user = auth_session.user.expect("user must be authenticated");
+    let employers = db.get_user_employers(&user.user_id).await?;
+
+    let template = home::Page {
+        content,
+        employers,
+        selected_employer_id: employer_id,
+    };
 
     Ok(Html(template.render()?))
 }

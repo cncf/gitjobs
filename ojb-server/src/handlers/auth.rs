@@ -4,7 +4,6 @@ use std::collections::HashMap;
 
 use axum::{
     extract::{Query, State},
-    http::StatusCode,
     response::{Html, IntoResponse, Redirect},
 };
 use axum_extra::extract::Form;
@@ -58,57 +57,50 @@ pub(crate) async fn log_in(
     mut auth_session: AuthSession,
     messages: Messages,
     session: Session,
+    State(db): State<DynDB>,
     JobBoardId(job_board_id): JobBoardId,
     Form(mut creds): Form<Credentials>,
-) -> impl IntoResponse {
+) -> Result<impl IntoResponse, HandlerError> {
     // Verify credentials
     creds.job_board_id = Some(job_board_id);
-    let user = match auth_session.authenticate(creds.clone()).await {
-        Ok(Some(user)) => user,
-        Ok(None) => {
-            messages.error("Invalid credentials");
+    let Some(user) = auth_session.authenticate(creds.clone()).await? else {
+        messages.error("Invalid credentials");
 
-            let mut log_in_url = LOG_IN_URL.to_string();
-            if let Some(next_url) = creds.next_url {
-                log_in_url = format!("{log_in_url}?next_url={next_url}");
-            };
+        let mut log_in_url = LOG_IN_URL.to_string();
+        if let Some(next_url) = creds.next_url {
+            log_in_url = format!("{log_in_url}?next_url={next_url}");
+        };
 
-            return Redirect::to(&log_in_url).into_response();
-        }
-        Err(_) => return StatusCode::INTERNAL_SERVER_ERROR.into_response(),
+        return Ok(Redirect::to(&log_in_url));
     };
 
     // Log user in
-    if auth_session.login(&user).await.is_err() {
-        return StatusCode::INTERNAL_SERVER_ERROR.into_response();
-    }
+    auth_session.login(&user).await?;
 
     // Use the first employer as the selected employer in the session
-    if !user.employers.is_empty()
-        && session
-            .insert(SELECTED_EMPLOYER_ID_KEY, user.employers[0].employer_id)
-            .await
-            .is_err()
-    {
-        return StatusCode::INTERNAL_SERVER_ERROR.into_response();
+    let employers = db.get_user_employers(&user.user_id).await?;
+    if !employers.is_empty() {
+        session
+            .insert(SELECTED_EMPLOYER_ID_KEY, employers[0].employer_id)
+            .await?;
     }
 
-    // Redirect to next url (if any)
-    if let Some(ref next_url) = creds.next_url {
-        Redirect::to(next_url)
+    // Prepare redirect url
+    let redirect_url = if let Some(ref next_url) = creds.next_url {
+        next_url
     } else {
-        Redirect::to("/")
-    }
-    .into_response()
+        "/"
+    };
+
+    Ok(Redirect::to(redirect_url))
 }
 
 /// Handler that logs the user out.
 #[instrument(skip_all)]
-pub(crate) async fn log_out(mut auth_session: AuthSession) -> impl IntoResponse {
-    match auth_session.logout().await {
-        Ok(_) => Redirect::to(LOG_IN_URL).into_response(),
-        Err(_) => StatusCode::INTERNAL_SERVER_ERROR.into_response(),
-    }
+pub(crate) async fn log_out(mut auth_session: AuthSession) -> Result<impl IntoResponse, HandlerError> {
+    auth_session.logout().await?;
+
+    Ok(Redirect::to(LOG_IN_URL))
 }
 
 /// Handler that signs up a new user.
@@ -121,5 +113,5 @@ pub(crate) async fn sign_up(
     new_user.password = password_auth::generate_hash(&new_user.password);
     db.sign_up_user(&job_board_id, &new_user).await?;
 
-    Ok(Redirect::to(LOG_IN_URL).into_response())
+    Ok(Redirect::to(LOG_IN_URL))
 }

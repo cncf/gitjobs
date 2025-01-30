@@ -10,6 +10,7 @@ use uuid::Uuid;
 use crate::{
     auth::{NewUser, User},
     db::PgDB,
+    templates::dashboard::employers::EmployerSummary,
 };
 
 /// Trait that defines some database operations used for authentication and
@@ -30,6 +31,9 @@ pub(crate) trait DBAuth {
 
     /// Get user by username.
     async fn get_user_by_username(&self, job_board_id: &Uuid, username: &str) -> Result<Option<User>>;
+
+    /// Get user employers.
+    async fn get_user_employers(&self, user_id: &Uuid) -> Result<Vec<EmployerSummary>>;
 
     /// Sign up a new user.
     async fn sign_up_user(&self, job_board_id: &Uuid, user: &NewUser) -> Result<()>;
@@ -117,17 +121,8 @@ impl DBAuth for PgDB {
                     email_verified,
                     first_name,
                     last_name,
-                    username,
-                    (
-                        select coalesce(json_agg(json_build_object(
-                            'employer_id', employer_id,
-                            'company', company
-                        )), '[]')
-                        from employer e
-                        join employer_team et using (employer_id)
-                        where et.user_id = u.user_id
-                    ) as employers
-                from "user" u
+                    username
+                from "user"
                 where user_id = $1::uuid
                 and email_verified = true;
                 "#,
@@ -139,7 +134,6 @@ impl DBAuth for PgDB {
                 auth_hash: row.get("auth_hash"),
                 email: row.get("email"),
                 email_verified: row.get("email_verified"),
-                employers: serde_json::from_value(row.get("employers")).expect("valid json"),
                 first_name: row.get("first_name"),
                 last_name: row.get("last_name"),
                 password: String::new(),
@@ -164,17 +158,8 @@ impl DBAuth for PgDB {
                     first_name,
                     last_name,
                     password,
-                    username,
-                    (
-                        select coalesce(json_agg(json_build_object(
-                            'employer_id', employer_id,
-                            'company', company
-                        )), '[]')
-                        from employer e
-                        join employer_team et using (employer_id)
-                        where et.user_id = u.user_id
-                    ) as employers
-                from "user" u
+                    username
+                from "user"
                 where username = $1::text
                 and job_board_id = $2::uuid
                 and email_verified = true;
@@ -187,7 +172,6 @@ impl DBAuth for PgDB {
                 auth_hash: row.get("auth_hash"),
                 email: row.get("email"),
                 email_verified: row.get("email_verified"),
-                employers: serde_json::from_value(row.get("employers")).expect("valid json"),
                 first_name: row.get("first_name"),
                 last_name: row.get("last_name"),
                 password: row.get("password"),
@@ -195,6 +179,30 @@ impl DBAuth for PgDB {
             });
 
         Ok(user)
+    }
+
+    /// [DBAuth::get_user_employers]
+    #[instrument(skip(self), err)]
+    async fn get_user_employers(&self, user_id: &Uuid) -> Result<Vec<EmployerSummary>> {
+        let db = self.pool.get().await?;
+        let employers = db
+            .query(
+                "
+                select employer_id, company
+                from employer
+                where user_id = $1::uuid;
+                ",
+                &[&user_id],
+            )
+            .await?
+            .into_iter()
+            .map(|row| EmployerSummary {
+                employer_id: row.get("employer_id"),
+                company: row.get("company"),
+            })
+            .collect();
+
+        Ok(employers)
     }
 
     /// [DBAuth::sign_up_user]

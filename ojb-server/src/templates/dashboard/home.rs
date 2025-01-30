@@ -2,24 +2,34 @@
 
 use rinja::Template;
 use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 
-use super::{employers, jobs};
+use crate::templates::dashboard::{employers, jobs};
 
 /// Home page template.
 #[derive(Debug, Clone, Template)]
 #[template(path = "dashboard/home.html")]
 pub(crate) struct Page {
     pub content: Content,
+    pub employers: Vec<employers::EmployerSummary>,
+
+    pub selected_employer_id: Option<Uuid>,
 }
 
 /// Content section.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub(crate) enum Content {
+    EmployerInitialSetup(employers::InitialSetupPage),
     Jobs(jobs::ListPage),
     Settings(employers::UpdatePage),
 }
 
 impl Content {
+    /// Check if the content is the employer initial setup page.
+    fn is_employer_initial_setup(&self) -> bool {
+        matches!(self, Content::EmployerInitialSetup(_))
+    }
+
     /// Check if the content is the jobs page.
     fn is_jobs(&self) -> bool {
         matches!(self, Content::Jobs(_))
@@ -34,6 +44,7 @@ impl Content {
 impl std::fmt::Display for Content {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
+            Content::EmployerInitialSetup(template) => write!(f, "{}", template.render()?),
             Content::Jobs(template) => write!(f, "{}", template.render()?),
             Content::Settings(template) => write!(f, "{}", template.render()?),
         }
@@ -43,6 +54,7 @@ impl std::fmt::Display for Content {
 /// Tab selected.
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 pub(crate) enum Tab {
+    EmployerInitialSetup,
     #[default]
     Jobs,
     Settings,
@@ -51,6 +63,7 @@ pub(crate) enum Tab {
 impl From<Option<&String>> for Tab {
     fn from(tab: Option<&String>) -> Self {
         match tab.map(String::as_str) {
+            Some("employer-initial-setup") => Tab::EmployerInitialSetup,
             Some("settings") => Tab::Settings,
             _ => Tab::Jobs,
         }

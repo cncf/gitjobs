@@ -12,6 +12,11 @@ use crate::templates::filters;
 #[template(path = "dashboard/employers/add.html")]
 pub(crate) struct AddPage {}
 
+/// Employer initial setup page template.
+#[derive(Debug, Clone, Template, Serialize, Deserialize)]
+#[template(path = "dashboard/employers/initial_setup.html")]
+pub(crate) struct InitialSetupPage {}
+
 /// Update employer page template.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
 #[template(path = "dashboard/employers/update.html")]

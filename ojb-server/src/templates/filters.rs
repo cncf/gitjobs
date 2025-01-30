@@ -28,7 +28,7 @@ where
 }
 
 /// Return the formatted date if it is some, otherwise return an empty string.
-#[allow(clippy::unnecessary_wraps, clippy::ref_option)]
+#[allow(clippy::unnecessary_wraps, clippy::ref_option, dead_code)]
 pub(crate) fn display_some_date(value: &Option<DateTime<Utc>>, format: &str) -> rinja::Result<String> {
     match value {
         Some(value) => Ok(value.format(format).to_string()),

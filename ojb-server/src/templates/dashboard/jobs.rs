@@ -6,7 +6,11 @@ use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use uuid::Uuid;
 
-use crate::templates::{dashboard::employers::EmployerDetails, filters, helpers::DATE_FORMAT};
+use crate::templates::{
+    dashboard::employers::EmployerDetails,
+    filters,
+    helpers::{build_location, DATE_FORMAT},
+};
 
 /// Add job page template.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
@@ -85,6 +89,11 @@ pub(crate) struct JobDetails {
 }
 
 impl JobDetails {
+    /// Get the location of the job.
+    pub(crate) fn location(&self) -> Option<String> {
+        build_location(self.city.as_ref(), self.state.as_ref(), self.country.as_ref())
+    }
+
     /// Get the salary kind of the job.
     pub(crate) fn salary_kind(&self) -> SalaryKind {
         if self.salary_min.is_some() && self.salary_max.is_some() {

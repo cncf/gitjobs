@@ -299,37 +299,7 @@
 </form>
 
 {# Preview modal -#}
-<div id="preview-modal"
-     tabindex="-1"
-     aria-hidden="true"
-     class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-full max-h-full flex">
-  <div id="backdrop-preview-modal"
-       class="modal-overlay absolute w-full h-full bg-black opacity-75"></div>
-  <div class="relative p-4 w-full max-w-2xl max-h-full">
-    <div class="relative bg-white rounded-lg shadow">
-      {# Modal header -#}
-      <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t">
-        {# Title -#}
-        <h3 class="text-xl font-semibold text-gray-900">Job preview</h3>
-        {# End title -#}
-
-        {# Close button -#}
-        <button id="close-preview-modal"
-                type="button"
-                class="group bg-transparent hover:bg-gray-200 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center">
-          <div class="svg-icon h-5 w-5 bg-gray-400 grouphover:bg-gray-900 icon-close"></div>
-          <span class="sr-only">Close modal</span>
-        </button>
-        {# End close button -#}
-      </div>
-      {# End modal header -#}
-
-      {# Modal content -#}
-      <div id="preview-content" class="p-4 md:p-8">modal content</div>
-      {# End modal content -#}
-    </div>
-  </div>
-</div>
+{% include "dashboard/jobs/preview_modal.html" %}
 {# End preview modal -#}
 
 <script type="module">
@@ -383,13 +353,5 @@
       console.log('Show error message');
     }
   });
-
-  // Close the preview modal on backdrop click
-  const backdropPreviewModal = document.querySelector('#backdrop-preview-modal');
-  backdropPreviewModal.addEventListener('click', () => toggleModalVisibility('preview-modal'));
-
-  // Close the preview modal on close button click
-  const closePreviewModal = document.querySelector('#close-preview-modal');
-  closePreviewModal.addEventListener('click', () => toggleModalVisibility('preview-modal'));
 </script>
 {# End Jobs form #}

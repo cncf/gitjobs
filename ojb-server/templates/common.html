@@ -1,8 +1,6 @@
 {# Spinner -#}
-{% macro spinner(size = 4, extra_styles = None) %}
-  {% let extra_styles_ = extra_styles.unwrap_or("") %}
-
-  <div role="status" class="{{ extra_styles_ }}">
+{% macro spinner(size = 4, extra_styles = "") %}
+  <div role="status" class="{{ extra_styles }}">
     <svg aria-hidden="true"
          class="inline size-{{ size }} text-gray-200 animate-spin fill-primary-600"
          viewBox="0 0 100 101"
@@ -17,7 +15,7 @@
 {# End spinner -#}
 
 {# Location -#}
-{% macro location(value = "", required = false) %}
+{% macro location(value = "", city = "", state = "", country = "", required = false) %}
   <div class="col-span-full">
     <label for="ts_query" class="block text-sm/6 font-medium text-gray-900">
       Location
@@ -44,6 +42,9 @@
              id="location_id"
              data-location="{{ value }}"
              {% if required %}required{% endif %}>
+      <input type="hidden" name="city" id="city" value="{{ city }}">
+      <input type="hidden" name="state" id="state" value="{{ state }}">
+      <input type="hidden" name="country" id="country" value="{{ country }}">
       <div class="htmx-indicator absolute end-10 top-1">{% call spinner(size = 5) %}</div>
       <div class="absolute end-1.5 top-1.5 peer-placeholder-shown:hidden">
         <button id="clean-location" type="button" class="mt-[2px]">
@@ -64,6 +65,9 @@
 
     const tsQueryInput = document.getElementById('ts_query');
     const locationIdInput = document.getElementById('location_id');
+    const locationCityInput = document.getElementById('city');
+    const locationStateInput = document.getElementById('state');
+    const locationCountryInput = document.getElementById('country');
     const cleanLocationButton = document.getElementById('clean-location');
 
     tsQueryInput.addEventListener('input', debounce(() => {
@@ -119,6 +123,9 @@
       tsQueryInput.value = "";
       locationIdInput.value = "";
       locationIdInput.dataset.location = "";
+      locationCityInput.value = "";
+      locationStateInput.value = "";
+      locationCountryInput.value = "";
       document.getElementById('search-location').innerHTML = "";
     });
   </script>
@@ -142,15 +149,17 @@
 {# End markdown editor -#}
 
 {# Job status badge -#}
-{% macro job_status_badge(status) %}
+{% macro job_status_badge(status, size = "xs") %}
+  {# djlint:off H008 #}
   {% match status %}
   {% when JobStatus::Archived %}
-  <span class="bg-red-100 text-red-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded uppercase">{{ status }}</span>
+  <span class='bg-red-100 text-red-800 text-{{ size }} font-medium me-2 {%- if size.to_string() == "xs" %} px-2.5 py-0.5 {%- else %} px-3 py-1 {%- endif %} rounded uppercase'>{{ status }}</span>
   {% when JobStatus::Draft %}
-  <span class="bg-blue-100 text-blue-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded uppercase">{{ status }}</span>
+  <span class='bg-blue-100 text-blue-800 text-{{ size }} font-medium me-2 {%- if size.to_string() == "xs" %} px-2.5 py-0.5 {%- else %} px-3 py-1 {%- endif %} rounded uppercase'>{{ status }}</span>
   {% when JobStatus::Published %}
-  <span class="bg-green-100 text-green-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded uppercase">{{ status }}</span>
+  <span class='bg-green-100 text-green-800 text-{{ size }} font-medium me-2 {%- if size.to_string() == "xs" %} px-2.5 py-0.5 {%- else %} px-3 py-1 {%- endif %} rounded uppercase'>{{ status }}</span>
 {% endmatch %}
+{# djlint:on H008 #}
 {% endmacro job_status_badge %}
 {# End job status badge -#}
 
@@ -179,3 +188,18 @@
   <option value="{{ value }}" {% if value == selected %}selected{% endif %}>{{ label }}</option>
 {% endmacro select_option %}
 {# End select option #}
+
+{# Badge #}
+{% macro badge(content, content_styles = "", icon = "") %}
+  <div class="inline-flex bg-gray-100 text-gray-800 text-sm font-medium me-2 px-2.5 py-1 rounded-md border border-gray-300">
+    <div class="flex items-center">
+      {% if icon.to_string() != "" %}
+        <div class="me-2">
+          <div class="svg-icon size-4 icon-{{ icon }} bg-gray-500"></div>
+        </div>
+      {% endif %}
+      <div class="capitalize {{ content_styles }}">{{ content }}</div>
+    </div>
+  </div>
+{% endmacro badge %}
+{# End badge #}

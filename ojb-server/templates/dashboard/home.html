@@ -8,9 +8,9 @@
   <div class="container w-full flex flex-wrap mx-auto px-2 pt-28 pb-20">
     <div class="w-full lg:w-1/6 lg:px-6">
       <ul class="fw-normal list-none leading-10">
-        {% call item_tab(name = "Jobs", is_active = content.is_jobs(), href = "/dashboard?tab=jobs", extra_styles = Some("mb-5")) %}
+        {% call tab_item(name = "Jobs", is_active = content.is_jobs(), href = "/dashboard?tab=jobs", extra_styles = "mb-5") %}
         <li class="uppercase px-3">Settings</li>
-        {% call item_tab(name = "Employer profile", is_active = content.is_settings(), href = "/dashboard?tab=settings", level = 2, extra_styles = Some("mb-3")) %}
+        {% call tab_item(name = "Employer profile", is_active = content.is_settings(), href = "/dashboard?tab=settings", level = 2, extra_styles = "mb-3") %}
       </ul>
     </div>
     <div class="w-full lg:w-5/6 mt-6 lg:mt-0 text-black leading-normal bg-white border rounded-lg">
@@ -32,11 +32,9 @@
 {% endblock main %}
 
 {# Item tab #}
-{% macro item_tab(name, is_active, href, level = 1, extra_styles = None ) %}
-  {% let extra_styles_ = extra_styles.unwrap_or("") %}
-
+{% macro tab_item(name, is_active, href, level = 1, extra_styles = "" ) %}
   {% if is_active %}
-    <li class="bg-gray-500/10 rounded-md font-semibold {{ extra_styles_ }}
+    <li class="bg-gray-500/10 rounded-md font-semibold {{ extra_styles }}
                {% if level + 0 == 1 -%}
                  uppercase px-3
                {% else -%}
@@ -45,7 +43,7 @@
       <a href="{{ href }}" class="flex">{{ name }}</a>
     </li>
   {% else %}
-    <li class="rounded-md hover:bg-gray-500/10 hover:font-semibold {{ extra_styles_ }}
+    <li class="rounded-md hover:bg-gray-500/10 hover:font-semibold {{ extra_styles }}
                {% if level + 0 == 1 -%}
                  uppercase px-3
                {% else -%}
@@ -54,5 +52,5 @@
       <a href="{{ href }}" class="flex">{{ name }}</a>
     </li>
   {% endif %}
-{% endmacro item_tab %}
+{% endmacro tab_item %}
 {# End item tab #}

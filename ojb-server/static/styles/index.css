@@ -6,6 +6,11 @@
   mask-position: center;
 }
 
+.icon-calendar {
+  mask-image: url('/static/images/icons/calendar.svg');
+  -webkit-mask-image: url('/static/images/icons/calendar.svg')
+}
+
 .icon-caret_down {
   mask-image: url('/static/images/icons/caret_down.svg');
   -webkit-mask-image: url('/static/images/icons/caret_down.svg')
@@ -29,6 +34,11 @@
 .icon-location {
   mask-image: url('/static/images/icons/location.svg');
   -webkit-mask-image: url('/static/images/icons/location.svg')
+}
+
+.icon-medal {
+  mask-image: url('/static/images/icons/medal.svg');
+  -webkit-mask-image: url('/static/images/icons/medal.svg')
 }
 
 .icon-search {

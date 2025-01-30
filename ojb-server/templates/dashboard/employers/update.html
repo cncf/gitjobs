@@ -50,7 +50,7 @@
 
         {# Location #}
         {% let location = "{}, {}, {}"|format(employer_details.city|display_some, employer_details.state|display_some, employer_details.country|display_some) %}
-        {% call common::location(value = location) %}
+        {% call common::location(value = location, city = employer_details.city|display_some, state = employer_details.state|display_some, country = employer_details.country|display_some) %}
         {# End location #}
 
         {# Website url #}

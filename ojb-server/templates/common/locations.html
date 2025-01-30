@@ -11,7 +11,12 @@
             <div class="me-2">
               <div class="svg-icon size-4 icon-location bg-gray-500"></div>
             </div>
-            <div class="location-text">{{ l.city }}, {{ l.state|display_some }}, {{ l.country }}</div>
+            <div class="location-text"
+                 data-city="{{ l.city }}"
+                 data-state="{{ l.state|display_some }}"
+                 data-country="{{ l.country }}">
+              {{ l.city }}, {{ l.state|display_some }}, {{ l.country }}
+            </div>
           </button>
         </li>
       {% endfor %}
@@ -25,8 +30,13 @@
   if (buttons) {
     buttons.forEach((btn) => {
       btn.addEventListener('click', () => {
+        const locationContent = btn.querySelector('.location-text');
         // Add the location to the input
-        const location = btn.querySelector('.location-text').textContent;
+        const location = locationContent.textContent;
+        const city = locationContent.dataset.city;
+        const state = locationContent.dataset.state;
+        const country = locationContent.dataset.country;
+
         if (input) {
           input.value = location;
           input.blur();
@@ -38,6 +48,23 @@
         if (locationInput) {
           locationInput.value = locationId;
           locationInput.dataset.location = location;
+
+          // Add the city, state, and country to the form
+          const cityInput = document.getElementById('city');
+          const stateInput = document.getElementById('state');
+          const countryInput = document.getElementById('country');
+
+          if (cityInput) {
+            cityInput.value = city;
+          }
+
+          if (stateInput) {
+            stateInput.value = state;
+          }
+
+          if (countryInput) {
+            countryInput.value = country;
+          }
         }
 
         // Clean the search results

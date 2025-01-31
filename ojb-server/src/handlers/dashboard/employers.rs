@@ -17,7 +17,7 @@ use crate::{
     db::DynDB,
     handlers::{
         error::HandlerError,
-        extractors::{JobBoardId, SelectedEmployerIdRequired},
+        extractors::{JobBoardId, SelectedEmployerIdRequired, SELECTED_EMPLOYER_ID_KEY},
     },
     templates::dashboard::employers,
 };
@@ -66,7 +66,7 @@ pub(crate) async fn add(
         .await?;
 
     // Use new employer as the selected employer for the session
-    session.insert("selected_employer_id", employer_id).await?;
+    session.insert(SELECTED_EMPLOYER_ID_KEY, employer_id).await?;
 
     Ok(StatusCode::CREATED)
 }
@@ -77,9 +77,8 @@ pub(crate) async fn select(
     session: Session,
     Path(employer_id): Path<Uuid>,
 ) -> Result<impl IntoResponse, HandlerError> {
-    // TODO: check if the user is part of the employer's team
-
-    session.insert("selected_employer_id", employer_id).await?;
+    // Update the selected employer in the session
+    session.insert(SELECTED_EMPLOYER_ID_KEY, employer_id).await?;
 
     Ok(StatusCode::NO_CONTENT)
 }

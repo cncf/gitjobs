@@ -55,7 +55,7 @@ pub(crate) async fn page(
     };
 
     // Prepare template
-    let employers = db.get_user_employers(&user.user_id).await?;
+    let employers = db.list_employers(&user.user_id).await?;
     let template = home::Page {
         content,
         employers,

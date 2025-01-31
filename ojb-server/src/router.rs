@@ -7,6 +7,7 @@ use axum::{
         header::{CACHE_CONTROL, CONTENT_TYPE},
         HeaderValue, StatusCode, Uri,
     },
+    middleware,
     response::IntoResponse,
     routing::{delete, get, post, put},
     Router,
@@ -34,6 +35,7 @@ use crate::{
     handlers::{
         auth::{self, LOG_IN_URL},
         common, dashboard, jobboard,
+        middleware::{user_owns_employer, user_owns_job},
     },
 };
 
@@ -60,22 +62,59 @@ pub(crate) fn setup(cfg: &HttpServerConfig, db: DynDB) -> Router {
     // Setup authentication/authorization layer
     let auth_layer = setup_auth_layer(cfg, db.clone());
 
+    // Setup router state
+    let state = State { db };
+
+    // Setup middleware
+    let check_user_owns_employer = middleware::from_fn_with_state(state.clone(), user_owns_employer);
+    let check_user_owns_job = middleware::from_fn_with_state(state.clone(), user_owns_job);
+
     // Setup router
-    #[rustfmt::skip]
     let mut router = Router::new()
         .route("/dashboard", get(dashboard::home::page))
-        .route("/dashboard/employers/add", get(dashboard::employers::add_page).post(dashboard::employers::add))
-        .route("/dashboard/employers/update", get(dashboard::employers::update_page).put(dashboard::employers::update))
-        .route("/dashboard/employers/{:employer_id}/select", put(dashboard::employers::select))
+        .route(
+            "/dashboard/employers/add",
+            get(dashboard::employers::add_page).post(dashboard::employers::add),
+        )
+        .route(
+            "/dashboard/employers/update",
+            get(dashboard::employers::update_page).put(dashboard::employers::update),
+        )
+        .route(
+            "/dashboard/employers/{:employer_id}/select",
+            put(dashboard::employers::select).layer(check_user_owns_employer.clone()),
+        )
         .route("/dashboard/jobs/list", get(dashboard::jobs::list_page))
-        .route("/dashboard/jobs/add", get(dashboard::jobs::add_page).post(dashboard::jobs::add))
+        .route(
+            "/dashboard/jobs/add",
+            get(dashboard::jobs::add_page).post(dashboard::jobs::add),
+        )
         .route("/dashboard/jobs/preview", post(dashboard::jobs::preview_page))
-        .route("/dashboard/jobs/{:job_id}/archive", put(dashboard::jobs::archive))
-        .route("/dashboard/jobs/{:job_id}/delete", delete(dashboard::jobs::delete))
-        .route("/dashboard/jobs/{:job_id}/publish", put(dashboard::jobs::publish))
-        .route("/dashboard/jobs/{:job_id}/update", get(dashboard::jobs::update_page).put(dashboard::jobs::update))
+        .route(
+            "/dashboard/jobs/{:job_id}/archive",
+            put(dashboard::jobs::archive).layer(check_user_owns_job.clone()),
+        )
+        .route(
+            "/dashboard/jobs/{:job_id}/delete",
+            delete(dashboard::jobs::delete).layer(check_user_owns_job.clone()),
+        )
+        .route(
+            "/dashboard/jobs/{:job_id}/publish",
+            put(dashboard::jobs::publish).layer(check_user_owns_job.clone()),
+        )
+        .route(
+            "/dashboard/jobs/{:job_id}/update",
+            get(dashboard::jobs::update_page)
+                .layer(check_user_owns_job.clone())
+                .put(dashboard::jobs::update)
+                .layer(check_user_owns_job.clone()),
+        )
         .route("/locations/search", get(common::search_locations))
-        .route_layer(login_required!(AuthnBackend, login_url = LOG_IN_URL, redirect_field = "next_url"))
+        .route_layer(login_required!(
+            AuthnBackend,
+            login_url = LOG_IN_URL,
+            redirect_field = "next_url"
+        ))
         .route("/", get(jobboard::jobs::page))
         .route("/about", get(jobboard::about::page))
         .route("/health-check", get(health_check))
@@ -91,7 +130,7 @@ pub(crate) fn setup(cfg: &HttpServerConfig, db: DynDB) -> Router {
         .layer(ServiceBuilder::new().layer(TraceLayer::new_for_http()))
         .layer(MessagesManagerLayer)
         .layer(auth_layer)
-        .with_state(State { db });
+        .with_state(state);
 
     // Setup basic auth
     if let Some(basic_auth) = &cfg.basic_auth {

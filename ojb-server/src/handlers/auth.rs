@@ -85,7 +85,7 @@ pub(crate) async fn log_in(
         .map_err(|e| HandlerError::Auth(e.to_string()))?;
 
     // Use the first employer as the selected employer in the session
-    let employers = db.get_user_employers(&user.user_id).await?;
+    let employers = db.list_employers(&user.user_id).await?;
     if !employers.is_empty() {
         session
             .insert(SELECTED_EMPLOYER_ID_KEY, employers[0].employer_id)

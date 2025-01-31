@@ -36,12 +36,18 @@ pub(crate) trait DBAuth {
 
     /// Update session.
     async fn update_session(&self, record: &session::Record) -> Result<()>;
+
+    /// Check if the user owns the employer.
+    async fn user_owns_employer(&self, user_id: &Uuid, employer_id: &Uuid) -> Result<bool>;
+
+    /// Check if the user owns the job
+    async fn user_owns_job(&self, user_id: &Uuid, job_id: &Uuid) -> Result<bool>;
 }
 
 #[async_trait]
 impl DBAuth for PgDB {
     /// [DBAuth::create_session]
-    #[instrument(skip(self), err)]
+    #[instrument(skip(self, record), err)]
     async fn create_session(&self, record: &session::Record) -> Result<()> {
         trace!("creating session in database");
 
@@ -229,7 +235,7 @@ impl DBAuth for PgDB {
     }
 
     /// [DBAuth::update_session]
-    #[instrument(skip(self), err)]
+    #[instrument(skip(self, record), err)]
     async fn update_session(&self, record: &session::Record) -> Result<()> {
         trace!("updating session in database");
 
@@ -250,5 +256,52 @@ impl DBAuth for PgDB {
         .await?;
 
         Ok(())
+    }
+
+    /// [DBAuth::user_owns_employer]
+    #[instrument(skip(self), err)]
+    async fn user_owns_employer(&self, user_id: &Uuid, employer_id: &Uuid) -> Result<bool> {
+        trace!("checking in database if user owns employer");
+
+        let db = self.pool.get().await?;
+        let row = db
+            .query_one(
+                "
+                select exists (
+                    select 1
+                    from employer_team
+                    where user_id = $1::uuid
+                    and employer_id = $2::uuid
+                );
+                ",
+                &[&user_id, &employer_id],
+            )
+            .await?;
+
+        Ok(row.get(0))
+    }
+
+    /// [DBAuth::user_owns_job]
+    #[instrument(skip(self), err)]
+    async fn user_owns_job(&self, user_id: &Uuid, job_id: &Uuid) -> Result<bool> {
+        trace!("checking in database if user owns job");
+
+        let db = self.pool.get().await?;
+        let row = db
+            .query_one(
+                "
+                select exists (
+                    select 1
+                    from job j
+                    join employer_team et using (employer_id)
+                    where et.user_id = $1::uuid
+                    and j.job_id = $2::uuid
+                );
+                ",
+                &[&user_id, &job_id],
+            )
+            .await?;
+
+        Ok(row.get(0))
     }
 }

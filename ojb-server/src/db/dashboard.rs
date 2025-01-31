@@ -18,43 +18,43 @@ pub(crate) trait DBDashBoard {
     /// Add employer.
     async fn add_employer(
         &self,
-        job_board_id: &uuid::Uuid,
-        user_id: &uuid::Uuid,
+        job_board_id: &Uuid,
+        user_id: &Uuid,
         employer: &EmployerDetails,
     ) -> Result<Uuid>;
 
     /// Add job.
-    async fn add_job(&self, employer_id: &uuid::Uuid, job: &JobDetails) -> Result<()>;
+    async fn add_job(&self, employer_id: &Uuid, job: &JobDetails) -> Result<()>;
 
     /// Archive job.
-    async fn archive_job(&self, job_id: &uuid::Uuid) -> Result<()>;
+    async fn archive_job(&self, job_id: &Uuid) -> Result<()>;
 
     /// Delete job.
-    async fn delete_job(&self, job_id: &uuid::Uuid) -> Result<()>;
+    async fn delete_job(&self, job_id: &Uuid) -> Result<()>;
 
     /// Get employer details.
-    async fn get_employer_details(&self, employer_id: &uuid::Uuid) -> Result<EmployerDetails>;
+    async fn get_employer_details(&self, employer_id: &Uuid) -> Result<EmployerDetails>;
 
     /// Get job board.
-    async fn get_job_board(&self, job_board_id: &uuid::Uuid) -> Result<JobBoard>;
+    async fn get_job_board(&self, job_board_id: &Uuid) -> Result<JobBoard>;
 
     /// Get job details.
-    async fn get_job_details(&self, job_id: &uuid::Uuid) -> Result<JobDetails>;
-
-    /// Get user employers.
-    async fn get_user_employers(&self, user_id: &Uuid) -> Result<Vec<EmployerSummary>>;
+    async fn get_job_details(&self, job_id: &Uuid) -> Result<JobDetails>;
 
     /// List employer jobs.
-    async fn list_employer_jobs(&self, employer_id: &uuid::Uuid) -> Result<Vec<JobSummary>>;
+    async fn list_employer_jobs(&self, employer_id: &Uuid) -> Result<Vec<JobSummary>>;
+
+    /// List employers where the user is part of the team.
+    async fn list_employers(&self, user_id: &Uuid) -> Result<Vec<EmployerSummary>>;
 
     /// Publish job.
-    async fn publish_job(&self, job_id: &uuid::Uuid) -> Result<()>;
+    async fn publish_job(&self, job_id: &Uuid) -> Result<()>;
 
     /// Update employer.
-    async fn update_employer(&self, employer_id: &uuid::Uuid, employer: &EmployerDetails) -> Result<()>;
+    async fn update_employer(&self, employer_id: &Uuid, employer: &EmployerDetails) -> Result<()>;
 
     /// Update job.
-    async fn update_job(&self, job_id: &uuid::Uuid, job: &JobDetails) -> Result<()>;
+    async fn update_job(&self, job_id: &Uuid, job: &JobDetails) -> Result<()>;
 }
 
 #[async_trait]
@@ -63,8 +63,8 @@ impl DBDashBoard for PgDB {
     #[instrument(skip(self), err)]
     async fn add_employer(
         &self,
-        job_board_id: &uuid::Uuid,
-        user_id: &uuid::Uuid,
+        job_board_id: &Uuid,
+        user_id: &Uuid,
         employer: &EmployerDetails,
     ) -> Result<Uuid> {
         let mut db = self.pool.get().await?;
@@ -127,7 +127,7 @@ impl DBDashBoard for PgDB {
 
     /// [DBDashBoard::add_job]
     #[instrument(skip(self), err)]
-    async fn add_job(&self, employer_id: &uuid::Uuid, job: &JobDetails) -> Result<()> {
+    async fn add_job(&self, employer_id: &Uuid, job: &JobDetails) -> Result<()> {
         let db = self.pool.get().await?;
         db.execute(
             "
@@ -201,7 +201,7 @@ impl DBDashBoard for PgDB {
 
     /// [DBDashBoard::archive_job]
     #[instrument(skip(self), err)]
-    async fn archive_job(&self, job_id: &uuid::Uuid) -> Result<()> {
+    async fn archive_job(&self, job_id: &Uuid) -> Result<()> {
         let db = self.pool.get().await?;
         db.execute(
             "
@@ -222,7 +222,7 @@ impl DBDashBoard for PgDB {
 
     /// [DBDashBoard::delete_job]
     #[instrument(skip(self), err)]
-    async fn delete_job(&self, job_id: &uuid::Uuid) -> Result<()> {
+    async fn delete_job(&self, job_id: &Uuid) -> Result<()> {
         let db = self.pool.get().await?;
         db.execute("delete from job where job_id = $1::uuid;", &[&job_id])
             .await?;
@@ -232,7 +232,7 @@ impl DBDashBoard for PgDB {
 
     /// [DBDashBoard::get_employer_details]
     #[instrument(skip(self), err)]
-    async fn get_employer_details(&self, employer_id: &uuid::Uuid) -> Result<EmployerDetails> {
+    async fn get_employer_details(&self, employer_id: &Uuid) -> Result<EmployerDetails> {
         let db = self.pool.get().await?;
         let row = db
             .query_one(
@@ -271,7 +271,7 @@ impl DBDashBoard for PgDB {
 
     /// [DBDashBoard::get_job_board]
     #[instrument(skip(self), err)]
-    async fn get_job_board(&self, job_board_id: &uuid::Uuid) -> Result<JobBoard> {
+    async fn get_job_board(&self, job_board_id: &Uuid) -> Result<JobBoard> {
         let db = self.pool.get().await?;
         let row = db
             .query_one(
@@ -295,7 +295,7 @@ impl DBDashBoard for PgDB {
 
     /// [DBDashBoard::get_job_details]
     #[instrument(skip(self), err)]
-    async fn get_job_details(&self, job_id: &uuid::Uuid) -> Result<JobDetails> {
+    async fn get_job_details(&self, job_id: &Uuid) -> Result<JobDetails> {
         let db = self.pool.get().await?;
         let row = db
             .query_one(
@@ -356,34 +356,9 @@ impl DBDashBoard for PgDB {
         Ok(job_details)
     }
 
-    /// [DBAuth::get_user_employers]
-    #[instrument(skip(self), err)]
-    async fn get_user_employers(&self, user_id: &Uuid) -> Result<Vec<EmployerSummary>> {
-        let db = self.pool.get().await?;
-        let employers = db
-            .query(
-                "
-                    select employer_id, company
-                    from employer e
-                    join employer_team et using (employer_id)
-                    where et.user_id = $1::uuid;
-                    ",
-                &[&user_id],
-            )
-            .await?
-            .into_iter()
-            .map(|row| EmployerSummary {
-                employer_id: row.get("employer_id"),
-                company: row.get("company"),
-            })
-            .collect();
-
-        Ok(employers)
-    }
-
     /// [DBDashBoard::list_employer_jobs]
     #[instrument(skip(self), err)]
-    async fn list_employer_jobs(&self, employer_id: &uuid::Uuid) -> Result<Vec<JobSummary>> {
+    async fn list_employer_jobs(&self, employer_id: &Uuid) -> Result<Vec<JobSummary>> {
         let db = self.pool.get().await?;
         let jobs = db
             .query(
@@ -421,9 +396,34 @@ impl DBDashBoard for PgDB {
         Ok(jobs)
     }
 
+    /// [DBAuth::list_employers]
+    #[instrument(skip(self), err)]
+    async fn list_employers(&self, user_id: &Uuid) -> Result<Vec<EmployerSummary>> {
+        let db = self.pool.get().await?;
+        let employers = db
+            .query(
+                "
+                        select employer_id, company
+                        from employer e
+                        join employer_team et using (employer_id)
+                        where et.user_id = $1::uuid;
+                        ",
+                &[&user_id],
+            )
+            .await?
+            .into_iter()
+            .map(|row| EmployerSummary {
+                employer_id: row.get("employer_id"),
+                company: row.get("company"),
+            })
+            .collect();
+
+        Ok(employers)
+    }
+
     /// [DBDashBoard::publish_job]
     #[instrument(skip(self), err)]
-    async fn publish_job(&self, job_id: &uuid::Uuid) -> Result<()> {
+    async fn publish_job(&self, job_id: &Uuid) -> Result<()> {
         let db = self.pool.get().await?;
         db.execute(
             "
@@ -445,7 +445,7 @@ impl DBDashBoard for PgDB {
 
     /// [DBDashBoard::update_employer]
     #[instrument(skip(self), err)]
-    async fn update_employer(&self, employer_id: &uuid::Uuid, employer: &EmployerDetails) -> Result<()> {
+    async fn update_employer(&self, employer_id: &Uuid, employer: &EmployerDetails) -> Result<()> {
         let db = self.pool.get().await?;
         db.execute(
             "
@@ -477,7 +477,7 @@ impl DBDashBoard for PgDB {
 
     /// [DBDashBoard::update_job]
     #[instrument(skip(self), err)]
-    async fn update_job(&self, job_id: &uuid::Uuid, job: &JobDetails) -> Result<()> {
+    async fn update_job(&self, job_id: &Uuid, job: &JobDetails) -> Result<()> {
         let db = self.pool.get().await?;
         db.execute(
             "

@@ -1,6 +1,6 @@
 {% import "common.html" as common %}
 
-{% let job_id = job_details.job_id.unwrap_or_default() %}
+{% let job_id = job_details.job_id|display_some %}
 
 {# Jobs form #}
 <form id="jobs-form"
@@ -35,8 +35,7 @@
         {# End job status #}
 
         {# Job location #}
-        {% let location = "{}, {}, {}"|format(job_details.city|display_some, job_details.state|display_some, job_details.country|display_some) %}
-        {% call common::location(value = location, city = job_details.city|display_some, state = job_details.state|display_some, country = job_details.country|display_some) %}
+        {% call common::location(location_id = job_details.location_id|display_some, city = job_details.city|display_some, state = job_details.state|display_some, country = job_details.country|display_some) %}
         {# End Job location #}
 
         {# Job type #}
@@ -120,41 +119,39 @@
         Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
       </p>
       <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-        {# TODO - check option #}
-        {% let selectedSalaryOption = "exact" %}
+        {% let salary_kind = job_details.salary_kind() %}
         <div class="col-span-full">
           <label for="salary" class="block text-sm/6 font-medium text-gray-900">Option</label>
           <div class="mt-2 flex space-x-12">
             <div class="flex items-center gap-x-3">
-              <input id="exact"
-                     name="salary_option"
+              <input id="fixed"
+                     name="salary_kind"
                      type="radio"
-                     {% if selectedSalaryOption == "exact" %}checked{% endif %}
+                     {% if salary_kind == SalaryKind::Fixed %}checked{% endif %}
                      class="relative size-4 appearance-none rounded-full border border-gray-300 bg-white before:absolute before:inset-1 before:rounded-full before:bg-white not-checked:before:hidden checked:border-primary-600 checked:bg-primary-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:before:bg-gray-400 forced-colors:appearance-auto forced-colors:before:hidden">
-              <label for="exact" class="block text-sm/6 font-medium text-gray-900">Exact</label>
+              <label for="fixed" class="block text-sm/6 font-medium text-gray-900">Exact</label>
             </div>
             <div class="flex items-center gap-x-3">
               <input id="range"
-                     name="salary_option"
+                     name="salary_kind"
                      type="radio"
-                     {% if selectedSalaryOption == "range" %}checked{% endif %}
+                     {% if salary_kind == SalaryKind::Range %}checked{% endif %}
                      class="relative size-4 appearance-none rounded-full border border-gray-300 bg-white before:absolute before:inset-1 before:rounded-full before:bg-white not-checked:before:hidden checked:border-primary-600 checked:bg-primary-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:before:bg-gray-400 forced-colors:appearance-auto forced-colors:before:hidden">
               <label for="range" class="block text-sm/6 font-medium text-gray-900">Range</label>
             </div>
           </div>
         </div>
         <script type="module">
-          const salaryOptions = document.querySelectorAll('input[name="salary_option"]');
-          const salaryOptionExact = document.getElementById('salary_option_exact');
-          const salaryOptionRange = document.getElementById('salary_option_range');
-          const salaryInputs = document.querySelectorAll('input[type=number][name^="salary"]');
+          const salaryOptions = document.querySelectorAll('input[name="salary_kind"]');
+          const salaryOptionFixed = document.getElementById('salary_kind_fixed');
+          const salaryOptionRange = document.getElementById('salary_kind_range');
           salaryOptions.forEach((option) => {
             option.addEventListener('change', () => {
-              if (option.id === 'exact') {
-                salaryOptionExact.classList.remove('hidden');
+              if (option.id === 'fixed') {
+                salaryOptionFixed.classList.remove('hidden');
                 salaryOptionRange.classList.add('hidden');
               } else {
-                salaryOptionExact.classList.add('hidden');
+                salaryOptionFixed.classList.add('hidden');
                 salaryOptionRange.classList.remove('hidden');
               }
             });
@@ -162,7 +159,8 @@
         </script>
 
         {# Salary #}
-        <div id="salary_option_exact" class="sm:col-span-2">
+        <div id="salary_kind_fixed"
+             class="sm:col-span-2 {%- if salary_kind != SalaryKind::Fixed %} hidden {%- endif -%}">
           <label for="salary" class="block text-sm/6 font-medium text-gray-900">Salary</label>
           <div class="mt-2">
             <input id="salary"
@@ -173,8 +171,8 @@
                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary-600 sm:text-sm/6">
           </div>
         </div>
-        <div id="salary_option_range"
-             class="hidden grid grid-cols-1 gap-x-6 sm:grid-cols-6 sm:col-span-2">
+        <div id="salary_kind_range"
+             class="grid grid-cols-1 gap-x-6 sm:grid-cols-6 sm:col-span-2 {%- if salary_kind != SalaryKind::Range %}hidden {%- endif -%}">
           <div class="sm:col-span-3">
             <label for="salary_min" class="block text-sm/6 font-medium text-gray-900">Salary min</label>
             <div class="mt-2">
@@ -208,35 +206,35 @@
             <select id="salary_currency"
                     name="salary_currency"
                     class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary-600 sm:text-sm/6">
-              <option value=""></option>
-              <option value="USD">USD - United States Dollar</option>
-              <option value="EUR">EUR - Euro</option>
-              <option value="GBP">GBP - British Pound Sterling</option>
-              <option value="CAD">CAD - Canadian Dollar</option>
-              <option value="JPY">JPY - Japanese Yen</option>
+              {% call common::select_option(value = "", label = "", selected = job_details.salary_currency|display_some) %}
+              {% call common::select_option(value = "USD", label = "USD - United States Dollar", selected = job_details.salary_currency|display_some) %}
+              {% call common::select_option(value = "EUR", label = "EUR - Euro", selected = job_details.salary_currency|display_some) %}
+              {% call common::select_option(value = "GBP", label = "GBP - British Pound Sterling", selected = job_details.salary_currency|display_some) %}
+              {% call common::select_option(value = "CAD", label = "CAD - Canadian Dollar", selected = job_details.salary_currency|display_some) %}
+              {% call common::select_option(value = "JPY", label = "JPY - Japanese Yen", selected = job_details.salary_currency|display_some) %}
             </select>
           </div>
         </div>
         {# End Salary currency #}
 
-        {# Salary timeframe #}
+        {# Salary period #}
         <div class="sm:col-span-1">
           <label for="salary_period" class="block text-sm/6 font-medium text-gray-900">Timeframe</label>
           <div class="mt-2 grid grid-cols-1">
             <select id="salary_period"
                     name="salary_period"
                     class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary-600 sm:text-sm/6">
-              <option value=""></option>
-              <option value="daily">Daily</option>
-              <option value="weekly">Weekly</option>
-              <option value="fortnightly">Fortnightly</option>
-              <option value="monthly">Monthly</option>
-              <option value="quarterly">Quarterly</option>
-              <option value="yearly">Yearly</option>
+              {% call common::select_option(value = "", label = "", selected = job_details.salary_period|display_some) %}
+              {% call common::select_option(value = "daily", label = "Daily", selected = job_details.salary_period|display_some) %}
+              {% call common::select_option(value = "weekly", label = "Weekly", selected = job_details.salary_period|display_some) %}
+              {% call common::select_option(value = "fortnightly", label = "Fortnightly", selected = job_details.salary_period|display_some) %}
+              {% call common::select_option(value = "monthly", label = "Monthly", selected = job_details.salary_period|display_some) %}
+              {% call common::select_option(value = "quarterly", label = "Quarterly", selected = job_details.salary_period|display_some) %}
+              {% call common::select_option(value = "yearly", label = "Yearly", selected = job_details.salary_period|display_some) %}
             </select>
           </div>
         </div>
-        {# End Salary timeframe #}
+        {# End Salary period #}
       </div>
     </div>
     {# End salary #}
@@ -252,13 +250,7 @@
         <div class="col-span-full">
           <label for="open_source" class="block text-sm/6 font-medium text-gray-900">Open source</label>
           <div class="mt-2">
-            <input id="open_source"
-                   name="open_source"
-                   type="range"
-                   min="0"
-                   max="100"
-                   value="{{ job_details.open_source|display_some_or(50) }}"
-                   class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+            {% call common::input_range(name = "open_source", value = job_details.open_source|display_some_or(0)) %}
           </div>
           <p class="mt-1 text-xs/6 text-gray-600">Lorem ipsum.</p>
         </div>
@@ -268,15 +260,7 @@
         <div class="col-span-full">
           <label for="upstream_commitment"
                  class="block text-sm/6 font-medium text-gray-900">Upstream commitment</label>
-          <div class="mt-2">
-            <input id="upstream_commitment"
-                   name="upstream_commitment"
-                   type="range"
-                   min="0"
-                   max="100"
-                   value="{{ job_details.upstream_commitment|display_some_or(50) }}"
-                   class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
-          </div>
+          {% call common::input_range(name = "upstream_commitment", value = job_details.upstream_commitment|display_some_or(0)) %}
           <p class="mt-1 text-xs/6 text-gray-600">Lorem ipsum.</p>
         </div>
         {# End Upstream commitment #}
@@ -304,7 +288,7 @@
       {# Publish button #}
       {% if job_details.status == JobStatus::Published %}
         <button type="submit"
-                class="rounded-md bg-primary-700 px-3 py-2 text-sm font-semibold text-white rounded-md hover:bg-primary-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
+                class="bg-primary-700 px-3 py-2 text-sm font-semibold text-white rounded-md hover:bg-primary-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
           Save
         </button>
       {% else %}
@@ -314,7 +298,7 @@
         </button>
         <button id="publish-job"
                 type="button"
-                class="rounded-md bg-primary-700 px-3 py-2 text-sm font-semibold text-white rounded-md hover:bg-primary-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
+                class="bg-primary-700 px-3 py-2 text-sm font-semibold text-white rounded-md hover:bg-primary-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
           Publish
         </button>
       {% endif %}
@@ -340,7 +324,7 @@
 
   // Before the form is submitted, check the salary option selected
   jobsForm.addEventListener('htmx:beforeRequest', (e) => {
-    const selectedSalaryOption = document.querySelector('input[name="salary_option"]:checked');
+    const selectedSalaryOption = document.querySelector('input[name="salary_kind"]:checked');
     // If the salary option is range, remove the salary value
     if (selectedSalaryOption.id === 'range') {
       document.querySelector('input[name="salary"]').value = '';

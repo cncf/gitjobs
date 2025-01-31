@@ -15,7 +15,8 @@
 {# End spinner -#}
 
 {# Location -#}
-{% macro location(value = "", city = "", state = "", country = "", required = false) %}
+{% macro location(location_id = "", city = "", state = "", country = "", required = false) %}
+  {% let value = &self::build_location(Some(city), Some(state), Some(country))|display_some %}
   <div class="col-span-full">
     <label for="ts_query" class="block text-sm/6 font-medium text-gray-900">
       Location
@@ -40,6 +41,7 @@
       <input type="hidden"
              name="location_id"
              id="location_id"
+             value="{{ location_id }}"
              data-location="{{ value }}"
              {% if required %}required{% endif %}>
       <input type="hidden" name="city" id="city" value="{{ city }}">
@@ -87,7 +89,7 @@
 
         // If the location id is set, set the ts_query input to the location
         if (locationIdInput.value !== "") {
-          tsQueryInput.value = locationIdInput.dataset.location;
+          tsQueryInput.value = locationIdInput.dataset.location.trim();
         } else {
           tsQueryInput.value = "";
         }
@@ -184,8 +186,9 @@
 {# End toggle checkbox #}
 
 {# Select option #}
-{% macro select_option(value, label, selected) %}
-  <option value="{{ value }}" {% if value == selected %}selected{% endif %}>{{ label }}</option>
+{% macro select_option(value, label, selected = "") %}
+  <option value="{{ value }}"
+          {% if value.to_string() == selected.to_string() %}selected{% endif %}>{{ label }}</option>
 {% endmacro select_option %}
 {# End select option #}
 
@@ -203,3 +206,67 @@
   </div>
 {% endmacro badge %}
 {# End badge #}
+
+{# Input range #}
+{% macro input_range(name, value = "0") %}
+  <div class="relative">
+    <input id="{{ name }}"
+           name="{{ name }}"
+           type="range"
+           min="0"
+           max="100"
+           value="{{ value }}"
+           class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:!bg-primary-900">
+    <div id="tooltip-{{ name }}"
+         role="tooltip"
+         class="absolute z-10 inline-block px-2 py-1 text-sm font-medium text-white text-center bg-primary-900 rounded-lg shadow-xs tooltip top-8 start-[8.5px] -ms-6 w-12">
+      <span>0</span><small>%</small>
+      <div class="h-0 w-0 border-x-[6px] border-x-transparent border-b-[6px] border-b-primary-900 absolute -top-1.5 start-[18px]">
+      </div>
+    </div>
+    <ul class="flex justify-between w-full px-[10px] h-5">
+      <li class="flex justify-center relative text-xs text-gray-500">
+        <span class="absolute">0</span>
+      </li>
+      <li class="flex justify-center relative text-xs text-gray-500">
+        <span class="absolute">25</span>
+      </li>
+      <li class="flex justify-center relative text-xs text-gray-500">
+        <span class="absolute">50</span>
+      </li>
+      <li class="flex justify-center relative text-xs text-gray-500">
+        <span class="absolute">75</span>
+      </li>
+      <li class="flex justify-center relative text-xs text-gray-500">
+        <span class="absolute">100</span>
+      </li>
+    </ul>
+  </div>
+  {# djlint:off #}
+  <script type="module">
+    import {
+      debounce
+    } from '/static/js/common/common.js';
+
+    const updateStyles = (newValue) => {
+      const value = parseInt(newValue, 10);
+      const thumbSize = 17;
+      const offset = thumbSize * (0.5 - value / 100);
+      const tooltip = document.getElementById('tooltip-{{ name }}');
+      tooltip.getElementsByTagName('span')[0].textContent = value;
+      tooltip.style.left = `calc(${value}% + ${offset}px)`;
+      const inputRange = document.getElementById('{{ name }}');
+      inputRange.style.backgroundImage = `linear-gradient(90deg, var(--ojb-primary) 0%, var(--ojb-primary) ${value}%, rgb(229 231 235 / var(--tw-bg-opacity, 1)) ${value}%, rgb(229 231 235 / var(--tw-bg-opacity, 1)) 100%)`;
+    };
+
+    const inputRange = document.getElementById('{{ name }}');
+    const tooltip = document.getElementById('tooltip-{{ name }}');
+    inputRange.addEventListener('input', debounce(() => {
+      updateStyles(inputRange.value);
+    }, 20));
+
+    updateStyles({{ value }});
+</script>
+  {# djlint:on #}
+{% endmacro input_range %}
+{# End input range #}

@@ -15,7 +15,9 @@
                  data-city="{{ l.city }}"
                  data-state="{{ l.state|display_some }}"
                  data-country="{{ l.country }}">
-              {{ l.city }}, {{ l.state|display_some }}, {{ l.country }}
+              {# djlint:off #}
+                 {{ &l.format()|display_some }}
+              {# djlint:on #}
             </div>
           </button>
         </li>
@@ -32,7 +34,7 @@
       btn.addEventListener('click', () => {
         const locationContent = btn.querySelector('.location-text');
         // Add the location to the input
-        const location = locationContent.textContent;
+        const location = locationContent.textContent.trim();
         const city = locationContent.dataset.city;
         const state = locationContent.dataset.state;
         const country = locationContent.dataset.country;

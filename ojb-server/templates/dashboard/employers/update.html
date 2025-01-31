@@ -49,8 +49,7 @@
         {# End Public #}
 
         {# Location #}
-        {% let location = "{}, {}, {}"|format(employer_details.city|display_some, employer_details.state|display_some, employer_details.country|display_some) %}
-        {% call common::location(value = location, city = employer_details.city|display_some, state = employer_details.state|display_some, country = employer_details.country|display_some) %}
+        {% call common::location(location_id = employer_details.location_id|display_some, city = employer_details.city|display_some, state = employer_details.state|display_some, country = employer_details.country|display_some) %}
         {# End location #}
 
         {# Website url #}
@@ -84,7 +83,7 @@
   </div>
   <div class="mt-6 flex justify-end items-center">
     <button type="submit"
-            class="rounded-md bg-primary-700 px-3 py-2 text-sm font-semibold text-white rounded-md hover:bg-primary-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
+            class="bg-primary-700 px-3 py-2 text-sm font-semibold text-white rounded-md hover:bg-primary-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
       Save
     </button>
   </div>

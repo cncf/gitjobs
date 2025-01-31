@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full min-h-screen">
+<html lang="en"
+      class="h-full min-h-screen has-[div[role='dialog'][data-open='true']]:overflow-hidden">
   <head>
     <title>Open Job Board</title>
     <meta name="description"
@@ -7,6 +8,14 @@
     <meta name="keywords" content="community, organization, jobs, job">
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    {# TODO - primary coloe #}
+    <style>
+      :root {
+        --ojb-primary: #268fd1;
+      }
+    </style>
+
     <link rel="stylesheet"
           href="https://unpkg.com/easymde/dist/easymde.min.css">
     <link rel="stylesheet" href="/static/styles/index.css" />

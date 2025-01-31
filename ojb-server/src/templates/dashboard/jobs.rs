@@ -61,6 +61,7 @@ pub(crate) struct JobSummary {
 
 impl JobSummary {
     /// Get the location of the job.
+    #[allow(dead_code)]
     pub(crate) fn location(&self) -> Option<String> {
         build_location(self.city.as_deref(), None, self.country.as_deref())
     }
@@ -97,6 +98,7 @@ pub(crate) struct JobDetails {
 
 impl JobDetails {
     /// Get the location of the job.
+    #[allow(dead_code)]
     pub(crate) fn location(&self) -> Option<String> {
         build_location(
             self.city.as_deref(),

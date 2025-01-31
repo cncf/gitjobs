@@ -50,6 +50,7 @@ pub(crate) struct EmployerDetails {
 
 impl EmployerDetails {
     /// Get the location of the employer.
+    #[allow(dead_code)]
     pub(crate) fn location(&self) -> Option<String> {
         build_location(
             self.city.as_deref(),

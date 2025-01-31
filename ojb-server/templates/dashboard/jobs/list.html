@@ -1,7 +1,7 @@
 {% import "common.html" as common %}
 
-<div class="flex justify-end mb-6 mb-4">
-  <div class="flex mb-2">
+<div class="flex justify-end mb-6">
+  <div class="flex gap-x-5">
     <div class="relative">
       {# Button actions #}
       <button id="btn-actions"
@@ -56,18 +56,29 @@
         const dropdownActions = document.getElementById('dropdown-actions');
 
         btnActions.addEventListener('click', () => {
+          const isOpen = dropdownActions.classList.contains('hidden');
           dropdownActions.classList.toggle('hidden');
+          if (isOpen) {
+            document.addEventListener('click', (event) => {
+              if (!dropdownActions.contains(event.target) && !btnActions.contains(event.target)) {
+                dropdownActions.classList.add('hidden');
+              }
+            });
+          } else {
+            document.removeEventListener('click', () => {});
+          }
         });
       </script>
     </div>
 
-    <div class="divider divider-horizontal mx-3"></div>
-    <button id="add-job-button"
-            hx-get="/dashboard/jobs/add"
-            hx-target="#dashboard-content"
-            class="rounded-md bg-primary-700 px-3 py-2 text-sm font-semibold text-white rounded-md hover:bg-primary-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
-      Add Job
-    </button>
+    <div>
+      <button id="add-job-button"
+              hx-get="/dashboard/jobs/add"
+              hx-target="#dashboard-content"
+              class="bg-primary-700 px-3 py-2 text-sm font-semibold text-white rounded-md hover:bg-primary-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
+        Add Job
+      </button>
+    </div>
     <script type="module">
       const addJobButton = document.getElementById('add-job-button');
       addJobButton.addEventListener('htmx:afterRequest', () => {
@@ -120,7 +131,8 @@
 
             {# Location #}
             <td class="px-6 py-4 whitespace-nowrap">
-              {{ job.city|display_some }}, {{ job.country|display_some_or("-") }}
+              {% let location = &self::build_location(job.city.as_deref(), None, job.country.as_deref())|display_some %}
+              {{ location }}
             </td>
             {# End location #}
 

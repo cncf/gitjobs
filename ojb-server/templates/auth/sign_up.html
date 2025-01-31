@@ -1,1 +1,89 @@
-<h1>Sign Up page</h1>
+{% extends "base.html" %}
+
+{% block main %}
+  <div class="container max-w-xl m-auto px-2 py-28">
+    <div class="bg-white p-10 border rounded-lg">
+      <form hx-post="/sign-up" hx-trigger="submit" hx-target="body">
+        <div class="text-2xl mb-10">Sign Up</div>
+        <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+          {# Name #}
+          <div class="sm:col-span-full">
+            <label for="name" class="block text-sm/6 font-medium text-gray-900">Name (required)</label>
+            <div class="mt-2">
+              <input id="name"
+                     name="name"
+                     type="text"
+                     class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary-600 sm:text-sm/6"
+                     required>
+            </div>
+          </div>
+          {# End name #}
+
+          {# Email #}
+          <div class="sm:col-span-full">
+            <label for="email" class="block text-sm/6 font-medium text-gray-900">Email (required)</label>
+            <div class="mt-2">
+              <input id="email"
+                     name="email"
+                     type="email"
+                     class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary-600 sm:text-sm/6"
+                     required>
+            </div>
+          </div>
+          {# End Email #}
+
+          {# Username #}
+          <div class="sm:col-span-full">
+            <label for="username" class="block text-sm/6 font-medium text-gray-900">Username (required)</label>
+            <div class="mt-2">
+              <input id="username"
+                     name="username"
+                     type="text"
+                     class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary-600 sm:text-sm/6"
+                     required>
+            </div>
+          </div>
+          {# End Username #}
+
+          {# Password #}
+          <div class="sm:col-span-3">
+            <label for="password" class="block text-sm/6 font-medium text-gray-900">Password (required)</label>
+            <div class="mt-2">
+              <input type="password"
+                     id="password"
+                     name="password"
+                     class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary-600 sm:text-sm/6"
+                     required>
+            </div>
+          </div>
+          {# End Password #}
+
+          {# Repeat password #}
+          <div class="sm:col-span-3">
+            <label for="repeat_password"
+                   class="block text-sm/6 font-medium text-gray-900">Repeat password (required)</label>
+            <div class="mt-2">
+              <input type="password"
+                     id="repeat_password"
+                     name="repeat_password"
+                     class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary-600 sm:text-sm/6"
+                     required>
+            </div>
+          </div>
+          {# End Repeat password #}
+        </div>
+
+        <div class="mt-12">
+          <button type="submit"
+                  class="bg-primary-700 w-full px-3 py-2 text-sm font-semibold text-white rounded-md hover:bg-primary-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
+            Submit
+          </button>
+        </div>
+
+        <div class="mt-5">
+          Already have an account? <a href="/log-in" class="text-primary-700 hover:text-primary-900">Sign In</a>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock main %}

@@ -41,6 +41,16 @@
   -webkit-mask-image: url('/static/images/icons/medal.svg')
 }
 
+.icon-menu {
+  mask-image: url('/static/images/icons/menu.svg');
+  -webkit-mask-image: url('/static/images/icons/menu.svg')
+}
+
+.icon-plus {
+  mask-image: url('/static/images/icons/plus.svg');
+  -webkit-mask-image: url('/static/images/icons/plus.svg')
+}
+
 .icon-search {
   mask-image: url('/static/images/icons/search.svg');
   -webkit-mask-image: url('/static/images/icons/search.svg')

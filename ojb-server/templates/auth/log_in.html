@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block main %}
-  <div class="container w-full m-auto px-2 py-28">
+  <div class="container max-w-lg m-auto px-2 py-28">
     <div class="bg-white p-10 border rounded-lg">
       <form hx-post="/log-in"
             hx-trigger="submit"
@@ -30,11 +30,21 @@
           <input type="hidden" id="next_url" name="next_url" value="{{ next_url }}" />
         {% endif %}
         <button type="submit"
-                class="rounded-md bg-primary-700 px-3 py-2 text-sm font-semibold text-white rounded-md hover:bg-primary-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
+                class="bg-primary-700 px-3 py-2 w-full text-sm font-semibold text-white rounded-md hover:bg-primary-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
           Submit
         </button>
+
+        {# GitHub login #}
+        <a href="/log-in/oauth2/github?{%- if let Some(next_url) = next_url -%}next_url={{ next_url }}{%- endif -%}"
+           class="block mt-5 bg-primary-700 px-3 py-2 w-full text-sm font-semibold text-center text-white rounded-md hover:bg-primary-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
+          Log In with GitHub
+        </a>
+        {# End GitHub login #}
+
+        <div class="mt-5">
+          Don't have an account? <a href="/sign-up" class="text-primary-700 hover:text-primary-900">Sign up</a>.
+        </div>
       </form>
-      <a href="/log-in/oauth2/github?next_url=/dashboard">Log In with GitHub</a>
 
       {# Messages #}
       {% if messages.len() > 0 %}

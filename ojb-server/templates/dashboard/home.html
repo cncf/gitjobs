@@ -1,19 +1,146 @@
 {% extends "base.html" %}
+{% import "common.html" as common %}
 
 {% block main %}
-  Employers: {{ employers|json }}
-  Selected employer: {{ selected_employer_id.unwrap_or_default() }}
-  Is employer initial setup: {{ content.is_employer_initial_setup() }}
-
   <div class="container w-full flex flex-wrap mx-auto px-2 pt-28 pb-20">
-    <div class="w-full lg:w-1/6 lg:px-6">
-      <ul class="fw-normal list-none leading-10">
-        {% call tab_item(name = "Jobs", is_active = content.is_jobs(), href = "/dashboard?tab=jobs", extra_styles = "mb-5") %}
-        <li class="uppercase px-3">Settings</li>
-        {% call tab_item(name = "Employer profile", is_active = content.is_settings(), href = "/dashboard?tab=settings", level = 2, extra_styles = "mb-3") %}
-      </ul>
+
+    {# Drawer #}
+    <div id="drawer-menu"
+         role="dialog"
+         data-open="false"
+         class="fixed top-0 left-0 h-screen overflow-y-auto transition-transform -translate-x-full z-40 w-80"
+         tabindex="-1">
+
+      <div class="w-full h-full p-4 bg-white">
+        <button type="button"
+                id="close-drawer-menu"
+                class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 absolute top-2.5 end-2.5 flex items-center justify-center dark:hover:bg-gray-600 dark:hover:text-white">
+          <div class="svg-icon size-5 bg-gray-400 dark:bg-gray-600 icon-close"></div>
+          <span class="sr-only">Close menu</span>
+        </button>
+
+        <ul class="fw-normal list-none leading-10 pt-8">
+          {% call tab_item(name = "Jobs", is_active = content.is_jobs(), href = "/dashboard?tab=jobs", extra_styles = "mb-5") %}
+          <li class="uppercase px-3">Settings</li>
+          {% call tab_item(name = "Employer profile", is_active = content.is_settings(), href = "/dashboard?tab=settings", level = 2, extra_styles = "mb-3") %}
+        </ul>
+      </div>
+      <div id="drawer-menu-backdrop" class="bg-gray-900/50 fixed inset-0 z-[-1]"></div>
     </div>
-    <div class="w-full lg:w-5/6 mt-6 lg:mt-0 text-black leading-normal bg-white border rounded-lg">
+    {# End Drawer #}
+
+    <div class="w-full lg:w-1/4 xl:w-1/6 lg:pe-6">
+      <div class="flex items-stretch">
+        {# Drawer button mobile #}
+        {% if !content.is_employer_initial_setup() %}
+          <div class="flex lg:hidden border-e-2 me-10 pe-10">
+            <div class="m-auto">
+              <button type="button"
+                      id="open-drawer-menu"
+                      class="bg-primary-700 px-3 py-3.5 text-sm font-semibold text-white rounded-md hover:bg-primary-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
+                <div class="svg-icon size-3 bg-white icon-menu"></div>
+                <span class="sr-only">Open menu</span>
+              </button>
+            </div>
+          </div>
+        {% endif %}
+        {# End drawer button mobile #}
+
+        {# Employers #}
+        <div class="flex-grow lg:mb-8">
+          <div class="flex justify-between items-center">
+            <label for="employer_select"
+                   class="block text-sm/6 uppercase font-medium text-gray-500">Employer</label>
+            <div>
+              <button hx-get="/dashboard/employers/add"
+                      hx-trigger="click"
+                      hx-target="#dashboard-content"
+                      class="rounded-full bg-primary-700 p-1.5 text-sm font-semibold text-white hover:bg-primary-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
+                <div class="svg-icon size-3 icon-plus bg-white"></div>
+              </button>
+            </div>
+          </div>
+          <div class="mt-2">
+            {% let selected_employer = selected_employer_id|display_some %}
+            <select id="employer_select"
+                    name="employer_select"
+                    class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary-600 sm:text-sm/6 disabled:bg-gray-100 disabled:opacity-75"
+                    {% if employers.len() == 0 %}disabled{% endif %}>
+              {% for employer in employers %}
+                {% call common::select_option(value = employer.employer_id, label = employer.company, selected = selected_employer) %}
+              {% endfor %}
+            </select>
+            <button id="change-selected-employer-button"
+                    hx-put="/dashboard/employers/???/select"
+                    hx-trigger="click"
+                    hx-target="#dashboard-content"
+                    class="hidden">Select</button>
+          </div>
+        </div>
+      </div>
+
+      <script type="module">
+        import {
+          processNewHtmxUrl,
+          toggleDrawerVisibility
+        } from '/static/js/common/common.js';
+        import {
+          updateJobsList
+        } from '/static/js/dashboard/jobs.js';
+
+        const openDrawerButton = document.getElementById('open-drawer-menu');
+        openDrawerButton.addEventListener('click', () => {
+          toggleDrawerVisibility('drawer-menu');
+        });
+
+        const closeDrawerButton = document.getElementById('close-drawer-menu');
+        closeDrawerButton.addEventListener('click', () => {
+          toggleDrawerVisibility('drawer-menu');
+        });
+
+        const drawerMenu = document.getElementById('drawer-menu');
+        drawerMenu.addEventListener('click', (e) => {
+          if (e.target.tagName === 'A') {
+            toggleDrawerVisibility('drawer-menu');
+          }
+        });
+
+        const drawerMenuBackdrop = document.getElementById('drawer-menu-backdrop');
+        drawerMenuBackdrop.addEventListener('click', () => {
+          toggleDrawerVisibility('drawer-menu');
+        });
+
+        const employerSelect = document.getElementById('employer_select');
+        const changeSelectedEmployerButton = document.getElementById('change-selected-employer-button');
+
+        if (employerSelect) {
+          employerSelect.addEventListener('change', (e) => {
+            processNewHtmxUrl('change-selected-employer-button', 'put', e.target.value);
+
+            // Click the button to update the employer
+            changeSelectedEmployerButton.click();
+          });
+        }
+
+        changeSelectedEmployerButton.addEventListener('htmx:afterRequest', (event) => {
+          updateJobsList();
+          // Update the hx-put attribute to the original value
+          changeSelectedEmployerButton.setAttribute('hx-put', '/dashboard/employers/???/select');
+        });
+      </script>
+      {# End employers #}
+
+      {% if !content.is_employer_initial_setup() %}
+        <div class="hidden lg:block">
+          <ul class="fw-normal list-none leading-10 pt-8 border-t">
+            {% call tab_item(name = "Jobs", is_active = content.is_jobs(), href = "/dashboard?tab=jobs", extra_styles = "mb-5") %}
+            <li class="uppercase px-3">Settings</li>
+            {% call tab_item(name = "Employer profile", is_active = content.is_settings(), href = "/dashboard?tab=settings", level = 2, extra_styles = "mb-3") %}
+          </ul>
+        </div>
+      {% endif %}
+    </div>
+    <div class="w-full lg:w-3/4 xl:w-5/6 mt-6 lg:mt-0 text-black leading-normal bg-white border rounded-lg">
       <div id="dashboard-content"
            class="grid h-full w-full overflow-hidden p-4 sm:p-6 lg:p-8">
         {# Content -#}

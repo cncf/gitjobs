@@ -1,3 +1,5 @@
+import { processNewHtmxUrl } from "../common/common.js";
+
 // Trigger action on the form provided.
 export const triggerActionOnForm = (formId, action) => {
   const form = document.getElementById(formId);
@@ -45,12 +47,9 @@ export const setupActionsButton = () => {
       const button = document.getElementById(`${action}-button`);
       if (visibleButtons.includes(action)) {
         const method = METHODS[action].toLowerCase();
-        // Update button URL
-        const currentUrl = button.getAttribute(`hx-${method}`);
-        const newUrl = currentUrl.replace("???", jobInfo.job_id);
-        button.setAttribute(`hx-${method}`, newUrl);
-        // Process new URL
-        htmx.process(`#${action}-button`);
+
+        // Update button URL with job ID
+        processNewHtmxUrl(`${action}-button`, method, jobInfo.job_id);
 
         // Add event listener to update jobs list after request
         // except for update action

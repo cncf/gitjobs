@@ -94,7 +94,7 @@ pub(crate) async fn add(
 ) -> Result<impl IntoResponse, HandlerError> {
     db.add_job(&employer_id, &job_details).await?;
 
-    Ok((StatusCode::CREATED, [("HX-Push-Url", "/dashboard/jobs/list")]))
+    Ok(StatusCode::CREATED)
 }
 
 /// Handler that archives a job.

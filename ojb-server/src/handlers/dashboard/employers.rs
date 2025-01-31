@@ -58,7 +58,7 @@ pub(crate) async fn add(
 ) -> Result<impl IntoResponse, HandlerError> {
     // Check if the user is logged in
     let Some(user) = auth_session.user else {
-        return Ok(StatusCode::FORBIDDEN);
+        return Ok((StatusCode::FORBIDDEN).into_response());
     };
 
     // Add employer to database
@@ -69,7 +69,7 @@ pub(crate) async fn add(
     // Use new employer as the selected employer for the session
     session.insert(SELECTED_EMPLOYER_ID_KEY, employer_id).await?;
 
-    Ok(StatusCode::CREATED)
+    Ok((StatusCode::CREATED, [("HX-Refresh", "true")]).into_response())
 }
 
 /// Handler that selects an employer.

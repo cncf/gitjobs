@@ -63,7 +63,11 @@ pub(crate) async fn log_in(
 ) -> Result<impl IntoResponse, HandlerError> {
     // Verify credentials
     creds.job_board_id = Some(job_board_id);
-    let Some(user) = auth_session.authenticate(creds.clone()).await? else {
+    let Some(user) = auth_session
+        .authenticate(creds.clone())
+        .await
+        .map_err(|e| HandlerError::Auth(e.to_string()))?
+    else {
         messages.error("Invalid credentials");
 
         let mut log_in_url = LOG_IN_URL.to_string();
@@ -75,7 +79,10 @@ pub(crate) async fn log_in(
     };
 
     // Log user in
-    auth_session.login(&user).await?;
+    auth_session
+        .login(&user)
+        .await
+        .map_err(|e| HandlerError::Auth(e.to_string()))?;
 
     // Use the first employer as the selected employer in the session
     let employers = db.get_user_employers(&user.user_id).await?;
@@ -98,7 +105,10 @@ pub(crate) async fn log_in(
 /// Handler that logs the user out.
 #[instrument(skip_all)]
 pub(crate) async fn log_out(mut auth_session: AuthSession) -> Result<impl IntoResponse, HandlerError> {
-    auth_session.logout().await?;
+    auth_session
+        .logout()
+        .await
+        .map_err(|e| HandlerError::Auth(e.to_string()))?;
 
     Ok(Redirect::to(LOG_IN_URL))
 }

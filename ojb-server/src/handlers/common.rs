@@ -22,13 +22,10 @@ pub(crate) async fn search_locations(
     Query(query): Query<HashMap<String, String>>,
 ) -> Result<impl IntoResponse, HandlerError> {
     let Some(ts_query) = query.get("ts_query") else {
-        return Ok((
-            StatusCode::BAD_REQUEST,
-            Html("missing ts_query parameter".to_string()),
-        ));
+        return Ok((StatusCode::BAD_REQUEST, "missing ts_query parameter").into_response());
     };
     let locations = db.search_locations(ts_query).await?;
     let template = common::Locations { locations };
 
-    Ok((StatusCode::OK, Html(template.render()?)))
+    Ok(Html(template.render()?).into_response())
 }

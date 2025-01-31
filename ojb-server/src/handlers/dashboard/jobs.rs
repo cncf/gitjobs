@@ -73,7 +73,7 @@ pub(crate) async fn update_page(
     JobBoardId(job_board_id): JobBoardId,
 ) -> Result<impl IntoResponse, HandlerError> {
     let (job_board, job_details) =
-        tokio::try_join!(db.get_job_board(&job_board_id), db.get_job_details(&job_id),)?;
+        tokio::try_join!(db.get_job_board(&job_board_id), db.get_job_details(&job_id))?;
 
     let template = jobs::UpdatePage {
         benefits: job_board.benefits,

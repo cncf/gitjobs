@@ -55,7 +55,12 @@ pub(crate) async fn add(
     JobBoardId(job_board_id): JobBoardId,
     Form(employer_details): Form<employers::EmployerDetails>,
 ) -> Result<impl IntoResponse, HandlerError> {
-    let user = auth_session.user.expect("user must be authenticated");
+    // Check if the user is logged in
+    let Some(user) = auth_session.user else {
+        return Ok(StatusCode::FORBIDDEN);
+    };
+
+    // Add employer to database
     let employer_id = db
         .add_employer(&job_board_id, &user.user_id, &employer_details)
         .await?;

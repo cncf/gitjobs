@@ -58,6 +58,7 @@ pub(crate) struct NewUser {
     pub email: String,
     pub first_name: String,
     pub last_name: String,
+    #[serde(skip_serializing)]
     pub password: String,
     pub username: String,
 }

@@ -5,6 +5,7 @@ use std::collections::HashMap;
 use anyhow::Result;
 use axum::{
     extract::{Query, State},
+    http::StatusCode,
     response::{Html, IntoResponse},
 };
 use rinja::Template;
@@ -29,11 +30,18 @@ pub(crate) async fn page(
     Query(query): Query<HashMap<String, String>>,
     SelectedEmployerIdOptional(employer_id): SelectedEmployerIdOptional,
 ) -> Result<impl IntoResponse, HandlerError> {
+    // Check if the user is logged in
+    let Some(user) = auth_session.user else {
+        return Ok(StatusCode::FORBIDDEN.into_response());
+    };
+
+    // Get selected tab from query
     let mut tab: Tab = query.get("tab").into();
     if employer_id.is_none() {
         tab = Tab::EmployerInitialSetup;
     }
 
+    // Prepare content for the selected tab
     let content = match tab {
         Tab::EmployerInitialSetup => Content::EmployerInitialSetup(employers::InitialSetupPage {}),
         Tab::Jobs => {
@@ -46,14 +54,13 @@ pub(crate) async fn page(
         }
     };
 
-    let user = auth_session.user.expect("user must be authenticated");
+    // Prepare template
     let employers = db.get_user_employers(&user.user_id).await?;
-
     let template = home::Page {
         content,
         employers,
         selected_employer_id: employer_id,
     };
 
-    Ok(Html(template.render()?))
+    Ok(Html(template.render()?).into_response())
 }

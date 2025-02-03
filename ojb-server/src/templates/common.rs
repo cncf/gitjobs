@@ -4,7 +4,7 @@ use rinja::Template;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::templates::filters;
+use crate::templates::{filters, helpers::build_location};
 
 /// Locations.
 #[derive(Debug, Clone, Template, PartialEq, Serialize, Deserialize)]
@@ -22,4 +22,11 @@ pub(crate) struct Location {
     pub country: String,
 
     pub state: Option<String>,
+}
+
+impl Location {
+    /// Format the location.
+    pub(crate) fn format(&self) -> Option<String> {
+        build_location(Some(&self.city), self.state.as_ref(), Some(&self.country))
+    }
 }

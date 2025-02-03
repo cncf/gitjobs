@@ -59,6 +59,13 @@ pub(crate) struct JobSummary {
     pub published_at: Option<DateTime<Utc>>,
 }
 
+impl JobSummary {
+    /// Get the location of the job.
+    pub(crate) fn location(&self) -> Option<String> {
+        build_location(self.city.as_ref(), None, self.country.as_ref())
+    }
+}
+
 /// Job details.
 #[skip_serializing_none]
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]

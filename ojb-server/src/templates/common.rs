@@ -27,6 +27,6 @@ pub(crate) struct Location {
 impl Location {
     /// Format the location.
     pub(crate) fn format(&self) -> Option<String> {
-        build_location(Some(&self.city), self.state.as_ref(), Some(&self.country))
+        build_location(Some(&self.city), self.state.as_deref(), Some(&self.country))
     }
 }

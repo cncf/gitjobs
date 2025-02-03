@@ -5,19 +5,19 @@ pub(crate) const DATE_FORMAT: &str = "%Y-%m-%d";
 
 /// Build location string from the location information provided.
 pub(crate) fn build_location(
-    city: Option<&String>,
-    state: Option<&String>,
-    country: Option<&String>,
+    city: Option<&str>,
+    state: Option<&str>,
+    country: Option<&str>,
 ) -> Option<String> {
     let mut location = String::new();
 
-    let mut push = |part: Option<&String>| {
+    let mut push = |part: Option<&str>| {
         if let Some(part) = part {
             if !part.is_empty() {
                 if !location.is_empty() {
                     location.push_str(", ");
                 }
-                location.push_str(part.as_str());
+                location.push_str(part);
             }
         }
     };

@@ -51,6 +51,10 @@ pub(crate) struct EmployerDetails {
 impl EmployerDetails {
     /// Get the location of the employer.
     pub(crate) fn location(&self) -> Option<String> {
-        build_location(self.city.as_ref(), self.state.as_ref(), self.country.as_ref())
+        build_location(
+            self.city.as_deref(),
+            self.state.as_deref(),
+            self.country.as_deref(),
+        )
     }
 }

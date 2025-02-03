@@ -62,7 +62,7 @@ pub(crate) struct JobSummary {
 impl JobSummary {
     /// Get the location of the job.
     pub(crate) fn location(&self) -> Option<String> {
-        build_location(self.city.as_ref(), None, self.country.as_ref())
+        build_location(self.city.as_deref(), None, self.country.as_deref())
     }
 }
 
@@ -98,7 +98,11 @@ pub(crate) struct JobDetails {
 impl JobDetails {
     /// Get the location of the job.
     pub(crate) fn location(&self) -> Option<String> {
-        build_location(self.city.as_ref(), self.state.as_ref(), self.country.as_ref())
+        build_location(
+            self.city.as_deref(),
+            self.state.as_deref(),
+            self.country.as_deref(),
+        )
     }
 
     /// Get the salary kind of the job.

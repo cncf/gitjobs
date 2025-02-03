@@ -25,6 +25,9 @@ pub(crate) trait DBAuth {
     /// Get session.
     async fn get_session(&self, session_id: &session::Id) -> Result<Option<session::Record>>;
 
+    /// Get user by email.
+    async fn get_user_by_email(&self, job_board_id: &Uuid, email: &str) -> Result<Option<User>>;
+
     /// Get user by id.
     async fn get_user_by_id(&self, user_id: &Uuid) -> Result<Option<User>>;
 
@@ -32,7 +35,7 @@ pub(crate) trait DBAuth {
     async fn get_user_by_username(&self, job_board_id: &Uuid, username: &str) -> Result<Option<User>>;
 
     /// Sign up a new user.
-    async fn sign_up_user(&self, job_board_id: &Uuid, user: &NewUser) -> Result<()>;
+    async fn sign_up_user(&self, job_board_id: &Uuid, user: &NewUser, email_verified: bool) -> Result<User>;
 
     /// Update session.
     async fn update_session(&self, record: &session::Record) -> Result<()>;
@@ -115,6 +118,43 @@ impl DBAuth for PgDB {
         Ok(None)
     }
 
+    /// [DBAuth::get_user_by_email]
+    #[instrument(skip(self), err)]
+    async fn get_user_by_email(&self, job_board_id: &Uuid, email: &str) -> Result<Option<User>> {
+        trace!("getting user (by email) from database");
+
+        let db = self.pool.get().await?;
+        let user = db
+            .query_opt(
+                r#"
+                select
+                    user_id,
+                    auth_hash,
+                    email,
+                    email_verified,
+                    name,
+                    username
+                from "user"
+                where email = $1::text
+                and job_board_id = $2::uuid
+                and email_verified = true;
+                "#,
+                &[&email, &job_board_id],
+            )
+            .await?
+            .map(|row| User {
+                user_id: row.get("user_id"),
+                auth_hash: row.get("auth_hash"),
+                email: row.get("email"),
+                email_verified: row.get("email_verified"),
+                name: row.get("name"),
+                password: None,
+                username: row.get("username"),
+            });
+
+        Ok(user)
+    }
+
     /// [DBAuth::get_user_by_id]
     #[instrument(skip(self), err)]
     async fn get_user_by_id(&self, user_id: &Uuid) -> Result<Option<User>> {
@@ -129,8 +169,7 @@ impl DBAuth for PgDB {
                     auth_hash,
                     email,
                     email_verified,
-                    first_name,
-                    last_name,
+                    name,
                     username
                 from "user"
                 where user_id = $1::uuid
@@ -144,9 +183,8 @@ impl DBAuth for PgDB {
                 auth_hash: row.get("auth_hash"),
                 email: row.get("email"),
                 email_verified: row.get("email_verified"),
-                first_name: row.get("first_name"),
-                last_name: row.get("last_name"),
-                password: String::new(),
+                name: row.get("name"),
+                password: None,
                 username: row.get("username"),
             });
 
@@ -167,13 +205,13 @@ impl DBAuth for PgDB {
                     auth_hash,
                     email,
                     email_verified,
-                    first_name,
-                    last_name,
+                    name,
                     password,
                     username
                 from "user"
                 where username = $1::text
                 and job_board_id = $2::uuid
+                and password is not null
                 and email_verified = true;
                 "#,
                 &[&username, &job_board_id],
@@ -184,8 +222,7 @@ impl DBAuth for PgDB {
                 auth_hash: row.get("auth_hash"),
                 email: row.get("email"),
                 email_verified: row.get("email_verified"),
-                first_name: row.get("first_name"),
-                last_name: row.get("last_name"),
+                name: row.get("name"),
                 password: row.get("password"),
                 username: row.get("username"),
             });
@@ -195,43 +232,58 @@ impl DBAuth for PgDB {
 
     /// [DBAuth::sign_up_user]
     #[instrument(skip(self), err)]
-    async fn sign_up_user(&self, job_board_id: &Uuid, user: &NewUser) -> Result<()> {
+    async fn sign_up_user(&self, job_board_id: &Uuid, user: &NewUser, email_verified: bool) -> Result<User> {
         trace!("signing up user in database");
 
         let db = self.pool.get().await?;
-        db.execute(
-            r#"
+        let row = db
+            .query_one(
+                r#"
             insert into "user" (
                 auth_hash,
                 email,
-                first_name,
-                last_name,
+                email_verified,
+                name,
                 password,
                 username,
                 job_board_id
-            )
-            values (
+            ) values (
                 gen_random_bytes(32),
                 $1::text,
-                $2::text,
+                $2::boolean,
                 $3::text,
                 $4::text,
                 $5::text,
                 $6::uuid
-            );
+            ) returning
+                user_id,
+                auth_hash,
+                email,
+                email_verified,
+                name,
+                username;
             "#,
-            &[
-                &user.email,
-                &user.first_name,
-                &user.last_name,
-                &user.password,
-                &user.username,
-                &job_board_id,
-            ],
-        )
-        .await?;
+                &[
+                    &user.email,
+                    &email_verified,
+                    &user.name,
+                    &user.password,
+                    &user.username,
+                    &job_board_id,
+                ],
+            )
+            .await?;
+        let user = User {
+            user_id: row.get("user_id"),
+            auth_hash: row.get("auth_hash"),
+            email: row.get("email"),
+            email_verified: row.get("email_verified"),
+            name: row.get("name"),
+            password: None,
+            username: row.get("username"),
+        };
 
-        Ok(())
+        Ok(user)
     }
 
     /// [DBAuth::update_session]

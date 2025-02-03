@@ -1,8 +1,10 @@
 //! Custom extractors for handlers.
 
+use std::sync::Arc;
+
 use anyhow::Result;
 use axum::{
-    extract::FromRequestParts,
+    extract::{FromRequestParts, Path},
     http::{header::HOST, request::Parts, StatusCode},
 };
 use cached::proc_macro::cached;
@@ -10,7 +12,12 @@ use tower_sessions::Session;
 use tracing::{error, instrument};
 use uuid::Uuid;
 
-use crate::{db::DynDB, router};
+use crate::{
+    auth::{AuthSession, OAuth2Provider, OAuth2ProviderDetails},
+    db::DynDB,
+    handlers::auth::SELECTED_EMPLOYER_ID_KEY,
+    router,
+};
 
 /// Custom extractor to get the job board id from the request's host header.
 pub(crate) struct JobBoardId(pub Uuid);
@@ -60,8 +67,26 @@ async fn lookup_job_board_id(db: DynDB, host: &str) -> Result<Option<Uuid>> {
     db.get_job_board_id(host).await
 }
 
-/// Key to store the selected employer id in the session.
-pub(crate) const SELECTED_EMPLOYER_ID_KEY: &str = "selected_employer_id";
+/// Custom extractor to get the oauth2 provider from the auth session.
+pub(crate) struct OAuth2(pub Arc<OAuth2ProviderDetails>);
+
+impl FromRequestParts<router::State> for OAuth2 {
+    type Rejection = (StatusCode, &'static str);
+
+    #[instrument(skip_all, err(Debug))]
+    async fn from_request_parts(parts: &mut Parts, state: &router::State) -> Result<Self, Self::Rejection> {
+        let Ok(provider) = Path::<OAuth2Provider>::from_request_parts(parts, state).await else {
+            return Err((StatusCode::BAD_REQUEST, "missing oauth2 provider"));
+        };
+        let Ok(auth_session) = AuthSession::from_request_parts(parts, state).await else {
+            return Err((StatusCode::BAD_REQUEST, "missing auth session"));
+        };
+        let Some(provider_details) = auth_session.backend.oauth2_providers.get(&provider) else {
+            return Err((StatusCode::BAD_REQUEST, "oauth2 provider not supported"));
+        };
+        Ok(OAuth2(provider_details.clone()))
+    }
+}
 
 /// Custom extractor to get the selected employer id from the session. It
 /// returns the employer id as an option.

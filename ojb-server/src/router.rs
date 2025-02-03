@@ -1,6 +1,7 @@
 //! This module defines the router used to dispatch HTTP requests to the
 //! corresponding handler.
 
+use anyhow::Result;
 use axum::{
     extract::FromRef,
     http::{
@@ -12,24 +13,17 @@ use axum::{
     routing::{delete, get, post, put},
     Router,
 };
-use axum_login::{
-    login_required,
-    tower_sessions::{cookie::SameSite, Expiry, SessionManagerLayer},
-    AuthManagerLayer, AuthManagerLayerBuilder,
-};
+use axum_login::login_required;
 use axum_messages::MessagesManagerLayer;
 use rust_embed::Embed;
-use time::Duration;
 use tower::ServiceBuilder;
 use tower_http::{
     set_header::SetResponseHeaderLayer, trace::TraceLayer, validate_request::ValidateRequestHeaderLayer,
 };
-use tower_sessions::CachingSessionStore;
-use tower_sessions_moka_store::MokaStore;
 use tracing::instrument;
 
 use crate::{
-    auth::{AuthnBackend, SessionStore},
+    auth::AuthnBackend,
     config::HttpServerConfig,
     db::DynDB,
     handlers::{
@@ -58,14 +52,12 @@ pub(crate) struct State {
 
 /// Setup router.
 #[instrument(skip_all)]
-pub(crate) fn setup(cfg: &HttpServerConfig, db: DynDB) -> Router {
-    // Setup authentication/authorization layer
-    let auth_layer = setup_auth_layer(cfg, db.clone());
-
+pub(crate) fn setup(cfg: &HttpServerConfig, db: DynDB) -> Result<Router> {
     // Setup router state
-    let state = State { db };
+    let state = State { db: db.clone() };
 
-    // Setup middleware
+    // Setup auth layer and middleware
+    let auth_layer = crate::auth::setup_layer(cfg, db)?;
     let check_user_owns_employer = middleware::from_fn_with_state(state.clone(), user_owns_employer);
     let check_user_owns_job = middleware::from_fn_with_state(state.clone(), user_owns_job);
 
@@ -120,6 +112,8 @@ pub(crate) fn setup(cfg: &HttpServerConfig, db: DynDB) -> Router {
         .route("/health-check", get(health_check))
         .route("/jobs", get(jobboard::jobs::page))
         .route("/log-in", get(auth::log_in_page).post(auth::log_in))
+        .route("/log-in/oauth2/{:provider}", get(auth::oauth2_redirect))
+        .route("/log-in/oauth2/{:provider}/callback", get(auth::oauth2_callback))
         .route("/log-out", get(auth::log_out))
         .route("/sign-up", get(auth::sign_up_page).post(auth::sign_up))
         .route("/static/{*file}", get(static_handler))
@@ -142,35 +136,7 @@ pub(crate) fn setup(cfg: &HttpServerConfig, db: DynDB) -> Router {
         }
     }
 
-    router
-}
-
-/// Setup router authentication/authorization layer.
-#[instrument(skip_all)]
-fn setup_auth_layer(
-    cfg: &HttpServerConfig,
-    db: DynDB,
-) -> AuthManagerLayer<AuthnBackend, CachingSessionStore<MokaStore, SessionStore>> {
-    // Setup session store
-    let session_store = SessionStore::new(db.clone());
-    let moka_store = MokaStore::new(Some(1000));
-    let caching_session_store = CachingSessionStore::new(moka_store, session_store);
-
-    // Setup session layer
-    let secure = if let Some(cookie) = &cfg.cookie {
-        cookie.secure.unwrap_or(true)
-    } else {
-        true
-    };
-    let session_layer = SessionManagerLayer::new(caching_session_store)
-        .with_expiry(Expiry::OnInactivity(Duration::days(7)))
-        .with_http_only(true)
-        .with_same_site(SameSite::Strict)
-        .with_secure(secure);
-
-    // Setup auth layer
-    let authn_backend = AuthnBackend::new(db.clone());
-    AuthManagerLayerBuilder::new(authn_backend, session_layer).build()
+    Ok(router)
 }
 
 /// Handler that takes care of health check requests.

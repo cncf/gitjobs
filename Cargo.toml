@@ -12,30 +12,32 @@ rust-version = "1.84"
 
 [workspace.dependencies]
 anyhow = "1.0.95"
-async-trait = "0.1.85"
+async-trait = "0.1.86"
 axum = { version = "0.8.1", features = ["macros"] }
 axum-login = "0.17.0"
 axum-extra = { version = "0.10.0", features = ["form"] }
 axum-messages = "0.8.0"
 cached = { version = "0.54.0", features = ["async"] }
-clap = { version = "4.5.26", features = ["derive"] }
+clap = { version = "4.5.27", features = ["derive"] }
 chrono = { version = "0.4.39", features = ["serde"] }
-chrono-tz = { version = "0.10.0", features = ["serde"] }
+chrono-tz = { version = "0.10.1", features = ["serde"] }
 deadpool-postgres = { version = "0.14.1", features = ["serde"] }
 emojis = "0.6.4"
 figment = { version = "0.10.19", features = ["yaml", "env"] }
 mime_guess = "2.0.5"
 minify-html = "0.15.0"
 num-format = "0.4.4"
-openssl = { version = "0.10.68", features = ["vendored"] }
+oauth2 = "5.0.0"
+openssl = { version = "0.10.70", features = ["vendored"] }
 palette = "0.7.6"
 password-auth = "1.0.0"
-postgres-openssl = "0.5.0"
-rinja = { git = "https://github.com/rinja-rs/rinja", rev = "be9069f", features = ["serde_json"] }
+postgres-openssl = "0.5.1"
+reqwest = { version = "0.12.12", features = ["json"] }
+rinja = { git = "https://github.com/rinja-rs/rinja", rev = "535df5e", features = ["serde_json"] }
 rust-embed = "8.5.0"
 serde = { version = "1.0.217", features = ["derive"] }
 serde_html_form = "0.2.7"
-serde_json = "1.0.135"
+serde_json = "1.0.138"
 serde_qs = "0.13.0"
 serde_with = "3.12.0"
 thiserror = "2.0.11"
@@ -48,7 +50,7 @@ tokio = { version = "1.43.0", features = [
     "sync",
     "time",
 ] }
-tokio-postgres = { version = "0.7.12", features = [
+tokio-postgres = { version = "0.7.13", features = [
     "with-chrono-0_4",
     "with-serde_json-1",
     "with-time-0_3",
@@ -61,4 +63,4 @@ tower-sessions-moka-store = "0.15.0"
 tracing = "0.1.41"
 tracing-subscriber = { version = "0.3.19", features = ["env-filter", "json"] }
 unicode-segmentation = "1.12.0"
-uuid = { version = "1.11.1", features = ["serde", "v4"] }
+uuid = { version = "1.12.1", features = ["serde", "v4"] }

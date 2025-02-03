@@ -1,6 +1,6 @@
 //! This module defines some types to represent the server configuration.
 
-use std::path::PathBuf;
+use std::{collections::HashMap, path::PathBuf};
 
 use anyhow::Result;
 use deadpool_postgres::Config as DbConfig;
@@ -10,6 +10,8 @@ use figment::{
 };
 use serde::{Deserialize, Serialize};
 use tracing::instrument;
+
+use crate::auth::OAuth2Provider;
 
 /// Server configuration.
 #[derive(Debug, Clone, Deserialize, Serialize)]
@@ -44,6 +46,7 @@ pub(crate) struct HttpServerConfig {
     pub addr: String,
     pub basic_auth: Option<BasicAuth>,
     pub cookie: Option<CookieConfig>,
+    pub oauth2: OAuth2Config,
 }
 
 /// Basic authentication configuration.
@@ -72,4 +75,18 @@ pub(crate) struct LogConfig {
 pub(crate) enum LogFormat {
     Json,
     Pretty,
+}
+
+/// Type alias for the `OAuth2` configuration.
+pub(crate) type OAuth2Config = HashMap<OAuth2Provider, OAuth2ProviderConfig>;
+
+/// `OAuth2` provider configuration.
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
+pub(crate) struct OAuth2ProviderConfig {
+    pub auth_url: String,
+    pub client_id: String,
+    pub client_secret: String,
+    pub redirect_uri: String,
+    pub scopes: Vec<String>,
+    pub token_url: String,
 }

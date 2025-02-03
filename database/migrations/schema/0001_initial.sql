@@ -30,11 +30,11 @@ create table "user" (
     auth_hash bytea not null check (auth_hash <> ''),
     created_at timestamptz not null default current_timestamp,
     email text not null check (email <> ''),
-    email_verified boolean not null default true, -- TODO: set to false when email verification is implemented
-    first_name text not null check (first_name <> ''),
-    last_name text not null check (last_name <> ''),
-    password text not null check (password <> ''),
+    email_verified boolean not null default false,
+    name text not null check (name <> ''),
     username text not null check (username <> ''),
+
+    password text check (password <> ''),
 
     unique (email, job_board_id),
     unique (username, job_board_id)
@@ -67,8 +67,7 @@ create table profile (
     location_id uuid references location,
 
     email text not null unique check (email <> ''),
-    first_name text not null check (first_name <> ''),
-    last_name text not null check (last_name <> ''),
+    name text not null check (name <> ''),
     public boolean not null default false,
     summary text not null check (summary <> ''),
 

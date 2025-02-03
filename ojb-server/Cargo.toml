@@ -23,10 +23,12 @@ figment = { workspace = true }
 mime_guess = { workspace = true }
 minify-html = { workspace = true }
 num-format = { workspace = true }
+oauth2 = { workspace = true }
 openssl = { workspace = true }
 palette = { workspace = true }
 password-auth = { workspace = true }
 postgres-openssl = { workspace = true }
+reqwest = { workspace = true }
 rinja = { workspace = true }
 rust-embed = { workspace = true }
 serde = { workspace = true }

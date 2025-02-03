@@ -16,8 +16,9 @@ use crate::{
     auth::AuthSession,
     db::DynDB,
     handlers::{
+        auth::SELECTED_EMPLOYER_ID_KEY,
         error::HandlerError,
-        extractors::{JobBoardId, SelectedEmployerIdRequired, SELECTED_EMPLOYER_ID_KEY},
+        extractors::{JobBoardId, SelectedEmployerIdRequired},
     },
     templates::dashboard::employers,
 };

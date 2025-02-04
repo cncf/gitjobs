@@ -124,7 +124,7 @@ pub(crate) async fn log_out(mut auth_session: AuthSession) -> Result<impl IntoRe
     Ok(Redirect::to(LOG_IN_URL))
 }
 
-/// Handler that completes the oauth2 authentication process.
+/// Handler that completes the oauth2 authorization process.
 #[instrument(skip_all)]
 pub(crate) async fn oauth2_callback(
     mut auth_session: AuthSession,

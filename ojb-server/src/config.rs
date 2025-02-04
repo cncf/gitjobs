@@ -77,7 +77,7 @@ pub(crate) enum LogFormat {
     Pretty,
 }
 
-/// Type alias for the `OAuth2` configuration.
+/// Type alias for the `OAuth2` configuration section.
 pub(crate) type OAuth2Config = HashMap<OAuth2Provider, OAuth2ProviderConfig>;
 
 /// `OAuth2` provider configuration.

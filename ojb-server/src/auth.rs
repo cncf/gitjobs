@@ -1,8 +1,8 @@
 //! This module contains the authentication and authorization functionality.
 
-use std::{collections::HashMap, fmt::Debug, sync::Arc};
+use std::{collections::HashMap, sync::Arc};
 
-use anyhow::{anyhow, Result};
+use anyhow::{bail, Result};
 use async_trait::async_trait;
 use axum::{
     extract::{Path, Request, State},
@@ -73,40 +73,49 @@ impl SessionStore {
     pub fn new(db: DynDB) -> Self {
         Self { db }
     }
-}
 
-impl Debug for SessionStore {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("OJBSessionStore").finish_non_exhaustive()
+    /// Convert an `anyhow::Error` to a `tower_sessions::session_store::Error`.
+    #[allow(clippy::needless_pass_by_value)]
+    fn to_session_store_error(err: anyhow::Error) -> session_store::Error {
+        session_store::Error::Backend(err.to_string())
     }
 }
 
 #[async_trait]
 impl tower_sessions::SessionStore for SessionStore {
     async fn create(&self, record: &mut session::Record) -> session_store::Result<()> {
-        self.db.create_session(record).await.map_err(to_session_store_error)
+        self.db
+            .create_session(record)
+            .await
+            .map_err(Self::to_session_store_error)
     }
 
     async fn save(&self, record: &session::Record) -> session_store::Result<()> {
-        self.db.update_session(record).await.map_err(to_session_store_error)
+        self.db
+            .update_session(record)
+            .await
+            .map_err(Self::to_session_store_error)
     }
 
     async fn load(&self, session_id: &session::Id) -> session_store::Result<Option<session::Record>> {
-        self.db.get_session(session_id).await.map_err(to_session_store_error)
+        self.db
+            .get_session(session_id)
+            .await
+            .map_err(Self::to_session_store_error)
     }
 
     async fn delete(&self, session_id: &session::Id) -> session_store::Result<()> {
         self.db
             .delete_session(session_id)
             .await
-            .map_err(to_session_store_error)
+            .map_err(Self::to_session_store_error)
     }
 }
 
-/// Convert an `anyhow::Error` to a `tower_sessions::session_store::Error`.
-#[allow(clippy::needless_pass_by_value)]
-fn to_session_store_error(err: anyhow::Error) -> session_store::Error {
-    session_store::Error::Backend(err.to_string())
+impl std::fmt::Debug for SessionStore {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("SessionStore").finish_non_exhaustive()
+    }
 }
 
 // Authentication backend.
@@ -132,6 +141,68 @@ impl AuthnBackend {
             http_client,
             oauth2_providers,
         })
+    }
+
+    /// Authenticate a user using `OAuth2` credentials.
+    async fn authenticate_oauth2(&self, creds: OAuth2Credentials) -> Result<Option<User>> {
+        // Exchange the authorization code for an access token
+        let Some(oauth2_provider) = self.oauth2_providers.get(&creds.provider) else {
+            bail!("oauth2 client not found")
+        };
+        let access_token = oauth2_provider
+            .client
+            .exchange_code(oauth2::AuthorizationCode::new(creds.code))
+            .request_async(&self.http_client)
+            .await?
+            .access_token()
+            .secret()
+            .to_string();
+
+        // Get the user if they exist, otherwise sign them up
+        let new_user = match creds.provider {
+            OAuth2Provider::GitHub => NewUser::from_github_profile(&access_token).await?,
+        };
+        let user = if let Some(user) = self
+            .db
+            .get_user_by_email(&creds.job_board_id, &new_user.email)
+            .await?
+        {
+            user
+        } else {
+            self.db.sign_up_user(&creds.job_board_id, &new_user, true).await?
+        };
+
+        Ok(Some(user))
+    }
+
+    /// Authenticate a user using password credentials.
+    async fn authenticate_password(&self, creds: PasswordCredentials) -> Result<Option<User>> {
+        // Ensure job board id is present
+        let Some(job_board_id) = creds.job_board_id else {
+            bail!("job_board_id missing")
+        };
+
+        // Get user from database
+        let user = self.db.get_user_by_username(&job_board_id, &creds.username).await?;
+
+        // Check if the credentials are valid, returning the user if they are
+        if let Some(mut user) = user {
+            // Check if the user's password is set
+            let Some(password) = user.password.clone() else {
+                return Ok(None);
+            };
+
+            // Verify the password
+            if tokio::task::spawn_blocking(move || verify_password(creds.password, &password))
+                .await?
+                .is_ok()
+            {
+                user.password = None;
+                return Ok(Some(user));
+            }
+        }
+
+        Ok(None)
     }
 
     /// Setup `OAuth2` providers.
@@ -166,66 +237,8 @@ impl axum_login::AuthnBackend for AuthnBackend {
 
     async fn authenticate(&self, creds: Self::Credentials) -> Result<Option<Self::User>, Self::Error> {
         match creds {
-            Credentials::OAuth2(creds) => {
-                // Exchange the authorization code for a token
-                let Some(oauth2_provider) = self.oauth2_providers.get(&creds.provider) else {
-                    return Err(anyhow!("oauth2 client not found").into());
-                };
-                let oauth2_access_token = oauth2_provider
-                    .client
-                    .exchange_code(oauth2::AuthorizationCode::new(creds.code))
-                    .request_async(&self.http_client)
-                    .await
-                    .map_err(|e| anyhow!("oauth2 token exchange failed: {}", e))?
-                    .access_token()
-                    .secret()
-                    .to_string();
-
-                // Get the user if they exist, otherwise sign them up
-                let new_user = match creds.provider {
-                    OAuth2Provider::GitHub => NewUser::from_github_profile(&oauth2_access_token).await?,
-                };
-                let user = if let Some(user) = self
-                    .db
-                    .get_user_by_email(&creds.job_board_id, &new_user.email)
-                    .await?
-                {
-                    user
-                } else {
-                    self.db.sign_up_user(&creds.job_board_id, &new_user, true).await?
-                };
-
-                Ok(Some(user))
-            }
-            Credentials::Password(creds) => {
-                // Ensure job board id is present
-                let Some(job_board_id) = creds.job_board_id else {
-                    return Err(anyhow!("job_board_id missing").into());
-                };
-
-                // Get user from database
-                let user = self.db.get_user_by_username(&job_board_id, &creds.username).await?;
-
-                // Check if the credentials are valid, returning the user if they are
-                if let Some(mut user) = user {
-                    // Check if the user's password is set
-                    let Some(password) = user.password.clone() else {
-                        return Ok(None);
-                    };
-
-                    // Verify the password
-                    if tokio::task::spawn_blocking(move || verify_password(creds.password, &password))
-                        .await
-                        .map_err(anyhow::Error::from)?
-                        .is_ok()
-                    {
-                        user.password = None;
-                        return Ok(Some(user));
-                    }
-                }
-
-                Ok(None)
-            }
+            Credentials::OAuth2(creds) => self.authenticate_oauth2(creds).await.map_err(AuthError),
+            Credentials::Password(creds) => self.authenticate_password(creds).await.map_err(AuthError),
         }
     }
 
@@ -235,7 +248,7 @@ impl axum_login::AuthnBackend for AuthnBackend {
     }
 }
 
-/// Type alias that includes our authentication backend.
+/// Type alias for `AuthSession` that includes our authentication backend.
 pub(crate) type AuthSession = axum_login::AuthSession<AuthnBackend>;
 
 /// Type alias for the structure that holds the `OAuth2` providers.
@@ -342,11 +355,11 @@ pub(crate) struct NewUser {
 
 impl NewUser {
     /// Create a `NewUser` instance from a GitHub profile.
-    async fn from_github_profile(oauth2_access_token: &str) -> Result<Self> {
+    async fn from_github_profile(access_token: &str) -> Result<Self> {
         let profile = reqwest::Client::new()
             .get("https://api.github.com/user")
             .header(USER_AGENT.as_str(), "open-job-board")
-            .header(AUTHORIZATION.as_str(), format!("Bearer {oauth2_access_token}"))
+            .header(AUTHORIZATION.as_str(), format!("Bearer {access_token}"))
             .send()
             .await?
             .json::<GitHubProfile>()

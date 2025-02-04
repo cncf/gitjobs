@@ -116,14 +116,14 @@ pub(crate) fn setup(cfg: &HttpServerConfig, db: DynDB) -> Result<Router> {
         .route("/log-in/oauth2/{:provider}/callback", get(auth::oauth2_callback))
         .route("/log-out", get(auth::log_out))
         .route("/sign-up", get(auth::sign_up_page).post(auth::sign_up))
+        .route_layer(MessagesManagerLayer)
+        .route_layer(auth_layer)
+        .route_layer(ServiceBuilder::new().layer(TraceLayer::new_for_http()))
         .route("/static/{*file}", get(static_handler))
         .layer(SetResponseHeaderLayer::if_not_present(
             CACHE_CONTROL,
             HeaderValue::try_from(format!("max-age={DEFAULT_CACHE_DURATION}")).expect("valid header value"),
         ))
-        .layer(ServiceBuilder::new().layer(TraceLayer::new_for_http()))
-        .layer(MessagesManagerLayer)
-        .layer(auth_layer)
         .with_state(state);
 
     // Setup basic auth

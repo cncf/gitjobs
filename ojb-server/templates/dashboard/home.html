@@ -93,9 +93,11 @@
 
         // Open drawer menu
         const openDrawerButton = document.getElementById('open-drawer-menu');
-        openDrawerButton.addEventListener('click', () => {
-          toggleDrawerVisibility('drawer-menu');
-        });
+        if (openDrawerButton) {
+          openDrawerButton.addEventListener('click', () => {
+            toggleDrawerVisibility('drawer-menu');
+          });
+        }
 
         // Close drawer menu
         const closeDrawerButton = document.getElementById('close-drawer-menu');

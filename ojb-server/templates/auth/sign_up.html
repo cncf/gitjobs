@@ -60,17 +60,28 @@
 
           {# Repeat password #}
           <div class="sm:col-span-3">
-            <label for="repeat_password"
+            <label for="password_confirmation"
                    class="block text-sm/6 font-medium text-gray-900">Repeat password (required)</label>
             <div class="mt-2">
               <input type="password"
-                     id="repeat_password"
-                     name="repeat_password"
+                     id="password_confirmation"
+                     name="password_confirmation"
                      class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary-600 sm:text-sm/6"
+                     pattern=""
                      required>
             </div>
           </div>
           {# End Repeat password #}
+
+          <script type="module">
+            const password = document.getElementById('password');
+            const passwordConfirmation = document.getElementById('password_confirmation');
+
+            // Set the pattern attribute of the password confirmation input to match the password input
+            password.addEventListener('input', (e) => {
+              passwordConfirmation.setAttribute('pattern', e.target.value);
+            });
+          </script>
         </div>
 
         <div class="mt-12">

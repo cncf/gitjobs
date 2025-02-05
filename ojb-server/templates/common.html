@@ -136,12 +136,10 @@
 
 {# Markdown editor -#}
 {% macro markdown_editor(id, content = "", required = false) %}
-  <textarea id="{{ id }}"
-            name="{{ id }}"
-            rows="3"
-            {% if required %}
-              required
-            {% endif %}>{{ content }}</textarea>
+  {# Do not add required attribute to original textarea to avoid issues to validate form #}
+  {# due to textarea is hidden #}
+  <textarea id="{{ id }}" name="{{ id }}" rows="3" class="hidden">{{ content }}</textarea>
+
   {# djlint:off #}
   <script type="module">
     const easyMDE = new EasyMDE({
@@ -150,6 +148,20 @@
       showIcons: ["code", "table", "undo", "redo", "horizontal-rule"],
       forceSync: true,
     });
+
+    // Force the required attribute to the textarea embed in the editor
+    const onLoadMDE = (required) => {
+      const editor = document.getElementsByClassName('EasyMDEContainer')[0];
+      if (editor) {
+        const textarea = editor.getElementsByTagName('textarea')[0];
+        if (textarea) {
+          textarea.required = required;
+        }
+      }
+    }
+
+    // Set the required attribute to the textarea
+    onLoadMDE({{ required }});
 </script>
   {# djlint:on #}
 {% endmacro markdown_editor %}
@@ -220,6 +232,7 @@
            type="range"
            min="0"
            max="100"
+           step="5"
            value="{{ value }}"
            class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:!bg-primary-900">
     <div id="tooltip-{{ name }}"
@@ -253,7 +266,8 @@
       debounce
     } from '/static/js/common/common.js';
 
-    const updateStyles = (newValue) => {
+    // Update the styles of the tooltip and the input range background
+    const refreshStyles = (newValue) => {
       const value = parseInt(newValue, 10);
       const thumbSize = 17;
       const offset = thumbSize * (0.5 - value / 100);
@@ -266,11 +280,13 @@
 
     const inputRange = document.getElementById('{{ name }}');
     const tooltip = document.getElementById('tooltip-{{ name }}');
-    inputRange.addEventListener('input', debounce(() => {
-      updateStyles(inputRange.value);
+    // Send the value to refresh the styles
+    inputRange.addEventListener('input', debounce((e) => {
+      refreshStyles(e.target.value);
     }, 20));
 
-    updateStyles({{ value }});
+    // Set the initial value
+    refreshStyles({{ value }});
 </script>
   {# djlint:on #}
 {% endmacro input_range %}

@@ -130,6 +130,7 @@ pub(crate) async fn oauth2_callback(
     mut auth_session: AuthSession,
     messages: Messages,
     session: Session,
+    State(db): State<DynDB>,
     JobBoardId(job_board_id): JobBoardId,
     Path(provider): Path<OAuth2Provider>,
     Query(OAuth2AuthorizationResponse { code, state }): Query<OAuth2AuthorizationResponse>,
@@ -147,7 +148,7 @@ pub(crate) async fn oauth2_callback(
     }
 
     // Get next url from session (if any)
-    let next_url = session.remove::<String>(OAUTH2_NEXT_URL_KEY).await?;
+    let next_url = session.remove::<Option<String>>(OAUTH2_NEXT_URL_KEY).await?.flatten();
 
     // Authenticate user
     let creds = OAuth2Credentials {
@@ -175,6 +176,14 @@ pub(crate) async fn oauth2_callback(
         .login(&user)
         .await
         .map_err(|e| HandlerError::Auth(e.to_string()))?;
+
+    // Use the first employer as the selected employer in the session
+    let employers = db.list_employers(&user.user_id).await?;
+    if !employers.is_empty() {
+        session
+            .insert(SELECTED_EMPLOYER_ID_KEY, employers[0].employer_id)
+            .await?;
+    }
 
     // Prepare next url
     let next_url = next_url.unwrap_or("/".to_string());

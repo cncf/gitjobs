@@ -39,9 +39,9 @@ export const debounce = (func, timeout = 300) => {
 export const processNewHtmxUrl = (idEl, method, data) => {
   const element = document.getElementById(idEl);
   if (element) {
-    const currentUrl = element.getAttribute(`hx-${method}`);
-    if (currentUrl) {
-      const newUrl = currentUrl.replace("???", data);
+    const url = element.dataset.url;
+    if (url) {
+      const newUrl = url.replace(`{:${element.dataset.replacement}}`, data);
       element.setAttribute(`hx-${method}`, newUrl);
       // Process new URL
       htmx.process(`#${idEl}`);

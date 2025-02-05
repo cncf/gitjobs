@@ -17,29 +17,38 @@
       {# Dropdown actions #}
       <div id="dropdown-actions"
            class="absolute hidden z-10 start-0 top-10 w-[200px] bg-white divide-y divide-gray-100 rounded-lg shadow border">
-        <ul class="py-2 text-sm text-gray-700 dark:text-gray-200"
+        <ul class="py-2 text-sm text-gray-700"
             aria-labelledby="dropdownDefaultButton">
           <li data-action="update" class="hidden">
             <button id="update-button"
-                    hx-get="/dashboard/jobs/???/update?employer=00000000-0000-0000-0000-000000000001"
+                    data-url="/dashboard/jobs/{:job_id}/update"
+                    data-replacement="job_id"
+                    hx-get="/dashboard/jobs/{:job_id}/update"
                     hx-target="#dashboard-content"
                     class="w-full text-start px-4 py-2 hover:bg-gray-100">Update</button>
           </li>
           <li data-action="publish" class="hidden">
             <button id="publish-button"
-                    hx-put="/dashboard/jobs/???/publish?employer=00000000-0000-0000-0000-000000000001"
+                    data-url="/dashboard/jobs/{:job_id}/publish"
+                    data-replacement="job_id"
+                    hx-put="/dashboard/jobs/{:job_id}/publish"
                     hx-target="#dashboard-content"
                     class="w-full text-start px-4 py-2 hover:bg-gray-100">Publish</button>
           </li>
           <li data-action="delete" class="hidden">
             <button id="delete-button"
-                    hx-delete="/dashboard/jobs/???/delete?employer=00000000-0000-0000-0000-000000000001"
+                    data-url="/dashboard/jobs/{:job_id}/delete"
+                    data-replacement="job_id"
+                    hx-delete="/dashboard/jobs/{:job_id}/delete"
                     hx-target="#dashboard-content"
+                    hx-confirm="Are you sure you wish to delete this job?"
                     class="w-full text-start px-4 py-2 hover:bg-gray-100">Delete</button>
           </li>
           <li data-action="archive" class="hidden">
             <button id="archive-button"
-                    hx-put="/dashboard/jobs/???/archive?employer=00000000-0000-0000-0000-000000000001"
+                    data-url="/dashboard/jobs/{:job_id}/archive"
+                    data-replacement="job_id"
+                    hx-put="/dashboard/jobs/{:job_id}/archive"
                     hx-target="#dashboard-content"
                     class="w-full text-start px-4 py-2 hover:bg-gray-100">Archive</button>
           </li>
@@ -58,15 +67,25 @@
         btnActions.addEventListener('click', () => {
           const isOpen = dropdownActions.classList.contains('hidden');
           dropdownActions.classList.toggle('hidden');
+          // Close dropdown actions when clicking outside
           if (isOpen) {
             document.addEventListener('click', (event) => {
               if (!dropdownActions.contains(event.target) && !btnActions.contains(event.target)) {
                 dropdownActions.classList.add('hidden');
               }
             });
+            // Remove event listener when dropdown is closed
           } else {
             document.removeEventListener('click', () => {});
           }
+        });
+
+        // Close dropdown actions when an action is clicked
+        const allActions = dropdownActions.querySelectorAll('button');
+        allActions.forEach((action) => {
+          action.addEventListener('click', () => {
+            dropdownActions.classList.add('hidden');
+          });
         });
       </script>
     </div>
@@ -94,12 +113,12 @@
     <thead class="text-xs text-gray-700 uppercase bg-gray-50">
       <tr>
         <th scope="col" class="p-4"></th>
-        <th scope="col" class="px-6 py-3">Title</th>
-        <th scope="col" class="px-6 py-3 w-15">Location</th>
-        <th scope="col" class="px-6 py-3 w-10">Status</th>
-        <th scope="col" class="px-6 py-3 w-10">Created</th>
-        <th scope="col" class="px-6 py-3 w-10">Published</th>
-        <th scope="col" class="px-6 py-3 w-10">Archived</th>
+        <th scope="col" class="px-5 py-3">Title</th>
+        <th scope="col" class="px-5 py-3">Location</th>
+        <th scope="col" class="px-5 py-3">Status</th>
+        <th scope="col" class="px-5 py-3">Created</th>
+        <th scope="col" class="px-5 py-3">Published</th>
+        <th scope="col" class="px-5 py-3">Archived</th>
       </tr>
     </thead>
     <tbody id="jobs-list">
@@ -124,32 +143,36 @@
             {# End checkbox #}
 
             {# Title job #}
-            <th scope="row" class="px-6 py-4 font-medium text-gray-900">
+            <th scope="row" class="px-5 py-4 font-medium text-gray-900 min-w-[200px]">
               <div class="text-ellipsis">{{ job.title }}</div>
             </th>
             {# End title job #}
 
             {# Location #}
-            <td class="px-6 py-4 whitespace-nowrap">
+            <td class="px-5 py-4 whitespace-nowrap min-w-[100px]">
               {% let location = &self::build_location(job.city.as_deref(), None, job.country.as_deref())|display_some %}
               {{ location }}
             </td>
             {# End location #}
 
             {# Status #}
-            <td class="px-6 py-4 whitespace-nowrap">{% call common::job_status_badge(status = job.status) %}</td>
+            <td class="px-5 py-4 whitespace-nowrap w-32">{% call common::job_status_badge(status = job.status) %}</td>
             {# End status #}
 
             {# Created date #}
-            <td class="px-6 py-4 whitespace-nowrap">{{ job.created_at.format(DATE_FORMAT) }}</td>
+            <td class="px-5 py-4 whitespace-nowrap w-32">{{ job.created_at.format(DATE_FORMAT) }}</td>
             {# End created date #}
 
             {# Published date #}
-            <td class="px-6 py-4 whitespace-nowrap">{{ job.published_at|display_some_date_or(DATE_FORMAT, "-") }}</td>
+            <td class="px-5 py-4 whitespace-nowrap w-32">
+              {{ job.published_at|display_some_date_or(DATE_FORMAT, "-") }}
+            </td>
             {# End published date #}
 
             {# Archived date #}
-            <td class="px-6 py-4 whitespace-nowrap">{{ job.archived_at|display_some_date_or(DATE_FORMAT, "-") }}</td>
+            <td class="px-5 py-4 whitespace-nowrap w-32">
+              {{ job.archived_at|display_some_date_or(DATE_FORMAT, "-") }}
+            </td>
             {# End archived date #}
           </tr>
         {% endfor %}

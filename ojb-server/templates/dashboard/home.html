@@ -14,8 +14,8 @@
       <div class="w-full h-full p-4 bg-white">
         <button type="button"
                 id="close-drawer-menu"
-                class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 absolute top-2.5 end-2.5 flex items-center justify-center dark:hover:bg-gray-600 dark:hover:text-white">
-          <div class="svg-icon size-5 bg-gray-400 dark:bg-gray-600 icon-close"></div>
+                class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 absolute top-2.5 end-2.5 flex items-center justify-center">
+          <div class="svg-icon size-5 bg-gray-400 icon-close"></div>
           <span class="sr-only">Close menu</span>
         </button>
 
@@ -71,12 +71,15 @@
               {% endfor %}
             </select>
             <button id="change-selected-employer-button"
-                    hx-put="/dashboard/employers/???/select"
+                    data-url="/dashboard/employers/{:employer_id}/select"
+                    data-replacement="employer_id"
+                    hx-put="/dashboard/employers/{:employer_id}/select"
                     hx-trigger="click"
                     hx-target="#dashboard-content"
                     class="hidden">Select</button>
           </div>
         </div>
+        {# End employers #}
       </div>
 
       <script type="module">
@@ -88,16 +91,19 @@
           updateJobsList
         } from '/static/js/dashboard/jobs.js';
 
+        // Open drawer menu
         const openDrawerButton = document.getElementById('open-drawer-menu');
         openDrawerButton.addEventListener('click', () => {
           toggleDrawerVisibility('drawer-menu');
         });
 
+        // Close drawer menu
         const closeDrawerButton = document.getElementById('close-drawer-menu');
         closeDrawerButton.addEventListener('click', () => {
           toggleDrawerVisibility('drawer-menu');
         });
 
+        // Close drawer menu when clicking on a link inside the drawer
         const drawerMenu = document.getElementById('drawer-menu');
         drawerMenu.addEventListener('click', (e) => {
           if (e.target.tagName === 'A') {
@@ -105,6 +111,7 @@
           }
         });
 
+        // Close drawer menu when clicking on the backdrop
         const drawerMenuBackdrop = document.getElementById('drawer-menu-backdrop');
         drawerMenuBackdrop.addEventListener('click', () => {
           toggleDrawerVisibility('drawer-menu');
@@ -115,6 +122,7 @@
 
         if (employerSelect) {
           employerSelect.addEventListener('change', (e) => {
+            // Update the hx-put attribute with the selected employer
             processNewHtmxUrl('change-selected-employer-button', 'put', e.target.value);
 
             // Click the button to update the employer
@@ -125,10 +133,9 @@
         changeSelectedEmployerButton.addEventListener('htmx:afterRequest', (event) => {
           updateJobsList();
           // Update the hx-put attribute to the original value
-          changeSelectedEmployerButton.setAttribute('hx-put', '/dashboard/employers/???/select');
+          changeSelectedEmployerButton.setAttribute('hx-put', changeSelectedEmployerButton.dataset.url);
         });
       </script>
-      {# End employers #}
 
       {% if !content.is_employer_initial_setup() %}
         <div class="hidden lg:block">

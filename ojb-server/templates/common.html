@@ -136,7 +136,12 @@
 
 {# Markdown editor -#}
 {% macro markdown_editor(id, content = "", required = false) %}
-  <textarea id="{{ id }}" name="{{ id }}" rows="3" required="{{ required }}">{{ content }}</textarea>
+  <textarea id="{{ id }}"
+            name="{{ id }}"
+            rows="3"
+            {% if required %}
+              required
+            {% endif %}>{{ content }}</textarea>
   {# djlint:off #}
   <script type="module">
     const easyMDE = new EasyMDE({

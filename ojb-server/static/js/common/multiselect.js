@@ -59,7 +59,7 @@ export class MultiSelect extends LitElement {
       <div class="mt-2 relative">
         <div class="flex flex-wrap w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus-within:outline focus-within:outline-[3px] focus-within:-outline-offset-2 focus-within:outline-primary-600 sm:text-sm/6">
           <div class="flex flex-items flex-wrap gap-2 w-full">
-            ${this.selected.map((option) => html`<span class="inline-flex items-center text-nowrap max-w-[100%] px-2 py-1 me-2 text-sm font-medium text-gray-800 bg-gray-100 rounded-sm dark:bg-gray-700 dark:text-gray-300">
+            ${this.selected.map((option) => html`<span class="inline-flex items-center text-nowrap max-w-[100%] px-2 py-1 me-2 text-sm font-medium text-gray-800 bg-gray-100 rounded-sm">
               <div class="flex items-center w-full">
                 <div class="truncate">${option}</div>
                 <button type="button" @click=${() => this._onRemoveBadge(option)} class="inline-flex items-center p-1 ms-2 bg-transparent rounded-xs hover:bg-gray-200  aria-label="Remove badge">

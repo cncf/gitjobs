@@ -9,8 +9,7 @@
             class="max-w-sm mx-auto">
         <div class="text-2xl mb-10">Log In</div>
         <div class="mb-5">
-          <label for="username"
-                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Username</label>
+          <label for="username" class="block mb-2 text-sm font-medium text-gray-900">Username</label>
           <input type="text"
                  id="username"
                  name="username"
@@ -18,8 +17,7 @@
                  required />
         </div>
         <div class="mb-5">
-          <label for="password"
-                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
+          <label for="password" class="block mb-2 text-sm font-medium text-gray-900">Password</label>
           <input type="password"
                  id="password"
                  name="password"
@@ -48,7 +46,7 @@
 
       {# Messages #}
       {% if messages.len() > 0 %}
-        <div class="p-4 mt-10 text-md max-w-sm mx-auto text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
+        <div class="p-4 mt-10 text-md max-w-sm mx-auto text-red-800 rounded-lg bg-red-50"
              role="alert">
           {% for message in messages %}<p>{{ message }}</p>{% endfor %}
         </div>

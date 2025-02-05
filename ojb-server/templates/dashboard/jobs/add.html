@@ -11,7 +11,7 @@
       <p class="mt-1 text-sm/6 text-gray-600">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
       </p>
-      <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+      <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-6">
 
         {# Job title #}
         <div class="col-span-full">
@@ -36,7 +36,7 @@
         {# End Job location #}
 
         {# Job type #}
-        <div class="sm:col-span-1">
+        <div class="col-span-full md:col-span-3 xl:col-span-1">
           <label for="type" class="block text-sm/6 font-medium text-gray-900">Job type (required)</label>
           <div class="mt-2 grid grid-cols-1">
             <select id="type"
@@ -53,7 +53,7 @@
         {# End Job type #}
 
         {# Workplace #}
-        <div class="sm:col-span-1">
+        <div class="col-span-full md:col-span-3 xl:col-span-1">
           <label for="workplace" class="block text-sm/6 font-medium text-gray-900">Workplace (required)</label>
           <div class="mt-2 grid grid-cols-1">
             <select id="workplace"
@@ -77,13 +77,13 @@
         {# End Job Description #}
 
         {# Job benefits #}
-        <div class="sm:col-span-3">
+        <div class="col-span-full lg:col-span-3">
           <multi-select id="benefits" name="Benefits" options="{{ benefits|json }}"></multi-select>
         </div>
         {# End job nebefits #}
 
         {# Job skills #}
-        <div class="sm:col-span-3">
+        <div class="col-span-full lg:col-span-3">
           <multi-select id="skills" name="Skills" options="{{ skills|json }}"></multi-select>
         </div>
         {# End job skills #}
@@ -102,14 +102,14 @@
       </div>
     </div>
 
-    {# Salary #}
+    {# Salary section #}
     <div class="border-b border-gray-900/10 pb-12">
       <h2 class="text-base/7 font-semibold text-gray-900">Salary</h2>
       <p class="mt-1 text-sm/6 text-gray-600">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
       </p>
-      <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-
+      <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-6">
+        {# Salary kind #}
         <div class="col-span-full">
           <label for="salary" class="block text-sm/6 font-medium text-gray-900">Option</label>
           <div class="mt-2 flex space-x-12">
@@ -146,9 +146,10 @@
             });
           });
         </script>
+        {# End salary kind #}
 
         {# Salary #}
-        <div id="salary_kind_fixed" class="sm:col-span-2">
+        <div id="salary_kind_fixed" class="col-span-full md:col-span-2">
           <label for="salary" class="block text-sm/6 font-medium text-gray-900">Salary</label>
           <div class="mt-2">
             <input id="salary"
@@ -159,8 +160,8 @@
           </div>
         </div>
         <div id="salary_kind_range"
-             class="hidden grid grid-cols-1 gap-x-6 sm:grid-cols-6 sm:col-span-2">
-          <div class="sm:col-span-3">
+             class="hidden grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-6 col-span-full md:col-span-2">
+          <div class="col-span-3">
             <label for="salary_min" class="block text-sm/6 font-medium text-gray-900">Salary min</label>
             <div class="mt-2">
               <input id="salary_min"
@@ -170,7 +171,7 @@
                      class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary-600 sm:text-sm/6">
             </div>
           </div>
-          <div class="sm:col-span-3">
+          <div class="col-span-3">
             <label for="salary_max" class="block text-sm/6 font-medium text-gray-900">Salary max</label>
             <div class="mt-2">
               <input id="salary_max"
@@ -184,7 +185,7 @@
         {# End Salary #}
 
         {# Salary currency #}
-        <div class="sm:col-span-1">
+        <div class="col-span-3 md:col-span-2 lg:col-span-1">
           <label for="salary_currency"
                  class="block text-sm/6 font-medium text-gray-900">Currency</label>
           <div class="mt-2 grid grid-cols-1">
@@ -203,7 +204,7 @@
         {# End Salary currency #}
 
         {# Salary period #}
-        <div class="sm:col-span-1">
+        <div class="col-span-3 md:col-span-2 lg:col-span-1">
           <label for="salary_period" class="block text-sm/6 font-medium text-gray-900">Timeframe</label>
           <div class="mt-2 grid grid-cols-1">
             <select id="salary_period"
@@ -222,7 +223,7 @@
         {# End Salary period #}
       </div>
     </div>
-    {# End salary #}
+    {# End salary section #}
 
     {# Others #}
     <div class="border-b border-gray-900/10 pb-12">
@@ -230,7 +231,7 @@
       <p class="mt-1 text-sm/6 text-gray-600">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
       </p>
-      <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+      <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-6">
         {# Open source #}
         <div class="col-span-full">
           <label for="open_source" class="block text-sm/6 font-medium text-gray-900">Open source</label>
@@ -252,7 +253,9 @@
     {# End Others #}
   </div>
   <div class="mt-6 flex justify-between items-center">
+    {# Preview #}
     <div class="flex items-center gap-x-6">
+      {# Preview button #}
       <button id="preview-button"
               type="button"
               hx-post="/dashboard/jobs/preview"
@@ -260,23 +263,46 @@
               hx-ext="no-empty-vals"
               hx-target="#preview-content"
               type="button"
-              class="text-primary-700 rounded-md hover:text-white border border-primary-700 hover:bg-primary-900 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-3 py-2">
-        Preview
+              class="group text-primary-700 rounded-md hover:text-white border border-primary-700 hover:bg-primary-900 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-3 py-2">
+        <span class="hidden md:block">Preview</span>
+        <span class="block md:hidden">
+          <div class="svg-icon size-3 icon-eye bg-primary-700 group-hover:bg-white"></div>
+        </span>
       </button>
+      {# End preview button #}
+
       <div class="htmx-indicator">{% call common::spinner(size = 5) %}</div>
+
+      {# Error preview #}
+      <div id="preview-error"
+           class="hidden fixed top-5 end-5 p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 z-30"
+           role="alert">
+        <span class="font-medium">Not available preview!</span> Please fill in the required fields.
+      </div>
+      {# End error preview #}
     </div>
+    {# End preview #}
+
     <div class="flex items-center justify-end gap-x-6">
+      {# Cancel button #}
       <a href="/dashboard?tab=jobs"
          class="text-sm/6 font-semibold text-gray-900">Cancel</a>
+      {# End cancel button #}
+
+      {# Save draft button #}
       <button type="submit"
               class="bg-primary-100 px-3 py-2 text-sm font-semibold text-primary-900 rounded-md hover:bg-primary-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
         Save draft
       </button>
+      {# End save draft button #}
+
+      {# Publish button #}
       <button id="publish-job"
               type="button"
               class="bg-primary-700 px-3 py-2 text-sm font-semibold text-white rounded-md hover:bg-primary-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
         Publish
       </button>
+      {# End publish button #}
     </div>
   </div>
 </form>
@@ -333,7 +359,13 @@
     if (e.detail.successful) {
       toggleModalVisibility('preview-modal');
     } else {
-      console.log('Show error message');
+      // When the preview is not available, show an error message
+      const previewError = document.getElementById('preview-error');
+      previewError.classList.remove('hidden');
+      // Hide the error message after 5 seconds
+      setTimeout(() => {
+        previewError.classList.add('hidden');
+      }, 5000);
     }
   });
 </script>

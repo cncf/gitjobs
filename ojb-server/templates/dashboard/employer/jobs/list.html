@@ -21,34 +21,34 @@
             aria-labelledby="dropdownDefaultButton">
           <li data-action="update" class="hidden">
             <button id="update-button"
-                    data-url="/dashboard/jobs/{:job_id}/update"
+                    data-url="/dashboard/employer/jobs/{:job_id}/update"
                     data-replacement="job_id"
-                    hx-get="/dashboard/jobs/{:job_id}/update"
+                    hx-get="/dashboard/employer/jobs/{:job_id}/update"
                     hx-target="#dashboard-content"
                     class="w-full text-start px-4 py-2 hover:bg-gray-100">Update</button>
           </li>
           <li data-action="publish" class="hidden">
             <button id="publish-button"
-                    data-url="/dashboard/jobs/{:job_id}/publish"
+                    data-url="/dashboard/employer/jobs/{:job_id}/publish"
                     data-replacement="job_id"
-                    hx-put="/dashboard/jobs/{:job_id}/publish"
+                    hx-put="/dashboard/employer/jobs/{:job_id}/publish"
                     hx-target="#dashboard-content"
                     class="w-full text-start px-4 py-2 hover:bg-gray-100">Publish</button>
           </li>
           <li data-action="delete" class="hidden">
             <button id="delete-button"
-                    data-url="/dashboard/jobs/{:job_id}/delete"
+                    data-url="/dashboard/employer/jobs/{:job_id}/delete"
                     data-replacement="job_id"
-                    hx-delete="/dashboard/jobs/{:job_id}/delete"
+                    hx-delete="/dashboard/employer/jobs/{:job_id}/delete"
                     hx-target="#dashboard-content"
                     hx-confirm="Are you sure you wish to delete this job?"
                     class="w-full text-start px-4 py-2 hover:bg-gray-100">Delete</button>
           </li>
           <li data-action="archive" class="hidden">
             <button id="archive-button"
-                    data-url="/dashboard/jobs/{:job_id}/archive"
+                    data-url="/dashboard/employer/jobs/{:job_id}/archive"
                     data-replacement="job_id"
-                    hx-put="/dashboard/jobs/{:job_id}/archive"
+                    hx-put="/dashboard/employer/jobs/{:job_id}/archive"
                     hx-target="#dashboard-content"
                     class="w-full text-start px-4 py-2 hover:bg-gray-100">Archive</button>
           </li>
@@ -92,7 +92,7 @@
 
     <div>
       <button id="add-job-button"
-              hx-get="/dashboard/jobs/add"
+              hx-get="/dashboard/employer/jobs/add"
               hx-target="#dashboard-content"
               class="bg-primary-700 px-3 py-2 text-sm font-semibold text-white rounded-md hover:bg-primary-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
         Add Job
@@ -101,7 +101,7 @@
     <script type="module">
       const addJobButton = document.getElementById('add-job-button');
       addJobButton.addEventListener('htmx:afterRequest', () => {
-        history.pushState({}, "Jobs list", '/dashboard?tab=jobs');
+        history.pushState({}, "Jobs list", '/dashboard/employer?tab=jobs');
       });
     </script>
   </div>

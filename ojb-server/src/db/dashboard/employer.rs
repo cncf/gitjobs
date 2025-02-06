@@ -1,20 +1,21 @@
-//! This module defines some database functionality for the dashboard.
+//! This module defines some database functionality for the employer dashboard.
 
 use anyhow::Result;
 use async_trait::async_trait;
 use tracing::instrument;
 use uuid::Uuid;
 
-use crate::templates::dashboard::{
-    employers::{EmployerDetails, EmployerSummary},
-    jobs::{JobBoard, JobDetails, JobSummary},
+use crate::{
+    templates::dashboard::employer::{
+        employers::{EmployerDetails, EmployerSummary},
+        jobs::{JobBoard, JobDetails, JobSummary},
+    },
+    PgDB,
 };
 
-use super::PgDB;
-
-/// Trait that defines some database operations used in the dashboard.
+/// Trait that defines some database operations used in the employer dashboard.
 #[async_trait]
-pub(crate) trait DBDashBoard {
+pub(crate) trait DBDashBoardEmployer {
     /// Add employer.
     async fn add_employer(
         &self,
@@ -58,8 +59,8 @@ pub(crate) trait DBDashBoard {
 }
 
 #[async_trait]
-impl DBDashBoard for PgDB {
-    /// [DBDashBoard::add_employer]
+impl DBDashBoardEmployer for PgDB {
+    /// [DBDashBoardEmployer::add_employer]
     #[instrument(skip(self), err)]
     async fn add_employer(
         &self,
@@ -125,7 +126,7 @@ impl DBDashBoard for PgDB {
         Ok(employer_id)
     }
 
-    /// [DBDashBoard::add_job]
+    /// [DBDashBoardEmployer::add_job]
     #[instrument(skip(self), err)]
     async fn add_job(&self, employer_id: &Uuid, job: &JobDetails) -> Result<()> {
         let db = self.pool.get().await?;
@@ -199,7 +200,7 @@ impl DBDashBoard for PgDB {
         Ok(())
     }
 
-    /// [DBDashBoard::archive_job]
+    /// [DBDashBoardEmployer::archive_job]
     #[instrument(skip(self), err)]
     async fn archive_job(&self, job_id: &Uuid) -> Result<()> {
         let db = self.pool.get().await?;
@@ -220,7 +221,7 @@ impl DBDashBoard for PgDB {
         Ok(())
     }
 
-    /// [DBDashBoard::delete_job]
+    /// [DBDashBoardEmployer::delete_job]
     #[instrument(skip(self), err)]
     async fn delete_job(&self, job_id: &Uuid) -> Result<()> {
         let db = self.pool.get().await?;
@@ -230,7 +231,7 @@ impl DBDashBoard for PgDB {
         Ok(())
     }
 
-    /// [DBDashBoard::get_employer_details]
+    /// [DBDashBoardEmployer::get_employer_details]
     #[instrument(skip(self), err)]
     async fn get_employer_details(&self, employer_id: &Uuid) -> Result<EmployerDetails> {
         let db = self.pool.get().await?;
@@ -269,7 +270,7 @@ impl DBDashBoard for PgDB {
         Ok(employer_details)
     }
 
-    /// [DBDashBoard::get_job_board]
+    /// [DBDashBoardEmployer::get_job_board]
     #[instrument(skip(self), err)]
     async fn get_job_board(&self, job_board_id: &Uuid) -> Result<JobBoard> {
         let db = self.pool.get().await?;
@@ -293,7 +294,7 @@ impl DBDashBoard for PgDB {
         Ok(job_board)
     }
 
-    /// [DBDashBoard::get_job_details]
+    /// [DBDashBoardEmployer::get_job_details]
     #[instrument(skip(self), err)]
     async fn get_job_details(&self, job_id: &Uuid) -> Result<JobDetails> {
         let db = self.pool.get().await?;
@@ -356,7 +357,7 @@ impl DBDashBoard for PgDB {
         Ok(job_details)
     }
 
-    /// [DBDashBoard::list_employer_jobs]
+    /// [DBDashBoardEmployer::list_employer_jobs]
     #[instrument(skip(self), err)]
     async fn list_employer_jobs(&self, employer_id: &Uuid) -> Result<Vec<JobSummary>> {
         let db = self.pool.get().await?;
@@ -421,7 +422,7 @@ impl DBDashBoard for PgDB {
         Ok(employers)
     }
 
-    /// [DBDashBoard::publish_job]
+    /// [DBDashBoardEmployer::publish_job]
     #[instrument(skip(self), err)]
     async fn publish_job(&self, job_id: &Uuid) -> Result<()> {
         let db = self.pool.get().await?;
@@ -443,7 +444,7 @@ impl DBDashBoard for PgDB {
         Ok(())
     }
 
-    /// [DBDashBoard::update_employer]
+    /// [DBDashBoardEmployer::update_employer]
     #[instrument(skip(self), err)]
     async fn update_employer(&self, employer_id: &Uuid, employer: &EmployerDetails) -> Result<()> {
         let db = self.pool.get().await?;
@@ -475,7 +476,7 @@ impl DBDashBoard for PgDB {
         Ok(())
     }
 
-    /// [DBDashBoard::update_job]
+    /// [DBDashBoardEmployer::update_job]
     #[instrument(skip(self), err)]
     async fn update_job(&self, job_id: &Uuid, job: &JobDetails) -> Result<()> {
         let db = self.pool.get().await?;

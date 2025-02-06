@@ -4,15 +4,7 @@ use std::{collections::HashMap, sync::Arc};
 
 use anyhow::{bail, Result};
 use async_trait::async_trait;
-use axum::{
-    extract::{Path, Request, State},
-    http::{
-        header::{AUTHORIZATION, USER_AGENT},
-        StatusCode,
-    },
-    middleware::Next,
-    response::IntoResponse,
-};
+use axum::http::header::{AUTHORIZATION, USER_AGENT};
 use axum_login::{
     tower_sessions::{self, session, session_store},
     AuthManagerLayer, AuthManagerLayerBuilder,
@@ -23,7 +15,6 @@ use serde::{Deserialize, Serialize};
 use time::Duration;
 use tower_sessions::{cookie::SameSite, CachingSessionStore, Expiry, SessionManagerLayer};
 use tower_sessions_moka_store::MokaStore;
-use tracing::instrument;
 use uuid::Uuid;
 
 use crate::{
@@ -390,56 +381,4 @@ struct GitHubProfile {
     login: String,
     name: String,
     email: String,
-}
-
-// Authorization middleware.
-
-/// Check if the user owns the employer provided.
-#[instrument(skip_all)]
-pub(crate) async fn user_owns_employer(
-    State(db): State<DynDB>,
-    Path(employer_id): Path<Uuid>,
-    auth_session: AuthSession,
-    request: Request,
-    next: Next,
-) -> impl IntoResponse {
-    // Check if user is logged in
-    let Some(user) = auth_session.user else {
-        return StatusCode::FORBIDDEN.into_response();
-    };
-
-    // Check if the user owns the employer
-    let Ok(user_owns_employer) = db.user_owns_employer(&user.user_id, &employer_id).await else {
-        return StatusCode::INTERNAL_SERVER_ERROR.into_response();
-    };
-    if !user_owns_employer {
-        return StatusCode::FORBIDDEN.into_response();
-    }
-
-    next.run(request).await.into_response()
-}
-
-/// Check if the user owns the job provided.
-#[instrument(skip_all)]
-pub(crate) async fn user_owns_job(
-    State(db): State<DynDB>,
-    Path(job_id): Path<Uuid>,
-    auth_session: AuthSession,
-    request: Request,
-    next: Next,
-) -> impl IntoResponse {
-    // Check if user is logged in
-    let Some(user) = auth_session.user else {
-        return StatusCode::FORBIDDEN.into_response();
-    };
-
-    // Check if the user owns the job
-    let Ok(user_owns_job) = db.user_owns_job(&user.user_id, &job_id).await else {
-        return StatusCode::INTERNAL_SERVER_ERROR.into_response();
-    };
-    if !user_owns_job {
-        return StatusCode::FORBIDDEN.into_response();
-    }
-
-    next.run(request).await.into_response()
 }

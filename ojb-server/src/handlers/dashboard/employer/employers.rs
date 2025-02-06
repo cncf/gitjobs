@@ -20,7 +20,7 @@ use crate::{
         error::HandlerError,
         extractors::{JobBoardId, SelectedEmployerIdRequired},
     },
-    templates::dashboard::employers,
+    templates::dashboard::employer,
 };
 
 // Pages handlers.
@@ -28,7 +28,7 @@ use crate::{
 /// Handler that returns the page to add a new employer.
 #[instrument(skip_all, err)]
 pub(crate) async fn add_page(State(_db): State<DynDB>) -> Result<impl IntoResponse, HandlerError> {
-    let template = employers::AddPage {};
+    let template = employer::employers::AddPage {};
 
     Ok(Html(template.render()?))
 }
@@ -40,7 +40,7 @@ pub(crate) async fn update_page(
     SelectedEmployerIdRequired(employer_id): SelectedEmployerIdRequired,
 ) -> Result<impl IntoResponse, HandlerError> {
     let employer_details = db.get_employer_details(&employer_id).await?;
-    let template = employers::UpdatePage { employer_details };
+    let template = employer::employers::UpdatePage { employer_details };
 
     Ok(Html(template.render()?))
 }
@@ -54,7 +54,7 @@ pub(crate) async fn add(
     session: Session,
     State(db): State<DynDB>,
     JobBoardId(job_board_id): JobBoardId,
-    Form(employer_details): Form<employers::EmployerDetails>,
+    Form(employer_details): Form<employer::employers::EmployerDetails>,
 ) -> Result<impl IntoResponse, HandlerError> {
     // Check if the user is logged in
     let Some(user) = auth_session.user else {
@@ -89,7 +89,7 @@ pub(crate) async fn select(
 pub(crate) async fn update(
     State(db): State<DynDB>,
     SelectedEmployerIdRequired(employer_id): SelectedEmployerIdRequired,
-    Form(employer_details): Form<employers::EmployerDetails>,
+    Form(employer_details): Form<employer::employers::EmployerDetails>,
 ) -> Result<impl IntoResponse, HandlerError> {
     db.update_employer(&employer_id, &employer_details).await?;
 

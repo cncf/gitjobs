@@ -11,9 +11,7 @@ use axum::{
 use rinja::Template;
 use tracing::instrument;
 
-use crate::{db::DynDB, templates::common};
-
-use super::error::HandlerError;
+use crate::{db::DynDB, handlers::error::HandlerError, templates::common};
 
 /// Handler that returns the locations search results.
 #[instrument(skip_all, err)]

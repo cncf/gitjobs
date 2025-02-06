@@ -29,7 +29,6 @@ use crate::{
     handlers::{
         auth::{self, LOG_IN_URL},
         common, dashboard, jobboard,
-        middleware::{user_owns_employer, user_owns_job},
     },
 };
 
@@ -56,51 +55,15 @@ pub(crate) fn setup(cfg: &HttpServerConfig, db: DynDB) -> Result<Router> {
     // Setup router state
     let state = State { db: db.clone() };
 
-    // Setup auth layer and middleware
+    // Setup authentication / authorization layer
     let auth_layer = crate::auth::setup_layer(cfg, db)?;
-    let check_user_owns_employer = middleware::from_fn_with_state(state.clone(), user_owns_employer);
-    let check_user_owns_job = middleware::from_fn_with_state(state.clone(), user_owns_job);
+
+    // Setup employer dashboard router
+    let employer_dashboard_router = setup_employer_dashboard_router(state.clone());
 
     // Setup router
     let mut router = Router::new()
-        .route("/dashboard", get(dashboard::home::page))
-        .route(
-            "/dashboard/employers/add",
-            get(dashboard::employers::add_page).post(dashboard::employers::add),
-        )
-        .route(
-            "/dashboard/employers/update",
-            get(dashboard::employers::update_page).put(dashboard::employers::update),
-        )
-        .route(
-            "/dashboard/employers/{:employer_id}/select",
-            put(dashboard::employers::select).layer(check_user_owns_employer.clone()),
-        )
-        .route("/dashboard/jobs/list", get(dashboard::jobs::list_page))
-        .route(
-            "/dashboard/jobs/add",
-            get(dashboard::jobs::add_page).post(dashboard::jobs::add),
-        )
-        .route("/dashboard/jobs/preview", post(dashboard::jobs::preview_page))
-        .route(
-            "/dashboard/jobs/{:job_id}/archive",
-            put(dashboard::jobs::archive).layer(check_user_owns_job.clone()),
-        )
-        .route(
-            "/dashboard/jobs/{:job_id}/delete",
-            delete(dashboard::jobs::delete).layer(check_user_owns_job.clone()),
-        )
-        .route(
-            "/dashboard/jobs/{:job_id}/publish",
-            put(dashboard::jobs::publish).layer(check_user_owns_job.clone()),
-        )
-        .route(
-            "/dashboard/jobs/{:job_id}/update",
-            get(dashboard::jobs::update_page)
-                .layer(check_user_owns_job.clone())
-                .put(dashboard::jobs::update)
-                .layer(check_user_owns_job.clone()),
-        )
+        .nest("/dashboard/employer", employer_dashboard_router)
         .route("/locations/search", get(common::search_locations))
         .route_layer(login_required!(
             AuthnBackend,
@@ -137,6 +100,55 @@ pub(crate) fn setup(cfg: &HttpServerConfig, db: DynDB) -> Result<Router> {
     }
 
     Ok(router)
+}
+
+/// Setup employer dashboard router.
+#[instrument(skip_all)]
+fn setup_employer_dashboard_router(state: State) -> Router<State> {
+    // Setup middleware
+    let check_user_owns_employer = middleware::from_fn_with_state(state.clone(), auth::user_owns_employer);
+    let check_user_owns_job = middleware::from_fn_with_state(state.clone(), auth::user_owns_job);
+
+    // Setup router
+    Router::new()
+        .route("/", get(dashboard::employer::home::page))
+        .route(
+            "/employers/add",
+            get(dashboard::employer::employers::add_page).post(dashboard::employer::employers::add),
+        )
+        .route(
+            "/employers/update",
+            get(dashboard::employer::employers::update_page).put(dashboard::employer::employers::update),
+        )
+        .route(
+            "/employers/{:employer_id}/select",
+            put(dashboard::employer::employers::select).layer(check_user_owns_employer.clone()),
+        )
+        .route("/jobs/list", get(dashboard::employer::jobs::list_page))
+        .route(
+            "/jobs/add",
+            get(dashboard::employer::jobs::add_page).post(dashboard::employer::jobs::add),
+        )
+        .route("/jobs/preview", post(dashboard::employer::jobs::preview_page))
+        .route(
+            "/jobs/{:job_id}/archive",
+            put(dashboard::employer::jobs::archive).layer(check_user_owns_job.clone()),
+        )
+        .route(
+            "/jobs/{:job_id}/delete",
+            delete(dashboard::employer::jobs::delete).layer(check_user_owns_job.clone()),
+        )
+        .route(
+            "/jobs/{:job_id}/publish",
+            put(dashboard::employer::jobs::publish).layer(check_user_owns_job.clone()),
+        )
+        .route(
+            "/jobs/{:job_id}/update",
+            get(dashboard::employer::jobs::update_page)
+                .layer(check_user_owns_job.clone())
+                .put(dashboard::employer::jobs::update)
+                .layer(check_user_owns_job.clone()),
+        )
 }
 
 /// Handler that takes care of health check requests.

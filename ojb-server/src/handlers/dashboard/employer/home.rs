@@ -1,4 +1,4 @@
-//! This module defines the templates for the dashboard home page.
+//! This module defines the HTTP handlers for the employer dashboard home page.
 
 use std::collections::HashMap;
 
@@ -15,10 +15,9 @@ use crate::{
     auth::AuthSession,
     db::DynDB,
     handlers::{error::HandlerError, extractors::SelectedEmployerIdOptional},
-    templates::dashboard::{
-        employers,
+    templates::dashboard::employer::{
+        self,
         home::{self, Content, Tab},
-        jobs,
     },
 };
 
@@ -43,14 +42,14 @@ pub(crate) async fn page(
 
     // Prepare content for the selected tab
     let content = match tab {
-        Tab::EmployerInitialSetup => Content::EmployerInitialSetup(employers::InitialSetupPage {}),
+        Tab::EmployerInitialSetup => Content::EmployerInitialSetup(employer::employers::InitialSetupPage {}),
         Tab::Jobs => {
             let jobs = db.list_employer_jobs(&employer_id.expect("to be some")).await?;
-            Content::Jobs(jobs::ListPage { jobs })
+            Content::Jobs(employer::jobs::ListPage { jobs })
         }
         Tab::Settings => {
             let employer_details = db.get_employer_details(&employer_id.expect("to be some")).await?;
-            Content::Settings(employers::UpdatePage { employer_details })
+            Content::Settings(employer::employers::UpdatePage { employer_details })
         }
     };
 

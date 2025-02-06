@@ -1,4 +1,5 @@
-//! This module defines some templates and types used in the jobs page.
+//! This module defines some templates and types used in the employer dashboard
+//! jobs page.
 
 use chrono::{DateTime, Utc};
 use rinja::Template;
@@ -7,14 +8,15 @@ use serde_with::skip_serializing_none;
 use uuid::Uuid;
 
 use crate::templates::{
-    dashboard::employers::EmployerDetails,
     filters,
     helpers::{build_location, DATE_FORMAT},
 };
 
+use super::employers::EmployerDetails;
+
 /// Add job page template.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
-#[template(path = "dashboard/jobs/add.html")]
+#[template(path = "dashboard/employer/jobs/add.html")]
 pub(crate) struct AddPage {
     pub benefits: Vec<String>,
     pub skills: Vec<String>,
@@ -22,14 +24,14 @@ pub(crate) struct AddPage {
 
 /// Jobs list page template.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
-#[template(path = "dashboard/jobs/list.html")]
+#[template(path = "dashboard/employer/jobs/list.html")]
 pub(crate) struct ListPage {
     pub jobs: Vec<JobSummary>,
 }
 
 /// Job preview page template.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
-#[template(path = "dashboard/jobs/preview.html")]
+#[template(path = "dashboard/employer/jobs/preview.html")]
 pub(crate) struct PreviewPage {
     pub employer_details: EmployerDetails,
     pub job_details: JobDetails,
@@ -37,7 +39,7 @@ pub(crate) struct PreviewPage {
 
 /// Update job page template.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
-#[template(path = "dashboard/jobs/update.html")]
+#[template(path = "dashboard/employer/jobs/update.html")]
 pub(crate) struct UpdatePage {
     pub benefits: Vec<String>,
     pub job_details: JobDetails,

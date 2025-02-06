@@ -1,10 +1,8 @@
 {% import "common.html" as common %}
 
-{% let job_id = job_details.job_id|display_some %}
-
 {# Jobs form #}
 <form id="jobs-form"
-      hx-put="/dashboard/jobs/{{ job_id }}/update"
+      hx-post="/dashboard/employer/jobs/add"
       hx-ext="no-empty-vals"
       hx-trigger="submit">
   <div class="space-y-12">
@@ -22,7 +20,6 @@
             <input type="text"
                    name="title"
                    id="title"
-                   value="{{ job_details.title }}"
                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary-600 sm:text-sm/6"
                    required>
           </div>
@@ -35,7 +32,7 @@
         {# End job status #}
 
         {# Job location #}
-        {% call common::location(location_id = job_details.location_id|display_some, city = job_details.city|display_some, state = job_details.state|display_some, country = job_details.country|display_some) %}
+        {% call common::location() %}
         {# End Job location #}
 
         {# Job type #}
@@ -46,10 +43,10 @@
                     name="type"
                     class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary-600 sm:text-sm/6"
                     required>
-              {% call common::select_option(value = JobType::Contractor, label = "Contractor", selected = job_details.type_) %}
-              {% call common::select_option(value = JobType::FullTime, label = "Full Time", selected = job_details.type_) %}
-              {% call common::select_option(value = JobType::Internship, label = "Internship", selected = job_details.type_) %}
-              {% call common::select_option(value = JobType::PartTime, label = "Part Time", selected = job_details.type_) %}
+              {% call common::select_option(value = JobType::Contractor, label = "Contractor", selected = JobType::FullTime) %}
+              {% call common::select_option(value = JobType::FullTime, label = "Full Time", selected = JobType::FullTime) %}
+              {% call common::select_option(value = JobType::Internship, label = "Internship", selected = JobType::FullTime) %}
+              {% call common::select_option(value = JobType::PartTime, label = "Part Time", selected = JobType::FullTime) %}
             </select>
           </div>
         </div>
@@ -63,9 +60,9 @@
                     name="workplace"
                     class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary-600 sm:text-sm/6"
                     required>
-              {% call common::select_option(value = Workplace::Hybrid, label = "Hybrid", selected = job_details.workplace) %}
-              {% call common::select_option(value = Workplace::OnSite, label = "On Site", selected = job_details.workplace) %}
-              {% call common::select_option(value = Workplace::Remote, label = "Remote", selected = job_details.workplace) %}
+              {% call common::select_option(value = Workplace::Hybrid, label = "Hybrid", selected = Workplace::OnSite) %}
+              {% call common::select_option(value = Workplace::OnSite, label = "On Site", selected = Workplace::OnSite) %}
+              {% call common::select_option(value = Workplace::Remote, label = "Remote", selected = Workplace::OnSite) %}
             </select>
           </div>
         </div>
@@ -74,26 +71,20 @@
         {# Job Description #}
         <div class="col-span-full">
           <label for="description" class="block text-sm/6 font-medium text-gray-900">Description (required)</label>
-          <div class="mt-2">
-            {% call common::markdown_editor(id = "description", content = job_details.description, required = true) %}
-          </div>
+          <div class="mt-2">{% call common::markdown_editor(id = "description", required = true) %}</div>
           <p class="mt-1 text-xs/6 text-gray-600">Lorem ipsum.</p>
         </div>
         {# End Job Description #}
 
         {# Job benefits #}
         <div class="col-span-full lg:col-span-3">
-          <multi-select id="benefits" name="Benefits" options="{{ benefits|json }}"
-          {% if let Some(job_benefits) = job_details.benefits %}selected="{{ job_benefits|json }}"{% endif %}
-          ></multi-select>
+          <multi-select id="benefits" name="Benefits" options="{{ benefits|json }}"></multi-select>
         </div>
         {# End job nebefits #}
 
         {# Job skills #}
         <div class="col-span-full lg:col-span-3">
-          <multi-select id="skills" name="Skills" options="{{ skills|json }}"
-          {% if let Some(job_skills) = job_details.skills %}selected="{{ job_skills|json }}"{% endif %}
-          ></multi-select>
+          <multi-select id="skills" name="Skills" options="{{ skills|json }}"></multi-select>
         </div>
         {# End job skills #}
 
@@ -104,7 +95,6 @@
             <input id="apply_url"
                    name="apply_url"
                    type="url"
-                   value="{%- if let Some(apply_url) = job_details.apply_url -%} {{ apply_url }} {%- endif -%}"
                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary-600 sm:text-sm/6">
           </div>
         </div>
@@ -119,7 +109,6 @@
         Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
       </p>
       <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-6">
-        {% let salary_kind = job_details.salary_kind() %}
         {# Salary kind #}
         <div class="col-span-full">
           <label for="salary" class="block text-sm/6 font-medium text-gray-900">Option</label>
@@ -128,15 +117,14 @@
               <input id="fixed"
                      name="salary_kind"
                      type="radio"
-                     {% if salary_kind == SalaryKind::Fixed %}checked{% endif %}
+                     checked
                      class="relative size-4 appearance-none rounded-full border border-gray-300 bg-white before:absolute before:inset-1 before:rounded-full before:bg-white not-checked:before:hidden checked:border-primary-600 checked:bg-primary-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:before:bg-gray-400 forced-colors:appearance-auto forced-colors:before:hidden">
-              <label for="fixed" class="block text-sm/6 font-medium text-gray-900">Exact</label>
+              <label for="fixed" class="block text-sm/6 font-medium text-gray-900">Fixed</label>
             </div>
             <div class="flex items-center gap-x-3">
               <input id="range"
                      name="salary_kind"
                      type="radio"
-                     {% if salary_kind == SalaryKind::Range %}checked{% endif %}
                      class="relative size-4 appearance-none rounded-full border border-gray-300 bg-white before:absolute before:inset-1 before:rounded-full before:bg-white not-checked:before:hidden checked:border-primary-600 checked:bg-primary-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:before:bg-gray-400 forced-colors:appearance-auto forced-colors:before:hidden">
               <label for="range" class="block text-sm/6 font-medium text-gray-900">Range</label>
             </div>
@@ -161,31 +149,24 @@
         {# End salary kind #}
 
         {# Salary #}
-        <div id="salary_kind_fixed"
-             class="col-span-full md:col-span-2
-                    {% if salary_kind != SalaryKind::Fixed %}
-                      hidden{%- endif -%}">
+        <div id="salary_kind_fixed" class="col-span-full md:col-span-2">
           <label for="salary" class="block text-sm/6 font-medium text-gray-900">Salary</label>
           <div class="mt-2">
             <input id="salary"
                    name="salary"
                    type="number"
-                   value="{{ job_details.salary|display_some }}"
                    min="0"
                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary-600 sm:text-sm/6">
           </div>
         </div>
         <div id="salary_kind_range"
-             class="grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-6 col-span-full md:col-span-2
-                    {% if salary_kind != SalaryKind::Range %}
-                      hidden {%- endif -%}">
+             class="hidden grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-6 col-span-full md:col-span-2">
           <div class="col-span-3">
             <label for="salary_min" class="block text-sm/6 font-medium text-gray-900">Salary min</label>
             <div class="mt-2">
               <input id="salary_min"
                      name="salary_min"
                      type="number"
-                     value="{{ job_details.salary_min|display_some }}"
                      min="0"
                      class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary-600 sm:text-sm/6">
             </div>
@@ -196,7 +177,6 @@
               <input id="salary_max"
                      name="salary_max"
                      type="number"
-                     value="{{ job_details.salary_max|display_some }}"
                      min="0"
                      class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary-600 sm:text-sm/6">
             </div>
@@ -212,12 +192,12 @@
             <select id="salary_currency"
                     name="salary_currency"
                     class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary-600 sm:text-sm/6">
-              {% call common::select_option(value = "", label = "", selected = job_details.salary_currency|display_some) %}
-              {% call common::select_option(value = "USD", label = "USD - United States Dollar", selected = job_details.salary_currency|display_some) %}
-              {% call common::select_option(value = "EUR", label = "EUR - Euro", selected = job_details.salary_currency|display_some) %}
-              {% call common::select_option(value = "GBP", label = "GBP - British Pound Sterling", selected = job_details.salary_currency|display_some) %}
-              {% call common::select_option(value = "CAD", label = "CAD - Canadian Dollar", selected = job_details.salary_currency|display_some) %}
-              {% call common::select_option(value = "JPY", label = "JPY - Japanese Yen", selected = job_details.salary_currency|display_some) %}
+              {% call common::select_option(value = "", label = "") %}
+              {% call common::select_option(value = "USD", label = "USD - United States Dollar") %}
+              {% call common::select_option(value = "EUR", label = "EUR - Euro") %}
+              {% call common::select_option(value = "GBP", label = "GBP - British Pound Sterling") %}
+              {% call common::select_option(value = "CAD", label = "CAD - Canadian Dollar") %}
+              {% call common::select_option(value = "JPY", label = "JPY - Japanese Yen") %}
             </select>
           </div>
         </div>
@@ -230,13 +210,13 @@
             <select id="salary_period"
                     name="salary_period"
                     class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary-600 sm:text-sm/6">
-              {% call common::select_option(value = "", label = "", selected = job_details.salary_period|display_some) %}
-              {% call common::select_option(value = "daily", label = "Daily", selected = job_details.salary_period|display_some) %}
-              {% call common::select_option(value = "weekly", label = "Weekly", selected = job_details.salary_period|display_some) %}
-              {% call common::select_option(value = "fortnightly", label = "Fortnightly", selected = job_details.salary_period|display_some) %}
-              {% call common::select_option(value = "monthly", label = "Monthly", selected = job_details.salary_period|display_some) %}
-              {% call common::select_option(value = "quarterly", label = "Quarterly", selected = job_details.salary_period|display_some) %}
-              {% call common::select_option(value = "yearly", label = "Yearly", selected = job_details.salary_period|display_some) %}
+              {% call common::select_option(value = "", label = "") %}
+              {% call common::select_option(value = "daily", label = "Daily") %}
+              {% call common::select_option(value = "weekly", label = "Weekly") %}
+              {% call common::select_option(value = "fortnightly", label = "Fortnightly") %}
+              {% call common::select_option(value = "monthly", label = "Monthly") %}
+              {% call common::select_option(value = "quarterly", label = "Quarterly") %}
+              {% call common::select_option(value = "yearly", label = "Yearly") %}
             </select>
           </div>
         </div>
@@ -255,9 +235,7 @@
         {# Open source #}
         <div class="col-span-full">
           <label for="open_source" class="block text-sm/6 font-medium text-gray-900">Open source</label>
-          <div class="mt-2">
-            {% call common::input_range(name = "open_source", value = job_details.open_source|display_some_or(0)) %}
-          </div>
+          <div class="mt-2">{% call common::input_range(name = "open_source") %}</div>
           <p class="mt-1 text-xs/6 text-gray-600">Lorem ipsum.</p>
         </div>
         {# End Open source #}
@@ -266,7 +244,7 @@
         <div class="col-span-full">
           <label for="upstream_commitment"
                  class="block text-sm/6 font-medium text-gray-900">Upstream commitment</label>
-          {% call common::input_range(name = "upstream_commitment", value = job_details.upstream_commitment|display_some_or(0)) %}
+          <div class="mt-2">{% call common::input_range(name = "upstream_commitment") %}</div>
           <p class="mt-1 text-xs/6 text-gray-600">Lorem ipsum.</p>
         </div>
         {# End Upstream commitment #}
@@ -280,7 +258,7 @@
       {# Preview button #}
       <button id="preview-button"
               type="button"
-              hx-post="/dashboard/jobs/preview"
+              hx-post="/dashboard/employer/jobs/preview"
               hx-include="#jobs-form input, #jobs-form select, #jobs-form textarea"
               hx-ext="no-empty-vals"
               hx-target="#preview-content"
@@ -307,42 +285,30 @@
 
     <div class="flex items-center justify-end gap-x-6">
       {# Cancel button #}
-      <a href="/dashboard?tab=jobs"
+      <a href="/dashboard/employer?tab=jobs"
          class="text-sm/6 font-semibold text-gray-900">Cancel</a>
       {# End cancel button #}
 
-      {# When status is published #}
-      {% if job_details.status == JobStatus::Published %}
-        {# Save button #}
-        <button type="submit"
-                class="bg-primary-700 px-3 py-2 text-sm font-semibold text-white rounded-md hover:bg-primary-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
-          Save
-        </button>
-        {# End save button #}
+      {# Save draft button #}
+      <button type="submit"
+              class="bg-primary-100 px-3 py-2 text-sm font-semibold text-primary-900 rounded-md hover:bg-primary-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
+        Save draft
+      </button>
+      {# End save draft button #}
 
-        {# When status is not published #}
-      {% else %}
-        {# Save button #}
-        <button type="submit"
-                class="rounded-md bg-primary-100 px-3 py-2 text-sm font-semibold text-primary-900 rounded-md hover:bg-primary-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
-          Save
-        </button>
-        {# End save button #}
-
-        {# Publish button #}
-        <button id="publish-job"
-                type="button"
-                class="bg-primary-700 px-3 py-2 text-sm font-semibold text-white rounded-md hover:bg-primary-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
-          Publish
-        </button>
-        {# End publish button #}
-      {% endif %}
+      {# Publish button #}
+      <button id="publish-job"
+              type="button"
+              class="bg-primary-700 px-3 py-2 text-sm font-semibold text-white rounded-md hover:bg-primary-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
+        Publish
+      </button>
+      {# End publish button #}
     </div>
   </div>
 </form>
 
 {# Preview modal -#}
-{% include "dashboard/jobs/preview_modal.html" %}
+{% include "dashboard/employer/jobs/preview_modal.html" %}
 {# End preview modal -#}
 
 <script type="module">

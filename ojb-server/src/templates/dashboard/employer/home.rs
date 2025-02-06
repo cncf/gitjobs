@@ -1,20 +1,18 @@
-//! This module defines some templates and types used in the home page.
+//! This module defines some templates and types used in the employer dashboard
+//! home page.
 
 use rinja::Template;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::templates::{
-    dashboard::{employers, jobs},
-    filters,
-};
+use crate::templates::{dashboard::employer, filters};
 
 /// Home page template.
 #[derive(Debug, Clone, Template)]
-#[template(path = "dashboard/home.html")]
+#[template(path = "dashboard/employer/home.html")]
 pub(crate) struct Page {
     pub content: Content,
-    pub employers: Vec<employers::EmployerSummary>,
+    pub employers: Vec<employer::employers::EmployerSummary>,
 
     pub selected_employer_id: Option<Uuid>,
 }
@@ -22,9 +20,9 @@ pub(crate) struct Page {
 /// Content section.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub(crate) enum Content {
-    EmployerInitialSetup(employers::InitialSetupPage),
-    Jobs(jobs::ListPage),
-    Settings(employers::UpdatePage),
+    EmployerInitialSetup(employer::employers::InitialSetupPage),
+    Jobs(employer::jobs::ListPage),
+    Settings(employer::employers::UpdatePage),
 }
 
 impl Content {

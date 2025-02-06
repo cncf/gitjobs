@@ -1,4 +1,4 @@
-//! This module defines some templates and types used to manage employers
+//! This module defines some templates and types used to manage employers.
 
 use rinja::Template;
 use serde::{Deserialize, Serialize};
@@ -9,17 +9,17 @@ use crate::templates::{filters, helpers::build_location};
 
 /// Add employer page template.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
-#[template(path = "dashboard/employers/add.html")]
+#[template(path = "dashboard/employer/employers/add.html")]
 pub(crate) struct AddPage {}
 
 /// Employer initial setup page template.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
-#[template(path = "dashboard/employers/initial_setup.html")]
+#[template(path = "dashboard/employer/employers/initial_setup.html")]
 pub(crate) struct InitialSetupPage {}
 
 /// Update employer page template.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
-#[template(path = "dashboard/employers/update.html")]
+#[template(path = "dashboard/employer/employers/update.html")]
 pub(crate) struct UpdatePage {
     pub employer_details: EmployerDetails,
 }

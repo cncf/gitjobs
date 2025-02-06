@@ -6,4 +6,3 @@ pub(crate) mod dashboard;
 mod error;
 mod extractors;
 pub(crate) mod jobboard;
-pub(crate) mod middleware;

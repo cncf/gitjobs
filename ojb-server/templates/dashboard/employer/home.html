@@ -20,9 +20,9 @@
         </button>
 
         <ul class="fw-normal list-none leading-10 pt-8">
-          {% call tab_item(name = "Jobs", is_active = content.is_jobs(), href = "/dashboard?tab=jobs", extra_styles = "mb-5") %}
+          {% call tab_item(name = "Jobs", is_active = content.is_jobs(), href = "/dashboard/employer?tab=jobs", extra_styles = "mb-5") %}
           <li class="uppercase px-3">Settings</li>
-          {% call tab_item(name = "Employer profile", is_active = content.is_settings(), href = "/dashboard?tab=settings", level = 2, extra_styles = "mb-3") %}
+          {% call tab_item(name = "Employer profile", is_active = content.is_settings(), href = "/dashboard/employer?tab=settings", level = 2, extra_styles = "mb-3") %}
         </ul>
       </div>
       <div id="drawer-menu-backdrop" class="bg-gray-900/50 fixed inset-0 z-[-1]"></div>
@@ -52,7 +52,7 @@
             <label for="employer_select"
                    class="block text-sm/6 uppercase font-medium text-gray-500">Employer</label>
             <div>
-              <button hx-get="/dashboard/employers/add"
+              <button hx-get="/dashboard/employer/employers/add"
                       hx-trigger="click"
                       hx-target="#dashboard-content"
                       class="rounded-full bg-primary-700 p-1.5 text-sm font-semibold text-white hover:bg-primary-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
@@ -71,9 +71,9 @@
               {% endfor %}
             </select>
             <button id="change-selected-employer-button"
-                    data-url="/dashboard/employers/{:employer_id}/select"
+                    data-url="/dashboard/employer/employers/{:employer_id}/select"
                     data-replacement="employer_id"
-                    hx-put="/dashboard/employers/{:employer_id}/select"
+                    hx-put="/dashboard/employer/employers/{:employer_id}/select"
                     hx-trigger="click"
                     hx-target="#dashboard-content"
                     class="hidden">Select</button>
@@ -142,9 +142,9 @@
       {% if !content.is_employer_initial_setup() %}
         <div class="hidden lg:block">
           <ul class="fw-normal list-none leading-10 pt-8 border-t">
-            {% call tab_item(name = "Jobs", is_active = content.is_jobs(), href = "/dashboard?tab=jobs", extra_styles = "mb-5") %}
+            {% call tab_item(name = "Jobs", is_active = content.is_jobs(), href = "/dashboard/employer?tab=jobs", extra_styles = "mb-5") %}
             <li class="uppercase px-3">Settings</li>
-            {% call tab_item(name = "Employer profile", is_active = content.is_settings(), href = "/dashboard?tab=settings", level = 2, extra_styles = "mb-3") %}
+            {% call tab_item(name = "Employer profile", is_active = content.is_settings(), href = "/dashboard/employer?tab=settings", level = 2, extra_styles = "mb-3") %}
           </ul>
         </div>
       {% endif %}
@@ -159,7 +159,7 @@
 
       {# Refresh table button #}
       <button id="refresh-table"
-              hx-get="/dashboard/jobs/list"
+              hx-get="/dashboard/employer/jobs/list"
               hx-target="#dashboard-content"
               class="hidden">Refresh table</button>
       {# End refresh table button #}

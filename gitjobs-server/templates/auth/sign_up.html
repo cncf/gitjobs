@@ -3,7 +3,8 @@
 {% block main %}
   <div class="container max-w-xl m-auto px-2 py-28">
     <div class="bg-white p-10 border rounded-lg">
-      <form hx-post="/sign-up" hx-trigger="submit" hx-target="body">
+      <form action="/sign-up{%- if let Some(next_url) = next_url -%}?next_url={{ next_url }}{%- endif -%}"
+            method="post">
         <div class="text-2xl mb-10">Sign Up</div>
         <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
           {# Name #}
@@ -92,7 +93,8 @@
         </div>
 
         <div class="mt-5">
-          Already have an account? <a href="/log-in" class="text-primary-700 hover:text-primary-900">Sign In</a>
+          Already have an account? <a href="/log-in{%- if let Some(next_url) = next_url -%}?next_url={{ next_url }}{%- endif -%}"
+    class="text-primary-700 hover:text-primary-900">Sign In</a>
         </div>
       </form>
     </div>

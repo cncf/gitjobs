@@ -15,4 +15,6 @@ pub(crate) struct LogInPage {
 /// Sign up page.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
 #[template(path = "auth/sign_up.html")]
-pub(crate) struct SignUpPage {}
+pub(crate) struct SignUpPage {
+    pub next_url: Option<String>,
+}

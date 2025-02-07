@@ -56,8 +56,12 @@ pub(crate) async fn log_in_page(
 
 /// Handler that returns the sign up page.
 #[instrument(skip_all, err)]
-pub(crate) async fn sign_up_page() -> Result<impl IntoResponse, HandlerError> {
-    let template = templates::auth::SignUpPage {};
+pub(crate) async fn sign_up_page(
+    Query(query): Query<HashMap<String, String>>,
+) -> Result<impl IntoResponse, HandlerError> {
+    let template = templates::auth::SignUpPage {
+        next_url: query.get("next_url").cloned(),
+    };
 
     Ok(Html(template.render()?))
 }
@@ -70,6 +74,7 @@ pub(crate) async fn log_in(
     mut auth_session: AuthSession,
     messages: Messages,
     session: Session,
+    Query(query): Query<HashMap<String, String>>,
     State(db): State<DynDB>,
     JobBoardId(job_board_id): JobBoardId,
     Form(mut creds): Form<PasswordCredentials>,
@@ -82,12 +87,7 @@ pub(crate) async fn log_in(
         .map_err(|e| HandlerError::Auth(e.to_string()))?
     else {
         messages.error("Invalid credentials");
-
-        let mut log_in_url = LOG_IN_URL.to_string();
-        if let Some(next_url) = creds.next_url {
-            log_in_url = format!("{log_in_url}?next_url={next_url}");
-        };
-
+        let log_in_url = get_log_in_url(query.get("next_url"));
         return Ok(Redirect::to(&log_in_url));
     };
 
@@ -106,9 +106,11 @@ pub(crate) async fn log_in(
     }
 
     // Prepare next url
-    let next_url = if let Some(ref next_url) = creds.next_url {
+    let next_url = if let Some(next_url) = query.get("next_url") {
+        tracing::debug!("1");
         next_url
     } else {
+        tracing::debug!("2");
         "/"
     };
 
@@ -164,12 +166,7 @@ pub(crate) async fn oauth2_callback(
         .map_err(|e| HandlerError::Auth(e.to_string()))?
     else {
         messages.error(OAUTH2_AUTHORIZATION_FAILED);
-
-        let mut log_in_url = LOG_IN_URL.to_string();
-        if let Some(next_url) = next_url {
-            log_in_url = format!("{log_in_url}?next_url={next_url}");
-        };
-
+        let log_in_url = get_log_in_url(next_url.as_ref());
         return Ok(Redirect::to(&log_in_url));
     };
 
@@ -220,6 +217,7 @@ pub(crate) async fn oauth2_redirect(
 pub(crate) async fn sign_up(
     State(db): State<DynDB>,
     JobBoardId(job_board_id): JobBoardId,
+    Query(query): Query<HashMap<String, String>>,
     Form(mut new_user): Form<auth::NewUser>,
 ) -> Result<impl IntoResponse, HandlerError> {
     // Check if the password has been provided
@@ -231,7 +229,9 @@ pub(crate) async fn sign_up(
     new_user.password = Some(password_auth::generate_hash(&password));
     _ = db.sign_up_user(&job_board_id, &new_user, true).await?;
 
-    Ok(Redirect::to(LOG_IN_URL).into_response())
+    // Redirect to the log in page
+    let log_in_url = get_log_in_url(query.get("next_url"));
+    Ok(Redirect::to(&log_in_url).into_response())
 }
 
 // Authorization middleware.
@@ -284,6 +284,15 @@ pub(crate) async fn user_owns_job(
     }
 
     next.run(request).await.into_response()
+}
+
+/// Get the log in url including the next url if provided.
+fn get_log_in_url(next_url: Option<&String>) -> String {
+    let mut log_in_url = LOG_IN_URL.to_string();
+    if let Some(next_url) = next_url {
+        log_in_url = format!("{log_in_url}?next_url={next_url}");
+    };
+    log_in_url
 }
 
 // Deserialization helpers.

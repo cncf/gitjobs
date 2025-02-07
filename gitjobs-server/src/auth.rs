@@ -292,7 +292,6 @@ pub(crate) struct PasswordCredentials {
     pub password: String,
 
     pub job_board_id: Option<Uuid>,
-    pub next_url: Option<String>,
 }
 
 // User types and implementations.

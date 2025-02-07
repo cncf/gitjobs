@@ -3,9 +3,8 @@
 {% block main %}
   <div class="container max-w-lg m-auto px-2 py-28">
     <div class="bg-white p-10 border rounded-lg">
-      <form hx-post="/log-in"
-            hx-trigger="submit"
-            hx-target="body"
+      <form action="/log-in{%- if let Some(next_url) = next_url -%}?next_url={{ next_url }}{%- endif -%}"
+            method="post"
             class="max-w-sm mx-auto">
         <div class="text-2xl mb-10">Log In</div>
         <div class="mb-5">
@@ -24,9 +23,6 @@
                  class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary-600 sm:text-sm/6"
                  required />
         </div>
-        {% if let Some(next_url) = next_url %}
-          <input type="hidden" id="next_url" name="next_url" value="{{ next_url }}" />
-        {% endif %}
         <button type="submit"
                 class="bg-primary-700 px-3 py-2 w-full text-sm font-semibold text-white rounded-md hover:bg-primary-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
           Submit
@@ -40,7 +36,8 @@
         {# End GitHub login #}
 
         <div class="mt-5">
-          Don't have an account? <a href="/sign-up" class="text-primary-700 hover:text-primary-900">Sign up</a>.
+          Don't have an account? <a href="/sign-up{%- if let Some(next_url) = next_url -%}?next_url={{ next_url }}{%- endif -%}"
+    class="text-primary-700 hover:text-primary-900">Sign up</a>.
         </div>
       </form>
 

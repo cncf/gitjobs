@@ -1,2 +1,168 @@
 //! This module defines some database functionality for the job seeker
 //! dashboard.
+
+use anyhow::Result;
+use async_trait::async_trait;
+use tracing::instrument;
+use uuid::Uuid;
+
+use crate::{templates::dashboard::job_seeker::profile::JobSeekerProfile, PgDB};
+
+/// Trait that defines some database operations used in the job seeker
+/// dashboard.
+#[async_trait]
+pub(crate) trait DBDashBoardJobSeeker {
+    /// Get job seeker profile.
+    async fn get_job_seeker_profile(&self, user_id: &Uuid) -> Result<Option<JobSeekerProfile>>;
+
+    /// Update job seeker profile.
+    async fn update_job_seeker_profile(&self, user_id: &Uuid, profile: &JobSeekerProfile) -> Result<()>;
+}
+
+#[async_trait]
+impl DBDashBoardJobSeeker for PgDB {
+    /// [DBDashBoardJobSeeker::get_job_seeker_profile]
+    #[instrument(skip(self), err)]
+    async fn get_job_seeker_profile(&self, user_id: &Uuid) -> Result<Option<JobSeekerProfile>> {
+        let db = self.pool.get().await?;
+        let profile = db
+            .query_opt(
+                "
+                select
+                    p.*,
+                    l.city,
+                    l.country,
+                    l.state
+                from job_seeker_profile p
+                left join location l using (location_id)
+                where user_id = $1::uuid;
+                ",
+                &[&user_id],
+            )
+            .await?
+            .map(|row| JobSeekerProfile {
+                email: row.get("email"),
+                name: row.get("name"),
+                public: row.get("public"),
+                summary: row.get("summary"),
+                certifications: serde_json::from_value(row.get("certifications")).unwrap(),
+                education: serde_json::from_value(row.get("education")).unwrap(),
+                employments: serde_json::from_value(row.get("employments")).unwrap(),
+                facebook_url: row.get("facebook_url"),
+                github_url: row.get("github_url"),
+                linkedin_url: row.get("linkedin_url"),
+                location_id: row.get("location_id"),
+                open_to_relocation: row.get("open_to_relocation"),
+                open_to_remote: row.get("open_to_remote"),
+                phone: row.get("phone"),
+                photo_url: row.get("photo_url"),
+                projects: serde_json::from_value(row.get("projects")).unwrap(),
+                skills: row.get("skills"),
+                twitter_url: row.get("twitter_url"),
+                website_url: row.get("website_url"),
+                city: row.get("city"),
+                country: row.get("country"),
+                state: row.get("state"),
+            });
+
+        Ok(profile)
+    }
+
+    /// [DBDashBoardJobSeeker::update_job_seeker_profile]
+    #[instrument(skip(self), err)]
+    async fn update_job_seeker_profile(&self, user_id: &Uuid, profile: &JobSeekerProfile) -> Result<()> {
+        let db = self.pool.get().await?;
+        db.execute(
+            "
+            insert into job_seeker_profile (
+                user_id,
+                email,
+                name,
+                public,
+                summary,
+                certifications,
+                education,
+                employments,
+                facebook_url,
+                github_url,
+                linkedin_url,
+                location_id,
+                open_to_relocation,
+                open_to_remote,
+                phone,
+                photo_url,
+                projects,
+                skills,
+                twitter_url,
+                website_url
+            ) values (
+                $1::uuid,
+                $2::text,
+                $3::text,
+                $4::boolean,
+                $5::text,
+                $6::jsonb,
+                $7::jsonb,
+                $8::jsonb,
+                $9::text,
+                $10::text,
+                $11::text,
+                $12::uuid,
+                $13::boolean,
+                $14::boolean,
+                $15::text,
+                $16::text,
+                $17::jsonb,
+                $18::text[],
+                $19::text,
+                $20::text
+            )
+            on conflict (user_id) do update set
+                email = excluded.email,
+                name = excluded.name,
+                public = excluded.public,
+                summary = excluded.summary,
+                certifications = excluded.certifications,
+                education = excluded.education,
+                employments = excluded.employments,
+                facebook_url = excluded.facebook_url,
+                github_url = excluded.github_url,
+                linkedin_url = excluded.linkedin_url,
+                location_id = excluded.location_id,
+                open_to_relocation = excluded.open_to_relocation,
+                open_to_remote = excluded.open_to_remote,
+                phone = excluded.phone,
+                photo_url = excluded.photo_url,
+                projects = excluded.projects,
+                skills = excluded.skills,
+                twitter_url = excluded.twitter_url,
+                website_url = excluded.website_url;
+            ",
+            &[
+                &user_id,
+                &profile.email,
+                &profile.name,
+                &profile.public,
+                &profile.summary,
+                &serde_json::to_value(&profile.certifications).unwrap(),
+                &serde_json::to_value(&profile.education).unwrap(),
+                &serde_json::to_value(&profile.employments).unwrap(),
+                &profile.facebook_url,
+                &profile.github_url,
+                &profile.linkedin_url,
+                &profile.location_id,
+                &profile.open_to_relocation,
+                &profile.open_to_remote,
+                &profile.phone,
+                &profile.photo_url,
+                &serde_json::to_value(&profile.projects).unwrap(),
+                &profile.skills,
+                &profile.twitter_url,
+                &profile.website_url,
+            ],
+        )
+        .await?;
+
+        Ok(())
+    }
+}

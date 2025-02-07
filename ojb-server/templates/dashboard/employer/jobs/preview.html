@@ -3,26 +3,24 @@
 {# Status badge #}
 <div class="flex items-center justify-end border-b p-4 py-2 md:p-8 md:py-4">
   <div class="uppercase text-xs text-gray-500 me-3">Status:</div>
-  {% call common::job_status_badge(status = job_details.status) %}
+  {% call common::job_status_badge(status = job.status) %}
 </div>
 {# End status badge #}
 
 <div class="relative overflow-y-auto p-4 md:p-8">
   <div class="flex justify-between">
     <div>
-      <div class="text-sm text-gray-500 mb-2">{{ employer_details.company }}</div>
+      <div class="text-sm text-gray-500 mb-2">{{ employer.company }}</div>
       <div class="flex items-baseline gap-x-10">
         {# Title #}
-        <div class="text-4xl font-stretch-condensed font-medium text-gray-900 text-truncate">
-          {{ job_details.title }}
-        </div>
+        <div class="text-4xl font-stretch-condensed font-medium text-gray-900 text-truncate">{{ job.title }}</div>
         {# End title #}
       </div>
       <div class="mt-3 flex items-center space-x-5">
         {# Location badge #}
-        {% let location = &self::build_location(job_details.city.as_deref(), job_details.state.as_deref(), job_details.country.as_deref())|display_some %}
+        {% let location = &self::build_location(job.city.as_deref(), job.state.as_deref(), job.country.as_deref())|display_some %}
 
-        {% match job_details.workplace %}
+        {% match job.workplace %}
         {% when Workplace::Remote %}
         {% call common::badge(content = "remote", icon = "location") %}
         {% when Workplace::Hybrid %}
@@ -33,12 +31,12 @@
       {# End location badge #}
 
       {# Type badge #}
-      {% call common::badge(content = job_details.type_.to_string().replace("-", " "), icon = "calendar") %}
+      {% call common::badge(content = job.type_.to_string().replace("-", " "), icon = "calendar") %}
       {# End workplace type #}
     </div>
   </div>
   {# Logo #}
-  {% if let Some(logo_url) = employer_details.logo_url %}
+  {% if let Some(logo_url) = employer.logo_url %}
     <div class="ml-5">
       <span class="relative flex size-[110px] shrink-0 overflow-hidden">
         <img class="h-auto max-w-[100%] m-auto"
@@ -55,25 +53,25 @@
 <div class="mt-5">
   {# Company information #}
   {% call content_heading(content = "About company") %}
-  <div>{{ employer_details.description }}</div>
+  <div>{{ employer.description }}</div>
   {# End company information #}
 
   {# Job description #}
   {% call content_heading(content = "Job description") %}
-  <div>{{ job_details.description }}</div>
+  <div>{{ job.description }}</div>
   {# End job description #}
 
   {# Compensantion #}
   {% call content_heading(content = "Compensation") %}
   <div class="flex items-baseline">
-    {% let salary_kind = job_details.salary_kind() %}
+    {% let salary_kind = job.salary_kind() %}
     {% match salary_kind %}
     {% when SalaryKind::Fixed %}
     {# Fixed salary #}
     <div class="flex">
-      {% if let Some(salary) = job_details.salary %}
+      {% if let Some(salary) = job.salary %}
         <div class="flex items-baseline font-medium text-gray-900">
-          {% call currency(value = job_details.salary_currency) %}
+          {% call currency(value = job.salary_currency) %}
           {{ salary }}
         </div>
       {% else %}
@@ -83,19 +81,19 @@
       {% when SalaryKind::Range %}
       {# Range salary #}
       <div class="flex">
-        {% if let Some(salary_min) = job_details.salary_min %}
+        {% if let Some(salary_min) = job.salary_min %}
           <div class="flex items-baseline font-medium text-gray-900">
-            {% call currency(value = job_details.salary_currency) %}
+            {% call currency(value = job.salary_currency) %}
             {{ salary_min }}
           </div>
         {% else %}
           -
         {% endif %}
 
-        {% if let Some(salary_max) = job_details.salary_max %}
+        {% if let Some(salary_max) = job.salary_max %}
           <div class="flex items-baseline text-gray-900">
             <span class="mx-2">-</span>
-            {% call currency(value = job_details.salary_currency) %}
+            {% call currency(value = job.salary_currency) %}
             {{ salary_max }}
           </div>
         {% endif %}
@@ -103,7 +101,7 @@
       {# End range salary #}
     {% endmatch %}
 
-    {% if let Some(salary_period) = job_details.salary_period %}
+    {% if let Some(salary_period) = job.salary_period %}
       <div class="text-gray-900 text-xs font-semibold uppercase ms-2">{{ salary_period }}</div>
     {% endif %}
   </div>
@@ -111,7 +109,7 @@
 {# End compensantion #}
 
 {# Benefits #}
-{% if let Some(benefits) = job_details.benefits %}
+{% if let Some(benefits) = job.benefits %}
   {% call content_heading(content = "Benefits") %}
   <div class="flex gap-x-5">
     {% for benefit in benefits %}
@@ -122,7 +120,7 @@
 {# End benefits #}
 
 {# Skills #}
-{% if let Some(skills) = job_details.skills %}
+{% if let Some(skills) = job.skills %}
   {% call content_heading(content = "Skills") %}
   <div class="flex gap-x-5">
     {% for skill in skills %}
@@ -136,10 +134,10 @@
 {% call content_heading(content = "Others") %}
 <div class="flex flex-col gap-y-3">
   <div class="font-medium">
-    <span class="text-gray-500 text-xs uppercase">Open source:</span> {{ job_details.open_source|display_some_or("-") }}<small class="ms-0.5">%</small>
+    <span class="text-gray-500 text-xs uppercase">Open source:</span> {{ job.open_source|display_some_or("-") }}<small class="ms-0.5">%</small>
   </div>
   <div class="font-medium">
-    <span class="text-gray-500 text-xs uppercase">Upstream commitment:</span> {{ job_details.upstream_commitment|display_some_or("-") }}<small class="ms-0.5">%</small>
+    <span class="text-gray-500 text-xs uppercase">Upstream commitment:</span> {{ job.upstream_commitment|display_some_or("-") }}<small class="ms-0.5">%</small>
   </div>
 </div>
 {# End others #}

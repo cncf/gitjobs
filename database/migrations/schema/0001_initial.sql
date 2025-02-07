@@ -61,16 +61,19 @@ create table location (
 create index location_coordinates_idx on location using gist (coordinates);
 create index location_tsdoc_idx on location using gin (tsdoc);
 
-create table profile (
-    profile_id uuid primary key default gen_random_uuid(),
-    job_board_id uuid not null references job_board,
+create table job_seeker_profile (
+    job_seeker_profile_id uuid primary key default gen_random_uuid(),
+    user_id uuid not null unique references "user",
     location_id uuid references location,
 
-    email text not null unique check (email <> ''),
+    email text not null check (email <> ''),
     name text not null check (name <> ''),
     public boolean not null default false,
     summary text not null check (summary <> ''),
 
+    certifications jsonb,
+    education jsonb,
+    employments jsonb,
     facebook_url text check (facebook_url <> ''),
     github_url text check (github_url <> ''),
     linkedin_url text check (linkedin_url <> ''),
@@ -78,6 +81,7 @@ create table profile (
     open_to_remote boolean,
     phone text check (phone <> ''),
     photo_url text check (photo_url <> ''),
+    projects jsonb,
     resume_blob bytea,
     resume_filename text check (resume_filename <> ''),
     skills text[],
@@ -85,61 +89,8 @@ create table profile (
     website_url text check (website_url <> '')
 );
 
-create index profile_job_board_id_idx on profile (job_board_id);
-create index profile_location_id_idx on profile (location_id);
-
-create table profile_certification (
-    profile_certification_id uuid primary key default gen_random_uuid(),
-    profile_id uuid not null references profile,
-
-    description text not null check (description <> ''),
-    end_date date not null,
-    provider text not null check (provider <> ''),
-    start_date date not null,
-    title text not null check (title <> '')
-);
-
-create index profile_certification_profile_id_idx on profile_certification (profile_id);
-
-create table profile_education (
-    profile_education_id uuid primary key default gen_random_uuid(),
-    profile_id uuid not null references profile,
-
-    description text not null check (description <> ''),
-    educational_institution text not null check (educational_institution <> ''),
-    end_date date not null,
-    start_date date not null,
-    title text not null check (title <> '')
-);
-
-create index profile_education_profile_id_idx on profile_education (profile_id);
-
-create table profile_employment (
-    profile_employment_id uuid primary key default gen_random_uuid(),
-    profile_id uuid not null references profile,
-
-    company text not null check (company <> ''),
-    current boolean not null default false,
-    description text not null check (description <> ''),
-    end_date date not null,
-    start_date date not null,
-    title text not null check (title <> '')
-);
-
-create index profile_employment_profile_id_idx on profile_employment (profile_id);
-
-create table profile_project (
-    profile_project_id uuid primary key default gen_random_uuid(),
-    profile_id uuid not null references profile,
-
-    description text not null check (description <> ''),
-    title text not null check (title <> ''),
-    url text not null check (url <> ''),
-
-    source_url text check (source_url <> '')
-);
-
-create index profile_project_profile_id_idx on profile_project (profile_id);
+create index job_seeker_profile_location_id_idx on job_seeker_profile (location_id);
+create index job_seeker_profile_user_id_idx on job_seeker_profile (user_id);
 
 create table employer_tier (
     employer_tier_id uuid primary key default gen_random_uuid(),
@@ -249,7 +200,7 @@ create index job_workplace_idx on job (workplace);
 
 create table applicant (
     applicant_id uuid primary key default gen_random_uuid(),
-    profile_id uuid not null references profile,
+    job_seeker_profile_id uuid not null references job_seeker_profile,
     job_id uuid not null references job,
 
     cover_letter text not null check (cover_letter <> ''),
@@ -258,7 +209,7 @@ create table applicant (
     updated_at timestamptz
 );
 
-create index applicant_profile_id_idx on applicant (profile_id);
+create index applicant_job_seeker_profile_id_idx on applicant (job_seeker_profile_id);
 create index applicant_job_id_idx on applicant (job_id);
 
 create table faq (

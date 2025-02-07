@@ -12,7 +12,7 @@ use crate::templates::{
     helpers::{build_location, DATE_FORMAT},
 };
 
-use super::employers::EmployerDetails;
+use super::employers::Employer;
 
 /// Add job page template.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
@@ -33,8 +33,8 @@ pub(crate) struct ListPage {
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
 #[template(path = "dashboard/employer/jobs/preview.html")]
 pub(crate) struct PreviewPage {
-    pub employer_details: EmployerDetails,
-    pub job_details: JobDetails,
+    pub employer: Employer,
+    pub job: Job,
 }
 
 /// Update job page template.
@@ -42,7 +42,7 @@ pub(crate) struct PreviewPage {
 #[template(path = "dashboard/employer/jobs/update.html")]
 pub(crate) struct UpdatePage {
     pub benefits: Vec<String>,
-    pub job_details: JobDetails,
+    pub job: Job,
     pub skills: Vec<String>,
 }
 
@@ -72,7 +72,8 @@ impl JobSummary {
 /// Job details.
 #[skip_serializing_none]
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub(crate) struct JobDetails {
+#[allow(clippy::struct_field_names)]
+pub(crate) struct Job {
     pub description: String,
     pub status: JobStatus,
     pub title: String,
@@ -98,7 +99,7 @@ pub(crate) struct JobDetails {
     pub upstream_commitment: Option<i32>,
 }
 
-impl JobDetails {
+impl Job {
     /// Get the location of the job.
     #[allow(dead_code)]
     pub(crate) fn location(&self) -> Option<String> {

@@ -19,7 +19,7 @@ use crate::{
     router,
 };
 
-/// Custom extractor to get the job board id from the request's host header.
+/// Extractor to get the job board id from the request's host header.
 pub(crate) struct JobBoardId(pub Uuid);
 
 impl FromRequestParts<router::State> for JobBoardId {
@@ -67,7 +67,7 @@ async fn lookup_job_board_id(db: DynDB, host: &str) -> Result<Option<Uuid>> {
     db.get_job_board_id(host).await
 }
 
-/// Custom extractor to get the oauth2 provider from the auth session.
+/// Extractor to get the oauth2 provider from the auth session.
 pub(crate) struct OAuth2(pub Arc<OAuth2ProviderDetails>);
 
 impl FromRequestParts<router::State> for OAuth2 {
@@ -88,8 +88,8 @@ impl FromRequestParts<router::State> for OAuth2 {
     }
 }
 
-/// Custom extractor to get the selected employer id from the session. It
-/// returns the employer id as an option.
+/// Extractor to get the selected employer id from the session. It returns the
+/// employer id as an option.
 pub(crate) struct SelectedEmployerIdOptional(pub Option<Uuid>);
 
 impl FromRequestParts<router::State> for SelectedEmployerIdOptional {
@@ -110,8 +110,8 @@ impl FromRequestParts<router::State> for SelectedEmployerIdOptional {
     }
 }
 
-/// Custom extractor to get the selected employer id from the session. An error
-/// is returned if the employer id is not found in the session.
+/// Extractor to get the selected employer id from the session. An error is
+/// returned if the employer id is not found in the session.
 pub(crate) struct SelectedEmployerIdRequired(pub Uuid);
 
 impl FromRequestParts<router::State> for SelectedEmployerIdRequired {

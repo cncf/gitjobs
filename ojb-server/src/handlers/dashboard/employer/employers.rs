@@ -5,8 +5,8 @@ use axum::{
     extract::{Path, State},
     http::StatusCode,
     response::{Html, IntoResponse},
-    Form,
 };
+use axum_extra::extract::Form;
 use rinja::Template;
 use tower_sessions::Session;
 use tracing::instrument;
@@ -20,7 +20,7 @@ use crate::{
         error::HandlerError,
         extractors::{JobBoardId, SelectedEmployerIdRequired},
     },
-    templates::dashboard::employer,
+    templates::dashboard::employer::employers,
 };
 
 // Pages handlers.
@@ -28,7 +28,7 @@ use crate::{
 /// Handler that returns the page to add a new employer.
 #[instrument(skip_all, err)]
 pub(crate) async fn add_page(State(_db): State<DynDB>) -> Result<impl IntoResponse, HandlerError> {
-    let template = employer::employers::AddPage {};
+    let template = employers::AddPage {};
 
     Ok(Html(template.render()?))
 }
@@ -39,8 +39,8 @@ pub(crate) async fn update_page(
     State(db): State<DynDB>,
     SelectedEmployerIdRequired(employer_id): SelectedEmployerIdRequired,
 ) -> Result<impl IntoResponse, HandlerError> {
-    let employer_details = db.get_employer_details(&employer_id).await?;
-    let template = employer::employers::UpdatePage { employer_details };
+    let employer = db.get_employer(&employer_id).await?;
+    let template = employers::UpdatePage { employer };
 
     Ok(Html(template.render()?))
 }
@@ -54,17 +54,15 @@ pub(crate) async fn add(
     session: Session,
     State(db): State<DynDB>,
     JobBoardId(job_board_id): JobBoardId,
-    Form(employer_details): Form<employer::employers::EmployerDetails>,
+    Form(employer): Form<employers::Employer>,
 ) -> Result<impl IntoResponse, HandlerError> {
-    // Check if the user is logged in
+    // Get user from session
     let Some(user) = auth_session.user else {
         return Ok((StatusCode::FORBIDDEN).into_response());
     };
 
     // Add employer to database
-    let employer_id = db
-        .add_employer(&job_board_id, &user.user_id, &employer_details)
-        .await?;
+    let employer_id = db.add_employer(&job_board_id, &user.user_id, &employer).await?;
 
     // Use new employer as the selected employer for the session
     session.insert(SELECTED_EMPLOYER_ID_KEY, employer_id).await?;
@@ -89,9 +87,9 @@ pub(crate) async fn select(
 pub(crate) async fn update(
     State(db): State<DynDB>,
     SelectedEmployerIdRequired(employer_id): SelectedEmployerIdRequired,
-    Form(employer_details): Form<employer::employers::EmployerDetails>,
+    Form(employer): Form<employers::Employer>,
 ) -> Result<impl IntoResponse, HandlerError> {
-    db.update_employer(&employer_id, &employer_details).await?;
+    db.update_employer(&employer_id, &employer).await?;
 
     Ok(StatusCode::NO_CONTENT)
 }

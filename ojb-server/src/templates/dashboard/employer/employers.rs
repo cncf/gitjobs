@@ -21,7 +21,7 @@ pub(crate) struct InitialSetupPage {}
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
 #[template(path = "dashboard/employer/employers/update.html")]
 pub(crate) struct UpdatePage {
-    pub employer_details: EmployerDetails,
+    pub employer: Employer,
 }
 
 /// Employer summary.
@@ -35,7 +35,7 @@ pub(crate) struct EmployerSummary {
 /// Employer details.
 #[skip_serializing_none]
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub(crate) struct EmployerDetails {
+pub(crate) struct Employer {
     pub company: String,
     pub description: String,
     pub public: bool,
@@ -48,7 +48,7 @@ pub(crate) struct EmployerDetails {
     pub website_url: Option<String>,
 }
 
-impl EmployerDetails {
+impl Employer {
     /// Get the location of the employer.
     #[allow(dead_code)]
     pub(crate) fn location(&self) -> Option<String> {

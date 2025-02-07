@@ -16,12 +16,13 @@ use crate::{
     db::DynDB,
     handlers::{error::HandlerError, extractors::SelectedEmployerIdOptional},
     templates::dashboard::employer::{
-        self,
+        employers,
         home::{self, Content, Tab},
+        jobs,
     },
 };
 
-/// Handler that returns the dashboard home page.
+/// Handler that returns the employer dashboard home page.
 #[instrument(skip_all, err)]
 pub(crate) async fn page(
     auth_session: AuthSession,
@@ -29,7 +30,7 @@ pub(crate) async fn page(
     Query(query): Query<HashMap<String, String>>,
     SelectedEmployerIdOptional(employer_id): SelectedEmployerIdOptional,
 ) -> Result<impl IntoResponse, HandlerError> {
-    // Check if the user is logged in
+    // Get user from session
     let Some(user) = auth_session.user else {
         return Ok(StatusCode::FORBIDDEN.into_response());
     };
@@ -42,14 +43,14 @@ pub(crate) async fn page(
 
     // Prepare content for the selected tab
     let content = match tab {
-        Tab::EmployerInitialSetup => Content::EmployerInitialSetup(employer::employers::InitialSetupPage {}),
+        Tab::EmployerInitialSetup => Content::EmployerInitialSetup(employers::InitialSetupPage {}),
         Tab::Jobs => {
             let jobs = db.list_employer_jobs(&employer_id.expect("to be some")).await?;
-            Content::Jobs(employer::jobs::ListPage { jobs })
+            Content::Jobs(jobs::ListPage { jobs })
         }
         Tab::Settings => {
-            let employer_details = db.get_employer_details(&employer_id.expect("to be some")).await?;
-            Content::Settings(employer::employers::UpdatePage { employer_details })
+            let employer = db.get_employer(&employer_id.expect("to be some")).await?;
+            Content::Settings(employers::UpdatePage { employer })
         }
     };
 

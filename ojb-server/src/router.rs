@@ -58,12 +58,14 @@ pub(crate) fn setup(cfg: &HttpServerConfig, db: DynDB) -> Result<Router> {
     // Setup authentication / authorization layer
     let auth_layer = crate::auth::setup_layer(cfg, db)?;
 
-    // Setup employer dashboard router
+    // Setup dashboard routers
     let employer_dashboard_router = setup_employer_dashboard_router(state.clone());
+    let job_seeker_dashboard_router = setup_job_seeker_dashboard_router();
 
     // Setup router
     let mut router = Router::new()
         .nest("/dashboard/employer", employer_dashboard_router)
+        .nest("/dashboard/job-seeker", job_seeker_dashboard_router)
         .route("/locations/search", get(common::search_locations))
         .route_layer(login_required!(
             AuthnBackend,
@@ -148,6 +150,17 @@ fn setup_employer_dashboard_router(state: State) -> Router<State> {
                 .layer(check_user_owns_job.clone())
                 .put(dashboard::employer::jobs::update)
                 .layer(check_user_owns_job.clone()),
+        )
+}
+
+/// Setup job seeker dashboard router.
+#[instrument(skip_all)]
+fn setup_job_seeker_dashboard_router() -> Router<State> {
+    Router::new()
+        .route("/", get(dashboard::job_seeker::home::page))
+        .route(
+            "/profile/update",
+            get(dashboard::job_seeker::profile::update_page).put(dashboard::job_seeker::profile::update),
         )
 }
 

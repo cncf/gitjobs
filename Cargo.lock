@@ -1163,6 +1163,53 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "07e28edb80900c19c28f1072f2e8aeca7fa06b23cd4169cefe1af5aa3260783f"
 
 [[package]]
+name = "gitjobs-server"
+version = "0.0.1"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "axum",
+ "axum-extra",
+ "axum-login",
+ "axum-messages",
+ "cached",
+ "chrono",
+ "chrono-tz",
+ "clap",
+ "deadpool-postgres",
+ "emojis",
+ "figment",
+ "mime_guess",
+ "minify-html",
+ "num-format",
+ "oauth2",
+ "openssl",
+ "palette",
+ "password-auth",
+ "postgres-openssl",
+ "reqwest",
+ "rinja",
+ "rust-embed",
+ "serde",
+ "serde_html_form",
+ "serde_json",
+ "serde_qs",
+ "serde_with",
+ "thiserror 2.0.11",
+ "time",
+ "tokio",
+ "tokio-postgres",
+ "tower",
+ "tower-http",
+ "tower-sessions",
+ "tower-sessions-moka-store",
+ "tracing",
+ "tracing-subscriber",
+ "unicode-segmentation",
+ "uuid",
+]
+
+[[package]]
 name = "h2"
 version = "0.4.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1929,53 +1976,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "62948e14d923ea95ea2c7c86c71013138b66525b86bdc08d2dcc262bdb497b87"
 dependencies = [
  "memchr",
-]
-
-[[package]]
-name = "ojb-server"
-version = "0.0.1"
-dependencies = [
- "anyhow",
- "async-trait",
- "axum",
- "axum-extra",
- "axum-login",
- "axum-messages",
- "cached",
- "chrono",
- "chrono-tz",
- "clap",
- "deadpool-postgres",
- "emojis",
- "figment",
- "mime_guess",
- "minify-html",
- "num-format",
- "oauth2",
- "openssl",
- "palette",
- "password-auth",
- "postgres-openssl",
- "reqwest",
- "rinja",
- "rust-embed",
- "serde",
- "serde_html_form",
- "serde_json",
- "serde_qs",
- "serde_with",
- "thiserror 2.0.11",
- "time",
- "tokio",
- "tokio-postgres",
- "tower",
- "tower-http",
- "tower-sessions",
- "tower-sessions-moka-store",
- "tracing",
- "tracing-subscriber",
- "unicode-segmentation",
- "uuid",
 ]
 
 [[package]]

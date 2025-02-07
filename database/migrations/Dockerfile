@@ -5,8 +5,8 @@ RUN go install github.com/jackc/tern@latest
 
 # Build final image
 FROM alpine:3.21.2
-RUN addgroup -S ojb && adduser -S ojb -G ojb
-USER ojb
-WORKDIR /home/ojb
+RUN addgroup -S gitjobs && adduser -S gitjobs -G gitjobs
+USER gitjobs
+WORKDIR /home/gitjobs
 COPY --from=tern /go/bin/tern /usr/local/bin
 COPY database/migrations .

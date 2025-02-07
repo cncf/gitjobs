@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
 members = [
-    "ojb-server"
+    "gitjobs-server"
 ]
 
 [workspace.package]

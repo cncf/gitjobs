@@ -1,6 +1,6 @@
 [package]
-name = "ojb-server"
-description = "Open Job Board server"
+name = "gitjobs-server"
+description = "GitJobs server"
 version.workspace = true
 license.workspace = true
 edition.workspace = true

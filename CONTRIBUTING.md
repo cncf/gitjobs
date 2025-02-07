@@ -1,6 +1,6 @@
 # Contributing Guide
 
-The Open Job Board project accepts contributions via [GitHub pull requests](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/about-pull-requests). This document outlines the process to help get your contribution accepted.
+The GitJobs project accepts contributions via [GitHub pull requests](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/about-pull-requests). This document outlines the process to help get your contribution accepted.
 
 ## Issues and discussions
 
@@ -16,7 +16,7 @@ You can find the existing pull requests at <https://github.com/cncf/open-job-boa
 
 ## Developer Certificate of Origin
 
-The Open Job Board project uses a [Developers Certificate of Origin (DCO)](https://developercertificate.org/) to sign-off that you have the right to contribute the code being contributed. The full text of the DCO reads:
+The GitJobs project uses a [Developers Certificate of Origin (DCO)](https://developercertificate.org/) to sign-off that you have the right to contribute the code being contributed. The full text of the DCO reads:
 
 ```text
 Developer Certificate of Origin

@@ -1,6 +1,6 @@
-# Open Job Board
+# GitJobs
 
-**Open Job Board** is an open source jobs platform for communities and organizations.
+**GitJobs** is an open source job board platform.
 
 > [!WARNING]
 > This project is currently in the early stages of development and is not yet ready for production use.
@@ -15,4 +15,4 @@ This project follows the [CNCF Code of Conduct](https://github.com/cncf/foundati
 
 ## License
 
-Open Job Board is an Open Source project licensed under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0).
+GitJobs is an Open Source project licensed under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0).

@@ -9,21 +9,18 @@
       hx-trigger="submit">
   <div class="space-y-12">
     <div class="border-b border-gray-900/10 pb-12">
-      <h2 class="text-base/7 font-semibold text-gray-900">Job Information</h2>
-      <p class="mt-1 text-sm/6 text-gray-600">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-      </p>
-      <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-6">
+      {% call common::form_title(title = "Job Information", description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.") %}
 
+      <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-6 max-w-3xl">
         {# Job title #}
         <div class="col-span-full">
-          <label for="title" class="block text-sm/6 font-medium text-gray-900">Title (required)</label>
+          <label for="title" class="block text-sm/6 font-medium text-gray-900">Title *</label>
           <div class="mt-2">
             <input type="text"
                    name="title"
                    id="title"
                    value="{{ job.title }}"
-                   class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary-600 sm:text-sm/6"
+                   class="input-primary"
                    required>
           </div>
           <p class="mt-1 text-xs/6 text-gray-600">Lorem ipsum.</p>
@@ -35,45 +32,58 @@
         {# End job status #}
 
         {# Job location #}
-        {% call common::location(location_id = job.location_id|display_some, city = job.city|display_some, state = job.state|display_some, country = job.country|display_some) %}
+        <div class="col-span-full lg:col-span-3">
+          <label for="ts_query" class="block text-sm/6 font-medium text-gray-900">Location</label>
+          {% call common::location(location_id = job.location_id|display_some, city = job.city|display_some, state = job.state|display_some, country = job.country|display_some) %}
+          <p class="mt-1 text-xs/6 text-gray-600">Lorem ipsum.</p>
+        </div>
         {# End Job location #}
 
         {# Job type #}
-        <div class="col-span-full md:col-span-3 xl:col-span-1">
-          <label for="type" class="block text-sm/6 font-medium text-gray-900">Job type (required)</label>
-          <div class="mt-2 grid grid-cols-1">
-            <select id="type"
-                    name="type"
-                    class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary-600 sm:text-sm/6"
-                    required>
-              {% call common::select_option(value = JobType::Contractor, label = "Contractor", selected = job.type_) %}
-              {% call common::select_option(value = JobType::FullTime, label = "Full Time", selected = job.type_) %}
-              {% call common::select_option(value = JobType::Internship, label = "Internship", selected = job.type_) %}
-              {% call common::select_option(value = JobType::PartTime, label = "Part Time", selected = job.type_) %}
-            </select>
+        <div class="col-span-full">
+          <label for="type" class="block text-sm/6 font-medium text-gray-900">Job type *</label>
+          <div class="mt-2 grid grid-cols-4 gap-x-6">
+            {# Contractor #}
+            {% call common::radio_box(name = "type", value = JobType::Contractor, label = "Contractor", icon = "clipboard", checked = job.type_, required = true) %}
+            {# End Contractor #}
+
+            {# Full time #}
+            {% call common::radio_box(name = "type", value = JobType::FullTime, label = "Full Time", icon = "signature", checked = job.type_, required = true) %}
+            {# End Full time #}
+
+            {# Part time #}
+            {% call common::radio_box(name = "type", value = JobType::PartTime, label = "Part Time", icon = "hour_glass", checked = job.type_, required = true) %}
+            {# End Part time #}
+
+            {# Internship #}
+            {% call common::radio_box(name = "type", value = JobType::Internship, label = "Internship", icon = "graduation_cap", checked = job.type_, required = true) %}
+            {# End Internship #}
           </div>
         </div>
         {# End Job type #}
 
         {# Workplace #}
-        <div class="col-span-full md:col-span-3 xl:col-span-1">
-          <label for="workplace" class="block text-sm/6 font-medium text-gray-900">Workplace (required)</label>
-          <div class="mt-2 grid grid-cols-1">
-            <select id="workplace"
-                    name="workplace"
-                    class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary-600 sm:text-sm/6"
-                    required>
-              {% call common::select_option(value = Workplace::Hybrid, label = "Hybrid", selected = job.workplace) %}
-              {% call common::select_option(value = Workplace::OnSite, label = "On Site", selected = job.workplace) %}
-              {% call common::select_option(value = Workplace::Remote, label = "Remote", selected = job.workplace) %}
-            </select>
+        <div class="col-span-full">
+          <label for="workplace" class="block text-sm/6 font-medium text-gray-900">Workplace *</label>
+          <div class="mt-2 grid grid-cols-4 gap-x-6">
+            {# Hybrid #}
+            {% call common::radio_box(name = "workplace", value = Workplace::Hybrid, label = "Hybrid", icon = "buildings", checked = job.workplace, required = true) %}
+            {# End Hybrid #}
+
+            {# On site #}
+            {% call common::radio_box(name = "workplace", value = Workplace::OnSite, label = "On Site", icon = "office_chair", checked = job.workplace, required = true) %}
+            {# End On site #}
+
+            {# Remote #}
+            {% call common::radio_box(name = "workplace", value = Workplace::Remote, label = "Remote", icon = "remote", checked = job.workplace, required = true) %}
+            {# End Remote #}
           </div>
         </div>
         {# End Workplace #}
 
         {# Job Description #}
         <div class="col-span-full">
-          <label for="description" class="block text-sm/6 font-medium text-gray-900">Description (required)</label>
+          <label for="description" class="block text-sm/6 font-medium text-gray-900">Description *</label>
           <div class="mt-2">
             {% call common::markdown_editor(id = "description", content = job.description, required = true) %}
           </div>
@@ -82,7 +92,7 @@
         {# End Job Description #}
 
         {# Job benefits #}
-        <div class="col-span-full lg:col-span-3">
+        <div class="col-span-full">
           <multi-select id="benefits" name="Benefits" options="{{ benefits|json }}"
           {% if let Some(job_benefits) = job.benefits %}selected="{{ job_benefits|json }}"{% endif %}
           ></multi-select>
@@ -90,7 +100,7 @@
         {# End job nebefits #}
 
         {# Job skills #}
-        <div class="col-span-full lg:col-span-3">
+        <div class="col-span-full">
           <multi-select id="skills" name="Skills" options="{{ skills|json }}"
           {% if let Some(job_skills) = job.skills %}selected="{{ job_skills|json }}"{% endif %}
           ></multi-select>
@@ -105,7 +115,7 @@
                    name="apply_url"
                    type="url"
                    value="{%- if let Some(apply_url) = job.apply_url -%} {{ apply_url }} {%- endif -%}"
-                   class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary-600 sm:text-sm/6">
+                   class="input-primary">
           </div>
         </div>
         {# End Apply url #}
@@ -114,10 +124,8 @@
 
     {# Salary section #}
     <div class="border-b border-gray-900/10 pb-12">
-      <h2 class="text-base/7 font-semibold text-gray-900">Salary</h2>
-      <p class="mt-1 text-sm/6 text-gray-600">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-      </p>
+      {% call common::form_title(title = "Salary", description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.") %}
+
       <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-6">
         {% let salary_kind = job.salary_kind() %}
         {# Salary kind #}
@@ -129,7 +137,7 @@
                      name="salary_kind"
                      type="radio"
                      {% if salary_kind == SalaryKind::Fixed %}checked{% endif %}
-                     class="relative size-4 appearance-none rounded-full border border-gray-300 bg-white before:absolute before:inset-1 before:rounded-full before:bg-white not-checked:before:hidden checked:border-primary-600 checked:bg-primary-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:before:bg-gray-400 forced-colors:appearance-auto forced-colors:before:hidden">
+                     class="radio-primary">
               <label for="fixed" class="block text-sm/6 font-medium text-gray-900">Exact</label>
             </div>
             <div class="flex items-center gap-x-3">
@@ -137,7 +145,7 @@
                      name="salary_kind"
                      type="radio"
                      {% if salary_kind == SalaryKind::Range %}checked{% endif %}
-                     class="relative size-4 appearance-none rounded-full border border-gray-300 bg-white before:absolute before:inset-1 before:rounded-full before:bg-white not-checked:before:hidden checked:border-primary-600 checked:bg-primary-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:before:bg-gray-400 forced-colors:appearance-auto forced-colors:before:hidden">
+                     class="radio-primary">
               <label for="range" class="block text-sm/6 font-medium text-gray-900">Range</label>
             </div>
           </div>
@@ -172,7 +180,7 @@
                    type="number"
                    value="{{ job.salary|display_some }}"
                    min="0"
-                   class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary-600 sm:text-sm/6">
+                   class="input-primary">
           </div>
         </div>
         <div id="salary_kind_range"
@@ -187,7 +195,7 @@
                      type="number"
                      value="{{ job.salary_min|display_some }}"
                      min="0"
-                     class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary-600 sm:text-sm/6">
+                     class="input-primary">
             </div>
           </div>
           <div class="col-span-3">
@@ -198,7 +206,7 @@
                      type="number"
                      value="{{ job.salary_max|display_some }}"
                      min="0"
-                     class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary-600 sm:text-sm/6">
+                     class="input-primary">
             </div>
           </div>
         </div>
@@ -209,9 +217,7 @@
           <label for="salary_currency"
                  class="block text-sm/6 font-medium text-gray-900">Currency</label>
           <div class="mt-2 grid grid-cols-1">
-            <select id="salary_currency"
-                    name="salary_currency"
-                    class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary-600 sm:text-sm/6">
+            <select id="salary_currency" name="salary_currency" class="select-primary">
               {% call common::select_option(value = "", label = "", selected = job.salary_currency|display_some) %}
               {% call common::select_option(value = "USD", label = "USD - United States Dollar", selected = job.salary_currency|display_some) %}
               {% call common::select_option(value = "EUR", label = "EUR - Euro", selected = job.salary_currency|display_some) %}
@@ -227,9 +233,7 @@
         <div class="col-span-3 md:col-span-2 lg:col-span-1">
           <label for="salary_period" class="block text-sm/6 font-medium text-gray-900">Timeframe</label>
           <div class="mt-2 grid grid-cols-1">
-            <select id="salary_period"
-                    name="salary_period"
-                    class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary-600 sm:text-sm/6">
+            <select id="salary_period" name="salary_period" class="select-primary">
               {% call common::select_option(value = "", label = "", selected = job.salary_period|display_some) %}
               {% call common::select_option(value = "daily", label = "Daily", selected = job.salary_period|display_some) %}
               {% call common::select_option(value = "weekly", label = "Weekly", selected = job.salary_period|display_some) %}
@@ -247,13 +251,11 @@
 
     {# Others #}
     <div class="border-b border-gray-900/10 pb-12">
-      <h2 class="text-base/7 font-semibold text-gray-900">Others</h2>
-      <p class="mt-1 text-sm/6 text-gray-600">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-      </p>
-      <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-6">
+      {% call common::form_title(title = "Others", description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.") %}
+
+      <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-6 max-w-4xl">
         {# Open source #}
-        <div class="col-span-full">
+        <div class="lg:col-span-3">
           <label for="open_source" class="block text-sm/6 font-medium text-gray-900">Open source</label>
           <div class="mt-2">
             {% call common::input_range(name = "open_source", value = job.open_source|display_some_or(0)) %}
@@ -263,82 +265,75 @@
         {# End Open source #}
 
         {# Upstream commitment #}
-        <div class="col-span-full">
+        <div class="lg:col-span-3">
           <label for="upstream_commitment"
                  class="block text-sm/6 font-medium text-gray-900">Upstream commitment</label>
-          {% call common::input_range(name = "upstream_commitment", value = job.upstream_commitment|display_some_or(0)) %}
+          <div class="mt-2">
+            {% call common::input_range(name = "upstream_commitment", value = job.upstream_commitment|display_some_or(0)) %}
+          </div>
           <p class="mt-1 text-xs/6 text-gray-600">Lorem ipsum.</p>
         </div>
         {# End Upstream commitment #}
       </div>
     </div>
     {# End Others #}
-  </div>
-  <div class="mt-6 flex justify-between items-center">
-    {# Preview #}
-    <div class="flex items-center gap-x-6">
-      {# Preview button #}
-      <button id="preview-button"
-              type="button"
-              hx-post="/dashboard/employer/jobs/preview"
-              hx-include="#jobs-form input, #jobs-form select, #jobs-form textarea"
-              hx-ext="no-empty-vals"
-              hx-target="#preview-content"
-              type="button"
-              class="group text-primary-700 rounded-md hover:text-white border border-primary-700 hover:bg-primary-900 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-3 py-2">
-        <span class="hidden md:block">Preview</span>
-        <span class="block md:hidden">
-          <div class="svg-icon size-3 icon-eye bg-primary-700 group-hover:bg-white"></div>
-        </span>
-      </button>
-      {# End preview button #}
 
-      <div class="htmx-indicator">{% call common::spinner(size = 5) %}</div>
-
-      {# Error preview #}
-      <div id="preview-error"
-           class="hidden fixed top-5 end-5 p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 z-30"
-           role="alert">
-        <span class="font-medium">Not available preview!</span> Please fill in the required fields.
-      </div>
-      {# End error preview #}
-    </div>
-    {# End preview #}
-
-    <div class="flex items-center justify-end gap-x-6">
-      {# Cancel button #}
-      <a href="/dashboard/employer?tab=jobs"
-         class="text-sm/6 font-semibold text-gray-900">Cancel</a>
-      {# End cancel button #}
-
-      {# When status is published #}
-      {% if job.status == JobStatus::Published %}
-        {# Save button #}
-        <button type="submit"
-                class="bg-primary-700 px-3 py-2 text-sm font-semibold text-white rounded-md hover:bg-primary-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
-          Save
-        </button>
-        {# End save button #}
-
-        {# When status is not published #}
-      {% else %}
-        {# Save button #}
-        <button type="submit"
-                class="rounded-md bg-primary-100 px-3 py-2 text-sm font-semibold text-primary-900 rounded-md hover:bg-primary-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
-          Save
-        </button>
-        {# End save button #}
-
-        {# Publish button #}
-        <button id="publish-job"
+    <div class="mt-6 flex justify-between items-center">
+      {# Preview #}
+      <div class="flex items-center gap-x-6">
+        {# Preview button #}
+        <button id="preview-button"
                 type="button"
-                class="bg-primary-700 px-3 py-2 text-sm font-semibold text-white rounded-md hover:bg-primary-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
-          Publish
+                hx-post="/dashboard/employer/jobs/preview"
+                hx-include="#jobs-form input, #jobs-form radio, #jobs-form select, #jobs-form textarea"
+                hx-ext="no-empty-vals"
+                hx-target="#preview-content"
+                type="button"
+                class="group btn-outline">
+          <span class="hidden md:block">Preview</span>
+          <span class="block md:hidden">
+            <div class="svg-icon size-3 icon-eye group-hover:bg-white"></div>
+          </span>
         </button>
-        {# End publish button #}
-      {% endif %}
+        {# End preview button #}
+
+        <div class="htmx-indicator">{% call common::spinner(size = 5) %}</div>
+
+        {# Error preview #}
+        <div id="preview-error"
+             class="hidden fixed top-5 end-5 p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 z-30"
+             role="alert">
+          <span class="font-medium">Not available preview!</span> Please fill in the required fields.
+        </div>
+        {# End error preview #}
+      </div>
+      {# End preview #}
+
+      <div class="flex items-center justify-end gap-x-6">
+        {# Cancel button #}
+        <a href="/dashboard/employer?tab=jobs" class="btn-tertiary">Cancel</a>
+        {# End cancel button #}
+
+        {# When status is published #}
+        {% if job.status == JobStatus::Published %}
+          {# Save button #}
+          <button type="submit" class="btn-primary">Save</button>
+          {# End save button #}
+
+          {# When status is not published #}
+        {% else %}
+          {# Save button #}
+          <button type="submit" class="btn-secondary">Save</button>
+          {# End save button #}
+
+          {# Publish button #}
+          <button id="publish-job" type="button" class="btn-primary">Publish</button>
+          {# End publish button #}
+        {% endif %}
+      </div>
     </div>
   </div>
+
 </form>
 
 {# Preview modal -#}
@@ -349,7 +344,7 @@
   import {
     triggerActionOnForm,
     updateJobsList
-  } from '/static/js/dashboard/jobs.js';
+  } from '/static/js/dashboard/employer/jobs.js';
   import {
     toggleModalVisibility
   } from '/static/js/common/common.js';

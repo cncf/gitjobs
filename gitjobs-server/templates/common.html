@@ -17,45 +17,38 @@
 {# Location -#}
 {% macro location(location_id = "", city = "", state = "", country = "", required = false) %}
   {% let value = &self::build_location(Some(city), Some(state), Some(country))|display_some %}
-  <div class="col-span-full">
-    <label for="ts_query" class="block text-sm/6 font-medium text-gray-900">
-      Location
-      {% if required %}(required){% endif %}
-    </label>
-    <div class="mt-2 relative">
-      <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
-        <div class="svg-icon size-4 icon-search bg-gray-300"></div>
-      </div>
-      <input id="ts_query"
-             name="ts_query"
-             hx-get="/locations/search"
-             hx-include="#ts_query"
-             hx-trigger="searchLocations"
-             hx-target="#search-location"
-             hx-indicator=".htmx-indicator"
-             type="text"
-             value="{{ value }}"
-             class="peer block w-full rounded-md bg-white px-3 py-1.5 ps-10 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary-600 sm:text-sm/6"
-             placeholder="Search location"
-             {% if required %}required{% endif %}>
-      <input type="hidden"
-             name="location_id"
-             id="location_id"
-             value="{{ location_id }}"
-             data-location="{{ value }}"
-             {% if required %}required{% endif %}>
-      <input type="hidden" name="city" id="city" value="{{ city }}">
-      <input type="hidden" name="state" id="state" value="{{ state }}">
-      <input type="hidden" name="country" id="country" value="{{ country }}">
-      <div class="htmx-indicator absolute end-10 top-1">{% call spinner(size = 5) %}</div>
-      <div class="absolute end-1.5 top-1.5 peer-placeholder-shown:hidden">
-        <button id="clean-location" type="button" class="mt-[2px]">
-          <div class="svg-icon size-5 bg-gray-400 hover:bg-gray-700 icon-close"></div>
-        </button>
-      </div>
-      <div id="search-location" class="absolute z-10 start-0 end-0"></div>
+  <div class="mt-2 relative">
+    <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
+      <div class="svg-icon size-4 icon-search bg-gray-300"></div>
     </div>
-    <p class="mt-1 text-xs/6 text-gray-600">Lorem ipsum.</p>
+    <input id="ts_query"
+           name="ts_query"
+           hx-get="/locations/search"
+           hx-include="#ts_query"
+           hx-trigger="searchLocations"
+           hx-target="#search-location"
+           hx-indicator=".htmx-indicator"
+           type="text"
+           value="{{ value }}"
+           class="input-primary peer ps-10"
+           placeholder="Search location"
+           {% if required %}required{% endif %}>
+    <input type="hidden"
+           name="location_id"
+           id="location_id"
+           value="{{ location_id }}"
+           data-location="{{ value }}"
+           {% if required %}required{% endif %}>
+    <input type="hidden" name="city" id="city" value="{{ city }}">
+    <input type="hidden" name="state" id="state" value="{{ state }}">
+    <input type="hidden" name="country" id="country" value="{{ country }}">
+    <div class="htmx-indicator absolute end-10 top-1">{% call spinner(size = 5) %}</div>
+    <div class="absolute end-1.5 top-1.5 peer-placeholder-shown:hidden">
+      <button id="clean-location" type="button" class="mt-[2px]">
+        <div class="svg-icon size-5 bg-gray-400 hover:bg-gray-700 icon-close"></div>
+      </button>
+    </div>
+    <div id="search-location" class="absolute z-10 start-0 end-0"></div>
   </div>
   <script type="module">
     import {
@@ -144,9 +137,10 @@
   <script type="module">
     const easyMDE = new EasyMDE({
       element: document.getElementById('{{ id }}'),
+      forceSync: true,
       hideIcons: ["side-by-side", "fullscreen", "guide"],
       showIcons: ["code", "table", "undo", "redo", "horizontal-rule"],
-      forceSync: true,
+      status: false,
     });
 
     // Force the required attribute to the textarea embed in the editor
@@ -155,6 +149,7 @@
       if (editor) {
         const textarea = editor.getElementsByTagName('textarea')[0];
         if (textarea) {
+          textarea.value = "{{ content }}";
           textarea.required = required;
         }
       }
@@ -172,11 +167,11 @@
   {# djlint:off H008 #}
   {% match status %}
   {% when JobStatus::Archived %}
-  <span class='bg-red-100 text-red-800 text-{{ size }} font-medium me-2 {%- if size.to_string() == "xs" %} px-2.5 py-0.5 {%- else %} px-3 py-1 {%- endif %} rounded uppercase'>{{ status }}</span>
+  <span class='bg-red-100 text-red-800 text-{{ size }} {%- if size.to_string() == "xs" %} px-2.5 py-0.5 {%- else %} px-3 py-1 {%- endif %} rounded-full capitalize tracking-wide'>{{ status }}</span>
   {% when JobStatus::Draft %}
-  <span class='bg-blue-100 text-blue-800 text-{{ size }} font-medium me-2 {%- if size.to_string() == "xs" %} px-2.5 py-0.5 {%- else %} px-3 py-1 {%- endif %} rounded uppercase'>{{ status }}</span>
+  <span class='bg-blue-100 text-blue-800 text-{{ size }} {%- if size.to_string() == "xs" %} px-2.5 py-0.5 {%- else %} px-3 py-1 {%- endif %} rounded-full capitalize tracking-wide'>{{ status }}</span>
   {% when JobStatus::Published %}
-  <span class='bg-green-100 text-green-800 text-{{ size }} font-medium me-2 {%- if size.to_string() == "xs" %} px-2.5 py-0.5 {%- else %} px-3 py-1 {%- endif %} rounded uppercase'>{{ status }}</span>
+  <span class='bg-green-100 text-green-800 text-{{ size }} {%- if size.to_string() == "xs" %} px-2.5 py-0.5 {%- else %} px-3 py-1 {%- endif %} rounded-full capitalize tracking-wide'>{{ status }}</span>
 {% endmatch %}
 {# djlint:on H008 #}
 {% endmacro job_status_badge %}
@@ -191,6 +186,8 @@
          class="sr-only peer"
          {% if checked %}checked{% endif %}>
   <input type="hidden" id="{{ id }}" name="{{ id }}" value="{{ checked }}">
+  <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600">
+  </div>
 
   <script>
     const checkbox = document.getElementById('toggle_{{ id }}');
@@ -211,7 +208,7 @@
 
 {# Badge #}
 {% macro badge(content, content_styles = "", icon = "") %}
-  <div class="inline-flex bg-gray-100 text-gray-800 text-sm font-medium me-2 px-2.5 py-1 rounded-md border border-gray-300">
+  <div class="inline-flex bg-gray-100 text-gray-800 text-sm font-medium me-2 px-2.5 py-1 rounded-md border">
     <div class="flex items-center">
       {% if icon.to_string() != "" %}
         <div class="me-2">
@@ -234,7 +231,7 @@
            max="100"
            step="5"
            value="{{ value }}"
-           class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:!bg-primary-900">
+           class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary-900">
     <div id="tooltip-{{ name }}"
          role="tooltip"
          class="absolute z-10 inline-block px-2 py-1 text-sm font-medium text-white text-center bg-primary-900 rounded-lg shadow-xs tooltip top-8 start-[8.5px] -ms-6 w-12">
@@ -275,7 +272,7 @@
       tooltip.getElementsByTagName('span')[0].textContent = value;
       tooltip.style.left = `calc(${value}% + ${offset}px)`;
       const inputRange = document.getElementById('{{ name }}');
-      inputRange.style.backgroundImage = `linear-gradient(90deg, var(--ojb-primary) 0%, var(--ojb-primary) ${value}%, rgb(229 231 235 / var(--tw-bg-opacity, 1)) ${value}%, rgb(229 231 235 / var(--tw-bg-opacity, 1)) 100%)`;
+      inputRange.style.backgroundImage = `linear-gradient(90deg, var(--primary-color) 0%, var(--primary-color) ${value}%, rgb(229 231 235 / var(--tw-bg-opacity, 1)) ${value}%, rgb(229 231 235 / var(--tw-bg-opacity, 1)) 100%)`;
     };
 
     const inputRange = document.getElementById('{{ name }}');
@@ -291,3 +288,29 @@
   {# djlint:on #}
 {% endmacro input_range %}
 {# End input range #}
+
+{# Form title #}
+{% macro form_title(title, description = "") %}
+  <div class="text-xl lg:text-2xl font-medium text-gray-900">{{ title }}</div>
+  {% if description.to_string() != "" %}
+    <p class="mt-1 text-sm/6 text-gray-500">{{ description }}</p>
+  {% endif %}
+{% endmacro form_title %}
+{# End form title #}
+
+{# Radio box #}
+{% macro radio_box(name, value, label, icon, checked = "", required = false) %}
+  <div class="flex items-center p-2 border border-gray-200 rounded-md">
+    <div class="svg-icon size-4 icon-{{ icon }} bg-gray-600 cursor-pointer"></div>
+    <label for="{{ name }}-{{ value }}"
+           class="ms-2 text-sm text-gray-900 flex-grow sm:text-sm/6 cursor-pointer">{{ label }}</label>
+    <input id="{{ name }}-{{ value }}"
+           type="radio"
+           value="{{ value }}"
+           name="{{ name }}"
+           class="radio-primary"
+           {% if value.to_string() == checked.to_string() %}checked{% endif %}
+           {% if required %}required{% endif %}>
+  </div>
+{% endmacro radio_box %}
+{# End radio box #}

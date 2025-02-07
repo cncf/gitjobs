@@ -8,17 +8,22 @@
     <meta name="keywords" content="community, organization, jobs, job">
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f9fafb" />
 
-    {# TODO - primary coloe #}
+    {# TODO - primary color #}
     <style>
       :root {
-        --ojb-primary: #268fd1;
+        --primary-color: #d62293;
       }
     </style>
 
     <link rel="stylesheet"
           href="https://unpkg.com/easymde/dist/easymde.min.css">
     <link rel="stylesheet" href="/static/styles/index.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+          rel="stylesheet">
     <script type="text/javascript"
             src="https://cdn.tailwindcss.com?plugins=forms"></script>
     <script type="text/javascript"
@@ -29,6 +34,53 @@
     <script src="https://unpkg.com/easymde/dist/easymde.min.js"
             integrity="sha384-KtB38COewxfrhJxoN2d+olxJAeT08LF8cVZ6DQ8Poqu89zIptqO6zAXoIxpGNWYE"
             crossorigin="anonymous"></script>
+    <style type="text/tailwindcss">
+      @layer components {
+        .btn-primary {
+          @apply rounded-full bg-primary-600 border border-primary-600 px-5 py-2 text-sm text-white hover:bg-primary-900 hover:border-primary-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600;
+        }
+
+        .btn-primary .svg-icon {
+          @apply bg-white;
+        }
+
+        .btn-secondary {
+          @apply rounded-full bg-primary-50 border-primary-50 px-5 py-2 text-sm text-primary-900 hover:bg-primary-100 hover:border-primary-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600;
+        }
+
+        .btn-secondary .svg-icon {
+          @apply bg-primary-900;
+        }
+
+        .btn-tertiary {
+          @apply text-sm/6 text-gray-900 px-5 py-2 border-transparent rounded-full hover:bg-gray-50 hover:border-gray-50;
+        }
+
+        .btn-tertiary .svg-icon {
+          @apply bg-gray-900;
+        }
+
+        .btn-outline {
+          @apply text-primary-600 border border-primary-600 rounded-full hover:text-white hover:bg-primary-900 hover:border-primary-900 focus:ring-4 focus:outline-none focus:ring-primary-300 text-sm px-5 py-2;
+        }
+
+        .btn-outline .svg-icon {
+          @apply bg-primary-600;
+        }
+
+        .input-primary {
+          @apply block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 border border-gray-200 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary-600 focus:ring-primary-600 sm:text-sm/6;
+        }
+
+        .select-primary {
+          @apply col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 border border-gray-200 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary-600 focus:ring-primary-600 sm:text-sm/6;
+        }
+
+        .radio-primary {
+          @apply w-4 h-4 text-primary-600 border border-gray-200 bg-gray-50 cursor-pointer focus:ring-primary-500 focus:ring-2;
+        }
+      }
+    </style>
     <script type="text/javascript">
       // Tailwind CSS configuration
       tailwind.config = {
@@ -36,17 +88,17 @@
           extend: {
             colors: {
               primary: {
-                '50': '#f2f8fd',
-                '100': '#e3effb',
-                '200': '#c1e0f6',
-                '300': '#8bc7ee',
-                '400': '#4daae3',
-                '500': '#268fd1',
-                '600': '#1871b1',
-                '700': '#155e95',
-                '800': '#154e77',
-                '900': '#174163',
-                '950': '#0f2a42',
+                '50': '#fdf2fa',
+                '100': '#fce7f7',
+                '200': '#fbcff0',
+                '300': '#faa7e3',
+                '400': '#f571ce',
+                '500': '#ed47b7',
+                '600': '#d62293',
+                '700': '#bf177c',
+                '800': '#9e1666',
+                '900': '#841757',
+                '950': '#510632',
               },
             },
             fontSize: {
@@ -57,6 +109,7 @@
             sans: [
               '"Clarity City", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, Roboto, Ubuntu, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',
             ],
+            inter: ['"Inter", serif'],
           },
         },
         future: {
@@ -79,18 +132,16 @@
       });
     </script>
   </head>
-  <body class="flex flex-col min-h-screen">
+  <body class="h-screen font-inter bg-gray-50">
     {# Header #}
     {% include "header.html" %}
     {# End Header #}
+
     {# Main Content #}
-    <main class="flex flex-col flex-grow bg-gray-50">
+    <div class="flex min-h-screen">
       {% block main %}
       {% endblock main %}
-    </main>
+    </div>
     {# End Main Content #}
-    {# Footer #}
-    {% include "footer.html" %}
-    {# End Footer #}
   </body>
 </html>

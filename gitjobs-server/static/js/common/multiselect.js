@@ -57,12 +57,12 @@ export class MultiSelect extends LitElement {
     return html`
       <label for="${this.id}" class="block text-sm/6 font-medium text-gray-900">${this.name}</label>
       <div class="mt-2 relative">
-        <div class="flex flex-wrap w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus-within:outline focus-within:outline-[3px] focus-within:-outline-offset-2 focus-within:outline-primary-600 sm:text-sm/6">
+        <div class="input-primary flex flex-wrap focus-within:outline focus-within:outline-[3px] focus-within:-outline-offset-2 focus-within:outline-primary-600">
           <div class="flex flex-items flex-wrap gap-2 w-full">
             ${this.selected.map((option) => html`<span class="inline-flex items-center text-nowrap max-w-[100%] px-2 py-1 me-2 text-sm font-medium text-gray-800 bg-gray-100 rounded-sm">
               <div class="flex items-center w-full">
                 <div class="truncate">${option}</div>
-                <button type="button" @click=${() => this._onRemoveBadge(option)} class="inline-flex items-center p-1 ms-2 bg-transparent rounded-xs hover:bg-gray-200  aria-label="Remove badge">
+                <button type="button" @click=${() => this._onRemoveBadge(option)} class="inline-flex items-center p-1 ms-2 bg-transparent rounded-xs hover:bg-gray-200" aria-label="Remove badge">
                   <div class="svg-icon size-3 icon-close bg-gray-400 hover:bg-gray-900"></div>
                   <span class="sr-only">Remove badge</span>
                 </button>
@@ -82,7 +82,7 @@ export class MultiSelect extends LitElement {
             <button
               type="button"
               @click=${() => this._onClickOption()}
-              class="rounded-md bg-primary-700 px-3 py-2 text-xs font-semibold text-white rounded-md hover:bg-primary-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
+              class="btn-primary">
               Add
             </button>
           </div>` : ''}

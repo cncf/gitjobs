@@ -1,124 +1,67 @@
 {% import "common.html" as common %}
 
-<div class="flex justify-end mb-6">
-  <div class="flex gap-x-5">
+<div class="flex justify-between mb-6">
+  <div class="flex items-center gap-x-6">
+    {# Filters button #}
+    <button class="btn-primary p-2">
+      <div class="svg-icon size-4 icon-filter"></div>
+    </button>
+    {# End filters button #}
+
+    {# Search jobs input #}
     <div class="relative">
-      {# Button actions #}
-      <button id="btn-actions"
-              class="group text-primary-700 rounded-md hover:text-white border border-primary-700 hover:bg-primary-900 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-3 py-2"
-              type="button">
-        <div class="flex items-center">
-          Actions
-          <div class="svg-icon size-4 ms-2 icon-caret_down bg-primary-700 group-hover:bg-white"></div>
-        </div>
-      </button>
-      {# End button actions #}
-
-      {# Dropdown actions #}
-      <div id="dropdown-actions"
-           class="absolute hidden z-10 start-0 top-10 w-[200px] bg-white divide-y divide-gray-100 rounded-lg shadow border">
-        <ul class="py-2 text-sm text-gray-700"
-            aria-labelledby="dropdownDefaultButton">
-          <li data-action="update" class="hidden">
-            <button id="update-button"
-                    data-url="/dashboard/employer/jobs/{:job_id}/update"
-                    data-replacement="job_id"
-                    hx-get="/dashboard/employer/jobs/{:job_id}/update"
-                    hx-target="#dashboard-content"
-                    class="w-full text-start px-4 py-2 hover:bg-gray-100">Update</button>
-          </li>
-          <li data-action="publish" class="hidden">
-            <button id="publish-button"
-                    data-url="/dashboard/employer/jobs/{:job_id}/publish"
-                    data-replacement="job_id"
-                    hx-put="/dashboard/employer/jobs/{:job_id}/publish"
-                    hx-target="#dashboard-content"
-                    class="w-full text-start px-4 py-2 hover:bg-gray-100">Publish</button>
-          </li>
-          <li data-action="delete" class="hidden">
-            <button id="delete-button"
-                    data-url="/dashboard/employer/jobs/{:job_id}/delete"
-                    data-replacement="job_id"
-                    hx-delete="/dashboard/employer/jobs/{:job_id}/delete"
-                    hx-target="#dashboard-content"
-                    hx-confirm="Are you sure you wish to delete this job?"
-                    class="w-full text-start px-4 py-2 hover:bg-gray-100">Delete</button>
-          </li>
-          <li data-action="archive" class="hidden">
-            <button id="archive-button"
-                    data-url="/dashboard/employer/jobs/{:job_id}/archive"
-                    data-replacement="job_id"
-                    hx-put="/dashboard/employer/jobs/{:job_id}/archive"
-                    hx-target="#dashboard-content"
-                    class="w-full text-start px-4 py-2 hover:bg-gray-100">Archive</button>
-          </li>
-          <li id="placeholder-actions">
-            <div class="p-5 text-center italic">
-              Any actions available. Please, select one or more jobs from the list.
-            </div>
-          </li>
-        </ul>
+      <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
+        <div class="svg-icon size-4 icon-search bg-gray-300"></div>
       </div>
-      {# End dropdown actions #}
-      <script type="module">
-        const btnActions = document.getElementById('btn-actions');
-        const dropdownActions = document.getElementById('dropdown-actions');
-
-        btnActions.addEventListener('click', () => {
-          const isOpen = dropdownActions.classList.contains('hidden');
-          dropdownActions.classList.toggle('hidden');
-          // Close dropdown actions when clicking outside
-          if (isOpen) {
-            document.addEventListener('click', (event) => {
-              if (!dropdownActions.contains(event.target) && !btnActions.contains(event.target)) {
-                dropdownActions.classList.add('hidden');
-              }
-            });
-            // Remove event listener when dropdown is closed
-          } else {
-            document.removeEventListener('click', () => {});
-          }
-        });
-
-        // Close dropdown actions when an action is clicked
-        const allActions = dropdownActions.querySelectorAll('button');
-        allActions.forEach((action) => {
-          action.addEventListener('click', () => {
-            dropdownActions.classList.add('hidden');
-          });
-        });
-      </script>
+      <input id="search_jobs"
+             name="search_jobs"
+             type="text"
+             value=""
+             class="input-primary peer ps-10 w-96"
+             placeholder="Search jobs">
+      <div class="absolute end-1.5 top-1.5 peer-placeholder-shown:hidden">
+        <button id="clean-search-jobs" type="button" class="mt-[2px]">
+          <div class="svg-icon size-5 bg-gray-400 hover:bg-gray-700 icon-close"></div>
+        </button>
+      </div>
     </div>
-
-    <div>
-      <button id="add-job-button"
-              hx-get="/dashboard/employer/jobs/add"
-              hx-target="#dashboard-content"
-              class="bg-primary-700 px-3 py-2 text-sm font-semibold text-white rounded-md hover:bg-primary-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
-        Add Job
-      </button>
-    </div>
-    <script type="module">
-      const addJobButton = document.getElementById('add-job-button');
-      addJobButton.addEventListener('htmx:afterRequest', () => {
-        history.pushState({}, "Jobs list", '/dashboard/employer?tab=jobs');
-      });
-    </script>
   </div>
+  {# End search jobs input #}
+
+  {# Add job button #}
+  <div>
+    <button id="add-job-button"
+            hx-get="/dashboard/employer/jobs/add"
+            hx-target="#dashboard-content"
+            class="btn-primary">Add Job</button>
+  </div>
+  {# End add job button #}
+
+  <script type="module">
+    const addJobButton = document.getElementById('add-job-button');
+    addJobButton.addEventListener('htmx:afterRequest', () => {
+      history.pushState({}, "Jobs list", '/dashboard/employer?tab=jobs');
+    });
+
+    const cleanSearchJobs = document.getElementById('clean-search-jobs');
+    cleanSearchJobs.addEventListener('click', () => {
+      document.getElementById('search_jobs').value = '';
+    });
+  </script>
 </div>
 
 {# Jobs Table -#}
-<div class="relative overflow-x-auto">
+<div class="relative overflow-visible">
   <table class="table-auto w-full text-sm text-left rtl:text-right text-gray-500">
-    <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+    <thead class="text-xs text-gray-700 uppercase bg-gray-100 border-b">
       <tr>
-        <th scope="col" class="p-4"></th>
         <th scope="col" class="px-5 py-3">Title</th>
         <th scope="col" class="px-5 py-3">Location</th>
         <th scope="col" class="px-5 py-3">Status</th>
         <th scope="col" class="px-5 py-3">Created</th>
         <th scope="col" class="px-5 py-3">Published</th>
         <th scope="col" class="px-5 py-3">Archived</th>
+        <th scope="col" class="p-4"></th>
       </tr>
     </thead>
     <tbody id="jobs-list">
@@ -128,20 +71,7 @@
         </tr>
       {% else %}
         {% for job in jobs %}
-          <tr class="bg-white border-b">
-            {# Checkbox #}
-            <td class="w-4 p-4">
-              <div class="flex items-center">
-                <input id="job_{{ job.job_id }}"
-                       name="job_selected"
-                       data-job="{{ job|json }}"
-                       type="radio"
-                       class="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 focus:ring-primary-500 focus:ring-2">
-                <label for="job_{{ job.job_id }}" class="sr-only">Job {{ job.job_id }}</label>
-              </div>
-            </td>
-            {# End checkbox #}
-
+          <tr class="odd:bg-white even:bg-gray-50/50 border-b">
             {# Title job #}
             <th scope="row" class="px-5 py-4 font-medium text-gray-900 min-w-[200px]">
               <div class="text-ellipsis">{{ job.title }}</div>
@@ -150,7 +80,7 @@
 
             {# Location #}
             <td class="px-5 py-4 whitespace-nowrap min-w-[100px]">
-              {% let location = &self::build_location(job.city.as_deref(), None, job.country.as_deref())|display_some %}
+              {% let location = &self::build_location(job.city.as_deref(), None, job.country.as_deref())|display_some_or("-") %}
               {{ location }}
             </td>
             {# End location #}
@@ -174,6 +104,71 @@
               {{ job.archived_at|display_some_date_or(DATE_FORMAT, "-") }}
             </td>
             {# End archived date #}
+
+            {# Actions #}
+            <td class="px-5 py-4 w-24">
+              <div class="flex items-center gap-x-3">
+                <div>
+                  <button hx-get="/dashboard/employer/jobs/{{ job.job_id }}/update"
+                          hx-target="#dashboard-content"
+                          class="btn-tertiary p-2">
+                    <div class="svg-icon size-4 icon-pencil"></div>
+                  </button>
+                </div>
+
+                <div class="group relative">
+                  <button data-job-id="{{ job.job_id }}"
+                          class="btn-actions btn-tertiary p-2 group-has-[.dropdown:not(.hidden)]:bg-gray-50">
+                    <div class="svg-icon size-4 icon-vertical_dots"></div>
+                  </button>
+
+                  {# Dropdown actions #}
+                  <div id="dropdown-actions-{{ job.job_id }}"
+                       class="dropdown absolute hidden z-10 end-0 top-8 w-[200px] bg-white divide-y divide-gray-100 rounded-lg shadow border">
+                    <ul class="py-2 text-sm text-gray-700"
+                        aria-labelledby="dropdownDefaultButton">
+                      {% if job.status != JobStatus::Published %}
+                        <li>
+                          <button hx-put="/dashboard/employer/jobs/{{ job.job_id }}/publish"
+                                  hx-target="#dashboard-content"
+                                  class="w-full text-start px-4 py-2 hover:bg-gray-100">
+                            <div class="flex items-center">
+                              <div class="svg-icon size-4 icon-send bg-gray-600"></div>
+                              <div class="ms-2">Publish</div>
+                            </div>
+                          </button>
+                        </li>
+                      {% endif %}
+                      <li>
+                        <button hx-delete="/dashboard/employer/jobs/{{ job.job_id }}/delete"
+                                hx-target="#dashboard-content"
+                                hx-confirm="Are you sure you wish to delete this job?"
+                                class="w-full text-start px-4 py-2 hover:bg-gray-100">
+                          <div class="flex items-center">
+                            <div class="svg-icon size-4 icon-trash bg-gray-600"></div>
+                            <div class="ms-2">Delete</div>
+                          </div>
+                        </button>
+                      </li>
+                      {% if job.status != JobStatus::Archived %}
+                        <li>
+                          <button hx-put="/dashboard/employer/jobs/{{ job.job_id }}/archive"
+                                  hx-target="#dashboard-content"
+                                  class="w-full text-start px-4 py-2 hover:bg-gray-100">
+                            <div class="flex items-center">
+                              <div class="svg-icon size-4 icon-archive bg-gray-600"></div>
+                              <div class="ms-2">Archive</div>
+                            </div>
+                          </button>
+                        </li>
+                      {% endif %}
+                    </ul>
+                  </div>
+                  {# End dropdown actions #}
+                </div>
+              </div>
+            </td>
+            {# End actions #}
           </tr>
         {% endfor %}
       {% endif %}
@@ -181,14 +176,41 @@
 
     <script type="module">
       import {
-        setupActionsButton
-      } from '/static/js/dashboard/jobs.js';
+        updateJobsList
+      } from '/static/js/dashboard/employer/jobs.js';
 
-      const jobSelectionRadios = document.querySelectorAll('#jobs-list input[type="radio"]');
+      const btnActions = document.querySelectorAll('.btn-actions');
+      btnActions.forEach((btnAction) => {
+        btnAction.addEventListener('click', () => {
+          const jobId = btnAction.dataset.jobId;
 
-      jobSelectionRadios.forEach((radio) => {
-        radio.addEventListener('change', () => {
-          setupActionsButton();
+          const dropdownActions = document.getElementById(`dropdown-actions-${jobId}`);
+          if (dropdownActions) {
+            const isOpen = dropdownActions.classList.contains('hidden');
+            dropdownActions.classList.toggle('hidden');
+            // Close dropdown actions when clicking outside
+            if (isOpen) {
+              document.addEventListener('click', (event) => {
+                if (!dropdownActions.contains(event.target) && !btnAction.contains(event.target)) {
+                  dropdownActions.classList.add('hidden');
+                }
+              });
+              // Remove event listener when dropdown is closed
+            } else {
+              document.removeEventListener('click', () => {});
+            }
+
+            // Close dropdown actions when an action is clicked
+            const allActions = dropdownActions.querySelectorAll('button');
+            allActions.forEach((action) => {
+              action.addEventListener('click', () => {
+                dropdownActions.classList.add('hidden');
+
+                // Update jobs list after action is performed
+                updateJobsList();
+              });
+            });
+          }
         });
       });
     </script>

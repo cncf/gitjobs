@@ -6,30 +6,39 @@
       hx-ext="no-empty-vals"
       hx-trigger="submit">
   <div class="space-y-12">
+    {# Settings #}
     <div class="border-b border-gray-900/10 pb-12">
-      <h2 class="text-base/7 font-semibold text-gray-900">Settings</h2>
-      <p class="mt-1 text-sm/6 text-gray-600">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-      </p>
-      <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+      {% call common::form_title(title = "Settings", description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.") %}
+
+      <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 max-w-3xl">
         {# Company name #}
-        <div class="col-span-full">
-          <label for="company" class="block text-sm/6 font-medium text-gray-900">Company name (required)</label>
+        <div class="col-span-3">
+          <label for="company" class="block text-sm/6 font-medium text-gray-900">Company name *</label>
           <div class="mt-2">
             <input type="text"
                    name="company"
                    id="company"
                    value="{{ employer.company }}"
-                   class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary-600 sm:text-sm/6"
+                   class="input-primary"
                    required>
           </div>
           <p class="mt-1 text-xs/6 text-gray-600">Lorem ipsum.</p>
         </div>
         {# End Company name #}
 
+        {# Public #}
+        <div class="col-span-3">
+          <div class="h-10"></div>
+          <label class="inline-flex items-center cursor-pointer">
+            {% call common::toggle_checkbox(id = "public", checked = employer.public) %}
+            <span class="ms-3 text-sm font-medium text-gray-900">Public</span>
+          </label>
+        </div>
+        {# End Public #}
+
         {# Description #}
         <div class="col-span-full">
-          <label for="description" class="block text-sm/6 font-medium text-gray-900">Description (required)</label>
+          <label for="description" class="block text-sm/6 font-medium text-gray-900">Description *</label>
           <div class="mt-2">
             {% call common::markdown_editor(id = "description", content = employer.description, required = true) %}
           </div>
@@ -37,19 +46,12 @@
         </div>
         {# End Description #}
 
-        {# Public #}
-        <div class="col-span-full">
-          <label class="inline-flex items-center cursor-pointer">
-            {% call common::toggle_checkbox(id = "public", checked = employer.public) %}
-            <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600">
-            </div>
-            <span class="ms-3 text-sm font-medium text-gray-900">Public</span>
-          </label>
-        </div>
-        {# End Public #}
-
         {# Location #}
-        {% call common::location(location_id = employer.location_id|display_some, city = employer.city|display_some, state = employer.state|display_some, country = employer.country|display_some) %}
+        <div class="col-span-full lg:col-span-3">
+          <label for="ts_query" class="block text-sm/6 font-medium text-gray-900">Location</label>
+          {% call common::location(location_id = employer.location_id|display_some, city = employer.city|display_some, state = employer.state|display_some, country = employer.country|display_some) %}
+          <p class="mt-1 text-xs/6 text-gray-600">Lorem ipsum.</p>
+        </div>
         {# End location #}
 
         {# Website url #}
@@ -60,32 +62,59 @@
                    name="website_url"
                    type="url"
                    value="{%- if let Some(website_url) = employer.website_url -%} {{ website_url }} {%- endif -%}"
-                   class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary-600 sm:text-sm/6">
+                   class="input-primary">
           </div>
         </div>
         {# End Website url #}
+      </div>
+    </div>
+    {# End settings #}
 
+    {# Logo #}
+    <div class="border-b border-gray-900/10 pb-12">
+      {% call common::form_title(title = "Logo", description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.") %}
+
+      <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 max-w-3xl">
         {# Logo url #}
-        <div class="sm:col-span-3">
+        <div class="col-span-full">
           <label for="logo_url" class="block text-sm/6 font-medium text-gray-900">Logo url</label>
           <div class="mt-2">
             <input id="logo_url"
                    name="logo_url"
                    type="url"
                    value="{%- if let Some(logo_url) = employer.logo_url -%} {{ logo_url }} {%- endif -%}"
-                   class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary-600 sm:text-sm/6">
+                   class="input-primary">
           </div>
         </div>
         {# End Logo url #}
 
+        {# Logo file #}
+        <div class="col-span-full">
+          <label for="logo" class="block text-sm/6 font-medium text-gray-900">Logo image</label>
+          <div class="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
+            <div class="text-center">
+              <div class="mx-auto size-8 svg-icon bg-gray-300 icon-image"></div>
+              <div class="mt-4 flex text-sm/6 text-gray-600">
+                <label for="logo_file"
+                       class="relative cursor-pointer rounded-md bg-white text-primary-600 focus-within:ring-2 focus-within:ring-primary-600 focus-within:ring-offset-2 focus-within:outline-hidden hover:text-primary-500">
+                  <span>Upload a file</span>
+                  <input id="logo_file" name="logo_file" type="file" class="sr-only">
+                </label>
+                <p class="pl-1">or drag and drop</p>
+              </div>
+              <p class="text-xs/5 text-gray-600">PNG, JPG, GIF up to 10MB</p>
+            </div>
+          </div>
+        </div>
+        {# End logo file #}
+
       </div>
     </div>
-  </div>
-  <div class="mt-6 flex justify-end items-center">
-    <button type="submit"
-            class="bg-primary-700 px-3 py-2 text-sm font-semibold text-white rounded-md hover:bg-primary-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
-      Save
-    </button>
+    {# End logo #}
+
+    <div class="mt-6 flex justify-end items-center">
+      <button type="submit" class="btn-primary">Save</button>
+    </div>
   </div>
 </form>
 {# End employer form #}

@@ -2,50 +2,35 @@
 {% import "common.html" as common %}
 
 {% block main %}
-  <div class="container w-full flex flex-wrap mx-auto px-2 pt-28 pb-20">
+  {# Drawer mobile #}
+  <div id="drawer-menu"
+       role="dialog"
+       data-open="false"
+       class="fixed top-0 left-0 h-screen overflow-y-auto transition-transform -translate-x-full z-40 w-80"
+       tabindex="-1">
 
-    {# Drawer #}
-    <div id="drawer-menu"
-         role="dialog"
-         data-open="false"
-         class="fixed top-0 left-0 h-screen overflow-y-auto transition-transform -translate-x-full z-40 w-80"
-         tabindex="-1">
+    <div class="w-full h-full p-4 bg-white">
+      <button type="button"
+              id="close-drawer-menu"
+              class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 absolute top-2.5 end-2.5 flex items-center justify-center">
+        <div class="svg-icon size-5 bg-gray-400 icon-close"></div>
+        <span class="sr-only">Close menu</span>
+      </button>
 
-      <div class="w-full h-full p-4 bg-white">
-        <button type="button"
-                id="close-drawer-menu"
-                class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 absolute top-2.5 end-2.5 flex items-center justify-center">
-          <div class="svg-icon size-5 bg-gray-400 icon-close"></div>
-          <span class="sr-only">Close menu</span>
-        </button>
-
-        <ul class="fw-normal list-none leading-10 pt-8">
-          {% call tab_item(name = "Jobs", is_active = content.is_jobs(), href = "/dashboard/employer?tab=jobs", extra_styles = "mb-5") %}
-          <li class="uppercase px-3">Settings</li>
-          {% call tab_item(name = "Employer profile", is_active = content.is_settings(), href = "/dashboard/employer?tab=settings", level = 2, extra_styles = "mb-3") %}
-        </ul>
-      </div>
-      <div id="drawer-menu-backdrop" class="bg-gray-900/50 fixed inset-0 z-[-1]"></div>
+      <ul class="fw-normal list-none leading-10 pt-8">
+        {% call menu_item(name = "Jobs", icon = "list", is_active = content.is_jobs(), href = "/dashboard/employer?tab=jobs") %}
+        <li class="uppercase px-3">Settings</li>
+        {% call menu_item(name = "Employer profile", icon = "list", is_active = content.is_settings(), href = "/dashboard/employer?tab=settings", extra_styles = "mb-3") %}
+      </ul>
     </div>
-    {# End Drawer #}
+    <div id="drawer-menu-backdrop" class="bg-gray-900/50 fixed inset-0 z-[-1]"></div>
+  </div>
+  {# End Drawer mobile #}
 
-    <div class="w-full lg:w-1/4 xl:w-1/6 lg:pe-6">
-      <div class="flex items-stretch">
-        {# Drawer button mobile #}
-        {% if !content.is_employer_initial_setup() %}
-          <div class="flex lg:hidden border-e-2 me-10 pe-10">
-            <div class="m-auto">
-              <button type="button"
-                      id="open-drawer-menu"
-                      class="bg-primary-700 px-3 py-3.5 text-sm font-semibold text-white rounded-md hover:bg-primary-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
-                <div class="svg-icon size-3 bg-white icon-menu"></div>
-                <span class="sr-only">Open menu</span>
-              </button>
-            </div>
-          </div>
-        {% endif %}
-        {# End drawer button mobile #}
-
+  {# Sticky menu #}
+  <aside class="hidden lg:block h-screen sticky top-0 w-[250px]">
+    <div class="flex flex-col justify-between h-full p-5 pt-24">
+      <div>
         {# Employers #}
         <div class="flex-grow lg:mb-8">
           <div class="flex justify-between items-center">
@@ -55,8 +40,8 @@
               <button hx-get="/dashboard/employer/employers/add"
                       hx-trigger="click"
                       hx-target="#dashboard-content"
-                      class="rounded-full bg-primary-700 p-1.5 text-sm font-semibold text-white hover:bg-primary-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
-                <div class="svg-icon size-3 icon-plus bg-white"></div>
+                      class="btn-primary p-1.5">
+                <div class="svg-icon size-3 icon-plus"></div>
               </button>
             </div>
           </div>
@@ -64,7 +49,7 @@
             {% let selected_employer = selected_employer_id|display_some %}
             <select id="employer_select"
                     name="employer_select"
-                    class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary-600 sm:text-sm/6 disabled:bg-gray-100 disabled:opacity-75"
+                    class="select-primary disabled:bg-gray-100 disabled:opacity-75"
                     {% if employers.len() == 0 %}disabled{% endif %}>
               {% for employer in employers %}
                 {% call common::select_option(value = employer.employer_id, label = employer.company, selected = selected_employer) %}
@@ -80,113 +65,177 @@
           </div>
         </div>
         {# End employers #}
+
+        {% if !content.is_employer_initial_setup() %}
+          <div class="leading-10 pt-6 border-t grid gap-y-0.5">
+            {% call menu_title(text = "Jobs") %}
+            {% call menu_item(name = "List", icon = "list", is_active = content.is_jobs(), href = "/dashboard/employer?tab=jobs") %}
+            <div class="rounded-md px-3 mb-3 text-sm/8 border border-transparent hover:bg-white hover:border-gray-200">
+              <button hx-get="/dashboard/employer/jobs/add"
+                      hx-target="#dashboard-content"
+                      class="flex items-center w-full">
+                <div class="svg-icon size-3 icon-plus bg-primary-600 text-white"></div>
+                <div class="text-sm/8 ms-3">Add job</div>
+              </button>
+            </div>
+
+            {% call menu_title(text = "Employer") %}
+            {% call menu_item(name = "Profile", icon = "gear", is_active = content.is_settings(), href = "/dashboard/employer?tab=settings") %}
+            <div class="rounded-md px-3 mb-3 text-sm/8 border border-transparent hover:bg-white hover:border-gray-200">
+              <button hx-get="/dashboard/employer/employers/add"
+                      hx-trigger="click"
+                      hx-target="#dashboard-content"
+                      class="flex items-center w-full">
+                <div class="svg-icon size-3 icon-plus bg-primary-600 text-white"></div>
+                <div class="text-sm/8 ms-3">Add employer</div>
+              </button>
+            </div>
+          </div>
+        {% endif %}
       </div>
 
-      <script type="module">
-        import {
-          processNewHtmxUrl,
-          toggleDrawerVisibility
-        } from '/static/js/common/common.js';
-        import {
-          updateJobsList
-        } from '/static/js/dashboard/jobs.js';
+      <div>
+        <div class="flex flex-row items-center justify-between border px-3 py-2 rounded-lg bg-white">
+          <div class="flex items-center">
+            {# Image #}
+            <div>
+              <img class="size-8 bg-gray-200 p-1 rounded-full"
+                   height="32"
+                   width="32"
+                   src="/static/images/user.png"
+                   alt="User avatar">
+              {# Initials #}
+              {# <div class="relative inline-flex items-center justify-center w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
+              <span class="font-medium text-gray-600 dark:text-gray-300">JL</span>
+            </div> #}
+              {# End initials #}
+            </div>
+            {# End image #}
 
-        // Open drawer menu
-        const openDrawerButton = document.getElementById('open-drawer-menu');
-        if (openDrawerButton) {
-          openDrawerButton.addEventListener('click', () => {
-            toggleDrawerVisibility('drawer-menu');
-          });
-        }
+            {# Name #}
+            <div class="ms-3 text-sm">Jane Smith</div>
+            {# End name #}
+          </div>
 
-        // Close drawer menu
-        const closeDrawerButton = document.getElementById('close-drawer-menu');
-        closeDrawerButton.addEventListener('click', () => {
-          toggleDrawerVisibility('drawer-menu');
-        });
-
-        // Close drawer menu when clicking on a link inside the drawer
-        const drawerMenu = document.getElementById('drawer-menu');
-        drawerMenu.addEventListener('click', (e) => {
-          if (e.target.tagName === 'A') {
-            toggleDrawerVisibility('drawer-menu');
-          }
-        });
-
-        // Close drawer menu when clicking on the backdrop
-        const drawerMenuBackdrop = document.getElementById('drawer-menu-backdrop');
-        drawerMenuBackdrop.addEventListener('click', () => {
-          toggleDrawerVisibility('drawer-menu');
-        });
-
-        const employerSelect = document.getElementById('employer_select');
-        const changeSelectedEmployerButton = document.getElementById('change-selected-employer-button');
-
-        if (employerSelect) {
-          employerSelect.addEventListener('change', (e) => {
-            // Update the hx-put attribute with the selected employer
-            processNewHtmxUrl('change-selected-employer-button', 'put', e.target.value);
-
-            // Click the button to update the employer
-            changeSelectedEmployerButton.click();
-          });
-        }
-
-        changeSelectedEmployerButton.addEventListener('htmx:afterRequest', (event) => {
-          updateJobsList();
-          // Update the hx-put attribute to the original value
-          changeSelectedEmployerButton.setAttribute('hx-put', changeSelectedEmployerButton.dataset.url);
-        });
-      </script>
-
-      {% if !content.is_employer_initial_setup() %}
-        <div class="hidden lg:block">
-          <ul class="fw-normal list-none leading-10 pt-8 border-t">
-            {% call tab_item(name = "Jobs", is_active = content.is_jobs(), href = "/dashboard/employer?tab=jobs", extra_styles = "mb-5") %}
-            <li class="uppercase px-3">Settings</li>
-            {% call tab_item(name = "Employer profile", is_active = content.is_settings(), href = "/dashboard/employer?tab=settings", level = 2, extra_styles = "mb-3") %}
-          </ul>
+          {# Logout #}
+          <a href="/log-out" class="btn-tertiary size-8 p-1">
+            <div class="h-full w-full flex items-center justify-center">
+              <div class="svg-icon size-4 m-auto icon-logout"></div>
+            </div>
+          </a>
+          {# End logout #}
         </div>
-      {% endif %}
-    </div>
-    <div class="w-full lg:w-3/4 xl:w-5/6 mt-6 lg:mt-0 text-black leading-normal bg-white border rounded-lg">
-      <div id="dashboard-content"
-           class="grid h-full w-full overflow-hidden p-4 sm:p-6 lg:p-8">
-        {# Content -#}
-        {{ content|safe }}
-        {# End Content #}
       </div>
-
-      {# Refresh table button #}
-      <button id="refresh-table"
-              hx-get="/dashboard/employer/jobs/list"
-              hx-target="#dashboard-content"
-              class="hidden">Refresh table</button>
-      {# End refresh table button #}
     </div>
-  </div>
+  </aside>
+  {# End sticky menu #}
+
+  <main class="w-[calc(100%-250px)] bg-white border rounded-3xl m-5 ms-0 mt-[75px] relative">
+    {# Drawer button mobile #}
+    {% if !content.is_employer_initial_setup() %}
+      <div class="block lg:hidden absolute top-5 start-5">
+        <button type="button" id="open-drawer-menu" class="btn-primary px-5 py-3.5">
+          <div class="svg-icon size-3 icon-menu"></div>
+          <span class="sr-only">Open menu</span>
+        </button>
+      </div>
+    {% endif %}
+    {# End drawer button mobile #}
+
+    <div id="dashboard-content" class="p-4 sm:p-6 lg:p-8">
+      {# Content -#}
+      {{ content|safe }}
+      {# End Content #}
+    </div>
+
+    {# Refresh table button #}
+    <button id="refresh-table"
+            hx-get="/dashboard/employer/jobs/list"
+            hx-target="#dashboard-content"
+            class="hidden">Refresh table</button>
+    {# End refresh table button #}
+  </main>
+  <script type="module">
+    import {
+      processNewHtmxUrl,
+      toggleDrawerVisibility
+    } from '/static/js/common/common.js';
+    import {
+      updateJobsList
+    } from '/static/js/dashboard/employer/jobs.js';
+
+    // Open drawer menu
+    const openDrawerButton = document.getElementById('open-drawer-menu');
+    if (openDrawerButton) {
+      openDrawerButton.addEventListener('click', () => {
+        toggleDrawerVisibility('drawer-menu');
+      });
+    }
+
+    // Close drawer menu
+    const closeDrawerButton = document.getElementById('close-drawer-menu');
+    closeDrawerButton.addEventListener('click', () => {
+      toggleDrawerVisibility('drawer-menu');
+    });
+
+    // Close drawer menu when clicking on a link inside the drawer
+    const drawerMenu = document.getElementById('drawer-menu');
+    drawerMenu.addEventListener('click', (e) => {
+      if (e.target.tagName === 'A') {
+        toggleDrawerVisibility('drawer-menu');
+      }
+    });
+
+    // Close drawer menu when clicking on the backdrop
+    const drawerMenuBackdrop = document.getElementById('drawer-menu-backdrop');
+    drawerMenuBackdrop.addEventListener('click', () => {
+      toggleDrawerVisibility('drawer-menu');
+    });
+
+    const employerSelect = document.getElementById('employer_select');
+    const changeSelectedEmployerButton = document.getElementById('change-selected-employer-button');
+
+    if (employerSelect) {
+      employerSelect.addEventListener('change', (e) => {
+        // Update the hx-put attribute with the selected employer
+        processNewHtmxUrl('change-selected-employer-button', 'put', e.target.value);
+
+        // Click the button to update the employer
+        changeSelectedEmployerButton.click();
+      });
+    }
+
+    changeSelectedEmployerButton.addEventListener('htmx:afterRequest', (event) => {
+      updateJobsList();
+      // Update the hx-put attribute to the original value
+      changeSelectedEmployerButton.setAttribute('hx-put', changeSelectedEmployerButton.dataset.url);
+    });
+  </script>
 {% endblock main %}
 
-{# Item tab #}
-{% macro tab_item(name, is_active, href, level = 1, extra_styles = "" ) %}
+{# Menu title #}
+{% macro menu_title(text) %}
+  <div class="text-xs/6 text-gray-400 uppercase py-1.5">{{ text }}</div>
+{% endmacro menu_title %}
+{# End menu title #}
+
+{# Menu item #}
+{% macro menu_item(name, icon, is_active, href, extra_styles = "" ) %}
   {% if is_active %}
-    <li class="bg-gray-500/10 rounded-md font-semibold {{ extra_styles }}
-               {% if level + 0 == 1 -%}
-                 uppercase px-3
-               {% else -%}
-                 px-5 text-sm/8
-               {% endif -%}">
-      <a href="{{ href }}" class="flex">{{ name }}</a>
-    </li>
+    <div class="relative bg-white border px-3 text-sm/8 rounded-lg {{ extra_styles }}">
+      <a href="{{ href }}" class="flex items-center">
+        <div class="svg-icon size-3 icon-{{ icon }} bg-primary-600 text-white"></div>
+        <div class="text-sm/8 ms-3">{{ name }}</div>
+      </a>
+      <div class="absolute top-0.5 -left-5 bottom-0.5 w-1 bg-primary-600 rounded-lg"></div>
+    </div>
   {% else %}
-    <li class="rounded-md hover:bg-gray-500/10 hover:font-semibold {{ extra_styles }}
-               {% if level + 0 == 1 -%}
-                 uppercase px-3
-               {% else -%}
-                 px-5 text-sm/8
-               {% endif -%}">
-      <a href="{{ href }}" class="flex">{{ name }}</a>
-    </li>
+    <div class="rounded-md px-3 text-sm/8 border border-transparent hover:bg-white hover:border-gray-200 {{ extra_styles }}">
+      <a href="{{ href }}" class="flex items-center">
+        <div class="svg-icon size-3 icon-{{ icon }} bg-primary-600 text-white"></div>
+        <div class="text-sm/8 ms-3">{{ name }}</div>
+      </a>
+    </div>
   {% endif %}
-{% endmacro tab_item %}
-{# End item tab #}
+{% endmacro menu_item %}
+{# End menu item #}

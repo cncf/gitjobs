@@ -1,41 +1,62 @@
 {% extends "base.html" %}
+{% import "common.html" as common %}
 
 {% block main %}
-  <div class="container max-w-lg m-auto px-2 py-28">
-    <div class="bg-white p-10 border rounded-lg">
+  <div class="container max-w-md m-auto px-2 py-28">
+    <div class="bg-white p-10 border rounded-3xl">
+      <div class="flex items-center justify-between space-x-5 lg:space-x-10">
+        {# GitHub login #}
+        <div class="w-1/2">
+          <a href="/log-in/oauth2/github?{%- if let Some(next_url) = next_url -%}next_url={{ next_url }}{%- endif -%}"
+             class="group btn-outline flex justify-center items-center space-x-2">
+            <div class="svg-icon size-4 icon-github group-hover:bg-white"></div>
+            <div>GitHub</div>
+          </a>
+        </div>
+        {# End GitHub login #}
+
+        {# TODO login #}
+        <div class="w-1/2">
+          <a href=""
+             class="group btn-outline flex justify-center items-center space-x-2">
+            <div class="svg-icon size-4 icon-lfx group-hover:bg-white"></div>
+            <div>LFID</div>
+          </a>
+        </div>
+        {# End TODO login #}
+      </div>
+
+      <div class="inline-flex items-center justify-center w-full">
+        <hr class="w-full h-0.5 my-8 bg-gray-200 border-0 rounded-sm">
+        <div class="absolute px-4 -translate-x-1/2 bg-white left-1/2 text-xs text-gray-400">OR</div>
+      </div>
+
       <form action="/log-in{%- if let Some(next_url) = next_url -%}?next_url={{ next_url }}{%- endif -%}"
-            method="post"
-            class="max-w-sm mx-auto">
-        <div class="text-2xl mb-10">Log In</div>
+            method="post">
+        <div class="mb-10">{% call common::form_title(title = "Log In") %}</div>
+
         <div class="mb-5">
           <label for="username" class="block mb-2 text-sm font-medium text-gray-900">Username</label>
           <input type="text"
                  id="username"
                  name="username"
-                 class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary-600 sm:text-sm/6"
+                 class="input-primary"
                  required />
         </div>
-        <div class="mb-5">
+        <div>
           <label for="password" class="block mb-2 text-sm font-medium text-gray-900">Password</label>
           <input type="password"
                  id="password"
                  name="password"
-                 class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-primary-600 sm:text-sm/6"
+                 class="input-primary"
                  required />
         </div>
-        <button type="submit"
-                class="bg-primary-700 px-3 py-2 w-full text-sm font-semibold text-white rounded-md hover:bg-primary-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
-          Submit
-        </button>
 
-        {# GitHub login #}
-        <a href="/log-in/oauth2/github?{%- if let Some(next_url) = next_url -%}next_url={{ next_url }}{%- endif -%}"
-           class="block mt-5 bg-primary-700 px-3 py-2 w-full text-sm font-semibold text-center text-white rounded-md hover:bg-primary-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
-          Log In with GitHub
-        </a>
-        {# End GitHub login #}
+        {# Submit button #}
+        <button type="submit" class="btn-primary w-full mt-12">Submit</button>
+        {# End submit button #}
 
-        <div class="mt-5">
+        <div class="mt-5 text-sm text-gray-600">
           Don't have an account? <a href="/sign-up{%- if let Some(next_url) = next_url -%}?next_url={{ next_url }}{%- endif -%}"
     class="text-primary-700 hover:text-primary-900">Sign up</a>.
         </div>

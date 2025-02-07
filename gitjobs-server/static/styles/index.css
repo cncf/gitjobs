@@ -6,6 +6,16 @@
   mask-position: center;
 }
 
+.icon-archive {
+  mask-image: url('/static/images/icons/archive.svg');
+  -webkit-mask-image: url('/static/images/icons/archive.svg')
+}
+
+.icon-buildings {
+  mask-image: url('/static/images/icons/buildings.svg');
+  -webkit-mask-image: url('/static/images/icons/buildings.svg')
+}
+
 .icon-calendar {
   mask-image: url('/static/images/icons/calendar.svg');
   -webkit-mask-image: url('/static/images/icons/calendar.svg')
@@ -21,6 +31,11 @@
   -webkit-mask-image: url('/static/images/icons/check.svg')
 }
 
+.icon-clipboard {
+  mask-image: url('/static/images/icons/clipboard.svg');
+  -webkit-mask-image: url('/static/images/icons/clipboard.svg')
+}
+
 .icon-close {
   mask-image: url('/static/images/icons/close.svg');
   -webkit-mask-image: url('/static/images/icons/close.svg')
@@ -31,14 +46,64 @@
   -webkit-mask-image: url('/static/images/icons/company.svg')
 }
 
+.icon-draft {
+  mask-image: url('/static/images/icons/draft.svg');
+  -webkit-mask-image: url('/static/images/icons/draft.svg')
+}
+
 .icon-eye {
   mask-image: url('/static/images/icons/eye.svg');
   -webkit-mask-image: url('/static/images/icons/eye.svg')
 }
 
+.icon-filter {
+  mask-image: url('/static/images/icons/filter.svg');
+  -webkit-mask-image: url('/static/images/icons/filter.svg')
+}
+
+.icon-gear {
+  mask-image: url('/static/images/icons/gear.svg');
+  -webkit-mask-image: url('/static/images/icons/gear.svg')
+}
+
+.icon-github {
+  mask-image: url('/static/images/icons/github.svg');
+  -webkit-mask-image: url('/static/images/icons/github.svg')
+}
+
+.icon-graduation_cap {
+  mask-image: url('/static/images/icons/graduation_cap.svg');
+  -webkit-mask-image: url('/static/images/icons/graduation_cap.svg')
+}
+
+.icon-hour_glass {
+  mask-image: url('/static/images/icons/hour_glass.svg');
+  -webkit-mask-image: url('/static/images/icons/hour_glass.svg')
+}
+
+.icon-image {
+  mask-image: url('/static/images/icons/image.svg');
+  -webkit-mask-image: url('/static/images/icons/image.svg')
+}
+
+.icon-lfx {
+  mask-image: url('/static/images/icons/lfx.svg');
+  -webkit-mask-image: url('/static/images/icons/lfx.svg')
+}
+
+.icon-list {
+  mask-image: url('/static/images/icons/list.svg');
+  -webkit-mask-image: url('/static/images/icons/list.svg')
+}
+
 .icon-location {
   mask-image: url('/static/images/icons/location.svg');
   -webkit-mask-image: url('/static/images/icons/location.svg')
+}
+
+.icon-logout {
+  mask-image: url('/static/images/icons/logout.svg');
+  -webkit-mask-image: url('/static/images/icons/logout.svg')
 }
 
 .icon-medal {
@@ -51,14 +116,54 @@
   -webkit-mask-image: url('/static/images/icons/menu.svg')
 }
 
+.icon-office_chair {
+  mask-image: url('/static/images/icons/office_chair.svg');
+  -webkit-mask-image: url('/static/images/icons/office_chair.svg')
+}
+
+.icon-pencil {
+  mask-image: url('/static/images/icons/pencil.svg');
+  -webkit-mask-image: url('/static/images/icons/pencil.svg')
+}
+
 .icon-plus {
   mask-image: url('/static/images/icons/plus.svg');
   -webkit-mask-image: url('/static/images/icons/plus.svg')
 }
 
+.icon-remote {
+  mask-image: url('/static/images/icons/remote.svg');
+  -webkit-mask-image: url('/static/images/icons/remote.svg')
+}
+
+.icon-save {
+  mask-image: url('/static/images/icons/save.svg');
+  -webkit-mask-image: url('/static/images/icons/save.svg')
+}
+
 .icon-search {
   mask-image: url('/static/images/icons/search.svg');
   -webkit-mask-image: url('/static/images/icons/search.svg')
+}
+
+.icon-send {
+  mask-image: url('/static/images/icons/send.svg');
+  -webkit-mask-image: url('/static/images/icons/send.svg')
+}
+
+.icon-signature {
+  mask-image: url('/static/images/icons/signature.svg');
+  -webkit-mask-image: url('/static/images/icons/signature.svg')
+}
+
+.icon-trash {
+  mask-image: url('/static/images/icons/trash.svg');
+  -webkit-mask-image: url('/static/images/icons/trash.svg')
+}
+
+.icon-vertical_dots {
+  mask-image: url('/static/images/icons/vertical_dots.svg');
+  -webkit-mask-image: url('/static/images/icons/vertical_dots.svg')
 }
 /* End icons */
 
@@ -66,11 +171,14 @@
 .EasyMDEContainer .editor-toolbar {
   border-top-left-radius: 0.375rem;
   border-top-right-radius: 0.375rem;
+  border-color: rgb(229 231 235 / var(--tw-border-opacity, 1));
 }
 
 .EasyMDEContainer .CodeMirror {
+  height: 220px;
   border-bottom-left-radius: 0.375rem;
   border-bottom-right-radius: 0.375rem;
+  border-color: rgb(229 231 235 / var(--tw-border-opacity, 1));
 }
 
 .EasyMDEContainer .CodeMirror-scroll {

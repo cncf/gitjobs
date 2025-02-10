@@ -6,8 +6,7 @@
   {# Employers #}
   <div class="flex-grow mb-8">
     <div class="flex justify-between items-center">
-      <label for="employer_select"
-             class="block text-sm/6 uppercase font-medium text-gray-500">Employer</label>
+      {% call dashboard_macros::menu_title(text = "Employer") %}
       <div>
         <button hx-get="/dashboard/employer/employers/add"
                 hx-trigger="click"
@@ -42,24 +41,24 @@
     <div class="leading-10 pt-6 border-t grid gap-y-0.5">
       {% call dashboard_macros::menu_title(text = "Jobs") %}
       {% call dashboard_macros::menu_item(name = "List", icon = "list", is_active = content.is_jobs(), href = "/dashboard/employer?tab=jobs") %}
-      <div class="rounded-md px-3 mb-3 text-sm/8 border border-transparent hover:bg-white hover:border-gray-200">
+      <div class="rounded-md px-3 mb-3 border border-transparent hover:bg-white hover:border-gray-200">
         <button hx-get="/dashboard/employer/jobs/add"
                 hx-target="#dashboard-content"
                 class="flex items-center w-full">
           <div class="svg-icon size-3 icon-plus bg-primary-600 text-white"></div>
-          <div class="text-sm/8 ms-3">Add job</div>
+          <div class="text-xs/8 lg:text-sm/8 ms-3">Add job</div>
         </button>
       </div>
 
       {% call dashboard_macros::menu_title(text = "Employer") %}
       {% call dashboard_macros::menu_item(name = "Profile", icon = "gear", is_active = content.is_settings(), href = "/dashboard/employer?tab=settings") %}
-      <div class="rounded-md px-3 mb-3 text-sm/8 border border-transparent hover:bg-white hover:border-gray-200">
+      <div class="rounded-md px-3 mb-3 border border-transparent hover:bg-white hover:border-gray-200">
         <button hx-get="/dashboard/employer/employers/add"
                 hx-trigger="click"
                 hx-target="#dashboard-content"
                 class="flex items-center w-full">
           <div class="svg-icon size-3 icon-plus bg-primary-600 text-white"></div>
-          <div class="text-sm/8 ms-3">Add employer</div>
+          <div class="text-xs/8 lg:text-sm/8 ms-3">Add employer</div>
         </button>
       </div>
     </div>

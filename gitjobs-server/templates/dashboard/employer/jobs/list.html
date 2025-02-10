@@ -55,12 +55,12 @@
   <table class="table-auto w-full text-sm text-left rtl:text-right text-gray-500">
     <thead class="text-xs text-gray-700 uppercase bg-gray-100 border-b">
       <tr>
-        <th scope="col" class="px-5 py-3">Title</th>
-        <th scope="col" class="px-5 py-3">Location</th>
-        <th scope="col" class="px-5 py-3">Status</th>
-        <th scope="col" class="px-5 py-3">Created</th>
-        <th scope="col" class="px-5 py-3">Published</th>
-        <th scope="col" class="px-5 py-3">Archived</th>
+        <th scope="col" class="px-3 xl:px-5 py-3">Title</th>
+        <th scope="col" class="hidden xl:table-cell px-3 xl:px-5 py-3">Location</th>
+        <th scope="col" class="px-3 xl:px-5 py-3">Status</th>
+        <th scope="col" class="px-3 xl:px-5 py-3">Created</th>
+        <th scope="col" class="px-3 xl:px-5 py-3">Published</th>
+        <th scope="col" class="hidden xl:table-cell px-5 py-3">Archived</th>
         <th scope="col" class="p-4"></th>
       </tr>
     </thead>
@@ -71,43 +71,47 @@
         </tr>
       {% else %}
         {% for job in jobs %}
+          {% let location = &self::build_location(job.city.as_deref(), None, job.country.as_deref())|display_some_or("-") %}
           <tr class="odd:bg-white even:bg-gray-50/50 border-b">
             {# Title job #}
-            <th scope="row" class="px-5 py-4 font-medium text-gray-900 min-w-[200px]">
-              <div class="text-ellipsis">{{ job.title }}</div>
+            <th scope="row"
+                class="px-3 xl:px-5 py-4 font-medium text-gray-900 min-w-[100px] max-w-[200px] xl:max-w-auto">
+              <div class="max-w-full truncate">{{ job.title }}</div>
+              <div class="block xl:hidden text-xs text-gray-500 max-w-full truncate">{{ location }}</div>
             </th>
             {# End title job #}
 
             {# Location #}
-            <td class="px-5 py-4 whitespace-nowrap min-w-[100px]">
-              {% let location = &self::build_location(job.city.as_deref(), None, job.country.as_deref())|display_some_or("-") %}
-              {{ location }}
+            <td class="hidden xl:table-cell px-3 xl:px-5 py-4 whitespace-nowrap min-w-[100px] max-w-[100px] xl:max-w-[200px]">
+              <div class="max-w-full truncate">{{ location }}</div>
             </td>
             {# End location #}
 
             {# Status #}
-            <td class="px-5 py-4 whitespace-nowrap w-32">{% call macros::job_status_badge(status = job.status) %}</td>
+            <td class="px-3 xl:px-5 py-4 whitespace-nowrap w-32">
+              {% call macros::job_status_badge(status = job.status) %}
+            </td>
             {# End status #}
 
             {# Created date #}
-            <td class="px-5 py-4 whitespace-nowrap w-32">{{ job.created_at.format(DATE_FORMAT) }}</td>
+            <td class="px-3 xl:px-5 py-4 whitespace-nowrap w-32">{{ job.created_at.format(DATE_FORMAT) }}</td>
             {# End created date #}
 
             {# Published date #}
-            <td class="px-5 py-4 whitespace-nowrap w-32">
+            <td class="px-3 xl:px-5 py-4 whitespace-nowrap w-32">
               {{ job.published_at|display_some_date_or(DATE_FORMAT, "-") }}
             </td>
             {# End published date #}
 
             {# Archived date #}
-            <td class="px-5 py-4 whitespace-nowrap w-32">
+            <td class="hidden xl:table-cell px-3 xl:px-5 py-4 whitespace-nowrap w-32">
               {{ job.archived_at|display_some_date_or(DATE_FORMAT, "-") }}
             </td>
             {# End archived date #}
 
             {# Actions #}
-            <td class="px-5 py-4 w-24">
-              <div class="flex items-center gap-x-3">
+            <td class="px-3 xl:px-5 py-4 w-24">
+              <div class="flex items-center gap-x-2 xl:gap-x-3">
                 <div>
                   <button hx-get="/dashboard/employer/jobs/{{ job.job_id }}/update"
                           hx-target="#dashboard-content"

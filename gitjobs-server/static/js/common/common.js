@@ -12,20 +12,6 @@ export const toggleModalVisibility = (modalId) => {
   }
 };
 
-// Show or hide the provided drawer.
-export const toggleDrawerVisibility = (drawerId) => {
-  const drawer = document.getElementById(drawerId);
-  if (drawer.classList.contains("-translate-x-full")) {
-    drawer.classList.remove("-translate-x-full");
-    // This is used to hide body scroll when the drawer is open
-    drawer.dataset.open = "true";
-  } else {
-    drawer.classList.add("-translate-x-full");
-    // This is used to show body scroll when the drawer is open
-    drawer.dataset.open = "false";
-  }
-};
-
 // Function to delay the execution of a function
 export const debounce = (func, timeout = 300) => {
   let timer;

@@ -255,7 +255,7 @@
 
       <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-6 max-w-4xl">
         {# Open source #}
-        <div class="lg:col-span-3">
+        <div class="col-span-full lg:col-span-3">
           <label for="open_source" class="block text-sm/6 font-medium text-gray-900">Open source</label>
           <div class="mt-2">
             {% call macros::input_range(name = "open_source", value = job.open_source|display_some_or(0)) %}
@@ -265,7 +265,7 @@
         {# End Open source #}
 
         {# Upstream commitment #}
-        <div class="lg:col-span-3">
+        <div class="col-span-full lg:col-span-3">
           <label for="upstream_commitment"
                  class="block text-sm/6 font-medium text-gray-900">Upstream commitment</label>
           <div class="mt-2">

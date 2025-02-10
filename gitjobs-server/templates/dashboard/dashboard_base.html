@@ -1,33 +1,9 @@
 {% extends "base.html" %}
 
 {% block main %}
-  {# Drawer mobile #}
-  <div id="drawer-menu"
-       role="dialog"
-       data-open="false"
-       class="fixed top-0 left-0 h-screen overflow-y-auto transition-transform -translate-x-full z-40 w-80"
-       tabindex="-1">
-
-    <div class="w-full h-full p-4 bg-white">
-      <button type="button"
-              id="close-drawer-menu"
-              class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 absolute top-2.5 end-2.5 flex items-center justify-center">
-        <div class="svg-icon size-5 bg-gray-400 icon-close"></div>
-        <span class="sr-only">Close menu</span>
-      </button>
-
-      <div class="mt-12">
-        {% block menu %}
-        {% endblock menu %}
-      </div>
-    </div>
-    <div id="drawer-menu-backdrop" class="bg-gray-900/50 fixed inset-0 z-[-1]"></div>
-  </div>
-  {# End Drawer mobile #}
-
   {# Sticky menu #}
-  <aside class="hidden lg:block h-screen sticky top-0 lg:w-[250px]">
-    <div class="flex flex-col justify-between h-full p-5 pt-24">
+  <aside class="h-screen sticky top-0 w-[175px] lg:w-[250px]">
+    <div class="flex flex-col justify-between h-full px-3 lg:px-5 py-5 pt-24">
       <div>
         {% block menu %}
         {% endblock menu %}
@@ -38,21 +14,16 @@
           <div class="flex items-center">
             {# Image #}
             <div>
-              <img class="size-8 bg-gray-200 p-1 rounded-full"
+              <img class="size-5 xl:size-8 bg-gray-200 p-1 rounded-full"
                    height="32"
                    width="32"
                    src="/static/images/user.png"
                    alt="User avatar">
-              {# Initials #}
-              {# <div class="relative inline-flex items-center justify-center w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
-              <span class="font-medium text-gray-600 dark:text-gray-300">JL</span>
-            </div> #}
-              {# End initials #}
             </div>
             {# End image #}
 
             {# Name #}
-            <div class="ms-3 text-sm">Jane Smith</div>
+            <div class="ms-3 text-xs xl:text-sm">Jane Smith</div>
             {# End name #}
           </div>
 
@@ -69,48 +40,8 @@
   </aside>
   {# End sticky menu #}
 
-  <main class="w-full lg:w-[calc(100%-250px)] bg-white border rounded-3xl m-5 lg:ms-0 mt-[75px] relative">
-    <div class="block lg:hidden absolute top-5 start-5">
-      <button type="button" id="open-drawer-menu" class="btn-primary px-5 py-3.5">
-        <div class="svg-icon size-3 icon-menu"></div>
-        <span class="sr-only">Open menu</span>
-      </button>
-    </div>
-
+  <main class="w-[calc(100%-175px)] lg:w-[calc(100%-250px)] bg-white border rounded-3xl m-5 ms-0 mt-[75px] relative">
     {% block dashboard_main %}
     {% endblock dashboard_main %}
   </main>
-  <script type="module">
-    import {
-      toggleDrawerVisibility
-    } from '/static/js/common/common.js';
-
-    // Open drawer menu
-    const openDrawerButton = document.getElementById('open-drawer-menu');
-    if (openDrawerButton) {
-      openDrawerButton.addEventListener('click', () => {
-        toggleDrawerVisibility('drawer-menu');
-      });
-    }
-
-    // Close drawer menu
-    const closeDrawerButton = document.getElementById('close-drawer-menu');
-    closeDrawerButton.addEventListener('click', () => {
-      toggleDrawerVisibility('drawer-menu');
-    });
-
-    // Close drawer menu when clicking on a link inside the drawer
-    const drawerMenu = document.getElementById('drawer-menu');
-    drawerMenu.addEventListener('click', (e) => {
-      if (e.target.tagName === 'A') {
-        toggleDrawerVisibility('drawer-menu');
-      }
-    });
-
-    // Close drawer menu when clicking on the backdrop
-    const drawerMenuBackdrop = document.getElementById('drawer-menu-backdrop');
-    drawerMenuBackdrop.addEventListener('click', () => {
-      toggleDrawerVisibility('drawer-menu');
-    });
-  </script>
 {% endblock main %}

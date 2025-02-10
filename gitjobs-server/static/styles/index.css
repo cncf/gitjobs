@@ -1,3 +1,8 @@
+/* Body min-width */
+body {
+  min-width: 910px;
+}
+
 /* Icons */
 .svg-icon {
   mask-size: 100%;

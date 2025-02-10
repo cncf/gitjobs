@@ -1,4 +1,4 @@
-{% import "common.html" as common %}
+{% import "macros.html" as macros %}
 
 {# Jobs form #}
 <form id="jobs-form"
@@ -7,7 +7,7 @@
       hx-trigger="submit">
   <div class="space-y-12">
     <div class="border-b border-gray-900/10 pb-12">
-      {% call common::form_title(title = "Job Information", description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.") %}
+      {% call macros::form_title(title = "Job Information", description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.") %}
 
       <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-6 max-w-3xl">
         {# Job title #}
@@ -27,7 +27,7 @@
         {# Job location #}
         <div class="col-span-full lg:col-span-3">
           <label for="ts_query" class="block text-sm/6 font-medium text-gray-900">Location</label>
-          {% call common::location() %}
+          {% call macros::location() %}
           <p class="mt-1 text-xs/6 text-gray-600">Lorem ipsum.</p>
         </div>
 
@@ -38,19 +38,19 @@
           <label for="type" class="block text-sm/6 font-medium text-gray-900">Job type *</label>
           <div class="mt-2 grid grid-cols-4 gap-x-6">
             {# Contractor #}
-            {% call common::radio_box(name = "type", value = JobType::Contractor, label = "Contractor", icon = "clipboard", checked = JobType::FullTime, required = true) %}
+            {% call macros::radio_box(name = "type", value = JobType::Contractor, label = "Contractor", icon = "clipboard", checked = JobType::FullTime, required = true) %}
             {# End Contractor #}
 
             {# Full time #}
-            {% call common::radio_box(name = "type", value = JobType::FullTime, label = "Full Time", icon = "signature", checked = JobType::FullTime, required = true) %}
+            {% call macros::radio_box(name = "type", value = JobType::FullTime, label = "Full Time", icon = "signature", checked = JobType::FullTime, required = true) %}
             {# End Full time #}
 
             {# Part time #}
-            {% call common::radio_box(name = "type", value = JobType::PartTime, label = "Part Time", icon = "hour_glass", checked = JobType::FullTime, required = true) %}
+            {% call macros::radio_box(name = "type", value = JobType::PartTime, label = "Part Time", icon = "hour_glass", checked = JobType::FullTime, required = true) %}
             {# End Part time #}
 
             {# Internship #}
-            {% call common::radio_box(name = "type", value = JobType::Internship, label = "Internship", icon = "graduation_cap", checked = JobType::FullTime, required = true) %}
+            {% call macros::radio_box(name = "type", value = JobType::Internship, label = "Internship", icon = "graduation_cap", checked = JobType::FullTime, required = true) %}
             {# End Internship #}
           </div>
         </div>
@@ -61,15 +61,15 @@
           <label for="workplace" class="block text-sm/6 font-medium text-gray-900">Workplace *</label>
           <div class="mt-2 grid grid-cols-4 gap-x-6">
             {# Hybrid #}
-            {% call common::radio_box(name = "workplace", value = Workplace::Hybrid, label = "Hybrid", icon = "buildings", checked = Workplace::OnSite, required = true) %}
+            {% call macros::radio_box(name = "workplace", value = Workplace::Hybrid, label = "Hybrid", icon = "buildings", checked = Workplace::OnSite, required = true) %}
             {# End Hybrid #}
 
             {# On site #}
-            {% call common::radio_box(name = "workplace", value = Workplace::OnSite, label = "On Site", icon = "office_chair", checked = Workplace::OnSite, required = true) %}
+            {% call macros::radio_box(name = "workplace", value = Workplace::OnSite, label = "On Site", icon = "office_chair", checked = Workplace::OnSite, required = true) %}
             {# End On site #}
 
             {# Remote #}
-            {% call common::radio_box(name = "workplace", value = Workplace::Remote, label = "Remote", icon = "remote", checked = Workplace::OnSite, required = true) %}
+            {% call macros::radio_box(name = "workplace", value = Workplace::Remote, label = "Remote", icon = "remote", checked = Workplace::OnSite, required = true) %}
             {# End Remote #}
           </div>
         </div>
@@ -78,7 +78,7 @@
         {# Job Description #}
         <div class="col-span-full">
           <label for="description" class="block text-sm/6 font-medium text-gray-900">Description *</label>
-          <div class="mt-2">{% call common::markdown_editor(id = "description", required = true) %}</div>
+          <div class="mt-2">{% call macros::markdown_editor(id = "description", required = true) %}</div>
           <p class="mt-1 text-xs/6 text-gray-600">Lorem ipsum.</p>
         </div>
         {# End Job Description #}
@@ -108,7 +108,7 @@
 
     {# Salary section #}
     <div class="border-b border-gray-900/10 pb-12">
-      {% call common::form_title(title = "Salary", description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.") %}
+      {% call macros::form_title(title = "Salary", description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.") %}
 
       <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-6">
         {# Salary kind #}
@@ -185,12 +185,12 @@
                  class="block text-sm/6 font-medium text-gray-900">Currency</label>
           <div class="mt-2 grid grid-cols-1">
             <select id="salary_currency" name="salary_currency" class="select-primary">
-              {% call common::select_option(value = "", label = "") %}
-              {% call common::select_option(value = "USD", label = "USD - United States Dollar") %}
-              {% call common::select_option(value = "EUR", label = "EUR - Euro") %}
-              {% call common::select_option(value = "GBP", label = "GBP - British Pound Sterling") %}
-              {% call common::select_option(value = "CAD", label = "CAD - Canadian Dollar") %}
-              {% call common::select_option(value = "JPY", label = "JPY - Japanese Yen") %}
+              {% call macros::select_option(value = "", label = "") %}
+              {% call macros::select_option(value = "USD", label = "USD - United States Dollar") %}
+              {% call macros::select_option(value = "EUR", label = "EUR - Euro") %}
+              {% call macros::select_option(value = "GBP", label = "GBP - British Pound Sterling") %}
+              {% call macros::select_option(value = "CAD", label = "CAD - Canadian Dollar") %}
+              {% call macros::select_option(value = "JPY", label = "JPY - Japanese Yen") %}
             </select>
           </div>
         </div>
@@ -201,13 +201,13 @@
           <label for="salary_period" class="block text-sm/6 font-medium text-gray-900">Timeframe</label>
           <div class="mt-2 grid grid-cols-1">
             <select id="salary_period" name="salary_period" class="select-primary">
-              {% call common::select_option(value = "", label = "") %}
-              {% call common::select_option(value = "daily", label = "Daily") %}
-              {% call common::select_option(value = "weekly", label = "Weekly") %}
-              {% call common::select_option(value = "fortnightly", label = "Fortnightly") %}
-              {% call common::select_option(value = "monthly", label = "Monthly") %}
-              {% call common::select_option(value = "quarterly", label = "Quarterly") %}
-              {% call common::select_option(value = "yearly", label = "Yearly") %}
+              {% call macros::select_option(value = "", label = "") %}
+              {% call macros::select_option(value = "daily", label = "Daily") %}
+              {% call macros::select_option(value = "weekly", label = "Weekly") %}
+              {% call macros::select_option(value = "fortnightly", label = "Fortnightly") %}
+              {% call macros::select_option(value = "monthly", label = "Monthly") %}
+              {% call macros::select_option(value = "quarterly", label = "Quarterly") %}
+              {% call macros::select_option(value = "yearly", label = "Yearly") %}
             </select>
           </div>
         </div>
@@ -218,13 +218,13 @@
 
     {# Others #}
     <div class="border-b border-gray-900/10 pb-12">
-      {% call common::form_title(title = "Others", description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.") %}
+      {% call macros::form_title(title = "Others", description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.") %}
 
       <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-6 max-w-4xl">
         {# Open source #}
         <div class="lg:col-span-3">
           <label for="open_source" class="block text-sm/6 font-medium text-gray-900">Open source</label>
-          <div class="mt-2">{% call common::input_range(name = "open_source") %}</div>
+          <div class="mt-2">{% call macros::input_range(name = "open_source") %}</div>
           <p class="mt-1 text-xs/6 text-gray-600">Lorem ipsum.</p>
         </div>
         {# End Open source #}
@@ -233,7 +233,7 @@
         <div class="lg:col-span-3">
           <label for="upstream_commitment"
                  class="block text-sm/6 font-medium text-gray-900">Upstream commitment</label>
-          <div class="mt-2">{% call common::input_range(name = "upstream_commitment") %}</div>
+          <div class="mt-2">{% call macros::input_range(name = "upstream_commitment") %}</div>
           <p class="mt-1 text-xs/6 text-gray-600">Lorem ipsum.</p>
         </div>
         {# End Upstream commitment #}
@@ -260,7 +260,7 @@
         </button>
         {# End preview button #}
 
-        <div class="htmx-indicator">{% call common::spinner(size = 5) %}</div>
+        <div class="htmx-indicator">{% call macros::spinner(size = 5) %}</div>
 
         {# Error preview #}
         <div id="preview-error"

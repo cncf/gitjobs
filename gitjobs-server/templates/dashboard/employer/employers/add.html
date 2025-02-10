@@ -1,4 +1,4 @@
-{% import "common.html" as common %}
+{% import "macros.html" as macros %}
 
 {# Employer form #}
 <form id="employer-form"
@@ -8,7 +8,7 @@
   <div class="space-y-12">
     {# Settings #}
     <div class="border-b border-gray-900/10 pb-12">
-      {% call common::form_title(title = "Settings", description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.") %}
+      {% call macros::form_title(title = "Settings", description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.") %}
 
       <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 max-w-3xl">
         {# Company name #}
@@ -29,7 +29,7 @@
         <div class="col-span-3">
           <div class="h-10"></div>
           <label class="inline-flex items-center cursor-pointer">
-            {% call common::toggle_checkbox(id = "public") %}
+            {% call macros::toggle_checkbox(id = "public") %}
             <span class="ms-3 text-sm font-medium text-gray-900">Public</span>
           </label>
         </div>
@@ -38,7 +38,7 @@
         {# Description #}
         <div class="col-span-full">
           <label for="description" class="block text-sm/6 font-medium text-gray-900">Description *</label>
-          <div class="mt-2">{% call common::markdown_editor(id = "description", required = true) %}</div>
+          <div class="mt-2">{% call macros::markdown_editor(id = "description", required = true) %}</div>
           <p class="mt-1 text-xs/6 text-gray-600">Lorem ipsum.</p>
         </div>
         {# End Description #}
@@ -46,7 +46,7 @@
         {# Location #}
         <div class="col-span-full lg:col-span-3">
           <label for="ts_query" class="block text-sm/6 font-medium text-gray-900">Location</label>
-          {% call common::location() %}
+          {% call macros::location() %}
           <p class="mt-1 text-xs/6 text-gray-600">Lorem ipsum.</p>
         </div>
         {# End location #}
@@ -65,7 +65,7 @@
 
     {# Logo #}
     <div class="border-b border-gray-900/10 pb-12">
-      {% call common::form_title(title = "Logo", description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.") %}
+      {% call macros::form_title(title = "Logo", description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.") %}
 
       <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 max-w-3xl">
         {# Logo url #}

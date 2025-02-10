@@ -1,9 +1,9 @@
-{% import "common.html" as common %}
+{% import "macros.html" as macros %}
 
 {# Status badge #}
 <div class="flex items-center justify-end border-b p-4 py-2 md:p-8 md:py-4">
   <div class="uppercase text-xs text-gray-500 me-3">Status:</div>
-  {% call common::job_status_badge(status = job.status) %}
+  {% call macros::job_status_badge(status = job.status) %}
 </div>
 {# End status badge #}
 
@@ -22,16 +22,16 @@
 
         {% match job.workplace %}
         {% when Workplace::Remote %}
-        {% call common::badge(content = "remote", icon = "location") %}
+        {% call macros::badge(content = "remote", icon = "location") %}
         {% when Workplace::Hybrid %}
-        {% call common::badge(content = "{} (hybrid)"|format(location), icon = "location") %}
+        {% call macros::badge(content = "{} (hybrid)"|format(location), icon = "location") %}
         {% when Workplace::OnSite %}
-        {% call common::badge(content = location, icon = "location") %}
+        {% call macros::badge(content = location, icon = "location") %}
       {% endmatch %}
       {# End location badge #}
 
       {# Type badge #}
-      {% call common::badge(content = job.type_.to_string().replace("-", " "), icon = "calendar") %}
+      {% call macros::badge(content = job.type_.to_string().replace("-", " "), icon = "calendar") %}
       {# End workplace type #}
     </div>
   </div>
@@ -113,7 +113,7 @@
   {% call content_heading(content = "Benefits") %}
   <div class="flex gap-x-5">
     {% for benefit in benefits %}
-      {% call common::badge(content = benefit.replace("-", " ")) %}
+      {% call macros::badge(content = benefit.replace("-", " ")) %}
     {% endfor %}
   </div>
 {% endif %}
@@ -124,7 +124,7 @@
   {% call content_heading(content = "Skills") %}
   <div class="flex gap-x-5">
     {% for skill in skills %}
-      {% call common::badge(content = skill.replace("-", " ")) %}
+      {% call macros::badge(content = skill.replace("-", " ")) %}
     {% endfor %}
   </div>
 {% endif %}

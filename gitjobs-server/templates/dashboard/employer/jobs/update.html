@@ -1,4 +1,4 @@
-{% import "common.html" as common %}
+{% import "macros.html" as macros %}
 
 {% let job_id = job.job_id|display_some %}
 
@@ -9,7 +9,7 @@
       hx-trigger="submit">
   <div class="space-y-12">
     <div class="border-b border-gray-900/10 pb-12">
-      {% call common::form_title(title = "Job Information", description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.") %}
+      {% call macros::form_title(title = "Job Information", description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.") %}
 
       <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-6 max-w-3xl">
         {# Job title #}
@@ -34,7 +34,7 @@
         {# Job location #}
         <div class="col-span-full lg:col-span-3">
           <label for="ts_query" class="block text-sm/6 font-medium text-gray-900">Location</label>
-          {% call common::location(location_id = job.location_id|display_some, city = job.city|display_some, state = job.state|display_some, country = job.country|display_some) %}
+          {% call macros::location(location_id = job.location_id|display_some, city = job.city|display_some, state = job.state|display_some, country = job.country|display_some) %}
           <p class="mt-1 text-xs/6 text-gray-600">Lorem ipsum.</p>
         </div>
         {# End Job location #}
@@ -44,19 +44,19 @@
           <label for="type" class="block text-sm/6 font-medium text-gray-900">Job type *</label>
           <div class="mt-2 grid grid-cols-4 gap-x-6">
             {# Contractor #}
-            {% call common::radio_box(name = "type", value = JobType::Contractor, label = "Contractor", icon = "clipboard", checked = job.type_, required = true) %}
+            {% call macros::radio_box(name = "type", value = JobType::Contractor, label = "Contractor", icon = "clipboard", checked = job.type_, required = true) %}
             {# End Contractor #}
 
             {# Full time #}
-            {% call common::radio_box(name = "type", value = JobType::FullTime, label = "Full Time", icon = "signature", checked = job.type_, required = true) %}
+            {% call macros::radio_box(name = "type", value = JobType::FullTime, label = "Full Time", icon = "signature", checked = job.type_, required = true) %}
             {# End Full time #}
 
             {# Part time #}
-            {% call common::radio_box(name = "type", value = JobType::PartTime, label = "Part Time", icon = "hour_glass", checked = job.type_, required = true) %}
+            {% call macros::radio_box(name = "type", value = JobType::PartTime, label = "Part Time", icon = "hour_glass", checked = job.type_, required = true) %}
             {# End Part time #}
 
             {# Internship #}
-            {% call common::radio_box(name = "type", value = JobType::Internship, label = "Internship", icon = "graduation_cap", checked = job.type_, required = true) %}
+            {% call macros::radio_box(name = "type", value = JobType::Internship, label = "Internship", icon = "graduation_cap", checked = job.type_, required = true) %}
             {# End Internship #}
           </div>
         </div>
@@ -67,15 +67,15 @@
           <label for="workplace" class="block text-sm/6 font-medium text-gray-900">Workplace *</label>
           <div class="mt-2 grid grid-cols-4 gap-x-6">
             {# Hybrid #}
-            {% call common::radio_box(name = "workplace", value = Workplace::Hybrid, label = "Hybrid", icon = "buildings", checked = job.workplace, required = true) %}
+            {% call macros::radio_box(name = "workplace", value = Workplace::Hybrid, label = "Hybrid", icon = "buildings", checked = job.workplace, required = true) %}
             {# End Hybrid #}
 
             {# On site #}
-            {% call common::radio_box(name = "workplace", value = Workplace::OnSite, label = "On Site", icon = "office_chair", checked = job.workplace, required = true) %}
+            {% call macros::radio_box(name = "workplace", value = Workplace::OnSite, label = "On Site", icon = "office_chair", checked = job.workplace, required = true) %}
             {# End On site #}
 
             {# Remote #}
-            {% call common::radio_box(name = "workplace", value = Workplace::Remote, label = "Remote", icon = "remote", checked = job.workplace, required = true) %}
+            {% call macros::radio_box(name = "workplace", value = Workplace::Remote, label = "Remote", icon = "remote", checked = job.workplace, required = true) %}
             {# End Remote #}
           </div>
         </div>
@@ -85,7 +85,7 @@
         <div class="col-span-full">
           <label for="description" class="block text-sm/6 font-medium text-gray-900">Description *</label>
           <div class="mt-2">
-            {% call common::markdown_editor(id = "description", content = job.description, required = true) %}
+            {% call macros::markdown_editor(id = "description", content = job.description, required = true) %}
           </div>
           <p class="mt-1 text-xs/6 text-gray-600">Lorem ipsum.</p>
         </div>
@@ -124,7 +124,7 @@
 
     {# Salary section #}
     <div class="border-b border-gray-900/10 pb-12">
-      {% call common::form_title(title = "Salary", description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.") %}
+      {% call macros::form_title(title = "Salary", description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.") %}
 
       <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-6">
         {% let salary_kind = job.salary_kind() %}
@@ -218,12 +218,12 @@
                  class="block text-sm/6 font-medium text-gray-900">Currency</label>
           <div class="mt-2 grid grid-cols-1">
             <select id="salary_currency" name="salary_currency" class="select-primary">
-              {% call common::select_option(value = "", label = "", selected = job.salary_currency|display_some) %}
-              {% call common::select_option(value = "USD", label = "USD - United States Dollar", selected = job.salary_currency|display_some) %}
-              {% call common::select_option(value = "EUR", label = "EUR - Euro", selected = job.salary_currency|display_some) %}
-              {% call common::select_option(value = "GBP", label = "GBP - British Pound Sterling", selected = job.salary_currency|display_some) %}
-              {% call common::select_option(value = "CAD", label = "CAD - Canadian Dollar", selected = job.salary_currency|display_some) %}
-              {% call common::select_option(value = "JPY", label = "JPY - Japanese Yen", selected = job.salary_currency|display_some) %}
+              {% call macros::select_option(value = "", label = "", selected = job.salary_currency|display_some) %}
+              {% call macros::select_option(value = "USD", label = "USD - United States Dollar", selected = job.salary_currency|display_some) %}
+              {% call macros::select_option(value = "EUR", label = "EUR - Euro", selected = job.salary_currency|display_some) %}
+              {% call macros::select_option(value = "GBP", label = "GBP - British Pound Sterling", selected = job.salary_currency|display_some) %}
+              {% call macros::select_option(value = "CAD", label = "CAD - Canadian Dollar", selected = job.salary_currency|display_some) %}
+              {% call macros::select_option(value = "JPY", label = "JPY - Japanese Yen", selected = job.salary_currency|display_some) %}
             </select>
           </div>
         </div>
@@ -234,13 +234,13 @@
           <label for="salary_period" class="block text-sm/6 font-medium text-gray-900">Timeframe</label>
           <div class="mt-2 grid grid-cols-1">
             <select id="salary_period" name="salary_period" class="select-primary">
-              {% call common::select_option(value = "", label = "", selected = job.salary_period|display_some) %}
-              {% call common::select_option(value = "daily", label = "Daily", selected = job.salary_period|display_some) %}
-              {% call common::select_option(value = "weekly", label = "Weekly", selected = job.salary_period|display_some) %}
-              {% call common::select_option(value = "fortnightly", label = "Fortnightly", selected = job.salary_period|display_some) %}
-              {% call common::select_option(value = "monthly", label = "Monthly", selected = job.salary_period|display_some) %}
-              {% call common::select_option(value = "quarterly", label = "Quarterly", selected = job.salary_period|display_some) %}
-              {% call common::select_option(value = "yearly", label = "Yearly", selected = job.salary_period|display_some) %}
+              {% call macros::select_option(value = "", label = "", selected = job.salary_period|display_some) %}
+              {% call macros::select_option(value = "daily", label = "Daily", selected = job.salary_period|display_some) %}
+              {% call macros::select_option(value = "weekly", label = "Weekly", selected = job.salary_period|display_some) %}
+              {% call macros::select_option(value = "fortnightly", label = "Fortnightly", selected = job.salary_period|display_some) %}
+              {% call macros::select_option(value = "monthly", label = "Monthly", selected = job.salary_period|display_some) %}
+              {% call macros::select_option(value = "quarterly", label = "Quarterly", selected = job.salary_period|display_some) %}
+              {% call macros::select_option(value = "yearly", label = "Yearly", selected = job.salary_period|display_some) %}
             </select>
           </div>
         </div>
@@ -251,14 +251,14 @@
 
     {# Others #}
     <div class="border-b border-gray-900/10 pb-12">
-      {% call common::form_title(title = "Others", description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.") %}
+      {% call macros::form_title(title = "Others", description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.") %}
 
       <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-6 max-w-4xl">
         {# Open source #}
         <div class="lg:col-span-3">
           <label for="open_source" class="block text-sm/6 font-medium text-gray-900">Open source</label>
           <div class="mt-2">
-            {% call common::input_range(name = "open_source", value = job.open_source|display_some_or(0)) %}
+            {% call macros::input_range(name = "open_source", value = job.open_source|display_some_or(0)) %}
           </div>
           <p class="mt-1 text-xs/6 text-gray-600">Lorem ipsum.</p>
         </div>
@@ -269,7 +269,7 @@
           <label for="upstream_commitment"
                  class="block text-sm/6 font-medium text-gray-900">Upstream commitment</label>
           <div class="mt-2">
-            {% call common::input_range(name = "upstream_commitment", value = job.upstream_commitment|display_some_or(0)) %}
+            {% call macros::input_range(name = "upstream_commitment", value = job.upstream_commitment|display_some_or(0)) %}
           </div>
           <p class="mt-1 text-xs/6 text-gray-600">Lorem ipsum.</p>
         </div>
@@ -297,7 +297,7 @@
         </button>
         {# End preview button #}
 
-        <div class="htmx-indicator">{% call common::spinner(size = 5) %}</div>
+        <div class="htmx-indicator">{% call macros::spinner(size = 5) %}</div>
 
         {# Error preview #}
         <div id="preview-error"

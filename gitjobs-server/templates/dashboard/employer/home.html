@@ -1,196 +1,92 @@
-{% extends "base.html" %}
-{% import "common.html" as common %}
+{% extends "dashboard/dashboard_base.html" %}
+{% import "macros.html" as macros %}
+{% import "dashboard/macros.html" as dashboard_macros %}
 
-{% block main %}
-  {# Drawer mobile #}
-  <div id="drawer-menu"
-       role="dialog"
-       data-open="false"
-       class="fixed top-0 left-0 h-screen overflow-y-auto transition-transform -translate-x-full z-40 w-80"
-       tabindex="-1">
-
-    <div class="w-full h-full p-4 bg-white">
-      <button type="button"
-              id="close-drawer-menu"
-              class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 absolute top-2.5 end-2.5 flex items-center justify-center">
-        <div class="svg-icon size-5 bg-gray-400 icon-close"></div>
-        <span class="sr-only">Close menu</span>
-      </button>
-
-      <ul class="fw-normal list-none leading-10 pt-8">
-        {% call menu_item(name = "Jobs", icon = "list", is_active = content.is_jobs(), href = "/dashboard/employer?tab=jobs") %}
-        <li class="uppercase px-3">Settings</li>
-        {% call menu_item(name = "Employer profile", icon = "list", is_active = content.is_settings(), href = "/dashboard/employer?tab=settings", extra_styles = "mb-3") %}
-      </ul>
-    </div>
-    <div id="drawer-menu-backdrop" class="bg-gray-900/50 fixed inset-0 z-[-1]"></div>
-  </div>
-  {# End Drawer mobile #}
-
-  {# Sticky menu #}
-  <aside class="hidden lg:block h-screen sticky top-0 w-[250px]">
-    <div class="flex flex-col justify-between h-full p-5 pt-24">
+{% block menu %}
+  {# Employers #}
+  <div class="flex-grow mb-8">
+    <div class="flex justify-between items-center">
+      <label for="employer_select"
+             class="block text-sm/6 uppercase font-medium text-gray-500">Employer</label>
       <div>
-        {# Employers #}
-        <div class="flex-grow lg:mb-8">
-          <div class="flex justify-between items-center">
-            <label for="employer_select"
-                   class="block text-sm/6 uppercase font-medium text-gray-500">Employer</label>
-            <div>
-              <button hx-get="/dashboard/employer/employers/add"
-                      hx-trigger="click"
-                      hx-target="#dashboard-content"
-                      class="btn-primary p-1.5">
-                <div class="svg-icon size-3 icon-plus"></div>
-              </button>
-            </div>
-          </div>
-          <div class="mt-2">
-            {% let selected_employer = selected_employer_id|display_some %}
-            <select id="employer_select"
-                    name="employer_select"
-                    class="select-primary disabled:bg-gray-100 disabled:opacity-75"
-                    {% if employers.len() == 0 %}disabled{% endif %}>
-              {% for employer in employers %}
-                {% call common::select_option(value = employer.employer_id, label = employer.company, selected = selected_employer) %}
-              {% endfor %}
-            </select>
-            <button id="change-selected-employer-button"
-                    data-url="/dashboard/employer/employers/{:employer_id}/select"
-                    data-replacement="employer_id"
-                    hx-put="/dashboard/employer/employers/{:employer_id}/select"
-                    hx-trigger="click"
-                    hx-target="#dashboard-content"
-                    class="hidden">Select</button>
-          </div>
-        </div>
-        {# End employers #}
-
-        {% if !content.is_employer_initial_setup() %}
-          <div class="leading-10 pt-6 border-t grid gap-y-0.5">
-            {% call menu_title(text = "Jobs") %}
-            {% call menu_item(name = "List", icon = "list", is_active = content.is_jobs(), href = "/dashboard/employer?tab=jobs") %}
-            <div class="rounded-md px-3 mb-3 text-sm/8 border border-transparent hover:bg-white hover:border-gray-200">
-              <button hx-get="/dashboard/employer/jobs/add"
-                      hx-target="#dashboard-content"
-                      class="flex items-center w-full">
-                <div class="svg-icon size-3 icon-plus bg-primary-600 text-white"></div>
-                <div class="text-sm/8 ms-3">Add job</div>
-              </button>
-            </div>
-
-            {% call menu_title(text = "Employer") %}
-            {% call menu_item(name = "Profile", icon = "gear", is_active = content.is_settings(), href = "/dashboard/employer?tab=settings") %}
-            <div class="rounded-md px-3 mb-3 text-sm/8 border border-transparent hover:bg-white hover:border-gray-200">
-              <button hx-get="/dashboard/employer/employers/add"
-                      hx-trigger="click"
-                      hx-target="#dashboard-content"
-                      class="flex items-center w-full">
-                <div class="svg-icon size-3 icon-plus bg-primary-600 text-white"></div>
-                <div class="text-sm/8 ms-3">Add employer</div>
-              </button>
-            </div>
-          </div>
-        {% endif %}
-      </div>
-
-      <div>
-        <div class="flex flex-row items-center justify-between border px-3 py-2 rounded-lg bg-white">
-          <div class="flex items-center">
-            {# Image #}
-            <div>
-              <img class="size-8 bg-gray-200 p-1 rounded-full"
-                   height="32"
-                   width="32"
-                   src="/static/images/user.png"
-                   alt="User avatar">
-              {# Initials #}
-              {# <div class="relative inline-flex items-center justify-center w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
-              <span class="font-medium text-gray-600 dark:text-gray-300">JL</span>
-            </div> #}
-              {# End initials #}
-            </div>
-            {# End image #}
-
-            {# Name #}
-            <div class="ms-3 text-sm">Jane Smith</div>
-            {# End name #}
-          </div>
-
-          {# Logout #}
-          <a href="/log-out" class="btn-tertiary size-8 p-1">
-            <div class="h-full w-full flex items-center justify-center">
-              <div class="svg-icon size-4 m-auto icon-logout"></div>
-            </div>
-          </a>
-          {# End logout #}
-        </div>
-      </div>
-    </div>
-  </aside>
-  {# End sticky menu #}
-
-  <main class="w-[calc(100%-250px)] bg-white border rounded-3xl m-5 ms-0 mt-[75px] relative">
-    {# Drawer button mobile #}
-    {% if !content.is_employer_initial_setup() %}
-      <div class="block lg:hidden absolute top-5 start-5">
-        <button type="button" id="open-drawer-menu" class="btn-primary px-5 py-3.5">
-          <div class="svg-icon size-3 icon-menu"></div>
-          <span class="sr-only">Open menu</span>
+        <button hx-get="/dashboard/employer/employers/add"
+                hx-trigger="click"
+                hx-target="#dashboard-content"
+                class="btn-primary p-1.5">
+          <div class="svg-icon size-3 icon-plus"></div>
         </button>
       </div>
-    {% endif %}
-    {# End drawer button mobile #}
-
-    <div id="dashboard-content" class="p-4 sm:p-6 lg:p-8">
-      {# Content -#}
-      {{ content|safe }}
-      {# End Content #}
     </div>
+    <div class="mt-2">
+      {% let selected_employer = selected_employer_id|display_some %}
+      <select id="employer_select"
+              name="employer_select"
+              class="select-primary disabled:bg-gray-100 disabled:opacity-75"
+              {% if employers.len() == 0 %}disabled{% endif %}>
+        {% for employer in employers %}
+          {% call macros::select_option(value = employer.employer_id, label = employer.company, selected = selected_employer) %}
+        {% endfor %}
+      </select>
+      <button id="change-selected-employer-button"
+              data-url="/dashboard/employer/employers/{:employer_id}/select"
+              data-replacement="employer_id"
+              hx-put="/dashboard/employer/employers/{:employer_id}/select"
+              hx-trigger="click"
+              hx-target="#dashboard-content"
+              class="hidden">Select</button>
+    </div>
+  </div>
+  {# End employers #}
 
-    {# Refresh table button #}
-    <button id="refresh-table"
-            hx-get="/dashboard/employer/jobs/list"
-            hx-target="#dashboard-content"
-            class="hidden">Refresh table</button>
-    {# End refresh table button #}
-  </main>
+  {% if !content.is_employer_initial_setup() %}
+    <div class="leading-10 pt-6 border-t grid gap-y-0.5">
+      {% call dashboard_macros::menu_title(text = "Jobs") %}
+      {% call dashboard_macros::menu_item(name = "List", icon = "list", is_active = content.is_jobs(), href = "/dashboard/employer?tab=jobs") %}
+      <div class="rounded-md px-3 mb-3 text-sm/8 border border-transparent hover:bg-white hover:border-gray-200">
+        <button hx-get="/dashboard/employer/jobs/add"
+                hx-target="#dashboard-content"
+                class="flex items-center w-full">
+          <div class="svg-icon size-3 icon-plus bg-primary-600 text-white"></div>
+          <div class="text-sm/8 ms-3">Add job</div>
+        </button>
+      </div>
+
+      {% call dashboard_macros::menu_title(text = "Employer") %}
+      {% call dashboard_macros::menu_item(name = "Profile", icon = "gear", is_active = content.is_settings(), href = "/dashboard/employer?tab=settings") %}
+      <div class="rounded-md px-3 mb-3 text-sm/8 border border-transparent hover:bg-white hover:border-gray-200">
+        <button hx-get="/dashboard/employer/employers/add"
+                hx-trigger="click"
+                hx-target="#dashboard-content"
+                class="flex items-center w-full">
+          <div class="svg-icon size-3 icon-plus bg-primary-600 text-white"></div>
+          <div class="text-sm/8 ms-3">Add employer</div>
+        </button>
+      </div>
+    </div>
+  {% endif %}
+{% endblock menu %}
+
+{% block dashboard_main %}
+  <div id="dashboard-content" class="p-4 sm:p-6 lg:p-8">
+    {# Content -#}
+    {{ content|safe }}
+    {# End Content #}
+  </div>
+
+  {# Refresh table button #}
+  <button id="refresh-table"
+          hx-get="/dashboard/employer/jobs/list"
+          hx-target="#dashboard-content"
+          class="hidden">Refresh table</button>
+  {# End refresh table button #}
+
   <script type="module">
     import {
-      processNewHtmxUrl,
-      toggleDrawerVisibility
+      processNewHtmxUrl
     } from '/static/js/common/common.js';
     import {
       updateJobsList
     } from '/static/js/dashboard/employer/jobs.js';
-
-    // Open drawer menu
-    const openDrawerButton = document.getElementById('open-drawer-menu');
-    if (openDrawerButton) {
-      openDrawerButton.addEventListener('click', () => {
-        toggleDrawerVisibility('drawer-menu');
-      });
-    }
-
-    // Close drawer menu
-    const closeDrawerButton = document.getElementById('close-drawer-menu');
-    closeDrawerButton.addEventListener('click', () => {
-      toggleDrawerVisibility('drawer-menu');
-    });
-
-    // Close drawer menu when clicking on a link inside the drawer
-    const drawerMenu = document.getElementById('drawer-menu');
-    drawerMenu.addEventListener('click', (e) => {
-      if (e.target.tagName === 'A') {
-        toggleDrawerVisibility('drawer-menu');
-      }
-    });
-
-    // Close drawer menu when clicking on the backdrop
-    const drawerMenuBackdrop = document.getElementById('drawer-menu-backdrop');
-    drawerMenuBackdrop.addEventListener('click', () => {
-      toggleDrawerVisibility('drawer-menu');
-    });
 
     const employerSelect = document.getElementById('employer_select');
     const changeSelectedEmployerButton = document.getElementById('change-selected-employer-button');
@@ -211,31 +107,4 @@
       changeSelectedEmployerButton.setAttribute('hx-put', changeSelectedEmployerButton.dataset.url);
     });
   </script>
-{% endblock main %}
-
-{# Menu title #}
-{% macro menu_title(text) %}
-  <div class="text-xs/6 text-gray-400 uppercase py-1.5">{{ text }}</div>
-{% endmacro menu_title %}
-{# End menu title #}
-
-{# Menu item #}
-{% macro menu_item(name, icon, is_active, href, extra_styles = "" ) %}
-  {% if is_active %}
-    <div class="relative bg-white border px-3 text-sm/8 rounded-lg {{ extra_styles }}">
-      <a href="{{ href }}" class="flex items-center">
-        <div class="svg-icon size-3 icon-{{ icon }} bg-primary-600 text-white"></div>
-        <div class="text-sm/8 ms-3">{{ name }}</div>
-      </a>
-      <div class="absolute top-0.5 -left-5 bottom-0.5 w-1 bg-primary-600 rounded-lg"></div>
-    </div>
-  {% else %}
-    <div class="rounded-md px-3 text-sm/8 border border-transparent hover:bg-white hover:border-gray-200 {{ extra_styles }}">
-      <a href="{{ href }}" class="flex items-center">
-        <div class="svg-icon size-3 icon-{{ icon }} bg-primary-600 text-white"></div>
-        <div class="text-sm/8 ms-3">{{ name }}</div>
-      </a>
-    </div>
-  {% endif %}
-{% endmacro menu_item %}
-{# End menu item #}
+{% endblock dashboard_main %}

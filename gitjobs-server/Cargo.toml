@@ -20,6 +20,7 @@ chrono-tz = { workspace = true }
 deadpool-postgres = { workspace = true }
 emojis = { workspace = true }
 figment = { workspace = true }
+image = { workspace = true }
 mime_guess = { workspace = true }
 minify-html = { workspace = true }
 num-format = { workspace = true }

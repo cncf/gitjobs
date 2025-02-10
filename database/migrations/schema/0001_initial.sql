@@ -61,10 +61,22 @@ create table location (
 create index location_coordinates_idx on location using gist (coordinates);
 create index location_tsdoc_idx on location using gin (tsdoc);
 
+create table image (
+    image_id uuid not null primary key
+);
+
+create table image_version (
+    image_id uuid not null references image on delete cascade,
+    version text not null check (version <> ''),
+    data bytea not null,
+    primary key (image_id, version)
+);
+
 create table job_seeker_profile (
     job_seeker_profile_id uuid primary key default gen_random_uuid(),
     user_id uuid not null unique references "user",
     location_id uuid references location,
+    photo_id uuid references image (image_id),
 
     email text not null check (email <> ''),
     name text not null check (name <> ''),
@@ -82,14 +94,14 @@ create table job_seeker_profile (
     phone text check (phone <> ''),
     photo_url text check (photo_url <> ''),
     projects jsonb,
-    resume_blob bytea,
-    resume_filename text check (resume_filename <> ''),
+    resume_url text check (resume_url <> ''),
     skills text[],
     twitter_url text check (twitter_url <> ''),
     website_url text check (website_url <> '')
 );
 
 create index job_seeker_profile_location_id_idx on job_seeker_profile (location_id);
+create index job_seeker_profile_photo_id_idx on job_seeker_profile (photo_id);
 create index job_seeker_profile_user_id_idx on job_seeker_profile (user_id);
 
 create table employer_tier (
@@ -105,9 +117,10 @@ create index tier_job_board_id_idx on employer_tier (job_board_id);
 
 create table employer (
     employer_id uuid primary key default gen_random_uuid(),
-    employer_tier_id uuid references employer_tier,
     job_board_id uuid not null references job_board,
+    employer_tier_id uuid references employer_tier,
     location_id uuid references location,
+    logo_id uuid references image (image_id),
 
     company text not null check (company <> ''),
     created_at timestamptz not null default current_timestamp,
@@ -119,9 +132,10 @@ create table employer (
     website_url text check (website_url <> '')
 );
 
-create index employer_employer_tier_id_idx on employer (employer_tier_id);
 create index employer_job_board_id_idx on employer (job_board_id);
+create index employer_employer_tier_id_idx on employer (employer_tier_id);
 create index employer_location_id_idx on employer (location_id);
+create index employer_logo_id_idx on employer (logo_id);
 
 create table employer_team (
     employer_id uuid not null references employer on delete cascade,

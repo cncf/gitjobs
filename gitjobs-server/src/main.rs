@@ -21,6 +21,7 @@ mod auth;
 mod config;
 mod db;
 mod handlers;
+mod img;
 mod router;
 mod templates;
 

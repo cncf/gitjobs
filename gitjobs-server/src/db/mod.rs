@@ -7,15 +7,17 @@ use auth::DBAuth;
 use common::DBCommon;
 use dashboard::DBDashBoard;
 use deadpool_postgres::Pool;
+use img::DBImage;
 
 mod auth;
 mod common;
 mod dashboard;
+pub(crate) mod img;
 
 /// Abstraction layer over the database. Trait that defines some operations a
 /// DB implementation must support.
 #[async_trait]
-pub(crate) trait DB: DBAuth + DBCommon + DBDashBoard {}
+pub(crate) trait DB: DBAuth + DBCommon + DBImage + DBDashBoard {}
 
 /// Type alias to represent a DB trait object.
 pub(crate) type DynDB = Arc<dyn DB + Send + Sync>;

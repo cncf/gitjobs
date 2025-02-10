@@ -71,6 +71,7 @@ impl DBDashBoardEmployer for PgDB {
                     description,
                     public,
                     location_id,
+                    logo_id,
                     logo_url,
                     website_url
                 ) values (
@@ -79,8 +80,9 @@ impl DBDashBoardEmployer for PgDB {
                     $3::text,
                     $4::bool,
                     $5::uuid,
-                    $6::text,
-                    $7::text
+                    $6::uuid,
+                    $7::text,
+                    $8::text
                 ) returning employer_id;
                 ",
                 &[
@@ -89,6 +91,7 @@ impl DBDashBoardEmployer for PgDB {
                     &employer.description,
                     &employer.public,
                     &employer.location_id,
+                    &employer.logo_id,
                     &employer.logo_url,
                     &employer.website_url,
                 ],
@@ -233,6 +236,7 @@ impl DBDashBoardEmployer for PgDB {
                     e.description,
                     e.public,
                     e.location_id,
+                    e.logo_id,
                     e.logo_url,
                     e.website_url,
                     l.city,
@@ -252,6 +256,7 @@ impl DBDashBoardEmployer for PgDB {
             city: row.get("city"),
             country: row.get("country"),
             location_id: row.get("location_id"),
+            logo_id: row.get("logo_id"),
             logo_url: row.get("logo_url"),
             state: row.get("state"),
             website_url: row.get("website_url"),
@@ -446,8 +451,9 @@ impl DBDashBoardEmployer for PgDB {
                 description = $3::text,
                 public = $4::bool,
                 location_id = $5::uuid,
-                logo_url = $6::text,
-                website_url = $7::text,
+                logo_id = $6:uuid,
+                logo_url = $7::text,
+                website_url = $8::text,
                 updated_at = current_timestamp
             where employer_id = $1::uuid;
             ",
@@ -457,6 +463,7 @@ impl DBDashBoardEmployer for PgDB {
                 &employer.description,
                 &employer.public,
                 &employer.location_id,
+                &employer.logo_id,
                 &employer.logo_url,
                 &employer.website_url,
             ],

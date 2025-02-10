@@ -1,6 +1,8 @@
 //! This module defines the router used to dispatch HTTP requests to the
 //! corresponding handler.
 
+use std::sync::Arc;
+
 use anyhow::Result;
 use axum::{
     extract::FromRef,
@@ -30,6 +32,7 @@ use crate::{
         auth::{self, LOG_IN_URL},
         common, dashboard, jobboard,
     },
+    img::{db::DbImageStore, DynImageStore},
 };
 
 /// Default cache duration.
@@ -47,13 +50,18 @@ struct StaticFile;
 #[derive(Clone, FromRef)]
 pub(crate) struct State {
     pub db: DynDB,
+    pub image_store: DynImageStore,
 }
 
 /// Setup router.
 #[instrument(skip_all)]
 pub(crate) fn setup(cfg: &HttpServerConfig, db: DynDB) -> Result<Router> {
     // Setup router state
-    let state = State { db: db.clone() };
+    let image_store = Arc::new(DbImageStore::new(db.clone()));
+    let state = State {
+        db: db.clone(),
+        image_store,
+    };
 
     // Setup authentication / authorization layer
     let auth_layer = crate::auth::setup_layer(cfg, db)?;
@@ -66,6 +74,7 @@ pub(crate) fn setup(cfg: &HttpServerConfig, db: DynDB) -> Result<Router> {
     let mut router = Router::new()
         .nest("/dashboard/employer", employer_dashboard_router)
         .nest("/dashboard/job-seeker", job_seeker_dashboard_router)
+        .route("/images", post(common::upload_image))
         .route("/locations/search", get(common::search_locations))
         .route_layer(login_required!(
             AuthnBackend,

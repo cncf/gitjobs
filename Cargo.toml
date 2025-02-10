@@ -13,17 +13,18 @@ rust-version = "1.84"
 [workspace.dependencies]
 anyhow = "1.0.95"
 async-trait = "0.1.86"
-axum = { version = "0.8.1", features = ["macros"] }
+axum = { version = "0.8.1", features = ["macros", "multipart"] }
 axum-login = "0.17.0"
 axum-extra = { version = "0.10.0", features = ["form"] }
 axum-messages = "0.8.0"
 cached = { version = "0.54.0", features = ["async"] }
-clap = { version = "4.5.27", features = ["derive"] }
+clap = { version = "4.5.28", features = ["derive"] }
 chrono = { version = "0.4.39", features = ["serde"] }
 chrono-tz = { version = "0.10.1", features = ["serde"] }
 deadpool-postgres = { version = "0.14.1", features = ["serde"] }
 emojis = "0.6.4"
 figment = { version = "0.10.19", features = ["yaml", "env"] }
+image = "0.25.5"
 mime_guess = "2.0.5"
 minify-html = "0.15.0"
 num-format = "0.4.4"
@@ -63,4 +64,4 @@ tower-sessions-moka-store = "0.15.0"
 tracing = "0.1.41"
 tracing-subscriber = { version = "0.3.19", features = ["env-filter", "json"] }
 unicode-segmentation = "1.12.0"
-uuid = { version = "1.12.1", features = ["serde", "v4"] }
+uuid = { version = "1.13.1", features = ["serde", "v4"] }

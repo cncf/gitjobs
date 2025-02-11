@@ -1,26 +1,37 @@
 {# Menu title #}
-{% macro menu_title(text) %}
-  <div class="text-xs/6 text-gray-400 uppercase py-1.5">{{ text }}</div>
+{% macro menu_title(text, extra_styles = "") %}
+  <div class="text-xs/6 text-gray-400 uppercase px-3 {{ extra_styles }}">{{ text }}</div>
 {% endmacro menu_title %}
 {# End menu title #}
 
 {# Menu item #}
-{% macro menu_item(name, icon, is_active, href, extra_styles = "" ) %}
+{% macro menu_item(name, icon, is_active, href, disabled = false, extra_styles = "", icon_size = 4 ) %}
   {% if is_active %}
     <div class="relative bg-white border px-3 rounded-lg {{ extra_styles }}">
       <a href="{{ href }}" class="flex items-center">
-        <div class="svg-icon size-3 icon-{{ icon }} bg-primary-600 text-white"></div>
+        <div class="svg-icon size-{{ icon_size }} icon-{{ icon }} bg-primary-600 text-white"></div>
         <div class="text-xs/8 lg:text-sm/8 ms-3">{{ name }}</div>
       </a>
       <div class="absolute top-0.5 -left-3 lg:-left-5 bottom-0.5 w-1 bg-primary-600 rounded-lg"></div>
     </div>
   {% else %}
-    <div class="rounded-md px-3 border border-transparent hover:bg-white hover:border-gray-200 {{ extra_styles }}">
-      <a href="{{ href }}" class="flex items-center">
-        <div class="svg-icon size-3 icon-{{ icon }} bg-primary-600 text-white"></div>
-        <div class="text-xs/8 lg:text-sm/8 ms-3">{{ name }}</div>
-      </a>
-    </div>
+    {% if disabled %}
+      <button class="rounded-md px-3 border border-transparent cursor-not-allowed {{ extra_styles }}"
+              disabled
+              title="Coming soon!">
+        <div class="flex items-center">
+          <div class="svg-icon size-{{ icon_size }} icon-{{ icon }} bg-primary-600 text-white"></div>
+          <div class="text-xs/8 lg:text-sm/8 ms-3">{{ name }}</div>
+        </div>
+      </button>
+    {% else %}
+      <div class="rounded-md px-3 border border-transparent hover:bg-white hover:border-gray-200 {{ extra_styles }}">
+        <a href="{{ href }}" class="flex items-center">
+          <div class="svg-icon size-{{ icon_size }} icon-{{ icon }} bg-primary-600 text-white"></div>
+          <div class="text-xs/8 lg:text-sm/8 ms-3">{{ name }}</div>
+        </a>
+      </div>
+    {% endif %}
   {% endif %}
 {% endmacro menu_item %}
 {# End menu item #}

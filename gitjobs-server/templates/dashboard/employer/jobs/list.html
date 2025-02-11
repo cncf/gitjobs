@@ -1,13 +1,9 @@
 {% import "macros.html" as macros %}
 
-<div class="flex justify-between mb-6">
-  <div class="flex items-center gap-x-6">
-    {# Filters button #}
-    <button class="btn-primary p-2">
-      <div class="svg-icon size-4 icon-filter"></div>
-    </button>
-    {# End filters button #}
+{% call macros::form_title(title = "Jobs") %}
 
+<div class="flex justify-between my-10">
+  <div class="flex items-center gap-x-6">
     {# Search jobs input #}
     <div class="relative">
       <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
@@ -18,7 +14,8 @@
              type="text"
              value=""
              class="input-primary peer ps-10 w-96"
-             placeholder="Search jobs">
+             placeholder="Search jobs"
+             disabled>
       <div class="absolute end-1.5 top-1.5 peer-placeholder-shown:hidden">
         <button id="clean-search-jobs" type="button" class="mt-[2px]">
           <div class="svg-icon size-5 bg-gray-400 hover:bg-gray-700 icon-close"></div>
@@ -67,7 +64,13 @@
     <tbody id="jobs-list">
       {% if jobs.len() == 0 %}
         <tr class="bg-white border-b">
-          <td class="p-8 text-center" colspan="7">Any jobs added yet.</td>
+          <td class="px-8 py-20 text-center" colspan="7">
+            <div class="text-3xl mb-10">It looks like you haven't created any jobs yet.</div>
+
+            <p class="text-md text-gray-700">
+              Jobs created by this employer will be listed here. You can create a new job by clicking on the <span class="italic">Add Job</span> button in the top right corner.
+            </p>
+          </td>
         </tr>
       {% else %}
         {% for job in jobs %}
@@ -154,7 +157,7 @@
                           </div>
                         </button>
                       </li>
-                      {% if job.status != JobStatus::Archived %}
+                      {% if job.status == JobStatus::Published %}
                         <li>
                           <button hx-put="/dashboard/employer/jobs/{{ job.job_id }}/archive"
                                   hx-target="#dashboard-content"
@@ -192,25 +195,22 @@
           if (dropdownActions) {
             const isOpen = dropdownActions.classList.contains('hidden');
             dropdownActions.classList.toggle('hidden');
-            // Close dropdown actions when clicking outside
             if (isOpen) {
+              // Close dropdown actions when clicking outside
               document.addEventListener('click', (event) => {
                 if (!dropdownActions.contains(event.target) && !btnAction.contains(event.target)) {
                   dropdownActions.classList.add('hidden');
                 }
               });
-              // Remove event listener when dropdown is closed
             } else {
+              // Remove event listener when dropdown is closed
               document.removeEventListener('click', () => {});
             }
 
-            // Close dropdown actions when an action is clicked
             const allActions = dropdownActions.querySelectorAll('button');
             allActions.forEach((action) => {
-              action.addEventListener('click', () => {
-                dropdownActions.classList.add('hidden');
-
-                // Update jobs list after action is performed
+              // Refresh the jobs list after an action is clicked
+              action.addEventListener('htmx:afterRequest', () => {
                 updateJobsList();
               });
             });

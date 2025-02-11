@@ -4,29 +4,19 @@
      aria-hidden="true"
      role="dialog"
      data-open="false"
-     class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 p-10 z-50 justify-center items-center w-full md:inset-0 h-full max-h-full flex">
+     class="hidden modal fixed w-full h-full top-0 left-0 z-50 flex items-center justify-center">
   <div id="backdrop-preview-modal"
        class="modal-overlay absolute w-full h-full bg-black opacity-75"></div>
-  <div class="pointer-events-auto relative flex max-h-[100%] max-w-7xl flex-col overflow-hidden rounded-md border-none bg-white bg-clip-padding text-current shadow-4 outline-none pointer-events-auto relative flex max-h-[100%] w-full flex-col overflow-hidden rounded-md border-none bg-white bg-clip-padding text-current shadow-4 outline-none">
-    {# Modal header -#}
-    <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t">
-      {# Title -#}
-      <h3 class="text-xl font-semibold text-gray-900">Job preview</h3>
-      {# End title -#}
-
-      {# Close button -#}
-      <button id="close-preview-modal"
-              type="button"
-              class="group bg-transparent hover:bg-gray-200 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center">
-        <div class="svg-icon h-5 w-5 bg-gray-400 grouphover:bg-gray-900 icon-close"></div>
-        <span class="sr-only">Close modal</span>
-      </button>
-      {# End close button -#}
-    </div>
-    {# End modal header -#}
-
+  {# Close button -#}
+  <button id="close-preview-modal"
+          class="modal-close absolute top-0 right-0 cursor-pointer mt-10 mr-10 p-2 rounded-full hover:bg-gray-300/30">
+    <div class="svg-icon size-8 bg-gray-100 icon-close"></div>
+  </button>
+  {# End close button -#}
+  <div class="modal-container fixed w-[1200px] max-w-[80%] top-20 bottom-20 p-10 bg-white drop-shadow-lg">
     {# Modal content -#}
-    <div id="preview-content" class="flex flex-col overflow-hidden"></div>
+    <div id="preview-content"
+         class="modal-content w-full h-full overflow-x-auto"></div>
     {# End modal content -#}
   </div>
 </div>

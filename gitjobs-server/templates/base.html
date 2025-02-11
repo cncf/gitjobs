@@ -37,7 +37,7 @@
     <style type="text/tailwindcss">
       @layer components {
         .btn-primary {
-          @apply rounded-full bg-primary-600 border border-primary-600 px-5 py-2 text-sm text-white hover:bg-primary-900 hover:border-primary-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600;
+          @apply cursor-pointer rounded-full bg-primary-600 border border-primary-600 px-5 py-2 text-sm text-white hover:bg-primary-900 hover:border-primary-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600;
         }
 
         .btn-primary .svg-icon {
@@ -45,7 +45,7 @@
         }
 
         .btn-secondary {
-          @apply rounded-full bg-primary-50 border-primary-50 px-5 py-2 text-sm text-primary-900 hover:bg-primary-100 hover:border-primary-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600;
+          @apply cursor-pointer rounded-full bg-primary-50 border border-primary-900 px-5 py-2 text-sm text-primary-900 hover:bg-primary-100 hover:border-primary-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600;
         }
 
         .btn-secondary .svg-icon {
@@ -53,19 +53,23 @@
         }
 
         .btn-tertiary {
-          @apply text-sm/6 text-gray-900 px-5 py-2 border-transparent rounded-full hover:bg-gray-50 hover:border-gray-50;
+          @apply cursor-pointer text-sm/6 text-gray-900 px-5 py-2 border-transparent rounded-full hover:bg-gray-50 hover:border-gray-50;
         }
 
         .btn-tertiary .svg-icon {
           @apply bg-gray-900;
         }
 
-        .btn-outline {
-          @apply text-primary-600 border border-primary-600 rounded-full hover:text-white hover:bg-primary-900 hover:border-primary-900 focus:ring-4 focus:outline-none focus:ring-primary-300 text-sm px-5 py-2;
+        .btn-primary-outline {
+          @apply cursor-pointer text-primary-600 border border-primary-600 bg-white rounded-full hover:text-white hover:bg-primary-900 hover:border-primary-900 focus:ring-4 focus:outline-none focus:ring-primary-300 text-sm px-5 py-2;
         }
 
-        .btn-outline .svg-icon {
+        .btn-primary-outline .svg-icon {
           @apply bg-primary-600;
+        }
+
+        .btn-mini {
+          @apply text-xs/6 px-2 py-0;
         }
 
         .input-primary {
@@ -78,6 +82,18 @@
 
         .radio-primary {
           @apply w-4 h-4 text-primary-600 border border-gray-200 bg-gray-50 cursor-pointer focus:ring-primary-500 focus:ring-2;
+        }
+
+        .asterisk {
+          @apply font-bold text-gray-900 text-lg/4;
+        }
+
+        .form-label {
+          @apply block text-sm/6 font-medium text-gray-900;
+        }
+
+        .form-legend {
+          @apply mt-1 text-xs/6 text-gray-600;
         }
       }
     </style>
@@ -100,6 +116,7 @@
                 '900': '#841757',
                 '950': '#510632',
               },
+              base: '#fcfbfc',
             },
             fontSize: {
               filterTitle: '0.8rem',
@@ -132,7 +149,7 @@
       });
     </script>
   </head>
-  <body class="h-screen font-inter bg-gray-50">
+  <body class="h-screen font-inter bg-base">
     {# Header #}
     {% include "header.html" %}
     {# End Header #}

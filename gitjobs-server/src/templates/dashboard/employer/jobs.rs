@@ -9,7 +9,7 @@ use uuid::Uuid;
 
 use crate::templates::{
     filters,
-    helpers::{build_location, normalize, DATE_FORMAT},
+    helpers::{build_image_url, build_location, normalize, DATE_FORMAT},
 };
 
 use super::employers::Employer;

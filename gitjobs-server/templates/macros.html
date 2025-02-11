@@ -1,8 +1,8 @@
 {# Spinner -#}
-{% macro spinner(size = 4, extra_styles = "") %}
+{% macro spinner(size = 4, bg_color = "gray-200", extra_styles = "") %}
   <div role="status" class="{{ extra_styles }}">
     <svg aria-hidden="true"
-         class="inline size-{{ size }} text-gray-200 animate-spin fill-primary-600"
+         class="inline size-{{ size }} text-{{ bg_color }} animate-spin fill-primary-600"
          viewBox="0 0 100 101"
          fill="none"
          xmlns="http://www.w3.org/2000/svg">
@@ -27,7 +27,7 @@
            hx-include="#ts_query"
            hx-trigger="searchLocations"
            hx-target="#search-location"
-           hx-indicator=".htmx-indicator"
+           hx-indicator="#location-spinner"
            type="text"
            value="{{ value }}"
            class="input-primary peer ps-10"
@@ -42,7 +42,7 @@
     <input type="hidden" name="city" id="city" value="{{ city }}">
     <input type="hidden" name="state" id="state" value="{{ state }}">
     <input type="hidden" name="country" id="country" value="{{ country }}">
-    <div class="htmx-indicator absolute end-10 top-1">{% call spinner(size = 5) %}</div>
+    <div id="location-spinner" class="hx-indicator absolute end-10 top-1">{% call spinner(size = 5) %}</div>
     <div class="absolute end-1.5 top-1.5 peer-placeholder-shown:hidden">
       <button id="clean-location" type="button" class="mt-[2px]">
         <div class="svg-icon size-5 bg-gray-400 hover:bg-gray-700 icon-close"></div>
@@ -138,7 +138,7 @@
     const easyMDE = new EasyMDE({
       element: document.getElementById('{{ id }}'),
       forceSync: true,
-      hideIcons: ["side-by-side", "fullscreen", "guide"],
+      hideIcons: ["side-by-side", "fullscreen", "guide", "heading", "image", "code"],
       showIcons: ["code", "table", "undo", "redo", "horizontal-rule"],
       status: false,
     });
@@ -208,7 +208,7 @@
 
 {# Badge #}
 {% macro badge(content, content_styles = "", icon = "") %}
-  <div class="inline-flex bg-gray-100 text-gray-800 text-sm font-medium me-2 px-2.5 py-1 rounded-md border">
+  <div class="inline-flex bg-gray-100 text-gray-800 text-sm/4 font-medium px-2.5 py-1.5 rounded-full border">
     <div class="flex items-center">
       {% if icon.to_string() != "" %}
         <div class="me-2">
@@ -234,7 +234,7 @@
            class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary-900">
     <div id="tooltip-{{ name }}"
          role="tooltip"
-         class="absolute z-10 inline-block px-2 py-1 text-sm font-medium text-white text-center bg-primary-900 rounded-lg shadow-xs tooltip top-8 start-[8.5px] -ms-6 w-12">
+         class="duration-100 transition-opacity opacity-0 absolute z-10 inline-block px-2 py-1 text-sm font-medium text-white text-center bg-primary-900 rounded-lg shadow-xs tooltip top-8 start-[8.5px] -ms-6 w-12">
       <span>0</span><small>%</small>
       <div class="h-0 w-0 border-x-[6px] border-x-transparent border-b-[6px] border-b-primary-900 absolute -top-1.5 start-[18px]">
       </div>
@@ -282,6 +282,14 @@
       refreshStyles(e.target.value);
     }, 20));
 
+    inputRange.addEventListener('mousedown', (e) => {
+      tooltip.classList.remove('opacity-0');
+    });
+
+    inputRange.addEventListener('mouseup', (e) => {
+      tooltip.classList.add('opacity-0');
+    });
+
     // Set the initial value
     refreshStyles({{ value }});
 </script>
@@ -300,7 +308,7 @@
 
 {# Radio box #}
 {% macro radio_box(name, value, label, icon, checked = "", required = false) %}
-  <div class="flex items-center p-2 border border-gray-200 rounded-md">
+  <div class="flex items-center px-3 py-2 border border-gray-200 rounded-md">
     <div class="svg-icon size-4 icon-{{ icon }} bg-gray-600 cursor-pointer"></div>
     <label for="{{ name }}-{{ value }}"
            class="ms-2 text-sm text-gray-900 flex-grow sm:text-sm/6 cursor-pointer">{{ label }}</label>
@@ -325,11 +333,13 @@
         hx-encoding="multipart/form-data"
         hx-trigger="change from:#logo"
         hx-swap="none"
-        hx-indicator=".htmx-indicator">
-    <label for="{{ name }}" class="block text-sm/6 font-medium text-gray-900">{{ label }}</label>
+        hx-indicator="#images-spinner">
+    <label for="{{ name }}" class="form-label">{{ label }}</label>
     <div class="mt-3 flex items-stretch gap-x-5">
       <div class="relative flex items-center size-24 min-w-24 bg-gray-200 rounded-xl overflow-hidden">
-        <div class="htmx-indicator absolute z-10 start-5 top-5">{% call spinner(size = 14) %}</div>
+        <div id="images-spinner" class="hx-indicator absolute z-10 start-5 top-5">
+          {% call spinner(size = 14, bg_color = "gray-300") %}
+        </div>
 
         {# Placeholder image #}
         <div id="placeholder-image"
@@ -343,18 +353,19 @@
              alt="Image"
              height="auto"
              width="auto"
-             class="size-20 m-auto {%- if empty_image %} hidden {%- endif -%}">
+             class="size-[86px] object-contain rounded-lg m-auto {%- if empty_image %} hidden {%- endif -%}">
         {# End image #}
       </div>
 
       <div class="flex flex-col justify-between self-stretch">
-        <p class="text-sm/5 text-gray-500">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        <p class="form-legend">
+          Images must be at least 400x400, preferably in square format. Formats supported: SVG, PNG, JPEG, GIF, WEBP and TIFF.
         </p>
 
         <div class="flex items-center gap-x-3">
           {# Input file #}
-          <label for="logo" class="btn-primary cursor-pointer whitespace-nowrap">
+          <label for="logo"
+                 class="btn-primary btn-mini cursor-pointer whitespace-nowrap">
             <input type="file" id="logo" name="logo" class="hidden" />
             {% if empty_image %}
               Upload
@@ -367,7 +378,7 @@
 
           <button id="clean-image"
                   type="button"
-                  class="group btn-outline whitespace-nowrap"
+                  class="group btn-primary-outline btn-mini whitespace-nowrap"
                   {% if empty_image -%}
                   disabled
                   {%- endif -%}>Remove image</button>

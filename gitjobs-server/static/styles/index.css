@@ -3,6 +3,30 @@ body {
   min-width: 910px;
 }
 
+/* Markdown */
+.markdown ul li {
+  list-style-type: disc;
+  list-style-position: inside;
+}
+
+.markdown h1, .markdown h2, .markdown h3, .markdown h4, .markdown h5, .markdown h6 {
+  font-size: inherit;
+}
+
+.markdown p, .markdown ul, .markdown ol, .markdown blockquote, .markdown pre, .markdown table {
+  margin-bottom: 0.5rem;
+}
+/* End markdown */
+
+/* Select styles */
+.select {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position-x: right 8px;
+  background-position-y: 50%;
+  background-repeat: no-repeat;
+  background-size: 21px 21px;
+}
+
 /* Icons */
 .svg-icon {
   mask-size: 100%;
@@ -126,6 +150,16 @@ body {
   -webkit-mask-image: url('/static/images/icons/office_chair.svg')
 }
 
+.icon-office {
+  mask-image: url('/static/images/icons/office.svg');
+  -webkit-mask-image: url('/static/images/icons/office.svg')
+}
+
+.icon-outline_clipboard {
+  mask-image: url('/static/images/icons/outline_clipboard.svg');
+  -webkit-mask-image: url('/static/images/icons/outline_clipboard.svg')
+}
+
 .icon-pencil {
   mask-image: url('/static/images/icons/pencil.svg');
   -webkit-mask-image: url('/static/images/icons/pencil.svg')
@@ -161,9 +195,19 @@ body {
   -webkit-mask-image: url('/static/images/icons/signature.svg')
 }
 
+.icon-team {
+  mask-image: url('/static/images/icons/team.svg');
+  -webkit-mask-image: url('/static/images/icons/team.svg')
+}
+
 .icon-trash {
   mask-image: url('/static/images/icons/trash.svg');
   -webkit-mask-image: url('/static/images/icons/trash.svg')
+}
+
+.icon-user {
+  mask-image: url('/static/images/icons/user.svg');
+  -webkit-mask-image: url('/static/images/icons/user.svg')
 }
 
 .icon-vertical_dots {
@@ -171,6 +215,18 @@ body {
   -webkit-mask-image: url('/static/images/icons/vertical_dots.svg')
 }
 /* End icons */
+
+/* Spinner */
+.hx-indicator {
+  display:none;
+}
+.htmx-request .hx-indicator {
+  display: inline;
+}
+.htmx-request.hx-indicator {
+  display: inline;
+}
+/* End spinner */
 
 /* EasyMD Editor */
 .EasyMDEContainer .editor-toolbar {

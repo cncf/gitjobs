@@ -2,7 +2,7 @@
 
 <div class="space-y-12">
   <div class="border-b border-gray-900/10 pb-12">
-    {% call macros::form_title(title = "Settings", description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.") %}
+    {% call macros::form_title(title = "Employer profile", description = "This information will be displayed in your jobs postings. You can update it any time.") %}
 
     <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 max-w-4xl">
       {# Form image #}
@@ -17,10 +17,12 @@
           hx-include="[name=logo_id]"
           hx-trigger="click from:#employer-form-btn">
 
-      <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 max-w-3xl">
+      <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 max-w-4xl">
         {# Company name #}
         <div class="col-span-3">
-          <label for="company" class="block text-sm/6 font-medium text-gray-900">Company name *</label>
+          <label for="company" class="form-label">
+            Company name <span class="asterisk">*</span>
+          </label>
           <div class="mt-2">
             <input type="text"
                    name="company"
@@ -28,44 +30,52 @@
                    class="input-primary"
                    required>
           </div>
-          <p class="mt-1 text-xs/6 text-gray-600">Lorem ipsum.</p>
+          <p class="form-legend">Your company's trade name.</p>
         </div>
         {# End Company name #}
 
-        {# Public #}
-        <div class="col-span-3">
-          <div class="h-10"></div>
-          <label class="inline-flex items-center cursor-pointer">
-            {% call macros::toggle_checkbox(id = "public") %}
-            <span class="ms-3 text-sm font-medium text-gray-900">Public</span>
-          </label>
-        </div>
-        {# End Public #}
-
-        {# Description #}
-        <div class="col-span-full">
-          <label for="description" class="block text-sm/6 font-medium text-gray-900">Description *</label>
-          <div class="mt-2">{% call macros::markdown_editor(id = "description", required = true) %}</div>
-          <p class="mt-1 text-xs/6 text-gray-600">Lorem ipsum.</p>
-        </div>
-        {# End Description #}
+        <div class="col-span-3"></div>
 
         {# Location #}
         <div class="col-span-full lg:col-span-3">
-          <label for="ts_query" class="block text-sm/6 font-medium text-gray-900">Location</label>
+          <label for="ts_query" class="form-label">Location</label>
           {% call macros::location() %}
-          <p class="mt-1 text-xs/6 text-gray-600">Lorem ipsum.</p>
+          <p class="form-legend">Location of the headquarters of your company.</p>
         </div>
         {# End location #}
 
         {# Website url #}
         <div class="sm:col-span-3">
-          <label for="website_url" class="block text-sm/6 font-medium text-gray-900">Website url</label>
+          <label for="website_url" class="form-label">Website url</label>
           <div class="mt-2">
             <input id="website_url" name="website_url" type="url" class="input-primary">
           </div>
+          <p class="form-legend">URL of your company's website.</p>
         </div>
         {# End Website url #}
+
+        {# Description #}
+        <div class="col-span-full">
+          <label for="description" class="form-label">
+            Description <span class="asterisk">*</span>
+          </label>
+          <div class="mt-2">{% call macros::markdown_editor(id = "description", required = true) %}</div>
+          <p class="form-legend">A short introduction of your company. You can use markdown to format the text.</p>
+        </div>
+        {# End Description #}
+
+        {# Public #}
+        <div class="col-span-full">
+          <div class="form-label">Public</div>
+          <label class="mt-2 inline-flex items-center cursor-pointer">
+            {% call macros::toggle_checkbox(id = "public", checked = true) %}
+            <span class="ms-3 text-sm font-medium text-gray-900">Display in employers listing.</span>
+          </label>
+          <p class="form-legend">
+            Your company will be listed in the employers section of the site. This may help attracting more applicants to your jobs.
+          </p>
+        </div>
+        {# End Public #}
       </div>
     </form>
     {# End employer form #}

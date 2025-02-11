@@ -7,16 +7,18 @@
       hx-trigger="submit">
   <div class="space-y-12">
     <div class="border-b border-gray-900/10 pb-12">
-      {% call macros::form_title(title = "Job Information", description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.") %}
+      {% call macros::form_title(title = "Job details", description = "Please add as many details about this job as possible. You can save it as a draft and come back later to finish it.") %}
 
-      <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-6 max-w-3xl">
+      <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-6 max-w-5xl">
         {# Job title #}
         <div class="col-span-3">
-          <label for="title" class="block text-sm/6 font-medium text-gray-900">Title *</label>
+          <label for="title" class="form-label">
+            Title <span class="asterisk">*</span>
+          </label>
           <div class="mt-2">
             <input type="text" name="title" id="title" class="input-primary" required>
           </div>
-          <p class="mt-1 text-xs/6 text-gray-600">Lorem ipsum.</p>
+          <p class="form-legend">Job position (e.g. Backend engineer).</p>
         </div>
         {# End Job title #}
 
@@ -26,21 +28,19 @@
 
         {# Job location #}
         <div class="col-span-full lg:col-span-3">
-          <label for="ts_query" class="block text-sm/6 font-medium text-gray-900">Location</label>
+          <label for="ts_query" class="form-label">Location</label>
           {% call macros::location() %}
-          <p class="mt-1 text-xs/6 text-gray-600">Lorem ipsum.</p>
+          <p class="form-legend">Location of the job.</p>
         </div>
 
         {# End Job location #}
 
         {# Job type #}
         <div class="col-span-full">
-          <label for="type" class="block text-sm/6 font-medium text-gray-900">Job type *</label>
+          <label for="type" class="form-label">
+            Job type <span class="asterisk">*</span>
+          </label>
           <div class="mt-2 grid grid-cols-4 gap-x-6">
-            {# Contractor #}
-            {% call macros::radio_box(name = "type", value = JobType::Contractor, label = "Contractor", icon = "clipboard", checked = JobType::FullTime, required = true) %}
-            {# End Contractor #}
-
             {# Full time #}
             {% call macros::radio_box(name = "type", value = JobType::FullTime, label = "Full Time", icon = "signature", checked = JobType::FullTime, required = true) %}
             {# End Full time #}
@@ -48,6 +48,10 @@
             {# Part time #}
             {% call macros::radio_box(name = "type", value = JobType::PartTime, label = "Part Time", icon = "hour_glass", checked = JobType::FullTime, required = true) %}
             {# End Part time #}
+
+            {# Contractor #}
+            {% call macros::radio_box(name = "type", value = JobType::Contractor, label = "Contractor", icon = "clipboard", checked = JobType::FullTime, required = true) %}
+            {# End Contractor #}
 
             {# Internship #}
             {% call macros::radio_box(name = "type", value = JobType::Internship, label = "Internship", icon = "graduation_cap", checked = JobType::FullTime, required = true) %}
@@ -58,12 +62,10 @@
 
         {# Workplace #}
         <div class="col-span-full">
-          <label for="workplace" class="block text-sm/6 font-medium text-gray-900">Workplace *</label>
+          <label for="workplace" class="form-label">
+            Workplace <span class="asterisk">*</span>
+          </label>
           <div class="mt-2 grid grid-cols-4 gap-x-6">
-            {# Hybrid #}
-            {% call macros::radio_box(name = "workplace", value = Workplace::Hybrid, label = "Hybrid", icon = "buildings", checked = Workplace::OnSite, required = true) %}
-            {# End Hybrid #}
-
             {# On site #}
             {% call macros::radio_box(name = "workplace", value = Workplace::OnSite, label = "On Site", icon = "office_chair", checked = Workplace::OnSite, required = true) %}
             {# End On site #}
@@ -71,36 +73,65 @@
             {# Remote #}
             {% call macros::radio_box(name = "workplace", value = Workplace::Remote, label = "Remote", icon = "remote", checked = Workplace::OnSite, required = true) %}
             {# End Remote #}
+
+            {# Hybrid #}
+            {% call macros::radio_box(name = "workplace", value = Workplace::Hybrid, label = "Hybrid", icon = "buildings", checked = Workplace::OnSite, required = true) %}
+            {# End Hybrid #}
           </div>
         </div>
         {# End Workplace #}
 
         {# Job Description #}
         <div class="col-span-full">
-          <label for="description" class="block text-sm/6 font-medium text-gray-900">Description *</label>
+          <label for="description" class="form-label">
+            Description <span class="asterisk">*</span>
+          </label>
           <div class="mt-2">{% call macros::markdown_editor(id = "description", required = true) %}</div>
-          <p class="mt-1 text-xs/6 text-gray-600">Lorem ipsum.</p>
+          <p class="form-legend">Description of the job. You can use markdown to format the text.</p>
         </div>
         {# End Job Description #}
 
-        {# Job benefits #}
+        {# Job responsibilities #}
         <div class="col-span-full">
-          <multi-select id="benefits" name="Benefits" options="{{ benefits|json }}"></multi-select>
+          <label for="responsibilities" class="form-label">Responsibilities</label>
+          <div class="mt-2">{% call macros::markdown_editor(id = "responsibilities") %}</div>
+          <p class="form-legend">
+            Explain potential candidates what will they do at this job and what their responsibilities will be.
+          </p>
         </div>
-        {# End job nebefits #}
+        {# End Job responsibilities #}
+
+        {# Job qualifications #}
+        <div class="col-span-full">
+          <label for="qualifications" class="form-label">Qualifications</label>
+          <div class="mt-2">{% call macros::markdown_editor(id = "qualifications") %}</div>
+          <p class="form-legend">Education, experience and skills required for the job.</p>
+        </div>
+        {# End Job qualifications #}
 
         {# Job skills #}
         <div class="col-span-full">
-          <multi-select id="skills" name="Skills" options="{{ skills|json }}"></multi-select>
+          <multi-select id="skills" name="Skills" options="{{ skills|json }}" legend="Relevant skills for this job position."></multi-select>
         </div>
         {# End job skills #}
 
+        {# Apply instructions #}
+        <div class="col-span-full">
+          <label for="apply_instructions" class="form-label">Apply instructions</label>
+          <div class="mt-2">{% call macros::markdown_editor(id = "apply_instructions") %}</div>
+          <p class="form-legend">Additional instructions on how to apply to the job position.</p>
+        </div>
+        {# End apply instructions #}
+
         {# Apply url #}
-        <div class="sm:col-span-3">
-          <label for="apply_url" class="block text-sm/6 font-medium text-gray-900">Apply url</label>
+        <div class="col-span-full">
+          <label for="apply_url" class="form-label">Apply url</label>
           <div class="mt-2">
             <input id="apply_url" name="apply_url" type="url" class="input-primary">
           </div>
+          <p class="form-legend">
+            URL of your apply page (optional). Use it only if you'd like people to use your own system to track applicants.
+          </p>
         </div>
         {# End Apply url #}
       </div>
@@ -108,24 +139,24 @@
 
     {# Salary section #}
     <div class="border-b border-gray-900/10 pb-12">
-      {% call macros::form_title(title = "Salary", description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.") %}
+      {% call macros::form_title(title = "Compensation", description = "This section includes the salary details and benefits.") %}
 
-      <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-6">
+      <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-6 max-w-5xl">
         {# Salary kind #}
         <div class="col-span-full">
-          <label for="salary" class="block text-sm/6 font-medium text-gray-900">Option</label>
-          <div class="mt-2 flex space-x-12">
+          <label for="salary" class="form-label">Salary</label>
+          <div class="mt-4 flex space-x-8">
             <div class="flex items-center gap-x-3">
               <input id="fixed"
                      name="salary_kind"
                      type="radio"
                      checked
                      class="radio-primary">
-              <label for="fixed" class="block text-sm/6 font-medium text-gray-900">Fixed</label>
+              <label for="fixed" class="form-label">Fixed</label>
             </div>
             <div class="flex items-center gap-x-3">
               <input id="range" name="salary_kind" type="radio" class="radio-primary">
-              <label for="range" class="block text-sm/6 font-medium text-gray-900">Range</label>
+              <label for="range" class="form-label">Range</label>
             </div>
           </div>
         </div>
@@ -149,7 +180,7 @@
 
         {# Salary #}
         <div id="salary_kind_fixed" class="col-span-full md:col-span-2">
-          <label for="salary" class="block text-sm/6 font-medium text-gray-900">Salary</label>
+          <label for="salary" class="form-label">Amount</label>
           <div class="mt-2">
             <input id="salary" name="salary" type="number" min="0" class="input-primary">
           </div>
@@ -157,7 +188,7 @@
         <div id="salary_kind_range"
              class="hidden grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-6 col-span-full md:col-span-2">
           <div class="col-span-3">
-            <label for="salary_min" class="block text-sm/6 font-medium text-gray-900">Salary min</label>
+            <label for="salary_min" class="form-label">Minimum</label>
             <div class="mt-2">
               <input id="salary_min"
                      name="salary_min"
@@ -167,7 +198,7 @@
             </div>
           </div>
           <div class="col-span-3">
-            <label for="salary_max" class="block text-sm/6 font-medium text-gray-900">Salary max</label>
+            <label for="salary_max" class="form-label">Maximum</label>
             <div class="mt-2">
               <input id="salary_max"
                      name="salary_max"
@@ -181,8 +212,7 @@
 
         {# Salary currency #}
         <div class="col-span-3 md:col-span-2 lg:col-span-1">
-          <label for="salary_currency"
-                 class="block text-sm/6 font-medium text-gray-900">Currency</label>
+          <label for="salary_currency" class="form-label">Currency</label>
           <div class="mt-2 grid grid-cols-1">
             <select id="salary_currency" name="salary_currency" class="select-primary">
               {% call macros::select_option(value = "", label = "") %}
@@ -198,7 +228,7 @@
 
         {# Salary period #}
         <div class="col-span-3 md:col-span-2 lg:col-span-1">
-          <label for="salary_period" class="block text-sm/6 font-medium text-gray-900">Timeframe</label>
+          <label for="salary_period" class="form-label">Timeframe</label>
           <div class="mt-2 grid grid-cols-1">
             <select id="salary_period" name="salary_period" class="select-primary">
               {% call macros::select_option(value = "", label = "") %}
@@ -212,34 +242,41 @@
           </div>
         </div>
         {# End Salary period #}
+
+        {# Job benefits #}
+        <div class="col-span-full">
+          <multi-select id="benefits" name="Benefits" options="{{ benefits|json }}" legend="Benefits and perks for employees."></multi-select>
+        </div>
+        {# End job benefits #}
       </div>
     </div>
     {# End salary section #}
 
-    {# Others #}
+    {# Open Source #}
     <div class="border-b border-gray-900/10 pb-12">
-      {% call macros::form_title(title = "Others", description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.") %}
+      {% call macros::form_title(title = "Open Source", description = "Does this job involve working on open source projects? Does it offer time to contribute to upstream projects?") %}
 
-      <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-6 max-w-4xl">
+      <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-6 max-w-6xl">
         {# Open source #}
         <div class="col-span-full lg:col-span-3">
-          <label for="open_source" class="block text-sm/6 font-medium text-gray-900">Open source</label>
-          <div class="mt-2">{% call macros::input_range(name = "open_source") %}</div>
-          <p class="mt-1 text-xs/6 text-gray-600">Lorem ipsum.</p>
+          <label for="open_source" class="form-label">Open source</label>
+          <div class="mt-2 me-8">{% call macros::input_range(name = "open_source") %}</div>
+          <p class="form-legend">Percentage of time working on open source projects.</p>
         </div>
         {# End Open source #}
 
         {# Upstream commitment #}
         <div class="col-span-full lg:col-span-3">
-          <label for="upstream_commitment"
-                 class="block text-sm/6 font-medium text-gray-900">Upstream commitment</label>
-          <div class="mt-2">{% call macros::input_range(name = "upstream_commitment") %}</div>
-          <p class="mt-1 text-xs/6 text-gray-600">Lorem ipsum.</p>
+          <label for="upstream_commitment" class="form-label">Upstream commitment</label>
+          <div class="mt-2 me-8">{% call macros::input_range(name = "upstream_commitment") %}</div>
+          <p class="form-legend">
+            Percentage of time working on upstream open source projects the company depends on.
+          </p>
         </div>
         {# End Upstream commitment #}
       </div>
     </div>
-    {# End Others #}
+    {# End Open Source #}
 
     <div class="mt-6 flex justify-between items-center">
       {# Preview #}
@@ -251,8 +288,9 @@
                 hx-include="#jobs-form input, #jobs-form radio, #jobs-form select, #jobs-form textarea"
                 hx-ext="no-empty-vals"
                 hx-target="#preview-content"
+                hx-indicator="#preview-spinner"
                 type="button"
-                class="group btn-outline">
+                class="group btn-primary-outline">
           <span class="hidden md:block">Preview</span>
           <span class="block md:hidden">
             <div class="svg-icon size-3 icon-eye group-hover:bg-white"></div>
@@ -260,7 +298,7 @@
         </button>
         {# End preview button #}
 
-        <div class="htmx-indicator">{% call macros::spinner(size = 5) %}</div>
+        <div id="preview-spinner" class="hx-indicator">{% call macros::spinner(size = 5) %}</div>
 
         {# Error preview #}
         <div id="preview-error"
@@ -274,7 +312,7 @@
 
       <div class="flex items-center justify-end gap-x-6">
         {# Cancel button #}
-        <a href="/dashboard/employer?tab=jobs" class="btn-tertiary">Cancel</a>
+        <a href="/dashboard/employer?tab=jobs" class="btn-primary-outline">Cancel</a>
         {# End cancel button #}
 
         {# Save draft button #}

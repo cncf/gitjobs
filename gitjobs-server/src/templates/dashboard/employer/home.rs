@@ -5,7 +5,11 @@ use rinja::Template;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::templates::{auth, dashboard::employer, filters};
+use crate::templates::{
+    auth,
+    dashboard::employer,
+    helpers::{build_image_url, find_employer},
+};
 
 /// Home page template.
 #[derive(Debug, Clone, Template)]

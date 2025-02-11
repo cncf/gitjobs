@@ -1,84 +1,165 @@
 {% import "macros.html" as macros %}
 
-{# Status badge #}
-<div class="flex items-center justify-end border-b p-4 py-2 md:p-8 md:py-4">
-  <div class="uppercase text-xs text-gray-500 me-3">Status:</div>
-  {% call macros::job_status_badge(status = job.status) %}
-</div>
-{# End status badge #}
-
-<div class="relative overflow-y-auto p-4 md:p-8">
-  <div class="flex justify-between">
+<div class="flex items-center justify-between gap-x-10 border-b pb-10">
+  <div class="flex items-stretch gap-x-5">
+    {# Image #}
     <div>
-      <div class="text-sm text-gray-500 mb-2">{{ employer.company }}</div>
-      <div class="flex items-baseline gap-x-10">
-        {# Title #}
-        <div class="text-4xl font-stretch-condensed font-medium text-gray-900 text-truncate">{{ job.title }}</div>
-        {# End title #}
-      </div>
-      <div class="mt-3 flex items-center space-x-5">
-        {# Location badge #}
-        {% let location = &self::build_location(job.city.as_deref(), job.state.as_deref(), job.country.as_deref())|display_some %}
+      {% if let Some(logo_id) = employer.logo_id %}
+        {% let logo = &self::build_image_url(logo_id, "small") %}
+        <img class="size-14"
+             height="56"
+             width="56"
+             src="{{ logo }}"
+             alt="{{ employer.company }} logo">
+      {% else %}
+        <div class="rounded-full size-14 bg-gray-200 p-1">
+          <div class="svg-icon size-12 icon-company bg-gray-600"></div>
+        </div>
+      {% endif %}
+    </div>
+    {# End image #}
 
-        {% match job.workplace %}
-        {% when Workplace::Remote %}
-        {% call macros::badge(content = "remote", icon = "location") %}
-        {% when Workplace::Hybrid %}
-        {% call macros::badge(content = "{} (hybrid)"|format(location), icon = "location") %}
-        {% when Workplace::OnSite %}
-        {% call macros::badge(content = location, icon = "location") %}
-      {% endmatch %}
-      {# End location badge #}
+    <div class="flex flex-col justify-center">
+      {# Title #}
+      <div class="text-xl font-stretch-condensed font-medium text-gray-900 truncate">{{ job.title }}</div>
+      {# End title #}
 
-      {# Type badge #}
-      {% call macros::badge(content = job.type_.to_string().replace("-", " "), icon = "calendar") %}
-      {# End workplace type #}
+      {# Company #}
+      <div class="text-sm/6 text-gray-500 italic">{{ employer.company }}</div>
+      {# End company #}
     </div>
   </div>
-  {# Logo #}
-  {# {% if let Some(logo_url) = employer.logo_url %}
-    <div class="ml-5">
-      <span class="relative flex size-[110px] shrink-0 overflow-hidden">
-        <img class="h-auto max-w-[100%] m-auto" alt="Logo company" height="auto" width="auto" src="{{ logo_url }}" />
-      </span>
-    </div>
-  {% endif %} #}
-  {# End logo #}
 </div>
-{# Content #}
-<div class="mt-5">
-  {# Company information #}
-  {% call content_heading(content = "About company") %}
-  <div>{{ employer.description }}</div>
-  {# End company information #}
+<div class="flex items-stretch">
+  <div class="w-3/4 border-e me-10 pe-10 pt-10">
 
-  {# Job description #}
-  {% call content_heading(content = "Job description") %}
-  <div>{{ job.description }}</div>
-  {# End job description #}
+    {# Content #}
+    <div class="flex flex-col space-y-6">
+      {# Job description #}
+      <div>
+        {% call content_heading(content = "Job description") %}
+        <div class="text-sm/6 text-gray-600 markdown">{{ job.description|md_to_html|safe }}</div>
+      </div>
+      {# End job description #}
 
-  {# Compensantion #}
-  {% call content_heading(content = "Compensation") %}
-  <div class="flex items-baseline">
+      {# Job responsibilities #}
+      {% if let Some(responsibilities) = job.responsibilities %}
+        <div>
+          {% call content_heading(content = "Responsibilities") %}
+          <div class="text-sm/6 text-gray-600 markdown">{{ responsibilities|md_to_html|safe }}</div>
+        </div>
+      {% endif %}
+      {# End job responsibilities #}
+
+      {# Job qualifications #}
+      {% if let Some(qualifications) = job.qualifications %}
+        <div>
+          {% call content_heading(content = "Qualifications") %}
+          <div class="text-sm/6 text-gray-600 markdown">{{ qualifications|md_to_html|safe }}</div>
+        </div>
+      {% endif %}
+      {# End job qualifications #}
+
+      {# Company information #}
+      <div>
+        {% call content_heading(content = "About company") %}
+        <div class="text-sm/6 text-gray-600 markdown">{{ employer.description|md_to_html|safe }}</div>
+      </div>
+      {# End company information #}
+
+      {# Skills #}
+      {% if let Some(skills) = job.skills %}
+        <div class="mb-5">
+          {% call content_heading(content = "Skills") %}
+          <div class="flex gap-x-5 mt-2">
+            {% for skill in skills %}
+              {% call macros::badge(content = skill|unnormalize) %}
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+      {# End skills #}
+
+      {# Benefits #}
+      {% if let Some(benefits) = job.benefits %}
+        <div class="mb-5">
+          {% call content_heading(content = "Compensation") %}
+          <div class="flex gap-x-5 mt-2">
+            {% for benefit in benefits %}
+              {% call macros::badge(content = benefit|unnormalize) %}
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+      {# End benefits #}
+
+      {# Application #}
+      {% if let Some(apply_instructions) = job.apply_instructions %}
+        <div>
+          {% call content_heading(content = "Apply instructions") %}
+          <div class="text-sm/6 text-gray-600 markdown">{{ apply_instructions|md_to_html|safe }}</div>
+        </div>
+      {% endif %}
+      {# End application #}
+    </div>
+    {# End content #}
+  </div>
+
+  {# Right column #}
+  <div class="w-1/4 pt-6">
+    {# Published date #}
+    {% call job_details_subheading(content = "Published") %}
+    {% call job_details_content(text = job.published_at|display_some_date_or(DATE_FORMAT, "-")) %}
+    {# End published date #}
+
+    {# Last update #}
+    <div>
+      {% call job_details_subheading(content = "Last updated") %}
+      {% call job_details_content(text = job.updated_at|display_some_date_or(DATE_FORMAT, "-")) %}
+    </div>
+    {# End last update #}
+
+    {# Type #}
+    {% call job_details_subheading(content = "Job type") %}
+    {% let job_type = job.type_.to_string().as_str()|unnormalize %}
+
+    {% match job.type_ %}
+    {% when JobType::FullTime %}
+    {% call job_details_content(text = job_type, icon = "signature", extra_styles = "capitalize") %}
+    {% when JobType::PartTime %}
+    {% call job_details_content(text = job_type, icon = "hour_glass", extra_styles = "capitalize") %}
+    {% when JobType::Contractor %}
+    {% call job_details_content(text = job_type, icon = "clipboard", extra_styles = "capitalize") %}
+    {% when JobType::Internship %}
+    {% call job_details_content(text = job_type, icon = "graduation_cap", extra_styles = "capitalize") %}
+  {% endmatch %}
+  {# End type #}
+
+  {# Salary #}
+  {% call job_details_subheading(content = "Salary") %}
+  <div class="flex items-baseline text-xs/6">
     {% let salary_kind = job.salary_kind() %}
     {% match salary_kind %}
     {% when SalaryKind::Fixed %}
     {# Fixed salary #}
-    <div class="flex">
+    <div class="flex items-baseline">
       {% if let Some(salary) = job.salary %}
-        <div class="flex items-baseline font-medium text-gray-900">
+        <div class="flex items-baseline font-medium text-gray-900 text-sm">
           {% call currency(value = job.salary_currency) %}
           {{ salary }}
         </div>
       {% else %}
         -
       {% endif %}
+      {% if let Some(salary_period) = job.salary_period %}
+        <div class="text-gray-900 text-xs italic ms-2">{{ salary_period }}</div>
+      {% endif %}
       {# End fixed salary #}
       {% when SalaryKind::Range %}
       {# Range salary #}
-      <div class="flex">
+      <div class="flex items-baseline">
         {% if let Some(salary_min) = job.salary_min %}
-          <div class="flex items-baseline font-medium text-gray-900">
+          <div class="flex items-baseline font-medium text-gray-900 text-sm">
             {% call currency(value = job.salary_currency) %}
             {{ salary_min }}
           </div>
@@ -87,68 +168,99 @@
         {% endif %}
 
         {% if let Some(salary_max) = job.salary_max %}
-          <div class="flex items-baseline text-gray-900">
+          <div class="flex items-baseline text-gray-900 text-sm">
             <span class="mx-2">-</span>
             {% call currency(value = job.salary_currency) %}
             {{ salary_max }}
           </div>
         {% endif %}
+
+        {% if let Some(salary_period) = job.salary_period %}
+          <div class="text-gray-900 text-xs italic ms-2">{{ salary_period }}</div>
+        {% endif %}
       </div>
       {# End range salary #}
     {% endmatch %}
-
-    {% if let Some(salary_period) = job.salary_period %}
-      <div class="text-gray-900 text-xs font-semibold uppercase ms-2">{{ salary_period }}</div>
-    {% endif %}
   </div>
 </div>
-{# End compensantion #}
+{# End salary #}
 
-{# Benefits #}
-{% if let Some(benefits) = job.benefits %}
-  {% call content_heading(content = "Benefits") %}
-  <div class="flex gap-x-5">
-    {% for benefit in benefits %}
-      {% call macros::badge(content = benefit.replace("-", " ")) %}
-    {% endfor %}
-  </div>
+{# Location #}
+{% call job_details_subheading(content = "Location") %}
+{% let location = &self::build_location(job.city.as_deref(), job.state.as_deref(), job.country.as_deref())|display_some_or("-") %}
+
+{% match job.workplace %}
+{% when Workplace::Remote %}
+{% call job_details_content(text = "Remote", icon = "location") %}
+{% when Workplace::Hybrid %}
+{% call job_details_content(text = "{} (hybrid)"|format(location), icon = "location") %}
+{% when Workplace::OnSite %}
+{% call job_details_content(text = location, icon = "location") %}
+{% endmatch %}
+{# End location #}
+
+{# Open source #}
+{% if let Some(open_source) = job.open_source %}
+  {% if open_source + 0 > 0 %}
+    {% call badge_percentage_bar(label = "Open source", percentage = open_source) %}
+  {% endif %}
 {% endif %}
-{# End benefits #}
+{# End open source #}
 
-{# Skills #}
-{% if let Some(skills) = job.skills %}
-  {% call content_heading(content = "Skills") %}
-  <div class="flex gap-x-5">
-    {% for skill in skills %}
-      {% call macros::badge(content = skill.replace("-", " ")) %}
-    {% endfor %}
-  </div>
+{# Upstream commitment #}
+{% if let Some(upstream_commitment) = job.upstream_commitment %}
+  {% if upstream_commitment + 0 > 0 %}
+    {% call badge_percentage_bar(label = "Upstream commitment", percentage = upstream_commitment) %}
+  {% endif %}
 {% endif %}
-{# End skills #}
+{# End Upstream commitment #}
 
-{# Others #}
-{% call content_heading(content = "Others") %}
-<div class="flex flex-col gap-y-3">
-  <div class="font-medium">
-    <span class="text-gray-500 text-xs uppercase">Open source:</span> {{ job.open_source|display_some_or("-") }}<small class="ms-0.5">%</small>
-  </div>
-  <div class="font-medium">
-    <span class="text-gray-500 text-xs uppercase">Upstream commitment:</span> {{ job.upstream_commitment|display_some_or("-") }}<small class="ms-0.5">%</small>
-  </div>
 </div>
-{# End others #}
-</div>
-{# End content #}
+{# End right column #}
 </div>
 
 {# Content heading #}
 {% macro content_heading(content) %}
-  <div class="text-md uppercase font-medium text-gray-500 pb-1 mb-5 mt-10 border-b">{{ content }}</div>
+  <div class="text-md font-medium text-gray-800 mb-3">{{ content }}</div>
 {% endmacro content_heading %}
 {# End content heading #}
+
+{# Job details subheading #}
+{% macro job_details_subheading(content) %}
+  <div class="text-xs/6 text-gray-400 mb-1 mt-4">{{ content }}</div>
+{% endmacro job_details_subheading %}
+{# End job details subheading #}
+
+{# Job details content #}
+{% macro job_details_content(text, icon = "", extra_styles = "") %}
+  <div class="flex items-center text-xs">
+    {% if icon.to_string() != "" %}
+      <div class="svg-icon size-3 icon-{{ icon }} bg-gray-500 me-2"></div>
+    {% endif %}
+    <div class="truncate {{ extra_styles }}">{{ text }}</div>
+  </div>
+{% endmacro job_details_content %}
+{# End job details content #}
 
 {# Currency #}
 {% macro currency(value) %}
   {% if let Some(value) = value %}<div class="text-xs text-gray-500 me-0.5">{{ value }}</div>{% endif %}
 {% endmacro %}
 {# End currency #}
+
+{# Badge with percentage bar #}
+{% macro badge_percentage_bar(label, percentage = 0) %}
+  <div class="border rounded-lg bg-gray-50 p-3 my-5">
+    <div class="flex items-center justify-between text-xs/6 text-gray-600">
+      <div>{{ label }}</div>
+      <div>
+        <span class="font-medium text-gray-900">{{ percentage }}</span>%
+      </div>
+    </div>
+    <div class="w-full bg-gray-200 rounded-full h-1.5 my-2">
+      <div class="bg-primary-600 h-1.5 rounded-full"
+           style="width: {{ percentage }}%"></div>
+    </div>
+  </div>
+{% endmacro %}
+{# End badge with percentage bar #}

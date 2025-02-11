@@ -4,26 +4,16 @@
 {% block main %}
   <div class="container max-w-md m-auto px-2 py-28">
     <div class="bg-white p-10 border rounded-3xl">
-      <div class="flex items-center justify-between space-x-5 lg:space-x-10">
+      <div class="flex items-center justify-between space-x-5 mb-2 lg:space-x-10">
         {# GitHub login #}
-        <div class="w-1/2">
+        <div class="w-full">
           <a href="/log-in/oauth2/github{%- if let Some(next_url) = next_url -%}?next_url={{ next_url }}{%- endif -%}"
-             class="group btn-outline flex justify-center items-center space-x-2">
+             class="group btn-primary-outline flex justify-center items-center space-x-2">
             <div class="svg-icon size-4 icon-github group-hover:bg-white"></div>
             <div>GitHub</div>
           </a>
         </div>
         {# End GitHub login #}
-
-        {# TODO login #}
-        <div class="w-1/2">
-          <a href="/"
-             class="group btn-outline flex justify-center items-center space-x-2">
-            <div class="svg-icon size-4 icon-lfx group-hover:bg-white"></div>
-            <div>LFID</div>
-          </a>
-        </div>
-        {# End TODO login #}
       </div>
 
       <div class="inline-flex items-center justify-center w-full">
@@ -33,12 +23,14 @@
 
       <form action="/sign-up{%- if let Some(next_url) = next_url -%}?next_url={{ next_url }}{%- endif -%}"
             method="post">
-        <div class="mb-10">{% call macros::form_title(title = "Sign Up") %}</div>
+        <div class="mb-8">{% call macros::form_title(title = "Sign Up") %}</div>
 
-        <div class="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+        <div class="grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-6">
           {# Name #}
           <div class="sm:col-span-full">
-            <label for="name" class="block text-sm/6 font-medium text-gray-900">Name *</label>
+            <label for="name" class="form-label">
+              Name <span class="asterisk">*</span>
+            </label>
             <div class="mt-2">
               <input id="name" name="name" type="text" class="input-primary" required>
             </div>
@@ -47,7 +39,9 @@
 
           {# Email #}
           <div class="sm:col-span-full">
-            <label for="email" class="block text-sm/6 font-medium text-gray-900">Email *</label>
+            <label for="email" class="form-label">
+              Email <span class="asterisk">*</span>
+            </label>
             <div class="mt-2">
               <input id="email" name="email" type="email" class="input-primary" required>
             </div>
@@ -56,7 +50,9 @@
 
           {# Username #}
           <div class="sm:col-span-full">
-            <label for="username" class="block text-sm/6 font-medium text-gray-900">Username *</label>
+            <label for="username" class="form-label">
+              Username <span class="asterisk">*</span>
+            </label>
             <div class="mt-2">
               <input id="username"
                      name="username"
@@ -69,7 +65,9 @@
 
           {# Password #}
           <div class="sm:col-span-3">
-            <label for="password" class="block text-sm/6 font-medium text-gray-900">Password *</label>
+            <label for="password" class="form-label">
+              Password <span class="asterisk">*</span>
+            </label>
             <div class="mt-2">
               <input type="password"
                      id="password"
@@ -82,8 +80,9 @@
 
           {# Repeat password #}
           <div class="sm:col-span-3">
-            <label for="password_confirmation"
-                   class="block text-sm/6 font-medium text-gray-900">Repeat password *</label>
+            <label for="password_confirmation" class="form-label">
+              Repeat password <span class="asterisk">*</span>
+            </label>
             <div class="mt-2">
               <input type="password"
                      id="password_confirmation"
@@ -107,10 +106,10 @@
         </div>
 
         {# Submit button #}
-        <button type="submit" class="btn-primary w-full mt-12">Submit</button>
+        <button type="submit" class="btn-primary w-full mt-10">Submit</button>
 
         {# Log in link #}
-        <div class="mt-5 text-sm text-gray-600">
+        <div class="mt-5 mb-1 text-sm text-gray-600">
           Already have an account? <a href="/log-in{%- if let Some(next_url) = next_url -%}?next_url={{ next_url }}{%- endif -%}"
     class="text-primary-700 hover:text-primary-900">Sign In</a>
         </div>

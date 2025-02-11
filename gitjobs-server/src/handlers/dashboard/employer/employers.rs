@@ -67,7 +67,11 @@ pub(crate) async fn add(
     // Use new employer as the selected employer for the session
     session.insert(SELECTED_EMPLOYER_ID_KEY, employer_id).await?;
 
-    Ok((StatusCode::CREATED, [("HX-Refresh", "true")]).into_response())
+    Ok((
+        StatusCode::CREATED,
+        [("HX-Push-Url", "/dashboard/employer?tab=profile")],
+    )
+        .into_response())
 }
 
 /// Handler that selects an employer.
@@ -79,7 +83,7 @@ pub(crate) async fn select(
     // Update the selected employer in the session
     session.insert(SELECTED_EMPLOYER_ID_KEY, employer_id).await?;
 
-    Ok(StatusCode::NO_CONTENT)
+    Ok((StatusCode::NO_CONTENT, [("HX-Refresh", "true")]))
 }
 
 /// Handler that updates an employer.

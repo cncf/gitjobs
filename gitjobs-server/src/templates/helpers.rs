@@ -5,11 +5,13 @@ use std::sync::LazyLock;
 use regex::Regex;
 use uuid::Uuid;
 
+use super::dashboard::employer::employers::EmployerSummary;
+
 /// The date format used in the templates.
 pub(crate) const DATE_FORMAT: &str = "%Y-%m-%d";
 
 /// Build url for an image version.
-pub(crate) fn build_image_url(image_id: Uuid, version: &str) -> String {
+pub(crate) fn build_image_url(image_id: &Uuid, version: &str) -> String {
     format!("/images/{image_id}/{version}")
 }
 
@@ -51,4 +53,13 @@ pub(crate) fn normalize(s: &str) -> String {
     let normalized = s.to_lowercase().replace(' ', "-");
     let normalized = MULTIPLE_HYPHENS.replace(&normalized, "-").to_string();
     normalized
+}
+
+/// Find the employer with the given id in the list of employers.
+pub(crate) fn find_employer<'a>(
+    employer_id: Option<&'a Uuid>,
+    employers: &'a [EmployerSummary],
+) -> Option<&'a EmployerSummary> {
+    let employer_id = employer_id?;
+    employers.iter().find(|e| e.employer_id == *employer_id)
 }

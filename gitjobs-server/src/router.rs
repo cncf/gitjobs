@@ -1,8 +1,6 @@
 //! This module defines the router used to dispatch HTTP requests to the
 //! corresponding handler.
 
-use std::sync::Arc;
-
 use anyhow::Result;
 use axum::{
     extract::FromRef,
@@ -30,9 +28,10 @@ use crate::{
     db::DynDB,
     handlers::{
         auth::{self, LOG_IN_URL},
-        common, dashboard, jobboard,
+        dashboard, img, jobboard,
+        misc::search_locations,
     },
-    img::{db::DbImageStore, DynImageStore},
+    img::DynImageStore,
 };
 
 /// Default cache duration.
@@ -55,9 +54,8 @@ pub(crate) struct State {
 
 /// Setup router.
 #[instrument(skip_all)]
-pub(crate) fn setup(cfg: &HttpServerConfig, db: DynDB) -> Result<Router> {
+pub(crate) fn setup(cfg: &HttpServerConfig, db: DynDB, image_store: DynImageStore) -> Result<Router> {
     // Setup router state
-    let image_store = Arc::new(DbImageStore::new(db.clone()));
     let state = State {
         db: db.clone(),
         image_store,
@@ -66,16 +64,17 @@ pub(crate) fn setup(cfg: &HttpServerConfig, db: DynDB) -> Result<Router> {
     // Setup authentication / authorization layer
     let auth_layer = crate::auth::setup_layer(cfg, db)?;
 
-    // Setup dashboard routers
+    // Setup sub-routers
     let employer_dashboard_router = setup_employer_dashboard_router(state.clone());
     let job_seeker_dashboard_router = setup_job_seeker_dashboard_router();
+    let images_router = setup_images_router();
 
-    // Setup router
+    // Setup main router
     let mut router = Router::new()
         .nest("/dashboard/employer", employer_dashboard_router)
         .nest("/dashboard/job-seeker", job_seeker_dashboard_router)
-        .route("/images", post(common::upload_image))
-        .route("/locations/search", get(common::search_locations))
+        .nest("/images", images_router)
+        .route("/locations/search", get(search_locations))
         .route_layer(login_required!(
             AuthnBackend,
             login_url = LOG_IN_URL,
@@ -171,6 +170,14 @@ fn setup_job_seeker_dashboard_router() -> Router<State> {
             "/profile/update",
             get(dashboard::job_seeker::profile::update_page).put(dashboard::job_seeker::profile::update),
         )
+}
+
+/// Setup images router.
+#[instrument(skip_all)]
+fn setup_images_router() -> Router<State> {
+    Router::new()
+        .route("/", post(img::upload))
+        .route("/{:image_id}/{:version}", get(img::get))
 }
 
 /// Handler that takes care of health check requests.

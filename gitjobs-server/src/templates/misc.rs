@@ -1,4 +1,4 @@
-//! This module defines some common templates used across the site.
+//! This module defines some templates used across the site.
 
 use rinja::Template;
 use serde::{Deserialize, Serialize};
@@ -8,7 +8,7 @@ use crate::templates::{filters, helpers::build_location};
 
 /// Locations.
 #[derive(Debug, Clone, Template, PartialEq, Serialize, Deserialize)]
-#[template(path = "common/locations.html")]
+#[template(path = "misc/locations.html")]
 pub(crate) struct Locations {
     pub locations: Vec<Location>,
 }

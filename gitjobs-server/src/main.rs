@@ -6,6 +6,7 @@ use std::{path::PathBuf, sync::Arc};
 use anyhow::{Context, Result};
 use clap::Parser;
 use deadpool_postgres::Runtime;
+use img::db::DbImageStore;
 use openssl::ssl::{SslConnector, SslMethod, SslVerifyMode};
 use postgres_openssl::MakeTlsConnector;
 use tokio::{net::TcpListener, signal};
@@ -60,8 +61,11 @@ async fn main() -> Result<()> {
     let pool = cfg.db.create_pool(Some(Runtime::Tokio1), connector)?;
     let db = Arc::new(PgDB::new(pool));
 
+    // Setup image store
+    let image_store = Arc::new(DbImageStore::new(db.clone()));
+
     // Setup and launch HTTP server
-    let router = router::setup(&cfg.server, db)?;
+    let router = router::setup(&cfg.server, db, image_store)?;
     let listener = TcpListener::bind(&cfg.server.addr).await?;
     info!("server started");
     info!(%cfg.server.addr, "listening");

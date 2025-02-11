@@ -6,7 +6,7 @@ use uuid::Uuid;
 
 use crate::{
     db::DynDB,
-    img::{generate_versions, is_svg, ImageStore, ImageVersion},
+    img::{generate_versions, is_svg, ImageFormat, ImageStore, ImageVersion},
 };
 
 /// Database-backed image store.
@@ -25,8 +25,8 @@ impl DbImageStore {
 
 #[async_trait]
 impl ImageStore for DbImageStore {
-    async fn get(&self, _image_id: Uuid, _version: &str) -> Result<Option<Vec<u8>>> {
-        Ok(None)
+    async fn get(&self, image_id: Uuid, version: &str) -> Result<Option<(Vec<u8>, ImageFormat)>> {
+        self.db.get_image_version(image_id, version).await
     }
 
     async fn save(&self, filename: &str, data: Vec<u8>) -> Result<Uuid> {

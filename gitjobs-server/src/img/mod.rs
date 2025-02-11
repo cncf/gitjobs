@@ -6,13 +6,15 @@ use anyhow::Result;
 use async_trait::async_trait;
 use uuid::Uuid;
 
+use crate::db::img::ImageFormat;
+
 pub(crate) mod db;
 
 /// Trait that defines the operations an image store must support.
 #[async_trait]
 pub(crate) trait ImageStore {
-    /// Get an image version of the requested size from the store.
-    async fn get(&self, image_id: Uuid, version: &str) -> Result<Option<Vec<u8>>>;
+    /// Get an image version from the store.
+    async fn get(&self, image_id: Uuid, version: &str) -> Result<Option<(Vec<u8>, ImageFormat)>>;
 
     /// Save an image to the store.
     async fn save(&self, filename: &str, data: Vec<u8>) -> Result<Uuid>;
@@ -20,13 +22,6 @@ pub(crate) trait ImageStore {
 
 /// Type alias to represent an `ImageStore` trait object.
 pub(crate) type DynImageStore = Arc<dyn ImageStore + Send + Sync>;
-
-/// Version of an image of a specific size.
-#[derive(Debug, Clone)]
-pub(crate) struct ImageVersion {
-    pub data: Vec<u8>,
-    pub version: String,
-}
 
 /// Generate versions of different sizes for an image.
 pub(crate) fn generate_versions(data: &[u8]) -> Result<Vec<ImageVersion>> {
@@ -41,7 +36,7 @@ pub(crate) fn generate_versions(data: &[u8]) -> Result<Vec<ImageVersion>> {
         // Resize image
         let version = img.resize(*size, *size, image::imageops::FilterType::Lanczos3);
 
-        // Encode resized version of the image
+        // Encode resized version of the image to png format
         let mut buf = vec![];
         version.write_to(&mut Cursor::new(&mut buf), image::ImageFormat::Png)?;
 
@@ -52,6 +47,13 @@ pub(crate) fn generate_versions(data: &[u8]) -> Result<Vec<ImageVersion>> {
     }
 
     Ok(versions)
+}
+
+/// Version of an image of a specific size.
+#[derive(Debug, Clone)]
+pub(crate) struct ImageVersion {
+    pub data: Vec<u8>,
+    pub version: String,
 }
 
 /// Check if the image is in SVG format.

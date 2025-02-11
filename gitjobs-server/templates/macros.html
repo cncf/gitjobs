@@ -314,3 +314,112 @@
   </div>
 {% endmacro radio_box %}
 {# End radio box #}
+
+{# Form image #}
+{% macro images_form(label, name, icon = "company", value = "", additional_input_name = "", additional_value = "") %}
+  {% let empty_image = value == "" %}
+  {% let additional_input = additional_input_name.to_string() != "" %}
+
+  {# Images form #}
+  <form id="images-form"
+        hx-post="/images"
+        hx-encoding="multipart/form-data"
+        hx-trigger="change from:#logo"
+        hx-swap="none"
+        hx-indicator=".htmx-indicator">
+    <label for="{{ name }}" class="block text-sm/6 font-medium text-gray-900">{{ label }}</label>
+    <div class="mt-3 flex items-stretch gap-x-5">
+      <div class="relative flex items-center size-24 min-w-24 bg-gray-200 rounded-xl overflow-hidden">
+        <div class="htmx-indicator absolute z-10 start-5 top-5">{% call spinner(size = 14) %}</div>
+
+        {# Placeholder image #}
+        <div id="placeholder-image"
+             class="svg-icon size-20 icon-{{ icon }} bg-white m-auto {%- if !empty_image %} hidden {%- endif -%}">
+        </div>
+        {# End placeholder image #}
+
+        {# Image #}
+        <img id="image"
+             src="{%- if !empty_image -%}/images/{{ value }}/small{%- endif -%}"
+             alt="Image"
+             height="auto"
+             width="auto"
+             class="size-20 m-auto {%- if empty_image %} hidden {%- endif -%}">
+        {# End image #}
+      </div>
+
+      <div class="flex flex-col justify-between self-stretch">
+        <p class="text-sm/5 text-gray-500">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        </p>
+
+        <div class="flex items-center gap-x-3">
+          {# Input file #}
+          <label for="logo" class="btn-primary cursor-pointer whitespace-nowrap">
+            <input type="file" id="logo" name="logo" class="hidden" />
+            {% if empty_image %}
+              Upload
+            {% else %}
+              Edit
+            {% endif %}
+            image
+          </label>
+          {# End input file #}
+
+          <button id="clean-image"
+                  type="button"
+                  class="group btn-outline whitespace-nowrap"
+                  {% if empty_image -%}
+                  disabled
+                  {%- endif -%}>Remove image</button>
+
+          {% if additional_input %}
+            <div class="text-xs text-gray-500 whitespace-nowrap">or use image from url</div>
+            <input type="url"
+                   name="{{ additional_input_name }}"
+                   id="{{ additional_input_name }}"
+                   value="{{ additional_value }}"
+                   class="input-primary max-w-[250px]">
+          {% endif %}
+
+        </div>
+      </div>
+    </div>
+  </form>
+  {# End images form #}
+
+  {# Input hidden #}
+  <input id="{{ name }}" type="hidden" name="{{ name }}" value="{{ value }}">
+  {# End input hidden #}
+
+  <script type="module">
+    // On clean image button click, remove the image and the clear button, and show the placeholder
+    const cleanImage = document.getElementById('clean-image');
+    const inputHidden = document.getElementById('{{ name }}');
+    const placeholderImage = document.getElementById('placeholder-image');
+    const image = document.getElementById('image');
+    cleanImage.addEventListener('click', () => {
+      inputHidden.value = "";
+      cleanImage.disabled = true;
+      placeholderImage.classList.remove('hidden');
+      image.setAttribute('src', '');
+      image.classList.add('hidden');
+    });
+
+    // On image upload, show the image and the clear button, and hide the placeholder
+    const imagesForm = document.getElementById('images-form');
+    imagesForm.addEventListener('htmx:afterRequest', (e) => {
+      if (e.detail.successful) {
+        const imageId = e.detail.xhr.response;
+        inputHidden.value = imageId;
+        cleanImage.disabled = false;
+        placeholderImage.classList.add('hidden');
+        image.setAttribute('src', `/images/${imageId}/small`);
+        image.classList.remove('hidden');
+      } else {
+        // TODO: Show an error message
+      }
+    });
+  </script>
+{% endmacro images_form %}
+{# End form image #}

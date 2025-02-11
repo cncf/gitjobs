@@ -451,7 +451,7 @@ impl DBDashBoardEmployer for PgDB {
                 description = $3::text,
                 public = $4::bool,
                 location_id = $5::uuid,
-                logo_id = $6:uuid,
+                logo_id = $6::uuid,
                 logo_url = $7::text,
                 website_url = $8::text,
                 updated_at = current_timestamp

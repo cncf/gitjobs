@@ -11,6 +11,9 @@ use crate::templates::dashboard::job_seeker;
 #[template(path = "dashboard/job_seeker/home.html")]
 pub(crate) struct Page {
     pub content: Content,
+    pub logged_in: bool,
+    pub name: String,
+    pub username: String,
 }
 
 /// Content section.

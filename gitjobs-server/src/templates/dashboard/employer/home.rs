@@ -13,6 +13,9 @@ use crate::templates::{dashboard::employer, filters};
 pub(crate) struct Page {
     pub content: Content,
     pub employers: Vec<employer::employers::EmployerSummary>,
+    pub logged_in: bool,
+    pub name: String,
+    pub username: String,
 
     pub selected_employer_id: Option<Uuid>,
 }

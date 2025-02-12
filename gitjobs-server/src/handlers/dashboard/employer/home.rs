@@ -59,7 +59,10 @@ pub(crate) async fn page(
     let template = home::Page {
         content,
         employers,
+        logged_in: true,
+        name: user.name,
         selected_employer_id: employer_id,
+        username: user.username,
     };
 
     Ok(Html(template.render()?).into_response())

@@ -47,6 +47,7 @@ pub(crate) async fn log_in_page(
     Query(query): Query<HashMap<String, String>>,
 ) -> Result<impl IntoResponse, HandlerError> {
     let template = templates::auth::LogInPage {
+        logged_in: false,
         messages: messages.into_iter().collect(),
         next_url: query.get("next_url").cloned(),
     };
@@ -60,6 +61,7 @@ pub(crate) async fn sign_up_page(
     Query(query): Query<HashMap<String, String>>,
 ) -> Result<impl IntoResponse, HandlerError> {
     let template = templates::auth::SignUpPage {
+        logged_in: false,
         next_url: query.get("next_url").cloned(),
     };
 

@@ -8,7 +8,7 @@ use tracing::{instrument, trace};
 use uuid::Uuid;
 
 use crate::{
-    auth::{NewUser, User},
+    auth::{User, UserSummary},
     db::PgDB,
 };
 
@@ -35,10 +35,18 @@ pub(crate) trait DBAuth {
     async fn get_user_by_username(&self, job_board_id: &Uuid, username: &str) -> Result<Option<User>>;
 
     /// Sign up a new user.
-    async fn sign_up_user(&self, job_board_id: &Uuid, user: &NewUser, email_verified: bool) -> Result<User>;
+    async fn sign_up_user(
+        &self,
+        job_board_id: &Uuid,
+        user_summary: &UserSummary,
+        email_verified: bool,
+    ) -> Result<User>;
 
     /// Update session.
     async fn update_session(&self, record: &session::Record) -> Result<()>;
+
+    /// Update user details.
+    async fn update_user_details(&self, user_id: &Uuid, user_summary: &UserSummary) -> Result<()>;
 
     /// Check if the user owns the employer.
     async fn user_owns_employer(&self, user_id: &Uuid, employer_id: &Uuid) -> Result<bool>;
@@ -232,7 +240,12 @@ impl DBAuth for PgDB {
 
     /// [DBAuth::sign_up_user]
     #[instrument(skip(self), err)]
-    async fn sign_up_user(&self, job_board_id: &Uuid, user: &NewUser, email_verified: bool) -> Result<User> {
+    async fn sign_up_user(
+        &self,
+        job_board_id: &Uuid,
+        user_summary: &UserSummary,
+        email_verified: bool,
+    ) -> Result<User> {
         trace!("signing up user in database");
 
         let db = self.pool.get().await?;
@@ -264,11 +277,11 @@ impl DBAuth for PgDB {
                 username;
             "#,
                 &[
-                    &user.email,
+                    &user_summary.email,
                     &email_verified,
-                    &user.name,
-                    &user.password,
-                    &user.username,
+                    &user_summary.name,
+                    &user_summary.password,
+                    &user_summary.username,
                     &job_board_id,
                 ],
             )
@@ -303,6 +316,32 @@ impl DBAuth for PgDB {
                 &record.id.to_string(),
                 &serde_json::to_value(&record.data)?,
                 &record.expiry_date,
+            ],
+        )
+        .await?;
+
+        Ok(())
+    }
+
+    /// [DBAuth::update_user_details]
+    #[instrument(skip(self), err)]
+    async fn update_user_details(&self, user_id: &Uuid, user_summary: &UserSummary) -> Result<()> {
+        trace!("updating user details in database");
+
+        let db = self.pool.get().await?;
+        db.execute(
+            r#"
+            update "user" set
+                email = $2::text,
+                name = $3::text,
+                username = $4::text
+            where user_id = $1::uuid;
+            "#,
+            &[
+                &user_id,
+                &user_summary.email,
+                &user_summary.name,
+                &user_summary.username,
             ],
         )
         .await?;

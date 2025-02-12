@@ -17,6 +17,8 @@ use crate::{
     templates::dashboard::job_seeker::profile::{self},
 };
 
+// Pages handlers.
+
 /// Handler that returns the page to preview a profile.
 #[instrument(skip_all, err)]
 pub(crate) async fn preview_page(body: String) -> Result<impl IntoResponse, HandlerError> {

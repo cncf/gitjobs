@@ -68,6 +68,19 @@ pub(crate) async fn sign_up_page(
     Ok(Html(template.render()?))
 }
 
+/// Handler that returns the page to update a user's details and/or password.
+#[instrument(skip_all, err)]
+pub(crate) async fn update_user_page(auth_session: AuthSession) -> Result<impl IntoResponse, HandlerError> {
+    let Some(user) = auth_session.user else {
+        return Ok(StatusCode::FORBIDDEN.into_response());
+    };
+    let template = templates::auth::UpdateUserPage {
+        user_summary: user.into(),
+    };
+
+    Ok(Html(template.render()?).into_response())
+}
+
 // Actions handlers.
 
 /// Handler that logs the user in.
@@ -220,20 +233,39 @@ pub(crate) async fn sign_up(
     State(db): State<DynDB>,
     JobBoardId(job_board_id): JobBoardId,
     Query(query): Query<HashMap<String, String>>,
-    Form(mut new_user): Form<auth::NewUser>,
+    Form(mut user_summary): Form<auth::UserSummary>,
 ) -> Result<impl IntoResponse, HandlerError> {
     // Check if the password has been provided
-    let Some(password) = new_user.password.take() else {
+    let Some(password) = user_summary.password.take() else {
         return Ok((StatusCode::BAD_REQUEST, "password not provided").into_response());
     };
 
     // Sign up the user
-    new_user.password = Some(password_auth::generate_hash(&password));
-    _ = db.sign_up_user(&job_board_id, &new_user, true).await?;
+    user_summary.password = Some(password_auth::generate_hash(&password));
+    _ = db.sign_up_user(&job_board_id, &user_summary, true).await?;
 
     // Redirect to the log in page
     let log_in_url = get_log_in_url(query.get("next_url"));
     Ok(Redirect::to(&log_in_url).into_response())
+}
+
+/// Handler that updates a user's details.
+#[instrument(skip_all, err)]
+pub(crate) async fn update_user_details(
+    auth_session: AuthSession,
+    State(db): State<DynDB>,
+    Form(user_summary): Form<auth::UserSummary>,
+) -> Result<impl IntoResponse, HandlerError> {
+    // Get user from session
+    let Some(user) = auth_session.user else {
+        return Ok(StatusCode::FORBIDDEN.into_response());
+    };
+
+    // Update user in database
+    let user_id = user.user_id;
+    db.update_user_details(&user_id, &user_summary).await?;
+
+    Ok(StatusCode::NO_CONTENT.into_response())
 }
 
 // Authorization middleware.

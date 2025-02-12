@@ -4,6 +4,8 @@ use axum_messages::Message;
 use rinja::Template;
 use serde::{Deserialize, Serialize};
 
+use crate::auth::UserSummary;
+
 /// Log in page.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
 #[template(path = "auth/log_in.html")]
@@ -21,4 +23,11 @@ pub(crate) struct SignUpPage {
     pub logged_in: bool,
 
     pub next_url: Option<String>,
+}
+
+/// Update user page.
+#[derive(Debug, Clone, Template, Serialize, Deserialize)]
+#[template(path = "auth/update_user.html")]
+pub(crate) struct UpdateUserPage {
+    pub user_summary: UserSummary,
 }

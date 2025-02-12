@@ -150,17 +150,17 @@ impl AuthnBackend {
             .to_string();
 
         // Get the user if they exist, otherwise sign them up
-        let new_user = match creds.provider {
-            OAuth2Provider::GitHub => NewUser::from_github_profile(&access_token).await?,
+        let user_summary = match creds.provider {
+            OAuth2Provider::GitHub => UserSummary::from_github_profile(&access_token).await?,
         };
         let user = if let Some(user) = self
             .db
-            .get_user_by_email(&creds.job_board_id, &new_user.email)
+            .get_user_by_email(&creds.job_board_id, &user_summary.email)
             .await?
         {
             user
         } else {
-            self.db.sign_up_user(&creds.job_board_id, &new_user, true).await?
+            self.db.sign_up_user(&creds.job_board_id, &user_summary, true).await?
         };
 
         Ok(Some(user))
@@ -297,7 +297,7 @@ pub(crate) struct PasswordCredentials {
 // User types and implementations.
 
 /// User information.
-#[derive(Clone)]
+#[derive(Clone, Serialize, Deserialize)]
 #[allow(clippy::struct_field_names, dead_code)]
 pub(crate) struct User {
     pub user_id: Uuid,
@@ -331,10 +331,10 @@ impl std::fmt::Debug for User {
     }
 }
 
-/// User information required to sign up a new user.
+/// User information summary.
 #[derive(Clone, Serialize, Deserialize)]
 #[allow(clippy::struct_field_names)]
-pub(crate) struct NewUser {
+pub(crate) struct UserSummary {
     pub email: String,
     pub name: String,
     pub username: String,
@@ -343,8 +343,8 @@ pub(crate) struct NewUser {
     pub password: Option<String>,
 }
 
-impl NewUser {
-    /// Create a `NewUser` instance from a GitHub profile.
+impl UserSummary {
+    /// Create a `UserSummary` instance from a GitHub profile.
     async fn from_github_profile(access_token: &str) -> Result<Self> {
         let profile = reqwest::Client::new()
             .get("https://api.github.com/user")
@@ -364,9 +364,20 @@ impl NewUser {
     }
 }
 
-impl std::fmt::Debug for NewUser {
+impl From<User> for UserSummary {
+    fn from(user: User) -> Self {
+        Self {
+            email: user.email,
+            name: user.name,
+            username: user.username,
+            password: None,
+        }
+    }
+}
+
+impl std::fmt::Debug for UserSummary {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("NewUser")
+        f.debug_struct("UserSummary")
             .field("email", &self.email)
             .field("name", &self.name)
             .field("username", &self.username)

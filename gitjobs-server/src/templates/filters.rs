@@ -52,3 +52,9 @@ where
         None => Ok(alternative.to_string()),
     }
 }
+
+/// Return the unnormalized version of the string provided.
+#[allow(clippy::unnecessary_wraps, clippy::ref_option)]
+pub(crate) fn unnormalize(s: &String) -> rinja::Result<String> {
+    Ok(s.replace("-", " "))
+}

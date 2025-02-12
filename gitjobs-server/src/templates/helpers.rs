@@ -1,7 +1,14 @@
 //! Some helpers for templates.
 
+use uuid::Uuid;
+
 /// The date format used in the templates.
 pub(crate) const DATE_FORMAT: &str = "%Y-%m-%d";
+
+/// Build url for an image version.
+pub(crate) fn build_image_url(image_id: Uuid, version: &str) -> String {
+    format!("/images/{image_id}/{version}")
+}
 
 /// Build location string from the location information provided.
 pub(crate) fn build_location(

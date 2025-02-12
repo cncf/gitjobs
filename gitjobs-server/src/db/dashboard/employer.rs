@@ -72,7 +72,6 @@ impl DBDashBoardEmployer for PgDB {
                     public,
                     location_id,
                     logo_id,
-                    logo_url,
                     website_url
                 ) values (
                     $1::uuid,
@@ -81,8 +80,7 @@ impl DBDashBoardEmployer for PgDB {
                     $4::bool,
                     $5::uuid,
                     $6::uuid,
-                    $7::text,
-                    $8::text
+                    $7::text
                 ) returning employer_id;
                 ",
                 &[
@@ -92,7 +90,6 @@ impl DBDashBoardEmployer for PgDB {
                     &employer.public,
                     &employer.location_id,
                     &employer.logo_id,
-                    &employer.logo_url,
                     &employer.website_url,
                 ],
             )
@@ -237,7 +234,6 @@ impl DBDashBoardEmployer for PgDB {
                     e.public,
                     e.location_id,
                     e.logo_id,
-                    e.logo_url,
                     e.website_url,
                     l.city,
                     l.country,
@@ -257,7 +253,6 @@ impl DBDashBoardEmployer for PgDB {
             country: row.get("country"),
             location_id: row.get("location_id"),
             logo_id: row.get("logo_id"),
-            logo_url: row.get("logo_url"),
             state: row.get("state"),
             website_url: row.get("website_url"),
         };
@@ -399,11 +394,11 @@ impl DBDashBoardEmployer for PgDB {
         let employers = db
             .query(
                 "
-                        select employer_id, company
-                        from employer e
-                        join employer_team et using (employer_id)
-                        where et.user_id = $1::uuid;
-                        ",
+                select employer_id, company, logo_id
+                from employer e
+                join employer_team et using (employer_id)
+                where et.user_id = $1::uuid;
+                ",
                 &[&user_id],
             )
             .await?
@@ -411,6 +406,7 @@ impl DBDashBoardEmployer for PgDB {
             .map(|row| EmployerSummary {
                 employer_id: row.get("employer_id"),
                 company: row.get("company"),
+                logo_id: row.get("logo_id"),
             })
             .collect();
 
@@ -452,8 +448,7 @@ impl DBDashBoardEmployer for PgDB {
                 public = $4::bool,
                 location_id = $5::uuid,
                 logo_id = $6::uuid,
-                logo_url = $7::text,
-                website_url = $8::text,
+                website_url = $7::text,
                 updated_at = current_timestamp
             where employer_id = $1::uuid;
             ",
@@ -464,7 +459,6 @@ impl DBDashBoardEmployer for PgDB {
                 &employer.public,
                 &employer.location_id,
                 &employer.logo_id,
-                &employer.logo_url,
                 &employer.website_url,
             ],
         )

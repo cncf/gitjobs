@@ -316,9 +316,8 @@
 {# End radio box #}
 
 {# Form image #}
-{% macro images_form(label, name, icon = "company", value = "", additional_input_name = "", additional_value = "") %}
+{% macro images_form(label, name, icon = "company", value = "") %}
   {% let empty_image = value == "" %}
-  {% let additional_input = additional_input_name.to_string() != "" %}
 
   {# Images form #}
   <form id="images-form"
@@ -372,15 +371,6 @@
                   {% if empty_image -%}
                   disabled
                   {%- endif -%}>Remove image</button>
-
-          {% if additional_input %}
-            <div class="text-xs text-gray-500 whitespace-nowrap">or use image from url</div>
-            <input type="url"
-                   name="{{ additional_input_name }}"
-                   id="{{ additional_input_name }}"
-                   value="{{ additional_value }}"
-                   class="input-primary max-w-[250px]">
-          {% endif %}
 
         </div>
       </div>

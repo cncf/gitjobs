@@ -127,7 +127,6 @@ create table employer (
     description text not null check (description <> ''),
     public boolean not null default false,
 
-    logo_url text check (logo_url <> ''),
     updated_at timestamptz,
     website_url text check (website_url <> '')
 );

@@ -30,6 +30,8 @@ pub(crate) struct UpdatePage {
 pub(crate) struct EmployerSummary {
     pub employer_id: Uuid,
     pub company: String,
+
+    pub logo_id: Option<Uuid>,
 }
 
 /// Employer details.
@@ -44,7 +46,6 @@ pub(crate) struct Employer {
     pub country: Option<String>,
     pub location_id: Option<Uuid>,
     pub logo_id: Option<Uuid>,
-    pub logo_url: Option<String>,
     pub state: Option<String>,
     pub website_url: Option<String>,
 }

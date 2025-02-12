@@ -196,14 +196,14 @@ impl DBDashBoardEmployer for PgDB {
         let db = self.pool.get().await?;
         db.execute(
             "
-                    update job
-                    set
-                        status = 'archived',
-                        archived_at = current_timestamp,
-                        updated_at = current_timestamp
-                    where job_id = $1::uuid
-                    and status = 'published';
-                    ",
+            update job
+            set
+                status = 'archived',
+                archived_at = current_timestamp,
+                updated_at = current_timestamp
+            where job_id = $1::uuid
+            and status = 'published';
+            ",
             &[&job_id],
         )
         .await?;

@@ -167,6 +167,10 @@ fn setup_job_seeker_dashboard_router() -> Router<State> {
     Router::new()
         .route("/", get(dashboard::job_seeker::home::page))
         .route(
+            "/profile/preview",
+            post(dashboard::job_seeker::profile::preview_page),
+        )
+        .route(
             "/profile/update",
             get(dashboard::job_seeker::profile::update_page).put(dashboard::job_seeker::profile::update),
         )

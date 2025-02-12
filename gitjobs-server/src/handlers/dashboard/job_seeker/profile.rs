@@ -17,6 +17,18 @@ use crate::{
     templates::dashboard::job_seeker::profile::{self},
 };
 
+/// Handler that returns the page to preview a profile.
+#[instrument(skip_all, err)]
+pub(crate) async fn preview_page(body: String) -> Result<impl IntoResponse, HandlerError> {
+    let profile = match serde_qs::from_str(&body).map_err(anyhow::Error::new) {
+        Ok(profile) => profile,
+        Err(e) => return Ok((StatusCode::UNPROCESSABLE_ENTITY, e.to_string()).into_response()),
+    };
+    let template = profile::PreviewPage { profile };
+
+    Ok(Html(template.render()?).into_response())
+}
+
 /// Handler that returns the page to update a profile.
 #[instrument(skip_all, err)]
 pub(crate) async fn update_page(

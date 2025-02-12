@@ -6,6 +6,13 @@ use rinja::Template;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
+/// Profile preview page template.
+#[derive(Debug, Clone, Template, Serialize, Deserialize)]
+#[template(path = "dashboard/job_seeker/profile/preview.html")]
+pub(crate) struct PreviewPage {
+    pub profile: JobSeekerProfile,
+}
+
 /// Update profile page template.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
 #[template(path = "dashboard/job_seeker/profile/update.html")]

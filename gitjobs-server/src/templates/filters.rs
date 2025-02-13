@@ -53,6 +53,12 @@ where
     }
 }
 
+/// Filter to convert markdown to html.
+#[allow(clippy::unnecessary_wraps, clippy::ref_option)]
+pub(crate) fn md_to_html(s: &str) -> rinja::Result<String> {
+    Ok(markdown::to_html(s))
+}
+
 /// Return the unnormalized version of the string provided.
 #[allow(clippy::unnecessary_wraps, clippy::ref_option)]
 pub(crate) fn unnormalize(s: &str) -> rinja::Result<String> {

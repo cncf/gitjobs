@@ -1334,6 +1334,7 @@ dependencies = [
  "emojis",
  "figment",
  "image",
+ "markdown",
  "mime_guess",
  "minify-html",
  "num-format",
@@ -2004,6 +2005,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0fae87c125b03c1d2c0150c90365d7d6bcc53fb73a9acaef207d2d065860f062"
 dependencies = [
  "imgref",
+]
+
+[[package]]
+name = "markdown"
+version = "1.0.0-alpha.22"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "790c11786cb51d02938e3eb38276575e1658b1dd8555875f5788a40670a33934"
+dependencies = [
+ "unicode-id",
 ]
 
 [[package]]
@@ -4252,6 +4262,12 @@ name = "unicode-bidi"
 version = "0.3.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5c1cb5db39152898a79168971543b1cb5020dff7fe43c8dc468b0885f5e29df5"
+
+[[package]]
+name = "unicode-id"
+version = "0.3.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "10103c57044730945224467c09f71a4db0071c123a0648cc3e818913bde6b561"
 
 [[package]]
 name = "unicode-ident"

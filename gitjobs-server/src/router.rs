@@ -124,6 +124,7 @@ fn setup_employer_dashboard_router(state: State) -> Router<State> {
         .route("/", get(dashboard::employer::home::page))
         .route("/account/update", get(auth::update_user_page))
         .route("/account/update/details", put(auth::update_user_details))
+        .route("/account/update/password", put(auth::update_user_password))
         .route(
             "/employers/add",
             get(dashboard::employer::employers::add_page).post(dashboard::employer::employers::add),
@@ -170,6 +171,7 @@ fn setup_job_seeker_dashboard_router() -> Router<State> {
         .route("/", get(dashboard::job_seeker::home::page))
         .route("/account/update", get(auth::update_user_page))
         .route("/account/update/details", put(auth::update_user_details))
+        .route("/account/update/password", put(auth::update_user_password))
         .route(
             "/profile/preview",
             post(dashboard::job_seeker::profile::preview_page),

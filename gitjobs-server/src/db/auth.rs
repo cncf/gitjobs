@@ -34,6 +34,9 @@ pub(crate) trait DBAuth {
     /// Get user by username.
     async fn get_user_by_username(&self, job_board_id: &Uuid, username: &str) -> Result<Option<User>>;
 
+    /// Get user password.
+    async fn get_user_password(&self, user_id: &Uuid) -> Result<Option<String>>;
+
     /// Sign up a new user.
     async fn sign_up_user(
         &self,
@@ -47,6 +50,9 @@ pub(crate) trait DBAuth {
 
     /// Update user details.
     async fn update_user_details(&self, user_id: &Uuid, user_summary: &UserSummary) -> Result<()>;
+
+    /// Update user password.
+    async fn update_user_password(&self, user_id: &Uuid, new_password: &str) -> Result<()>;
 
     /// Check if the user owns the employer.
     async fn user_owns_employer(&self, user_id: &Uuid, employer_id: &Uuid) -> Result<bool>;
@@ -140,6 +146,7 @@ impl DBAuth for PgDB {
                     auth_hash,
                     email,
                     email_verified,
+                    password is not null as has_password,
                     name,
                     username
                 from "user"
@@ -155,6 +162,7 @@ impl DBAuth for PgDB {
                 auth_hash: row.get("auth_hash"),
                 email: row.get("email"),
                 email_verified: row.get("email_verified"),
+                has_password: row.get("has_password"),
                 name: row.get("name"),
                 password: None,
                 username: row.get("username"),
@@ -177,6 +185,7 @@ impl DBAuth for PgDB {
                     auth_hash,
                     email,
                     email_verified,
+                    password is not null as has_password,
                     name,
                     username
                 from "user"
@@ -191,6 +200,7 @@ impl DBAuth for PgDB {
                 auth_hash: row.get("auth_hash"),
                 email: row.get("email"),
                 email_verified: row.get("email_verified"),
+                has_password: row.get("has_password"),
                 name: row.get("name"),
                 password: None,
                 username: row.get("username"),
@@ -213,6 +223,7 @@ impl DBAuth for PgDB {
                     auth_hash,
                     email,
                     email_verified,
+                    password is not null as has_password,
                     name,
                     password,
                     username
@@ -230,12 +241,30 @@ impl DBAuth for PgDB {
                 auth_hash: row.get("auth_hash"),
                 email: row.get("email"),
                 email_verified: row.get("email_verified"),
+                has_password: row.get("has_password"),
                 name: row.get("name"),
                 password: row.get("password"),
                 username: row.get("username"),
             });
 
         Ok(user)
+    }
+
+    /// [DBAuth::get_user_password]
+    #[instrument(skip(self), err)]
+    async fn get_user_password(&self, user_id: &Uuid) -> Result<Option<String>> {
+        trace!("getting user password from database");
+
+        let db = self.pool.get().await?;
+        let password = db
+            .query_opt(
+                r#"select password from "user" where user_id = $1::uuid;"#,
+                &[&user_id],
+            )
+            .await?
+            .map(|row| row.get("password"));
+
+        Ok(password)
     }
 
     /// [DBAuth::sign_up_user]
@@ -252,30 +281,30 @@ impl DBAuth for PgDB {
         let row = db
             .query_one(
                 r#"
-            insert into "user" (
-                auth_hash,
-                email,
-                email_verified,
-                name,
-                password,
-                username,
-                job_board_id
-            ) values (
-                gen_random_bytes(32),
-                $1::text,
-                $2::boolean,
-                $3::text,
-                $4::text,
-                $5::text,
-                $6::uuid
-            ) returning
-                user_id,
-                auth_hash,
-                email,
-                email_verified,
-                name,
-                username;
-            "#,
+                insert into "user" (
+                    auth_hash,
+                    email,
+                    email_verified,
+                    name,
+                    password,
+                    username,
+                    job_board_id
+                ) values (
+                    gen_random_bytes(32),
+                    $1::text,
+                    $2::boolean,
+                    $3::text,
+                    $4::text,
+                    $5::text,
+                    $6::uuid
+                ) returning
+                    user_id,
+                    auth_hash,
+                    email,
+                    email_verified,
+                    name,
+                    username;
+                "#,
                 &[
                     &user_summary.email,
                     &email_verified,
@@ -291,6 +320,7 @@ impl DBAuth for PgDB {
             auth_hash: row.get("auth_hash"),
             email: row.get("email"),
             email_verified: row.get("email_verified"),
+            has_password: Some(true),
             name: row.get("name"),
             password: None,
             username: row.get("username"),
@@ -343,6 +373,26 @@ impl DBAuth for PgDB {
                 &user_summary.name,
                 &user_summary.username,
             ],
+        )
+        .await?;
+
+        Ok(())
+    }
+
+    /// [DBAuth::update_user_password]
+    #[instrument(skip(self), err)]
+    async fn update_user_password(&self, user_id: &Uuid, new_password: &str) -> Result<()> {
+        trace!("updating user password in database");
+
+        let db = self.pool.get().await?;
+        db.execute(
+            r#"
+            update "user" set
+                auth_hash = gen_random_bytes(32), -- Invalidate existing sessions
+                password = $2::text
+            where user_id = $1::uuid;
+            "#,
+            &[&user_id, &new_password],
         )
         .await?;
 

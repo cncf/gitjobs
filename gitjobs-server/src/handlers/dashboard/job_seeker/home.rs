@@ -16,9 +16,12 @@ use crate::{
     auth::AuthSession,
     db::DynDB,
     handlers::error::HandlerError,
-    templates::dashboard::job_seeker::{
-        home::{self, Content, Tab},
-        profile,
+    templates::{
+        auth,
+        dashboard::job_seeker::{
+            home::{self, Content, Tab},
+            profile,
+        },
     },
 };
 
@@ -37,6 +40,10 @@ pub(crate) async fn page(
     // Prepare content for the selected tab
     let tab: Tab = query.get("tab").into();
     let content = match tab {
+        Tab::Account => {
+            let user_summary = user.clone().into();
+            Content::Account(auth::UpdateUserPage { user_summary })
+        }
         Tab::Profile => {
             let profile = db.get_job_seeker_profile(&user.user_id).await?;
             Content::Profile(profile::UpdatePage { profile })

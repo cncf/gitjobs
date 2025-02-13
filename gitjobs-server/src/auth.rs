@@ -134,7 +134,7 @@ impl AuthnBackend {
         })
     }
 
-    /// Authenticate a user using `OAuth2` credentials.
+    /// Authenticate user using `OAuth2` credentials.
     async fn authenticate_oauth2(&self, creds: OAuth2Credentials) -> Result<Option<User>> {
         // Exchange the authorization code for an access token
         let Some(oauth2_provider) = self.oauth2_providers.get(&creds.provider) else {
@@ -166,7 +166,7 @@ impl AuthnBackend {
         Ok(Some(user))
     }
 
-    /// Authenticate a user using password credentials.
+    /// Authenticate user using password credentials.
     async fn authenticate_password(&self, creds: PasswordCredentials) -> Result<Option<User>> {
         // Ensure job board id is present
         let Some(job_board_id) = creds.job_board_id else {
@@ -179,12 +179,12 @@ impl AuthnBackend {
         // Check if the credentials are valid, returning the user if they are
         if let Some(mut user) = user {
             // Check if the user's password is set
-            let Some(password) = user.password.clone() else {
+            let Some(password_hash) = user.password.clone() else {
                 return Ok(None);
             };
 
             // Verify the password
-            if tokio::task::spawn_blocking(move || verify_password(creds.password, &password))
+            if tokio::task::spawn_blocking(move || verify_password(creds.password, &password_hash))
                 .await?
                 .is_ok()
             {
@@ -307,6 +307,7 @@ pub(crate) struct User {
     pub name: String,
     pub username: String,
 
+    pub has_password: Option<bool>,
     pub password: Option<String>,
 }
 
@@ -339,6 +340,7 @@ pub(crate) struct UserSummary {
     pub name: String,
     pub username: String,
 
+    pub has_password: Option<bool>,
     #[serde(skip_serializing)]
     pub password: Option<String>,
 }
@@ -359,6 +361,7 @@ impl UserSummary {
             email: profile.email,
             name: profile.name,
             username: profile.login,
+            has_password: Some(false),
             password: None,
         })
     }
@@ -370,6 +373,7 @@ impl From<User> for UserSummary {
             email: user.email,
             name: user.name,
             username: user.username,
+            has_password: user.has_password,
             password: None,
         }
     }
@@ -391,4 +395,11 @@ struct GitHubProfile {
     login: String,
     name: String,
     email: String,
+}
+
+/// User password update input.
+#[derive(Clone, Serialize, Deserialize)]
+pub(crate) struct PasswordUpdateInput {
+    pub old_password: String,
+    pub new_password: String,
 }

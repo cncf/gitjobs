@@ -15,10 +15,13 @@ use crate::{
     auth::AuthSession,
     db::DynDB,
     handlers::{error::HandlerError, extractors::SelectedEmployerIdOptional},
-    templates::dashboard::employer::{
-        employers,
-        home::{self, Content, Tab},
-        jobs,
+    templates::{
+        auth,
+        dashboard::employer::{
+            employers,
+            home::{self, Content, Tab},
+            jobs,
+        },
     },
 };
 
@@ -43,14 +46,18 @@ pub(crate) async fn page(
 
     // Prepare content for the selected tab
     let content = match tab {
+        Tab::Account => {
+            let user_summary = user.clone().into();
+            Content::Account(auth::UpdateUserPage { user_summary })
+        }
         Tab::EmployerInitialSetup => Content::EmployerInitialSetup(employers::InitialSetupPage {}),
         Tab::Jobs => {
             let jobs = db.list_employer_jobs(&employer_id.expect("to be some")).await?;
             Content::Jobs(jobs::ListPage { jobs })
         }
-        Tab::Settings => {
+        Tab::Profile => {
             let employer = db.get_employer(&employer_id.expect("to be some")).await?;
-            Content::Settings(employers::UpdatePage { employer })
+            Content::Profile(employers::UpdatePage { employer })
         }
     };
 

@@ -10,6 +10,7 @@ use axum::{
 };
 use axum_extra::extract::Form;
 use axum_messages::Messages;
+use password_auth::verify_password;
 use rinja::Template;
 use serde::Deserialize;
 use tower_sessions::Session;
@@ -28,6 +29,9 @@ use crate::{
 
 /// Log in URL.
 pub(crate) const LOG_IN_URL: &str = "/log-in";
+
+/// Log out URL.
+pub(crate) const LOG_OUT_URL: &str = "/log-out";
 
 /// Key to store the oauth2 csrf state in the session.
 pub(crate) const OAUTH2_CSRF_STATE_KEY: &str = "oauth2.csrf_state";
@@ -68,7 +72,7 @@ pub(crate) async fn sign_up_page(
     Ok(Html(template.render()?))
 }
 
-/// Handler that returns the page to update a user's details and/or password.
+/// Handler that returns the page to update the user's details and/or password.
 #[instrument(skip_all, err)]
 pub(crate) async fn update_user_page(auth_session: AuthSession) -> Result<impl IntoResponse, HandlerError> {
     let Some(user) = auth_session.user else {
@@ -122,10 +126,8 @@ pub(crate) async fn log_in(
 
     // Prepare next url
     let next_url = if let Some(next_url) = query.get("next_url") {
-        tracing::debug!("1");
         next_url
     } else {
-        tracing::debug!("2");
         "/"
     };
 
@@ -249,7 +251,7 @@ pub(crate) async fn sign_up(
     Ok(Redirect::to(&log_in_url).into_response())
 }
 
-/// Handler that updates a user's details.
+/// Handler that updates the user's details.
 #[instrument(skip_all, err)]
 pub(crate) async fn update_user_details(
     auth_session: AuthSession,
@@ -266,6 +268,36 @@ pub(crate) async fn update_user_details(
     db.update_user_details(&user_id, &user_summary).await?;
 
     Ok(StatusCode::NO_CONTENT.into_response())
+}
+
+/// Handler that updates the user's password.
+#[instrument(skip_all, err)]
+pub(crate) async fn update_user_password(
+    auth_session: AuthSession,
+    State(db): State<DynDB>,
+    Form(input): Form<auth::PasswordUpdateInput>,
+) -> Result<impl IntoResponse, HandlerError> {
+    // Get user from session
+    let Some(user) = auth_session.user else {
+        return Ok(StatusCode::FORBIDDEN.into_response());
+    };
+
+    // Check if the old password provided is correct
+    let Some(old_password_hash) = db.get_user_password(&user.user_id).await? else {
+        return Ok(StatusCode::BAD_REQUEST.into_response());
+    };
+    if tokio::task::spawn_blocking(move || verify_password(&input.old_password, &old_password_hash))
+        .await
+        .map_err(anyhow::Error::from)?
+        .is_err()
+    {
+        return Ok(StatusCode::FORBIDDEN.into_response());
+    }
+
+    // Update password in database
+    db.update_user_password(&user.user_id, &input.new_password).await?;
+
+    Ok(Redirect::to(LOG_OUT_URL).into_response())
 }
 
 // Authorization middleware.

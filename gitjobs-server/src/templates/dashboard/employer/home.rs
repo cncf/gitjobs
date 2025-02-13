@@ -5,7 +5,7 @@ use rinja::Template;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::templates::{dashboard::employer, filters};
+use crate::templates::{auth, dashboard::employer, filters};
 
 /// Home page template.
 #[derive(Debug, Clone, Template)]
@@ -23,12 +23,18 @@ pub(crate) struct Page {
 /// Content section.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub(crate) enum Content {
+    Account(auth::UpdateUserPage),
     EmployerInitialSetup(employer::employers::InitialSetupPage),
     Jobs(employer::jobs::ListPage),
-    Settings(employer::employers::UpdatePage),
+    Profile(employer::employers::UpdatePage),
 }
 
 impl Content {
+    /// Check if the content is the account page.
+    fn is_account(&self) -> bool {
+        matches!(self, Content::Account(_))
+    }
+
     /// Check if the content is the employer initial setup page.
     fn is_employer_initial_setup(&self) -> bool {
         matches!(self, Content::EmployerInitialSetup(_))
@@ -39,18 +45,19 @@ impl Content {
         matches!(self, Content::Jobs(_))
     }
 
-    /// Check if the content is the settings page.
-    fn is_settings(&self) -> bool {
-        matches!(self, Content::Settings(_))
+    /// Check if the content is the profile page.
+    fn is_profile(&self) -> bool {
+        matches!(self, Content::Profile(_))
     }
 }
 
 impl std::fmt::Display for Content {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
+            Content::Account(template) => write!(f, "{}", template.render()?),
             Content::EmployerInitialSetup(template) => write!(f, "{}", template.render()?),
             Content::Jobs(template) => write!(f, "{}", template.render()?),
-            Content::Settings(template) => write!(f, "{}", template.render()?),
+            Content::Profile(template) => write!(f, "{}", template.render()?),
         }
     }
 }
@@ -58,17 +65,19 @@ impl std::fmt::Display for Content {
 /// Tab selected.
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 pub(crate) enum Tab {
+    Account,
     EmployerInitialSetup,
     #[default]
     Jobs,
-    Settings,
+    Profile,
 }
 
 impl From<Option<&String>> for Tab {
     fn from(tab: Option<&String>) -> Self {
         match tab.map(String::as_str) {
+            Some("account") => Tab::Account,
             Some("employer-initial-setup") => Tab::EmployerInitialSetup,
-            Some("settings") => Tab::Settings,
+            Some("profile") => Tab::Profile,
             _ => Tab::Jobs,
         }
     }

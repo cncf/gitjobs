@@ -51,7 +51,7 @@
       </div>
 
       {% call dashboard_macros::menu_title(text = "Employer") %}
-      {% call dashboard_macros::menu_item(name = "Profile", icon = "gear", is_active = content.is_settings(), href = "/dashboard/employer?tab=settings") %}
+      {% call dashboard_macros::menu_item(name = "Profile", icon = "gear", is_active = content.is_profile(), href = "/dashboard/employer?tab=settings") %}
       <div class="rounded-md px-3 mb-3 border border-transparent hover:bg-white hover:border-gray-200">
         <button hx-get="/dashboard/employer/employers/add"
                 hx-trigger="click"

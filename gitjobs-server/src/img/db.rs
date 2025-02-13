@@ -39,7 +39,7 @@ impl ImageStore for DbImageStore {
             }]
         } else {
             // Generate versions for different sizes in png format
-            generate_versions(&data)?
+            tokio::task::spawn_blocking(move || generate_versions(&data)).await??
         };
 
         // Save image versions to the database

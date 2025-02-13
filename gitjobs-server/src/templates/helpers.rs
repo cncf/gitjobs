@@ -1,5 +1,8 @@
 //! Some helpers for templates.
 
+use std::sync::LazyLock;
+
+use regex::Regex;
 use uuid::Uuid;
 
 /// The date format used in the templates.
@@ -37,4 +40,15 @@ pub(crate) fn build_location(
         return Some(location);
     }
     None
+}
+
+/// Regular expression to match multiple hyphens.
+static MULTIPLE_HYPHENS: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"-{2,}").expect("exprs in MULTIPLE_HYPHENS to be valid"));
+
+/// Normalize string.
+pub(crate) fn normalize(s: &str) -> String {
+    let normalized = s.to_lowercase().replace(' ', "-");
+    let normalized = MULTIPLE_HYPHENS.replace(&normalized, "-").to_string();
+    normalized
 }

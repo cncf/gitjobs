@@ -30,6 +30,7 @@ openssl = { workspace = true }
 palette = { workspace = true }
 password-auth = { workspace = true }
 postgres-openssl = { workspace = true }
+regex = { workspace = true }
 reqwest = { workspace = true }
 rinja = { workspace = true }
 rust-embed = { workspace = true }

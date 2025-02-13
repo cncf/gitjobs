@@ -6,6 +6,8 @@ use rinja::Template;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
+use crate::templates::helpers::normalize;
+
 /// Profile preview page template.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
 #[template(path = "dashboard/job_seeker/profile/preview.html")]
@@ -47,6 +49,18 @@ pub(crate) struct JobSeekerProfile {
     pub state: Option<String>,
     pub twitter_url: Option<String>,
     pub website_url: Option<String>,
+}
+
+impl JobSeekerProfile {
+    /// Normalize some fields.
+    pub(crate) fn normalize(&mut self) {
+        // Skills
+        if let Some(skills) = &mut self.skills {
+            for skill in skills.iter_mut() {
+                *skill = normalize(skill);
+            }
+        }
+    }
 }
 
 /// Certification.

@@ -14,7 +14,7 @@ use crate::{
     auth::AuthSession,
     db::DynDB,
     handlers::error::HandlerError,
-    templates::dashboard::job_seeker::profile::{self},
+    templates::dashboard::job_seeker::profile::{self, JobSeekerProfile},
 };
 
 // Pages handlers.
@@ -22,10 +22,11 @@ use crate::{
 /// Handler that returns the page to preview a profile.
 #[instrument(skip_all, err)]
 pub(crate) async fn preview_page(body: String) -> Result<impl IntoResponse, HandlerError> {
-    let profile = match serde_qs::from_str(&body).map_err(anyhow::Error::new) {
+    let mut profile: JobSeekerProfile = match serde_qs::from_str(&body).map_err(anyhow::Error::new) {
         Ok(profile) => profile,
         Err(e) => return Ok((StatusCode::UNPROCESSABLE_ENTITY, e.to_string()).into_response()),
     };
+    profile.normalize();
     let template = profile::PreviewPage { profile };
 
     Ok(Html(template.render()?).into_response())
@@ -61,10 +62,11 @@ pub(crate) async fn update(
     };
 
     // Get profile information from body
-    let profile = match serde_qs::from_str(&body).map_err(anyhow::Error::new) {
+    let mut profile: JobSeekerProfile = match serde_qs::from_str(&body).map_err(anyhow::Error::new) {
         Ok(profile) => profile,
         Err(e) => return Ok((StatusCode::UNPROCESSABLE_ENTITY, e.to_string()).into_response()),
     };
+    profile.normalize();
 
     // Update profile in database
     db.update_job_seeker_profile(&user.user_id, &profile).await?;

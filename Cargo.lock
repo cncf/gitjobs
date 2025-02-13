@@ -1343,6 +1343,7 @@ dependencies = [
  "palette",
  "password-auth",
  "postgres-openssl",
+ "regex",
  "reqwest",
  "rinja",
  "rust-embed",

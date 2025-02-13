@@ -86,8 +86,9 @@ pub(crate) async fn update_page(
 pub(crate) async fn add(
     State(db): State<DynDB>,
     SelectedEmployerIdRequired(employer_id): SelectedEmployerIdRequired,
-    Form(job): Form<jobs::Job>,
+    Form(mut job): Form<jobs::Job>,
 ) -> Result<impl IntoResponse, HandlerError> {
+    job.normalize();
     db.add_job(&employer_id, &job).await?;
 
     Ok(StatusCode::CREATED)
@@ -131,8 +132,9 @@ pub(crate) async fn publish(
 pub(crate) async fn update(
     State(db): State<DynDB>,
     Path(job_id): Path<Uuid>,
-    Form(job): Form<jobs::Job>,
+    Form(mut job): Form<jobs::Job>,
 ) -> Result<impl IntoResponse, HandlerError> {
+    job.normalize();
     db.update_job(&job_id, &job).await?;
 
     Ok(StatusCode::NO_CONTENT)

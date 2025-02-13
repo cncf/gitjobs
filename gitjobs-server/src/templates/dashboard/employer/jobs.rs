@@ -9,7 +9,7 @@ use uuid::Uuid;
 
 use crate::templates::{
     filters,
-    helpers::{build_location, DATE_FORMAT},
+    helpers::{build_location, normalize, DATE_FORMAT},
 };
 
 use super::employers::Employer;
@@ -110,6 +110,23 @@ impl Job {
             self.state.as_deref(),
             self.country.as_deref(),
         )
+    }
+
+    /// Normalize some fields.
+    pub(crate) fn normalize(&mut self) {
+        // Benefits
+        if let Some(benefits) = &mut self.benefits {
+            for benefit in benefits.iter_mut() {
+                *benefit = normalize(benefit);
+            }
+        }
+
+        // Skills
+        if let Some(skills) = &mut self.skills {
+            for skill in skills.iter_mut() {
+                *skill = normalize(skill);
+            }
+        }
     }
 
     /// Get the salary kind of the job.

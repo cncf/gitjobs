@@ -34,6 +34,7 @@ openssl = { version = "0.10.70", features = ["vendored"] }
 palette = "0.7.6"
 password-auth = "1.0.0"
 postgres-openssl = "0.5.1"
+regex = "1.11.1"
 reqwest = { version = "0.12.12", features = ["json"] }
 rinja = { git = "https://github.com/rinja-rs/rinja", rev = "535df5e", features = ["serde_json"] }
 rust-embed = "8.5.0"

@@ -32,7 +32,7 @@ pub(crate) struct JobSeekerProfile {
     pub city: Option<String>,
     pub country: Option<String>,
     pub education: Option<Vec<Education>>,
-    pub employments: Option<Vec<Employment>>,
+    pub experience: Option<Vec<Experience>>,
     pub facebook_url: Option<String>,
     pub github_url: Option<String>,
     pub linkedin_url: Option<String>,
@@ -69,9 +69,9 @@ pub(crate) struct Education {
     pub title: String,
 }
 
-/// Employment.
+/// Experience.
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub(crate) struct Employment {
+pub(crate) struct Experience {
     pub company: String,
     pub description: String,
     pub start_date: NaiveDate,

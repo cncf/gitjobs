@@ -85,7 +85,7 @@ create table job_seeker_profile (
 
     certifications jsonb,
     education jsonb,
-    employments jsonb,
+    experience jsonb,
     facebook_url text check (facebook_url <> ''),
     github_url text check (github_url <> ''),
     linkedin_url text check (linkedin_url <> ''),

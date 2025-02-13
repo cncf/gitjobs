@@ -89,6 +89,8 @@ pub(crate) struct Job {
     pub job_id: Option<Uuid>,
     pub location_id: Option<Uuid>,
     pub open_source: Option<i32>,
+    pub qualifications: Option<String>,
+    pub responsibilities: Option<String>,
     pub salary: Option<i64>,
     pub salary_currency: Option<String>,
     pub salary_min: Option<i64>,

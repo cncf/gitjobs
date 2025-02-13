@@ -195,6 +195,8 @@ create table job (
     benefits text[],
     open_source int check (open_source >= 0 and open_source <= 100),
     published_at timestamptz,
+    qualifications text check (qualifications <> ''),
+    responsibilities text check (responsibilities <> ''),
     salary bigint check (salary >= 0),
     salary_currency text check (salary_currency <> ''),
     salary_max bigint check (salary_max >= 0),

@@ -40,7 +40,7 @@ pub(crate) async fn page(
 
     // Get selected tab from query
     let mut tab: Tab = query.get("tab").into();
-    if employer_id.is_none() {
+    if tab != Tab::Account && employer_id.is_none() {
         tab = Tab::EmployerInitialSetup;
     }
 

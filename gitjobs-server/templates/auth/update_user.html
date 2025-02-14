@@ -1,7 +1,7 @@
 {% import "macros.html" as macros %}
 
 {# Update user details form #}
-<form hx-put="/dashboard/employer/account/update/details"
+<form hx-put="/account/update/details"
       hx-ext="no-empty-vals"
       hx-trigger="submit">
   <div class="space-y-12">
@@ -70,7 +70,7 @@
   <hr class="w-full h-px mx-auto my-12 bg-gray-200 border-0">
 
   {# Update user password form #}
-  <form hx-put="/dashboard/employer/account/update/password"
+  <form hx-put="/account/update/password"
         hx-ext="no-empty-vals"
         hx-trigger="submit"
         hx-target="body">

@@ -72,19 +72,6 @@ pub(crate) async fn sign_up_page(
     Ok(Html(template.render()?))
 }
 
-/// Handler that returns the page to update the user's details and/or password.
-#[instrument(skip_all, err)]
-pub(crate) async fn update_user_page(auth_session: AuthSession) -> Result<impl IntoResponse, HandlerError> {
-    let Some(user) = auth_session.user else {
-        return Ok(StatusCode::FORBIDDEN.into_response());
-    };
-    let template = templates::auth::UpdateUserPage {
-        user_summary: user.into(),
-    };
-
-    Ok(Html(template.render()?).into_response())
-}
-
 // Actions handlers.
 
 /// Handler that logs the user in.

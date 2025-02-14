@@ -89,6 +89,7 @@ pub(crate) struct Job {
     pub job_id: Option<Uuid>,
     pub location_id: Option<Uuid>,
     pub open_source: Option<i32>,
+    pub published_at: Option<DateTime<Utc>>,
     pub qualifications: Option<String>,
     pub responsibilities: Option<String>,
     pub salary: Option<i64>,
@@ -98,6 +99,7 @@ pub(crate) struct Job {
     pub salary_period: Option<String>,
     pub skills: Option<Vec<String>>,
     pub state: Option<String>,
+    pub updated_at: Option<DateTime<Utc>>,
     pub upstream_commitment: Option<i32>,
 }
 

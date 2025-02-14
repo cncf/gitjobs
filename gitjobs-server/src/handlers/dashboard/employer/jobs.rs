@@ -7,6 +7,7 @@ use axum::{
     response::{Html, IntoResponse},
 };
 use axum_extra::extract::Form;
+use chrono::Utc;
 use rinja::Template;
 use tracing::instrument;
 use uuid::Uuid;
@@ -54,8 +55,10 @@ pub(crate) async fn list_page(
 pub(crate) async fn preview_page(
     State(db): State<DynDB>,
     SelectedEmployerIdRequired(employer_id): SelectedEmployerIdRequired,
-    Form(job): Form<jobs::Job>,
+    Form(mut job): Form<jobs::Job>,
 ) -> Result<impl IntoResponse, HandlerError> {
+    job.published_at = Some(Utc::now());
+    job.updated_at = Some(Utc::now());
     let employer = db.get_employer(&employer_id).await?;
     let template = jobs::PreviewPage { employer, job };
 

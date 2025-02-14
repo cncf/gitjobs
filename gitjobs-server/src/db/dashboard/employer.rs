@@ -309,6 +309,7 @@ impl DBDashBoardEmployer for PgDB {
                     j.job_id,
                     j.location_id,
                     j.open_source,
+                    j.published_at,
                     j.qualifications,
                     j.responsibilities,
                     j.salary,
@@ -317,6 +318,7 @@ impl DBDashBoardEmployer for PgDB {
                     j.salary_max,
                     j.salary_period,
                     j.skills,
+                    j.updated_at,
                     j.upstream_commitment,
                     l.city,
                     l.country,
@@ -342,6 +344,7 @@ impl DBDashBoardEmployer for PgDB {
             job_id: row.get("job_id"),
             location_id: row.get("location_id"),
             open_source: row.get("open_source"),
+            published_at: row.get("published_at"),
             qualifications: row.get("qualifications"),
             responsibilities: row.get("responsibilities"),
             salary: row.get("salary"),
@@ -351,6 +354,7 @@ impl DBDashBoardEmployer for PgDB {
             salary_period: row.get("salary_period"),
             skills: row.get("skills"),
             state: row.get("state"),
+            updated_at: row.get("updated_at"),
             upstream_commitment: row.get("upstream_commitment"),
         };
 

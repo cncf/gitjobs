@@ -204,14 +204,14 @@ impl DBDashBoardEmployer for PgDB {
         let job_id: Uuid = row.get("job_id");
 
         // Insert job projects
-        if let Some(project_ids) = &job.projects_ids {
-            for project_id in project_ids {
+        if let Some(projects) = &job.projects {
+            for project in projects {
                 tx.execute(
                     "
                     insert into job_project (job_id, project_id)
                     values ($1::uuid, $2::uuid);
                     ",
-                    &[&job_id, &project_id],
+                    &[&job_id, &project.project_id],
                 )
                 .await?;
             }
@@ -360,10 +360,17 @@ impl DBDashBoardEmployer for PgDB {
                     l.country,
                     l.state,
                     (
-                        select array_agg(project_id)
-                        from job_project
-                        where job_id = j.job_id
-                    ) as projects_ids
+                        select json_agg(json_build_object(
+                            'project_id', p.project_id,
+                            'name', p.name,
+                            'maturity', p.maturity,
+                            'logo_url', p.logo_url
+                        ))
+                        from project p
+                        left join job_project jp using (project_id)
+                        left join job j using (job_id)
+                        where j.job_id = $1::uuid
+                    ) as projects
                 from job j
                 left join location l using (location_id)
                 where job_id = $1::uuid;
@@ -385,7 +392,7 @@ impl DBDashBoardEmployer for PgDB {
             job_id: row.get("job_id"),
             location_id: row.get("location_id"),
             open_source: row.get("open_source"),
-            projects_ids: row.get("projects_ids"),
+            projects: serde_json::from_value(row.get("projects")).unwrap(),
             published_at: row.get("published_at"),
             qualifications: row.get("qualifications"),
             responsibilities: row.get("responsibilities"),
@@ -587,14 +594,14 @@ impl DBDashBoardEmployer for PgDB {
         // Update job projects
         tx.execute("delete from job_project where job_id = $1::uuid;", &[&job_id])
             .await?;
-        if let Some(project_ids) = &job.projects_ids {
-            for project_id in project_ids {
+        if let Some(projects) = &job.projects {
+            for project in projects {
                 tx.execute(
                     "
                     insert into job_project (job_id, project_id)
                     values ($1::uuid, $2::uuid);
                     ",
-                    &[&job_id, &project_id],
+                    &[&job_id, &project.project_id],
                 )
                 .await?;
             }

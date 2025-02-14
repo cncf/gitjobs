@@ -10,6 +10,7 @@ use uuid::Uuid;
 use crate::templates::{
     filters,
     helpers::{build_image_url, build_location, normalize, DATE_FORMAT},
+    misc::Project,
 };
 
 use super::employers::Employer;
@@ -89,7 +90,7 @@ pub(crate) struct Job {
     pub job_id: Option<Uuid>,
     pub location_id: Option<Uuid>,
     pub open_source: Option<i32>,
-    pub projects_ids: Option<Vec<Uuid>>,
+    pub projects: Option<Vec<Project>>,
     pub published_at: Option<DateTime<Utc>>,
     pub qualifications: Option<String>,
     pub responsibilities: Option<String>,

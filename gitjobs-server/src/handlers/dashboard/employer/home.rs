@@ -67,9 +67,9 @@ pub(crate) async fn page(
         content,
         employers,
         logged_in: true,
-        name: user.name,
+        name: Some(user.name),
         selected_employer_id: employer_id,
-        username: user.username,
+        username: Some(user.username),
     };
 
     Ok(Html(template.render()?).into_response())

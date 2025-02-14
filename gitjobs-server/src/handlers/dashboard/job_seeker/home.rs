@@ -54,8 +54,8 @@ pub(crate) async fn page(
     let template = home::Page {
         content,
         logged_in: true,
-        name: user.name,
-        username: user.username,
+        name: Some(user.name),
+        username: Some(user.username),
     };
 
     Ok(Html(template.render()?).into_response())

@@ -18,10 +18,10 @@ pub(crate) struct Page {
     pub content: Content,
     pub employers: Vec<employer::employers::EmployerSummary>,
     pub logged_in: bool,
-    pub name: String,
-    pub username: String,
 
+    pub name: Option<String>,
     pub selected_employer_id: Option<Uuid>,
+    pub username: Option<String>,
 }
 
 /// Content section.

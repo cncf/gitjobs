@@ -12,8 +12,9 @@ use crate::templates::{auth, dashboard::job_seeker};
 pub(crate) struct Page {
     pub content: Content,
     pub logged_in: bool,
-    pub name: String,
-    pub username: String,
+
+    pub name: Option<String>,
+    pub username: Option<String>,
 }
 
 /// Content section.

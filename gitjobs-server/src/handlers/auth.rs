@@ -53,7 +53,9 @@ pub(crate) async fn log_in_page(
     let template = templates::auth::LogInPage {
         logged_in: false,
         messages: messages.into_iter().collect(),
+        name: None,
         next_url: query.get("next_url").cloned(),
+        username: None,
     };
 
     Ok(Html(template.render()?))
@@ -66,7 +68,9 @@ pub(crate) async fn sign_up_page(
 ) -> Result<impl IntoResponse, HandlerError> {
     let template = templates::auth::SignUpPage {
         logged_in: false,
+        name: None,
         next_url: query.get("next_url").cloned(),
+        username: None,
     };
 
     Ok(Html(template.render()?))

@@ -43,7 +43,6 @@ pub(crate) struct JobSeekerProfile {
     pub open_to_remote: Option<bool>,
     pub phone: Option<String>,
     pub photo_id: Option<Uuid>,
-    pub photo_url: Option<String>,
     pub projects: Option<Vec<Project>>,
     pub skills: Option<Vec<String>>,
     pub state: Option<String>,

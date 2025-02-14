@@ -72,6 +72,7 @@ impl DBDashBoardEmployer for PgDB {
                     public,
                     location_id,
                     logo_id,
+                    member_id,
                     website_url
                 ) values (
                     $1::uuid,
@@ -80,7 +81,8 @@ impl DBDashBoardEmployer for PgDB {
                     $4::bool,
                     $5::uuid,
                     $6::uuid,
-                    $7::text
+                    $7::uuid,
+                    $8::text
                 ) returning employer_id;
                 ",
                 &[
@@ -90,6 +92,7 @@ impl DBDashBoardEmployer for PgDB {
                     &employer.public,
                     &employer.location_id,
                     &employer.logo_id,
+                    &employer.member_id,
                     &employer.website_url,
                 ],
             )
@@ -119,79 +122,103 @@ impl DBDashBoardEmployer for PgDB {
     /// [DBDashBoardEmployer::add_job]
     #[instrument(skip(self), err)]
     async fn add_job(&self, employer_id: &Uuid, job: &Job) -> Result<()> {
-        let db = self.pool.get().await?;
-        db.execute(
-            "
-            insert into job (
-                employer_id,
-                type,
-                status,
-                location_id,
-                workplace,
-                title,
-                description,
-                apply_instructions,
-                apply_url,
-                benefits,
-                open_source,
-                qualifications,
-                responsibilities,
-                salary,
-                salary_currency,
-                salary_min,
-                salary_max,
-                salary_period,
-                skills,
-                upstream_commitment,
-                published_at
+        // Begin transaction
+        let mut db = self.pool.get().await?;
+        let tx = db.transaction().await?;
+
+        // Insert job
+        let row = tx
+            .query_one(
+                "
+                insert into job (
+                    employer_id,
+                    type,
+                    status,
+                    location_id,
+                    workplace,
+                    title,
+                    description,
+                    apply_instructions,
+                    apply_url,
+                    benefits,
+                    open_source,
+                    qualifications,
+                    responsibilities,
+                    salary,
+                    salary_currency,
+                    salary_min,
+                    salary_max,
+                    salary_period,
+                    skills,
+                    upstream_commitment,
+                    published_at
+                )
+                select
+                    $1::uuid,
+                    $2::text,
+                    $3::text,
+                    $4::uuid,
+                    $5::text,
+                    $6::text,
+                    $7::text,
+                    $8::text,
+                    $9::text,
+                    $10::text[],
+                    $11::int,
+                    $12::text,
+                    $13::text,
+                    $14::bigint,
+                    $15::text,
+                    $16::bigint,
+                    $17::bigint,
+                    $18::text,
+                    $19::text[],
+                    $20::int,
+                    case when $3::text = 'published' then current_timestamp else null end
+                returning job_id;
+                ",
+                &[
+                    &employer_id,
+                    &job.type_.to_string(),
+                    &job.status.to_string(),
+                    &job.location_id,
+                    &job.workplace.to_string(),
+                    &job.title,
+                    &job.description,
+                    &job.apply_instructions,
+                    &job.apply_url,
+                    &job.benefits,
+                    &job.open_source,
+                    &job.qualifications,
+                    &job.responsibilities,
+                    &job.salary,
+                    &job.salary_currency,
+                    &job.salary_min,
+                    &job.salary_max,
+                    &job.salary_period,
+                    &job.skills,
+                    &job.upstream_commitment,
+                ],
             )
-            select
-                $1::uuid,
-                $2::text,
-                $3::text,
-                $4::uuid,
-                $5::text,
-                $6::text,
-                $7::text,
-                $8::text,
-                $9::text,
-                $10::text[],
-                $11::int,
-                $12::text,
-                $13::text,
-                $14::bigint,
-                $15::text,
-                $16::bigint,
-                $17::bigint,
-                $18::text,
-                $19::text[],
-                $20::int,
-                case when $3::text = 'published' then current_timestamp else null end;
-            ",
-            &[
-                &employer_id,
-                &job.type_.to_string(),
-                &job.status.to_string(),
-                &job.location_id,
-                &job.workplace.to_string(),
-                &job.title,
-                &job.description,
-                &job.apply_instructions,
-                &job.apply_url,
-                &job.benefits,
-                &job.open_source,
-                &job.qualifications,
-                &job.responsibilities,
-                &job.salary,
-                &job.salary_currency,
-                &job.salary_min,
-                &job.salary_max,
-                &job.salary_period,
-                &job.skills,
-                &job.upstream_commitment,
-            ],
-        )
-        .await?;
+            .await?;
+        let job_id: Uuid = row.get("job_id");
+
+        // Insert job projects
+        if let Some(project_ids) = &job.projects_ids {
+            for project_id in project_ids {
+                tx.execute(
+                    "
+                    insert into job_project (job_id, project_id)
+                    values ($1::uuid, $2::uuid);
+                    ",
+                    &[&job_id, &project_id],
+                )
+                .await?;
+            }
+        }
+
+        // Commit transaction
+        tx.commit().await?;
 
         Ok(())
     }
@@ -240,12 +267,17 @@ impl DBDashBoardEmployer for PgDB {
                     e.public,
                     e.location_id,
                     e.logo_id,
+                    e.member_id,
                     e.website_url,
                     l.city,
                     l.country,
-                    l.state
+                    l.state,
+                    m.name as member_name,
+                    m.level as member_level,
+                    m.logo_url as member_logo_url
                 from employer e
                 left join location l using (location_id)
+                left join member m using (member_id)
                 where employer_id = $1::uuid;
                 ",
                 &[&employer_id],
@@ -259,6 +291,10 @@ impl DBDashBoardEmployer for PgDB {
             country: row.get("country"),
             location_id: row.get("location_id"),
             logo_id: row.get("logo_id"),
+            member_id: row.get("member_id"),
+            member_name: row.get("member_name"),
+            member_level: row.get("member_level"),
+            member_logo_url: row.get("member_logo_url"),
             state: row.get("state"),
             website_url: row.get("website_url"),
         };
@@ -322,7 +358,12 @@ impl DBDashBoardEmployer for PgDB {
                     j.upstream_commitment,
                     l.city,
                     l.country,
-                    l.state
+                    l.state,
+                    (
+                        select array_agg(project_id)
+                        from job_project
+                        where job_id = j.job_id
+                    ) as projects_ids
                 from job j
                 left join location l using (location_id)
                 where job_id = $1::uuid;
@@ -344,6 +385,7 @@ impl DBDashBoardEmployer for PgDB {
             job_id: row.get("job_id"),
             location_id: row.get("location_id"),
             open_source: row.get("open_source"),
+            projects_ids: row.get("projects_ids"),
             published_at: row.get("published_at"),
             qualifications: row.get("qualifications"),
             responsibilities: row.get("responsibilities"),
@@ -462,7 +504,8 @@ impl DBDashBoardEmployer for PgDB {
                 public = $4::bool,
                 location_id = $5::uuid,
                 logo_id = $6::uuid,
-                website_url = $7::text,
+                member_id = $7::uuid,
+                website_url = $8::text,
                 updated_at = current_timestamp
             where employer_id = $1::uuid;
             ",
@@ -473,6 +516,7 @@ impl DBDashBoardEmployer for PgDB {
                 &employer.public,
                 &employer.location_id,
                 &employer.logo_id,
+                &employer.member_id,
                 &employer.website_url,
             ],
         )
@@ -484,8 +528,12 @@ impl DBDashBoardEmployer for PgDB {
     /// [DBDashBoardEmployer::update_job]
     #[instrument(skip(self), err)]
     async fn update_job(&self, job_id: &Uuid, job: &Job) -> Result<()> {
-        let db = self.pool.get().await?;
-        db.execute(
+        // Begin transaction
+        let mut db = self.pool.get().await?;
+        let tx = db.transaction().await?;
+
+        // Update job
+        tx.execute(
             "
             update job
             set
@@ -535,6 +583,25 @@ impl DBDashBoardEmployer for PgDB {
             ],
         )
         .await?;
+
+        // Update job projects
+        tx.execute("delete from job_project where job_id = $1::uuid;", &[&job_id])
+            .await?;
+        if let Some(project_ids) = &job.projects_ids {
+            for project_id in project_ids {
+                tx.execute(
+                    "
+                    insert into job_project (job_id, project_id)
+                    values ($1::uuid, $2::uuid);
+                    ",
+                    &[&job_id, &project_id],
+                )
+                .await?;
+            }
+        }
+
+        // Commit transaction
+        tx.commit().await?;
 
         Ok(())
     }

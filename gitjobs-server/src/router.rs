@@ -29,7 +29,7 @@ use crate::{
     handlers::{
         auth::{self, LOG_IN_URL},
         dashboard, img, jobboard,
-        misc::search_locations,
+        misc::{search_locations, search_members, search_projects},
     },
     img::DynImageStore,
 };
@@ -75,6 +75,8 @@ pub(crate) fn setup(cfg: &HttpServerConfig, db: DynDB, image_store: DynImageStor
         .nest("/dashboard/job-seeker", job_seeker_dashboard_router)
         .nest("/images", images_router)
         .route("/locations/search", get(search_locations))
+        .route("/members/search", get(search_members))
+        .route("/projects/search", get(search_projects))
         .route_layer(login_required!(
             AuthnBackend,
             login_url = LOG_IN_URL,

@@ -46,6 +46,10 @@ pub(crate) struct Employer {
     pub country: Option<String>,
     pub location_id: Option<Uuid>,
     pub logo_id: Option<Uuid>,
+    pub member_id: Option<Uuid>,
+    pub member_name: Option<String>,
+    pub member_level: Option<String>,
+    pub member_logo_url: Option<String>,
     pub state: Option<String>,
     pub website_url: Option<String>,
 }

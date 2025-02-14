@@ -25,7 +25,7 @@ create table job_board (
 
 create table "user" (
     user_id uuid primary key default gen_random_uuid(),
-    job_board_id uuid not null references job_board,
+    job_board_id uuid not null references job_board on delete restrict,
 
     auth_hash bytea not null check (auth_hash <> ''),
     created_at timestamptz not null default current_timestamp,
@@ -72,11 +72,33 @@ create table image_version (
     primary key (image_id, version)
 );
 
+create table member (
+    member_id uuid primary key default gen_random_uuid(),
+    job_board_id uuid not null references job_board on delete restrict,
+
+    name text not null check (name <> '') unique,
+    level text not null check (level <> ''),
+    logo_url text not null check (logo_url <> '')
+);
+
+create index member_job_board_id_idx on member (job_board_id);
+
+create table project (
+    project_id uuid primary key default gen_random_uuid(),
+    job_board_id uuid not null references job_board on delete restrict,
+
+    name text not null check (name <> '') unique,
+    maturity text not null check (maturity <> ''),
+    logo_url text not null check (logo_url <> '')
+);
+
+create index project_job_board_id_idx on project (job_board_id);
+
 create table job_seeker_profile (
     job_seeker_profile_id uuid primary key default gen_random_uuid(),
-    user_id uuid not null unique references "user",
-    location_id uuid references location,
-    photo_id uuid references image (image_id),
+    user_id uuid not null unique references "user"  on delete cascade,
+    location_id uuid references location on delete set null,
+    photo_id uuid references image (image_id) on delete set null,
 
     email text not null check (email <> ''),
     name text not null check (name <> ''),
@@ -92,7 +114,6 @@ create table job_seeker_profile (
     open_to_relocation boolean,
     open_to_remote boolean,
     phone text check (phone <> ''),
-    photo_url text check (photo_url <> ''),
     projects jsonb,
     resume_url text check (resume_url <> ''),
     skills text[],
@@ -104,23 +125,12 @@ create index job_seeker_profile_location_id_idx on job_seeker_profile (location_
 create index job_seeker_profile_photo_id_idx on job_seeker_profile (photo_id);
 create index job_seeker_profile_user_id_idx on job_seeker_profile (user_id);
 
-create table employer_tier (
-    employer_tier_id uuid primary key default gen_random_uuid(),
-    job_board_id uuid not null references job_board,
-
-    name text not null unique check (name <> ''),
-    highlight boolean not null default false,
-    priority int not null default 0
-);
-
-create index tier_job_board_id_idx on employer_tier (job_board_id);
-
 create table employer (
     employer_id uuid primary key default gen_random_uuid(),
-    job_board_id uuid not null references job_board,
-    employer_tier_id uuid references employer_tier,
-    location_id uuid references location,
-    logo_id uuid references image (image_id),
+    member_id uuid not null references member on delete set null,
+    job_board_id uuid not null references job_board on delete restrict,
+    location_id uuid references location on delete set null,
+    logo_id uuid references image (image_id) on delete set null,
 
     company text not null check (company <> ''),
     created_at timestamptz not null default current_timestamp,
@@ -131,14 +141,14 @@ create table employer (
     website_url text check (website_url <> '')
 );
 
+create index employer_member_id_idx on employer (member_id);
 create index employer_job_board_id_idx on employer (job_board_id);
-create index employer_employer_tier_id_idx on employer (employer_tier_id);
 create index employer_location_id_idx on employer (location_id);
 create index employer_logo_id_idx on employer (logo_id);
 
 create table employer_team (
     employer_id uuid not null references employer on delete cascade,
-    user_id uuid not null references "user",
+    user_id uuid not null references "user" on delete cascade,
 
     primary key (employer_id, user_id)
 );
@@ -179,11 +189,11 @@ insert into workplace (name) values ('remote');
 
 create table job (
     job_id uuid primary key default gen_random_uuid(),
-    employer_id uuid not null references employer,
-    type text not null references job_type (name),
-    status text not null references job_status (name),
-    location_id uuid references location,
-    workplace text not null references workplace (name),
+    employer_id uuid not null references employer on delete cascade,
+    type text not null references job_type (name) on delete restrict,
+    status text not null references job_status (name) on delete restrict,
+    location_id uuid references location on delete set null,
+    workplace text not null references workplace (name) on delete restrict,
 
     created_at timestamptz not null default current_timestamp,
     title text not null check (title <> ''),
@@ -213,10 +223,17 @@ create index job_type_idx on job (type);
 create index job_status_idx on job (status);
 create index job_workplace_idx on job (workplace);
 
+create table job_project (
+    job_id uuid not null references job on delete cascade,
+    project_id uuid not null references project on delete cascade,
+
+    primary key (job_id, project_id)
+);
+
 create table applicant (
     applicant_id uuid primary key default gen_random_uuid(),
-    job_seeker_profile_id uuid not null references job_seeker_profile,
-    job_id uuid not null references job,
+    job_seeker_profile_id uuid not null references job_seeker_profile on delete cascade,
+    job_id uuid not null references job on delete cascade,
 
     cover_letter text not null check (cover_letter <> ''),
     created_at timestamptz not null default current_timestamp,
@@ -229,7 +246,7 @@ create index applicant_job_id_idx on applicant (job_id);
 
 create table faq (
     faq_id uuid primary key default gen_random_uuid(),
-    job_board_id uuid not null references job_board,
+    job_board_id uuid not null references job_board on delete restrict,
 
     answer text not null check (answer <> ''),
     question text not null check (question <> '')

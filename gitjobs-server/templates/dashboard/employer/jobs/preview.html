@@ -1,9 +1,9 @@
 {% import "macros.html" as macros %}
 
 <div class="flex items-center justify-between gap-x-10 border-b pb-10">
-  <div class="flex items-stretch gap-x-5">
+  <div class="flex-grow flex items-stretch gap-x-5 min-w-0">
     {# Image #}
-    <div>
+    <div class="min-w-[56px]">
       {% if let Some(logo_id) = employer.logo_id %}
         {% let logo = &self::build_image_url(logo_id, "small") %}
         <img class="size-14"
@@ -12,14 +12,14 @@
              src="{{ logo }}"
              alt="{{ employer.company }} logo">
       {% else %}
-        <div class="rounded-full size-14 bg-gray-200 p-1">
-          <div class="svg-icon size-12 icon-company bg-gray-600"></div>
+        <div class="rounded-full size-14 bg-gray-200 p-1 flex">
+          <div class="svg-icon size-8 icon-company bg-gray-600"></div>
         </div>
       {% endif %}
     </div>
     {# End image #}
 
-    <div class="flex flex-col justify-center">
+    <div class="flex flex-col justify-center min-w-0">
       {# Title #}
       <div class="text-xl font-stretch-condensed font-medium text-gray-900 truncate">{{ job.title }}</div>
       {# End title #}
@@ -29,6 +29,25 @@
       {# End company #}
     </div>
   </div>
+
+  {% if let Some(member_level) = employer.member_level %}
+    <div class="flex gap-x-2 items-center bg-gray-50 border rounded-lg p-2 max-w-[230px]">
+      <div>
+        <img src="/static/images/cncf_icon.svg"
+             alt="CNCF icon"
+             height="40"
+             width="40"
+             class="size-10">
+      </div>
+      <div class="flex flex-col justify-start min-w-0">
+        <div class="truncate text-start text-gray-700 font-medium">{{ employer.member_name|display_some }}</div>
+        <div class="truncate text-nowrap uppercase max-w-[100%] text-xs/4 font-medium text-gray-400">
+          {{ member_level }} member
+        </div>
+      </div>
+    </div>
+
+  {% endif %}
 </div>
 <div class="flex items-stretch">
   <div class="w-3/4 border-e me-10 pe-10 pt-10">
@@ -198,6 +217,19 @@
 {% call job_details_content(text = location, icon = "location") %}
 {% endmatch %}
 {# End location #}
+
+{# Projects #}
+{% if let Some(projects) = job.projects %}
+  {% call job_details_subheading(content = "Projects") %}
+  <div class="flex flex-col space-y-3">
+    {% for p in projects %}
+      <div class="border rounded-lg p-2 text-sm/5 bg-white w-full">
+        {% call macros::dropdown_card(name = p.name, label = p.maturity, logo_url = p.logo_url, line_height = 5) %}
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+{# End projects #}
 
 {# Open source #}
 {% if let Some(open_source) = job.open_source %}

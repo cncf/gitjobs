@@ -6,7 +6,6 @@ use axum::{
     http::StatusCode,
     response::{Html, IntoResponse},
 };
-use axum_extra::extract::Form;
 use chrono::Utc;
 use rinja::Template;
 use tracing::instrument;
@@ -54,15 +53,23 @@ pub(crate) async fn list_page(
 #[instrument(skip_all, err)]
 pub(crate) async fn preview_page(
     State(db): State<DynDB>,
+    State(form_de): State<serde_qs::Config>,
     SelectedEmployerIdRequired(employer_id): SelectedEmployerIdRequired,
-    Form(mut job): Form<jobs::Job>,
+    body: String,
 ) -> Result<impl IntoResponse, HandlerError> {
+    // Get job information from body
+    let mut job: Job = match form_de.deserialize_str(&body).map_err(anyhow::Error::new) {
+        Ok(profile) => profile,
+        Err(e) => return Ok((StatusCode::UNPROCESSABLE_ENTITY, e.to_string()).into_response()),
+    };
+    job.normalize();
     job.published_at = Some(Utc::now());
     job.updated_at = Some(Utc::now());
+
     let employer = db.get_employer(&employer_id).await?;
     let template = jobs::PreviewPage { employer, job };
 
-    Ok(Html(template.render()?))
+    Ok(Html(template.render()?).into_response())
 }
 
 /// Handler that returns the page to update a job.

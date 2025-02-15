@@ -1,1 +1,86 @@
-<h1>List of members</h1>
+{% import "macros.html" as macros %}
+
+<div class="bg-white divide-y divide-gray-100 rounded-lg shadow w-full border mt-1">
+  {% if members.len() == 0 %}
+    <div class="p-8 text-sm text-gray-600 italic">No members found</div>
+  {% else %}
+    <ul class="text-sm text-gray-700 overflow-auto max-h-[180px]">
+      {% for m in members %}
+        <li class="group
+                   {% if loop.index != 1 -%}border-t{%- endif %}"
+            data-index="{{ loop.index }}">
+          <button type="button"
+                  data-member-id="{{ m.member_id }}"
+                  data-name="{{ m.name }}"
+                  data-level="{{ m.level }}"
+                  data-logo-url="{{ m.logo_url }}"
+                  class="btn-member px-4 py-2 w-full hover:bg-gray-100 group-[.active]:bg-gray-100">
+            {% call macros::dropdown_card(name = m.name, label = m.level, logo_url = m.logo_url) %}
+          </button>
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+</div>
+<script type="module">
+  import {
+    addMemberCard
+  } from '/static/js/common/members.js';
+
+  const input = document.querySelector('input#member');
+  const buttons = document.querySelectorAll('button.btn-member');
+
+  if (buttons) {
+    buttons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        // Add the member data to the inputs
+        const memberId = btn.dataset.memberId;
+        const name = btn.dataset.name;
+        const level = btn.dataset.level;
+        const logoUrl = btn.dataset.logoUrl;
+
+        if (input) {
+          input.value = "";
+          input.blur();
+
+          // Add the member data to the form
+          const memberIdInput = document.getElementById('member_id');
+          const nameInput = document.getElementById('member_name');
+          const levelInput = document.getElementById('member_level');
+          const logoUrlInput = document.getElementById('member_logo_url');
+
+          if (memberIdInput) {
+            memberIdInput.value = memberId;
+          }
+
+          if (nameInput) {
+            nameInput.value = name;
+          }
+
+          if (levelInput) {
+            levelInput.value = level;
+          }
+
+          if (logoUrlInput) {
+            logoUrlInput.value = logoUrl;
+          }
+
+          addMemberCard(memberId, name, level, logoUrl, 'selected-member');
+        }
+
+        // Clean the search results
+        document.getElementById('search-member').innerHTML = "";
+      });
+
+      // Highlight the item in the list when the user hovers over it
+      btn.addEventListener('mouseover', () => {
+        const activeItem = document.querySelector('#search-member li.active');
+        // Remove the class from the active item
+        if (activeItem) {
+          activeItem.classList.remove('active');
+        }
+        btn.closest('li').classList.add('active');
+      });
+    });
+  }
+</script>

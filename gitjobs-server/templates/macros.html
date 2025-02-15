@@ -53,7 +53,7 @@
   <script type="module">
     import {
       highlightItem
-    } from '/static/js/common/locations.js';
+    } from '/static/js/common/dropdown.js';
     import {
       debounce
     } from '/static/js/common/common.js';
@@ -64,6 +64,7 @@
     const locationStateInput = document.getElementById('state');
     const locationCountryInput = document.getElementById('country');
     const cleanLocationButton = document.getElementById('clean-location');
+    const contentData = "search-location";
 
     tsQueryInput.addEventListener('input', debounce(() => {
       if (tsQueryInput.value.length > 2) {
@@ -78,7 +79,7 @@
     tsQueryInput.addEventListener('focusout', () => {
       // Delay the execution to allow the user to click on the search results
       setTimeout(() => {
-        document.getElementById('search-location').innerHTML = "";
+        document.getElementById(contentData).innerHTML = "";
 
         // If the location id is set, set the ts_query input to the location
         if (locationIdInput.value !== "") {
@@ -94,16 +95,16 @@
       switch (e.key) {
         // Highlight the next item in the list
         case 'ArrowDown':
-          highlightItem('down');
+          highlightItem(contentData, 'down');
           break;
           // Highlight the previous item in the list
         case 'ArrowUp':
-          highlightItem('up');
+          highlightItem(contentData, 'up');
           break;
           // Select the highlighted item
         case 'Enter':
           e.preventDefault();
-          const activeItem = document.querySelector('li.active');
+          const activeItem = document.querySelector(`#${contentData} li.active`);
           if (activeItem) {
             activeItem.querySelector('button').click();
           }
@@ -121,11 +122,202 @@
       locationCityInput.value = "";
       locationStateInput.value = "";
       locationCountryInput.value = "";
-      document.getElementById('search-location').innerHTML = "";
+      document.getElementById(contentData).innerHTML = "";
     });
   </script>
 {% endmacro location %}
 {# End location -#}
+
+{# Search member #}
+{% macro search_member(member_id = "", member_name = "", member_level = "", member_logo_url = "") %}
+  <div class="mt-2 relative">
+    <div class="absolute top-2.5 start-0 flex items-center ps-3 pointer-events-none">
+      <div class="svg-icon size-4 icon-search bg-gray-300"></div>
+    </div>
+    <input id="member"
+           name="name"
+           hx-get="/members/search"
+           hx-include="#member"
+           hx-trigger="searchMembers"
+           hx-target="#search-member"
+           hx-indicator="#member-spinner"
+           type="text"
+           value=""
+           class="input-primary peer ps-10"
+           placeholder="Search member"
+           autocomplete="off">
+    <input type="hidden" name="member_id" id="member_id" value="{{ member_id }}">
+    <input type="hidden"
+           name="member_name"
+           id="member_name"
+           value="{{ member_name }}">
+    <input type="hidden"
+           name="member_level"
+           id="member_level"
+           value="{{ member_level }}">
+    <input type="hidden"
+           name="member_logo_url"
+           id="member_logo_url"
+           value="{{ member_logo_url }}">
+    <div id="member-spinner" class="hx-indicator absolute end-10 top-1">{% call spinner(size = 5) %}</div>
+    <div class="absolute end-1.5 top-1.5 peer-placeholder-shown:hidden">
+      <button id="clean-member" type="button" class="mt-[2px]">
+        <div class="svg-icon size-5 bg-gray-400 hover:bg-gray-700 icon-close"></div>
+      </button>
+    </div>
+    <div id="search-member" class="absolute z-10 start-0 end-0"></div>
+  </div>
+  <script type="module">
+    import {
+      highlightItem
+    } from '/static/js/common/dropdown.js';
+    import {
+      debounce
+    } from '/static/js/common/common.js';
+
+    const memberInput = document.getElementById('member');
+    const cleanMemberButton = document.getElementById('clean-member');
+    const contentData = "search-member";
+
+    memberInput.addEventListener('input', debounce(() => {
+      if (memberInput.value.length > 2) {
+        htmx.trigger('#member', 'searchMembers');
+      } else {
+        document.getElementById('search-member').innerHTML = "";
+      }
+    }));
+
+    // Clear search results when focus is lost and clear the input field
+    // if the member id is not set
+    memberInput.addEventListener('focusout', () => {
+      // Delay the execution to allow the user to click on the search results
+      setTimeout(() => {
+        document.getElementById('search-member').innerHTML = "";
+        memberInput.value = "";
+      }, 200);
+    });
+
+    // Handle keyboard events
+    memberInput.addEventListener('keydown', (e) => {
+      switch (e.key) {
+        // Highlight the next item in the list
+        case 'ArrowDown':
+          highlightItem(contentData, 'down');
+          break;
+          // Highlight the previous item i  n the list
+        case 'ArrowUp':
+          highlightItem(contentData, 'up');
+          break;
+          // Select the highlighted item
+        case 'Enter':
+          e.preventDefault();
+          const activeItem = document.querySelector(`#${contentData} li.active`);
+          if (activeItem) {
+            activeItem.querySelector('button').click();
+          }
+          break;
+        default:
+          break;
+      }
+    });
+
+    // Clear the member
+    cleanMemberButton.addEventListener('click', () => {
+      memberInput.value = "";
+      document.getElementById(contentData).innerHTML = "";
+    });
+  </script>
+{% endmacro search_member %}
+{# End search member #}
+
+{# Search project #}
+{% macro search_project() %}
+  <div class="mt-2 relative">
+    <div class="absolute top-2.5 start-0 flex items-center ps-3 pointer-events-none">
+      <div class="svg-icon size-4 icon-search bg-gray-300"></div>
+    </div>
+    <input id="project"
+           name="name"
+           hx-get="/projects/search"
+           hx-include="#project"
+           hx-trigger="searchprojects"
+           hx-target="#search-project"
+           hx-indicator="#project-spinner"
+           type="text"
+           value=""
+           class="input-primary peer ps-10"
+           placeholder="Search project"
+           autocomplete="off">
+    <div id="project-spinner" class="hx-indicator absolute end-10 top-1">{% call spinner(size = 5) %}</div>
+    <div class="absolute end-1.5 top-1.5 peer-placeholder-shown:hidden">
+      <button id="clean-project" type="button" class="mt-[2px]">
+        <div class="svg-icon size-5 bg-gray-400 hover:bg-gray-700 icon-close"></div>
+      </button>
+    </div>
+    <div id="search-project" class="absolute z-10 start-0 end-0"></div>
+  </div>
+  <script type="module">
+    import {
+      highlightItem
+    } from '/static/js/common/dropdown.js';
+    import {
+      debounce
+    } from '/static/js/common/common.js';
+
+    const projectInput = document.getElementById('project');
+    const cleanprojectButton = document.getElementById('clean-project');
+    const contentData = "search-project";
+
+    projectInput.addEventListener('input', debounce(() => {
+      if (projectInput.value.length > 2) {
+        htmx.trigger('#project', 'searchprojects');
+      } else {
+        document.getElementById('search-project').innerHTML = "";
+      }
+    }));
+
+    // Clear search results when focus is lost and clear the input field
+    // if the project id is not set
+    projectInput.addEventListener('focusout', () => {
+      // Delay the execution to allow the user to click on the search results
+      setTimeout(() => {
+        document.getElementById('search-project').innerHTML = "";
+        projectInput.value = "";
+      }, 200);
+    });
+
+    // Handle keyboard events
+    projectInput.addEventListener('keydown', (e) => {
+      switch (e.key) {
+        // Highlight the next item in the list
+        case 'ArrowDown':
+          highlightItem(contentData, 'down');
+          break;
+          // Highlight the previous item i  n the list
+        case 'ArrowUp':
+          highlightItem(contentData, 'up');
+          break;
+          // Select the highlighted item
+        case 'Enter':
+          e.preventDefault();
+          const activeItem = document.querySelector(`#${contentData} li.active`);
+          if (activeItem) {
+            activeItem.querySelector('button').click();
+          }
+          break;
+        default:
+          break;
+      }
+    });
+
+    // Clear the project
+    cleanprojectButton.addEventListener('click', () => {
+      projectInput.value = "";
+      document.getElementById(contentData).innerHTML = "";
+    });
+  </script>
+{% endmacro search_project %}
+{# End search project #}
 
 {# Markdown editor -#}
 {% macro markdown_editor(id, content = "", required = false) %}
@@ -423,3 +615,23 @@
   </script>
 {% endmacro images_form %}
 {# End form image #}
+
+{# Dropdown card #}
+{% macro dropdown_card(name, label, logo_url, line_height = 6) %}
+  <div class="flex items-center space-x-3">
+    <img class="size-10"
+         height="40"
+         width="40"
+         src="{{ logo_url }}"
+         alt="{{ name }} logo">
+    <div class="flex flex-col justify-start min-w-0">
+      <div class="truncate text-start text-gray-700 font-medium">{{ name }}</div>
+      <div class="inline-flex">
+        <div class="truncate text-nowrap uppercase max-w-[100%] text-xs/{{ line_height }} font-medium text-gray-400">
+          {{ label }}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endmacro dropdown_card %}
+{# End dropdown card #}

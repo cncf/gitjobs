@@ -63,6 +63,15 @@
       </div>
       {# End Description #}
 
+      {# Member #}
+      <div class="col-span-full lg:col-span-3">
+        <label for="ts_query" class="form-label">Member</label>
+        {% call macros::search_member() %}
+        <p class="form-legend">Lorem ipsum.</p>
+        <div id="selected-member" class="flex space-x-5"></div>
+      </div>
+      {# End member #}
+
       {# Public #}
       <div class="col-span-full">
         <div class="form-label">Public</div>
@@ -83,22 +92,5 @@
     </div>
     {# End submit employer form button #}
   </form>
-  <script type="module">
-    const employerForm = document.getElementById('employer-form');
-    employerForm.addEventListener('htmx:beforeSend', () => {
-      console.log("Before request");
-      const requiredTextareas = document.querySelectorAll('textarea[data-required=true]');
-      if (requiredTextareas) {
-        console.log("Required textareas", requiredTextareas);
-        requiredTextareas.forEach(textarea => {
-          if (textarea.value.trim() === '') {
-            console.log("Empty textarea", textarea);
-            const id = textarea.getAttribute('id');
-            document.getElementById(`mde-${id}`).required = true;
-          }
-        });
-      }
-    })
-  </script>
   {# End employer form #}
 </div>

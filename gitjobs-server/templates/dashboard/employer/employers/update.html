@@ -71,6 +71,39 @@
       </div>
       {# End Description #}
 
+      {# Member #}
+      <div class="col-span-full lg:col-span-3">
+        <label for="member" class="form-label">Member</label>
+        {% call macros::search_member(member_id = employer.member_id|display_some, member_name = employer.member_name|display_some, member_level = employer.member_level|display_some, member_logo_url = employer.member_logo_url|display_some) %}
+        <p class="form-legend">Lorem ipsum.</p>
+        <div id="selected-member" class="flex space-x-5">
+          {% if let Some(member_id) = employer.member_id %}
+            <div class="relative border rounded-lg p-4 pe-10 bg-white mt-4 min-w-64">
+              <button id="remove-{{ member_id }}"
+                      data-id="{{ member_id }}"
+                      type="button"
+                      class="rounded-full bg-gray-100 hover:bg-gray-200 absolute top-1 end-1">
+                <div class="svg-icon size-5 bg-gray-400 hover:bg-gray-700 icon-close"></div>
+              </button>
+              {% call macros::dropdown_card(name = employer.member_name|display_some, label = employer.member_level|display_some, logo_url = employer.member_logo_url|display_some) %}
+            </div>
+            <script type="module">
+              import {
+                removeSelectedMember
+              } from '/static/js/common/members.js';
+
+              const removeBtn = document.getElementById('remove-{{ member_id }}');
+              if (removeBtn) {
+                removeBtn.addEventListener('click', () => {
+                  removeSelectedMember('{{ member_id }}');
+                });
+              }
+            </script>
+          {% endif %}
+        </div>
+      </div>
+      {# End member #}
+
       {# Public #}
       <div class="col-span-full">
         <div class="form-label">Public</div>

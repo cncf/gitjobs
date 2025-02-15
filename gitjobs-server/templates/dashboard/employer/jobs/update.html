@@ -129,6 +129,33 @@
         </div>
         {# End job skills #}
 
+        {# Projects #}
+        <div class="col-span-full lg:col-span-3">
+          <label for="project" class="form-label">Projects</label>
+          {% call macros::search_project() %}
+          <p class="form-legend">Lorem ipsum.</p>
+          <div id="selected-projects"
+               class="flex space-x-5"
+               {% if let Some(projects) = job.projects -%}data-projects="{{ projects|json }}"{%- endif %}></div>
+        </div>
+        <script type="module">
+          import {
+            addProjectCard
+          } from '/static/js/common/projects.js';
+
+          const selectedProjects = document.getElementById('selected-projects');
+          if (selectedProjects) {
+            const projects = selectedProjects.dataset.projects;
+            if (projects) {
+              const parsedProjects = JSON.parse(projects);
+              parsedProjects.forEach((project) => {
+                addProjectCard(project.project_id, project.name, project.maturity, project.logo_url, 'selected-projects');
+              });
+            }
+          }
+        </script>
+        {# End projects #}
+
         {# Apply instructions #}
         <div class="col-span-full">
           <label for="apply_instructions" class="form-label">Apply instructions</label>

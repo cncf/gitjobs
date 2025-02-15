@@ -1,1 +1,64 @@
-<h1>List of projects</h1>
+{% import "macros.html" as macros %}
+
+<div class="bg-white divide-y divide-gray-100 rounded-lg shadow w-full border mt-1">
+  {% if projects.len() == 0 %}
+    <div class="p-8 text-sm text-gray-600 italic">No projects found</div>
+  {% else %}
+    <ul class="text-sm text-gray-700 overflow-auto max-h-[180px]">
+      {% for p in projects %}
+        <li class="group
+                   {% if loop.index != 1 -%}border-t{%- endif %}"
+            data-index="{{ loop.index }}">
+          <button type="button"
+                  data-project-id="{{ p.project_id }}"
+                  data-name="{{ p.name }}"
+                  data-maturity="{{ p.maturity }}"
+                  data-logo-url="{{ p.logo_url }}"
+                  class="btn-project px-4 py-2 w-full hover:bg-gray-100 group-[.active]:bg-gray-100">
+            {% call macros::dropdown_card(name = p.name, label = p.maturity, logo_url = p.logo_url) %}
+          </button>
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+</div>
+<script type="module">
+  import {
+    addProjectCard
+  } from '/static/js/common/projects.js';
+
+  const input = document.querySelector('input#project');
+  const buttons = document.querySelectorAll('button.btn-project');
+
+  if (buttons) {
+    buttons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        // Add the project data to the inputs
+        const projectId = btn.dataset.projectId;
+        const name = btn.dataset.name;
+        const maturity = btn.dataset.maturity;
+        const logoUrl = btn.dataset.logoUrl;
+
+        if (input) {
+          input.value = "";
+          input.blur();
+
+          addProjectCard(projectId, name, maturity, logoUrl, 'selected-projects');
+        }
+
+        // Clean the search results
+        document.getElementById('search-project').innerHTML = "";
+      });
+
+      // Highlight the item in the list when the user hovers over it
+      btn.addEventListener('mouseover', () => {
+        const activeItem = document.querySelector('#search-project li.active');
+        // Remove the class from the active item
+        if (activeItem) {
+          activeItem.classList.remove('active');
+        }
+        btn.closest('li').classList.add('active');
+      });
+    });
+  }
+</script>

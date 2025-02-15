@@ -6,6 +6,8 @@ use serde::{Deserialize, Serialize};
 
 use crate::auth::UserSummary;
 
+use crate::templates::filters;
+
 /// Log in page.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
 #[template(path = "auth/log_in.html")]

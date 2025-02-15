@@ -8,6 +8,7 @@ use uuid::Uuid;
 use crate::templates::{
     auth,
     dashboard::employer,
+    filters,
     helpers::{build_image_url, find_employer},
 };
 

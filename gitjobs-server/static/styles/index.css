@@ -40,6 +40,11 @@ body {
   -webkit-mask-image: url('/static/images/icons/archive.svg')
 }
 
+.icon-briefcase {
+  mask-image: url('/static/images/icons/briefcase.svg');
+  -webkit-mask-image: url('/static/images/icons/briefcase.svg')
+}
+
 .icon-buildings {
   mask-image: url('/static/images/icons/buildings.svg');
   -webkit-mask-image: url('/static/images/icons/buildings.svg')

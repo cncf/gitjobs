@@ -6,7 +6,10 @@ use rinja::Template;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::templates::helpers::normalize;
+use crate::templates::{
+    filters,
+    helpers::{build_location, normalize},
+};
 
 /// Profile preview page template.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
@@ -23,7 +26,7 @@ pub(crate) struct UpdatePage {
 }
 
 /// Job seeker profile.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub(crate) struct JobSeekerProfile {
     pub email: String,
     pub name: String,

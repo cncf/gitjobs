@@ -129,36 +129,38 @@
 
 {# Markdown editor -#}
 {% macro markdown_editor(id, content = "", required = false) %}
-  {# Do not add required attribute to original textarea to avoid issues to validate form #}
-  {# due to textarea is hidden #}
-  <textarea id="{{ id }}" name="{{ id }}" rows="3" class="hidden">{{ content }}</textarea>
+  <div class="relative">
+    <textarea id="{{ id }}"
+              name="{{ id }}"
+              rows="3"
+              class="absolute top-0 left-0 opacity-0"
+              {% if required -%}
+              required
+              {%- endif %}>{{ content }}</textarea>
+  </div>
 
-  {# djlint:off #}
   <script type="module">
     const easyMDE = new EasyMDE({
       element: document.getElementById('{{ id }}'),
       forceSync: true,
       hideIcons: ["side-by-side", "fullscreen", "guide", "heading", "image", "code"],
       showIcons: ["code", "table", "undo", "redo", "horizontal-rule"],
+      initialValue: "{{ content }}",
       status: false,
+      previewClass: "markdown",
     });
 
-    // Force the required attribute to the textarea embed in the editor
-    const onLoadMDE = (required) => {
-      const editor = document.getElementsByClassName('EasyMDEContainer')[0];
-      if (editor) {
-        const textarea = editor.getElementsByTagName('textarea')[0];
-        if (textarea) {
-          textarea.value = "{{ content }}";
-          textarea.required = required;
-        }
+    // Force the textarea to be displayed if required
+    // This is necessary because the EasyMDE hides the textarea
+    // and the browser will not validate it
+    const onLoadMDE = () => {
+      const textarea = document.getElementById('{{ id }}');
+      if (textarea.required) {
+        textarea.style.display = 'block';
       }
     }
-
-    // Set the required attribute to the textarea
-    onLoadMDE({{ required }});
-</script>
-  {# djlint:on #}
+    onLoadMDE();
+  </script>
 {% endmacro markdown_editor %}
 {# End markdown editor -#}
 

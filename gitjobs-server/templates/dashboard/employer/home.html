@@ -104,23 +104,24 @@
 
     const employerBtn = document.getElementById('employer-btn');
     const dropdownEmployers = document.getElementById('dropdown-employers');
+    if (employerBtn) {
+      employerBtn.addEventListener('click', () => {
+        const isOpen = dropdownEmployers.classList.contains('hidden');
+        dropdownEmployers.classList.toggle('hidden');
 
-    employerBtn.addEventListener('click', () => {
-      const isOpen = dropdownEmployers.classList.contains('hidden');
-      dropdownEmployers.classList.toggle('hidden');
-
-      // Close dropdown employers when clicking outside
-      if (isOpen) {
-        document.addEventListener('click', (event) => {
-          if (!dropdownEmployers.contains(event.target) && !employerBtn.contains(event.target)) {
-            dropdownEmployers.classList.add('hidden');
-          }
-        });
-      } else {
-        // Remove event listener when dropdown is closed
-        document.removeEventListener('click', () => {});
-      }
-    });
+        // Close dropdown employers when clicking outside
+        if (isOpen) {
+          document.addEventListener('click', (event) => {
+            if (!dropdownEmployers.contains(event.target) && !employerBtn.contains(event.target)) {
+              dropdownEmployers.classList.add('hidden');
+            }
+          });
+        } else {
+          // Remove event listener when dropdown is closed
+          document.removeEventListener('click', () => {});
+        }
+      });
+    }
   </script>
 {% endblock dashboard_main %}
 

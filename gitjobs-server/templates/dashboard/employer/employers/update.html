@@ -1,97 +1,95 @@
 {% import "macros.html" as macros %}
 
 <div class="space-y-12">
-  <div class="border-b border-gray-900/10 pb-12">
-    {% call macros::form_title(title = "Employer profile", description = "This information will be displayed in your jobs postings. You can update it any time.") %}
+  {% call macros::form_title(title = "Employer profile", description = "This information will be displayed in your jobs postings. You can update it any time.") %}
 
+  <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 max-w-4xl">
+    {# Form image #}
+    <div class="col-span-full">
+      {% call macros::images_form(label = "Company logo", name = "logo_id", value = employer.logo_id|display_some) %}
+    </div>
+    {# End form image #}
+  </div>
+
+  {# Employer form #}
+  <form id="employer-form"
+        hx-put="/dashboard/employer/employers/update"
+        hx-ext="no-empty-vals"
+        hx-include="[name=logo_id]"
+        hx-trigger="submit">
     <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 max-w-4xl">
-      {# Form image #}
-      <div class="col-span-full">
-        {% call macros::images_form(label = "Company logo", name = "logo_id", value = employer.logo_id|display_some) %}
+      {# Company name #}
+      <div class="col-span-3">
+        <label for="company" class="form-label">
+          Company name <span class="asterisk">*</span>
+        </label>
+        <div class="mt-2">
+          <input type="text"
+                 name="company"
+                 id="company"
+                 value="{{ employer.company }}"
+                 class="input-primary"
+                 required>
+        </div>
+        <p class="form-legend">Your company's trade name.</p>
       </div>
-      {# End form image #}
+      {# End Company name #}
+
+      <div class="col-span-3"></div>
+
+      {# Location #}
+      <div class="col-span-full lg:col-span-3">
+        <label for="ts_query" class="form-label">Location</label>
+        {% call macros::location(location_id = employer.location_id|display_some, city = employer.city|display_some, state = employer.state|display_some, country = employer.country|display_some) %}
+        <p class="form-legend">Location of the headquarters of your company.</p>
+      </div>
+      {# End location #}
+
+      {# Website url #}
+      <div class="sm:col-span-3">
+        <label for="website_url" class="form-label">Website url</label>
+        <div class="mt-2">
+          <input id="website_url"
+                 name="website_url"
+                 type="url"
+                 value="{%- if let Some(website_url) = employer.website_url -%} {{ website_url }} {%- endif -%}"
+                 class="input-primary">
+        </div>
+        <p class="form-legend">URL of your company's website.</p>
+      </div>
+      {# End Website url #}
+
+      {# Description #}
+      <div class="col-span-full">
+        <label for="description" class="form-label">
+          Description <span class="asterisk">*</span>
+        </label>
+        <div class="mt-2">
+          {% call macros::markdown_editor(id = "description", content = employer.description, required = true) %}
+        </div>
+        <p class="form-legend">A short introduction of your company. You can use markdown to format the text.</p>
+      </div>
+      {# End Description #}
+
+      {# Public #}
+      <div class="col-span-full">
+        <div class="form-label">Public</div>
+        <label class="mt-2 inline-flex items-center cursor-pointer">
+          {% call macros::toggle_checkbox(id = "public", checked = employer.public) %}
+          <span class="ms-3 text-sm font-medium text-gray-900">Display in employers listing.</span>
+        </label>
+        <p class="form-legend">
+          Your company will be listed in the employers section of the site. This may help attracting more applicants to your jobs.
+        </p>
+      </div>
+      {# End Public #}
     </div>
 
-    {# Employer form #}
-    <form id="employer-form"
-          hx-put="/dashboard/employer/employers/update"
-          hx-ext="no-empty-vals"
-          hx-include="[name=logo_id]"
-          hx-trigger="click from:#employer-form-btn">
-      <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 max-w-4xl">
-        {# Company name #}
-        <div class="col-span-3">
-          <label for="company" class="form-label">
-            Company name <span class="asterisk">*</span>
-          </label>
-          <div class="mt-2">
-            <input type="text"
-                   name="company"
-                   id="company"
-                   value="{{ employer.company }}"
-                   class="input-primary"
-                   required>
-          </div>
-          <p class="form-legend">Your company's trade name.</p>
-        </div>
-        {# End Company name #}
-
-        <div class="col-span-3"></div>
-
-        {# Location #}
-        <div class="col-span-full lg:col-span-3">
-          <label for="ts_query" class="form-label">Location</label>
-          {% call macros::location(location_id = employer.location_id|display_some, city = employer.city|display_some, state = employer.state|display_some, country = employer.country|display_some) %}
-          <p class="form-legend">Location of the headquarters of your company.</p>
-        </div>
-        {# End location #}
-
-        {# Website url #}
-        <div class="sm:col-span-3">
-          <label for="website_url" class="form-label">Website url</label>
-          <div class="mt-2">
-            <input id="website_url"
-                   name="website_url"
-                   type="url"
-                   value="{%- if let Some(website_url) = employer.website_url -%} {{ website_url }} {%- endif -%}"
-                   class="input-primary">
-          </div>
-          <p class="form-legend">URL of your company's website.</p>
-        </div>
-        {# End Website url #}
-
-        {# Description #}
-        <div class="col-span-full">
-          <label for="description" class="form-label">
-            Description <span class="asterisk">*</span>
-          </label>
-          <div class="mt-2">
-            {% call macros::markdown_editor(id = "description", content = employer.description, required = true) %}
-          </div>
-          <p class="form-legend">A short introduction of your company. You can use markdown to format the text.</p>
-        </div>
-        {# End Description #}
-
-        {# Public #}
-        <div class="col-span-full">
-          <div class="form-label">Public</div>
-          <label class="mt-2 inline-flex items-center cursor-pointer">
-            {% call macros::toggle_checkbox(id = "public", checked = employer.public) %}
-            <span class="ms-3 text-sm font-medium text-gray-900">Display in employers listing.</span>
-          </label>
-          <p class="form-legend">
-            Your company will be listed in the employers section of the site. This may help attracting more applicants to your jobs.
-          </p>
-        </div>
-        {# End Public #}
-      </div>
-    </form>
-    {# End employer form #}
-  </div>
-
-  {# Submit employer form button #}
-  <div class="mt-6 flex justify-end items-center">
-    <button id="employer-form-btn" type="click" class="btn-primary">Save</button>
-  </div>
-  {# End submit employer form button #}
+    {# Submit employer form button #}
+    <div class="mt-12 flex justify-end items-center border-t border-gray-900/10 pt-6">
+      <button type="submit" class="btn-primary">Save</button>
+    </div>
+    {# End submit employer form button #}
+  </form>
+  {# End employer form #}
 </div>

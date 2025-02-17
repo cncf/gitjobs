@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  lint-and-test-server:
+    runs-on:
+      labels: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: 1.84.1
+          components: clippy, rustfmt
+      - name: Run clippy
+        run: cargo clippy --all-targets --all-features -- --deny warnings
+      - name: Run rustfmt
+        run: cargo fmt --all -- --check
+      - name: Run tests
+        run: cargo test
+
+  lint-templates:
+    runs-on:
+      labels: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install djlint
+        run: pip install djlint==1.36.4
+      - name: Run djlint
+        run: |
+          djlint \
+            --reformat \
+            --configuration gitjobs-server/templates/.djlintrc \
+            gitjobs-server/templates
+
+  check-js-files-format:
+    runs-on:
+      labels: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Run prettier
+        uses: creyD/prettier_action@v4.3
+        with:
+          dry: true
+          prettier_options: --check gitjobs-server/static/js/**/*.js --config gitjobs-server/static/js/.prettierrc.yaml
+

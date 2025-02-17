@@ -167,11 +167,11 @@
   {# djlint:off H008 #}
   {% match status %}
   {% when JobStatus::Archived %}
-  <span class='bg-red-100 text-red-800 text-{{ size }} {%- if size.to_string() == "xs" %} px-2.5 py-0.5 {%- else %} px-3 py-1 {%- endif %} rounded-full capitalize tracking-wide'>{{ status }}</span>
+  <span class='bg-red-100 text-red-800 text-{{ size }} {%- if size == "xs" %} px-2.5 py-0.5 {%- else %} px-3 py-1 {%- endif %} rounded-full capitalize tracking-wide'>{{ status }}</span>
   {% when JobStatus::Draft %}
-  <span class='bg-blue-100 text-blue-800 text-{{ size }} {%- if size.to_string() == "xs" %} px-2.5 py-0.5 {%- else %} px-3 py-1 {%- endif %} rounded-full capitalize tracking-wide'>{{ status }}</span>
+  <span class='bg-blue-100 text-blue-800 text-{{ size }} {%- if size == "xs" %} px-2.5 py-0.5 {%- else %} px-3 py-1 {%- endif %} rounded-full capitalize tracking-wide'>{{ status }}</span>
   {% when JobStatus::Published %}
-  <span class='bg-green-100 text-green-800 text-{{ size }} {%- if size.to_string() == "xs" %} px-2.5 py-0.5 {%- else %} px-3 py-1 {%- endif %} rounded-full capitalize tracking-wide'>{{ status }}</span>
+  <span class='bg-green-100 text-green-800 text-{{ size }} {%- if size == "xs" %} px-2.5 py-0.5 {%- else %} px-3 py-1 {%- endif %} rounded-full capitalize tracking-wide'>{{ status }}</span>
 {% endmatch %}
 {# djlint:on H008 #}
 {% endmacro job_status_badge %}
@@ -201,8 +201,7 @@
 
 {# Select option #}
 {% macro select_option(value, label, selected = "") %}
-  <option value="{{ value }}"
-          {% if value.to_string() == selected.to_string() %}selected{% endif %}>{{ label }}</option>
+  <option value="{{ value }}" {% if value == selected|ref %}selected{% endif %}>{{ label }}</option>
 {% endmacro select_option %}
 {# End select option #}
 
@@ -210,7 +209,7 @@
 {% macro badge(content, content_styles = "", icon = "") %}
   <div class="inline-flex bg-gray-100 text-gray-800 text-sm/4 font-medium px-2.5 py-1.5 rounded-full border">
     <div class="flex items-center">
-      {% if icon.to_string() != "" %}
+      {% if !icon.is_empty() %}
         <div class="me-2">
           <div class="svg-icon size-4 icon-{{ icon }} bg-gray-500"></div>
         </div>
@@ -300,9 +299,7 @@
 {# Form title #}
 {% macro form_title(title, description = "") %}
   <div class="text-xl lg:text-2xl font-medium text-gray-900">{{ title }}</div>
-  {% if description.to_string() != "" %}
-    <p class="mt-1 text-sm/6 text-gray-500">{{ description }}</p>
-  {% endif %}
+  {% if !description.is_empty() %}<p class="mt-1 text-sm/6 text-gray-500">{{ description }}</p>{% endif %}
 {% endmacro form_title %}
 {# End form title #}
 
@@ -317,7 +314,7 @@
            value="{{ value }}"
            name="{{ name }}"
            class="radio-primary"
-           {% if value.to_string() == checked.to_string() %}checked{% endif %}
+           {% if value == checked %}checked{% endif %}
            {% if required %}required{% endif %}>
   </div>
 {% endmacro radio_box %}

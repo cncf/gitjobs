@@ -4,9 +4,7 @@ use axum_messages::Message;
 use rinja::Template;
 use serde::{Deserialize, Serialize};
 
-use crate::auth::UserSummary;
-
-use crate::templates::filters;
+use crate::{auth::UserSummary, templates::filters};
 
 /// Log in page.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]

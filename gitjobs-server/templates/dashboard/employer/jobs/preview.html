@@ -234,9 +234,7 @@
 {# Job details content #}
 {% macro job_details_content(text, icon = "", extra_styles = "") %}
   <div class="flex items-center text-xs">
-    {% if icon.to_string() != "" %}
-      <div class="svg-icon size-3 icon-{{ icon }} bg-gray-500 me-2"></div>
-    {% endif %}
+    {% if !icon.is_empty() %}<div class="svg-icon size-3 icon-{{ icon }} bg-gray-500 me-2"></div>{% endif %}
     <div class="truncate {{ extra_styles }}">{{ text }}</div>
   </div>
 {% endmacro job_details_content %}

@@ -63,9 +63,15 @@ impl DBDashBoardJobSeeker for PgDB {
                 name: row.get("name"),
                 public: row.get("public"),
                 summary: row.get("summary"),
-                certifications: serde_json::from_value(row.get("certifications")).unwrap(),
-                education: serde_json::from_value(row.get("education")).unwrap(),
-                experience: serde_json::from_value(row.get("experience")).unwrap(),
+                certifications: row
+                    .get::<_, Option<serde_json::Value>>("certifications")
+                    .map(|v| serde_json::from_value(v).expect("certifications to be valid json")),
+                education: row
+                    .get::<_, Option<serde_json::Value>>("education")
+                    .map(|v| serde_json::from_value(v).expect("education to be valid json")),
+                experience: row
+                    .get::<_, Option<serde_json::Value>>("experience")
+                    .map(|v| serde_json::from_value(v).expect("experience to be valid json")),
                 facebook_url: row.get("facebook_url"),
                 github_url: row.get("github_url"),
                 linkedin_url: row.get("linkedin_url"),
@@ -74,7 +80,9 @@ impl DBDashBoardJobSeeker for PgDB {
                 open_to_remote: row.get("open_to_remote"),
                 phone: row.get("phone"),
                 photo_id: row.get("avatar_id"),
-                projects: serde_json::from_value(row.get("projects")).unwrap(),
+                projects: row
+                    .get::<_, Option<serde_json::Value>>("projects")
+                    .map(|v| serde_json::from_value(v).expect("projects to be valid json")),
                 skills: row.get("skills"),
                 twitter_url: row.get("twitter_url"),
                 website_url: row.get("website_url"),
@@ -162,9 +170,9 @@ impl DBDashBoardJobSeeker for PgDB {
                 &profile.name,
                 &profile.public,
                 &profile.summary,
-                &serde_json::to_value(&profile.certifications).unwrap(),
-                &serde_json::to_value(&profile.education).unwrap(),
-                &serde_json::to_value(&profile.experience).unwrap(),
+                &serde_json::to_value(&profile.certifications).expect("certifications to be valid json"),
+                &serde_json::to_value(&profile.education).expect("education to be valid json"),
+                &serde_json::to_value(&profile.experience).expect("experience to be valid json"),
                 &profile.facebook_url,
                 &profile.github_url,
                 &profile.linkedin_url,
@@ -173,7 +181,7 @@ impl DBDashBoardJobSeeker for PgDB {
                 &profile.open_to_remote,
                 &profile.phone,
                 &profile.photo_id,
-                &serde_json::to_value(&profile.projects).unwrap(),
+                &serde_json::to_value(&profile.projects).expect("projects to be valid json"),
                 &profile.skills,
                 &profile.twitter_url,
                 &profile.website_url,

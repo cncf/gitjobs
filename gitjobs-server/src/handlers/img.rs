@@ -44,7 +44,7 @@ pub(crate) async fn upload(
     mut multipart: Multipart,
 ) -> Result<impl IntoResponse, HandlerError> {
     // Get image file name and data from the multipart form data
-    let (file_name, data) = if let Some(field) = multipart.next_field().await.unwrap() {
+    let (file_name, data) = if let Ok(Some(field)) = multipart.next_field().await {
         let file_name = field.file_name().unwrap_or_default().to_string();
         let Ok(data) = field.bytes().await else {
             return Ok(StatusCode::BAD_REQUEST.into_response());

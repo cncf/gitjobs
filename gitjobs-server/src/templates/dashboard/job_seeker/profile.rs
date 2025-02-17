@@ -6,10 +6,7 @@ use rinja::Template;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::templates::{
-    filters,
-    helpers::{build_location, normalize},
-};
+use crate::templates::helpers::normalize;
 
 /// Profile preview page template.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]

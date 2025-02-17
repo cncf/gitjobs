@@ -9,7 +9,6 @@ export const triggerActionOnForm = (formId, action) => {
 };
 
 export const updateJobsList = () => {
-  const refreshButton = document.getElementById('refresh-table');
-  htmx.trigger(refreshButton, 'click');
-}
-
+  const refreshButton = document.getElementById("refresh-table");
+  htmx.trigger(refreshButton, "click");
+};

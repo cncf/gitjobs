@@ -347,10 +347,8 @@
   </div>
 
   <script>
-    const checkbox = document.getElementById('toggle_{{ id }}');
-    const hiddenInput = document.getElementById('{{ id }}');
-    checkbox.addEventListener('change', () => {
-      hiddenInput.value = checkbox.checked;
+    document.getElementById('toggle_{{ id }}').addEventListener('change', () => {
+      document.getElementById('{{ id }}').value = document.getElementById('toggle_{{ id }}').checked;
     });
   </script>
 {% endmacro toggle_checkbox %}

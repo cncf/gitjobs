@@ -3,8 +3,10 @@ import { LitElement, html, createRef, ref } from "https://cdn.jsdelivr.net/gh/li
 export class MarkdownEditor extends LitElement {
   static properties = {
     id: { type: String },
+    name: { type: String },
     content: { type: String },
     required: { type: Boolean },
+    onChange: { type: Function },
   };
 
   textareaRef = createRef();
@@ -12,8 +14,10 @@ export class MarkdownEditor extends LitElement {
   constructor() {
     super();
     this.id = "id";
+    this.name = undefined;
     this.content = "";
     this.required = false;
+    this.onChange = undefined;
   }
 
   createRenderRoot() {
@@ -39,6 +43,12 @@ export class MarkdownEditor extends LitElement {
       previewClass: "markdown",
     });
 
+    easyMDE.codemirror.on("change", () => {
+      if (this.onChange) {
+        this.onChange(easyMDE.value());
+      }
+    });
+
     if (this.required) {
       textarea.style.display = "block";
     }
@@ -50,11 +60,13 @@ export class MarkdownEditor extends LitElement {
         <textarea
           ${ref(this.textareaRef)}
           name="${this.id}"
+          data-name="${this.name}"
           rows="3"
           class="absolute top-0 left-0 opacity-0"
           ?required=${this.required}
         >
-${this.content}</textarea
+          ${this.content}
+        </textarea
         >
       </div>
     `;

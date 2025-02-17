@@ -7,7 +7,10 @@ use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use uuid::Uuid;
 
-use crate::templates::helpers::normalize;
+use crate::templates::{
+    filters,
+    helpers::{build_location, normalize},
+};
 
 /// Profile preview page template.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]

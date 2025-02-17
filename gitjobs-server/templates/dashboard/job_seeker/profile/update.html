@@ -1,1 +1,235 @@
-<h1>Job seeker profile update page</h1>
+{% import "macros.html" as macros %}
+
+{% let profile = profile.clone().unwrap_or_default() %}
+
+<div class="space-y-12">
+  <div>{% call macros::form_title(title = "Personal details", description = "Lorem ipsum") %}</div>
+
+  <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 max-w-4xl">
+    {# Form image #}
+    <div class="col-span-full">
+      {% call macros::images_form(label = "Avatar", name = "photo_id", value = profile.photo_id|display_some) %}
+    </div>
+    {# End form image #}
+  </div>
+
+  {# Jobseeker form #}
+  <form id="jobseeker-form"
+        hx-put="/dashboard/job-seeker/profile/update"
+        hx-ext="no-empty-vals"
+        hx-include="[name=photo_id]"
+        hx-trigger="submit">
+    <div class="space-y-12">
+      <div class="border-b border-gray-900/10 pb-12">
+        <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-6 max-w-5xl">
+          {# Name #}
+          <div class="col-span-3">
+            <label for="name" class="form-label">
+              Name <span class="asterisk">*</span>
+            </label>
+            <div class="mt-2">
+              <input type="text"
+                     name="name"
+                     id="name"
+                     value="{{ profile.name }}"
+                     class="input-primary"
+                     required>
+            </div>
+          </div>
+          {# End name #}
+
+          {# Email #}
+          <div class="col-span-3">
+            <label for="email" class="form-label">
+              Email <span class="asterisk">*</span>
+            </label>
+            <div class="mt-2">
+              <input type="email"
+                     name="email"
+                     id="email"
+                     value="{{ profile.email }}"
+                     class="input-primary"
+                     required>
+            </div>
+          </div>
+          {# End email #}
+
+          {# Phone #}
+          <div class="col-span-3">
+            <label for="phone" class="form-label">Phone</label>
+            <div class="mt-2">
+              <input type="text"
+                     name="phone"
+                     id="phone"
+                     value="{{ profile.phone|display_some }}"
+                     class="input-primary">
+            </div>
+          </div>
+          {# End phone #}
+
+          {# Location #}
+          <div class="col-span-full lg:col-span-3">
+            <label for="ts_query" class="form-label">Location</label>
+            {% call macros::location(location_id = profile.location_id|display_some, city = profile.city|display_some, state = profile.state|display_some, country = profile.country|display_some) %}
+            <p class="form-legend">Lorem ipsum</p>
+          </div>
+          {# End location #}
+
+          {# Summary #}
+          <div class="col-span-full">
+            <label for="summary" class="form-label">
+              Summary <span class="asterisk">*</span>
+            </label>
+            <div class="mt-2">
+              <markdown-editor id="summary" content="{{ profile.summary }}" required></markdown-editor>
+            </div>
+            <p class="form-legend">A short introduction of yourself. You can use markdown to format the text.</p>
+          </div>
+          {# End Summary #}
+
+          {# Skills #}
+          {# TODO - get skills list #}
+          <div class="col-span-full">
+            <multi-select id="skills" name="Skills" options='["kubernetes","docker","aws","gcp","azure","terraform","linux","helm","prometheus"]'
+            {% if let Some(skills) = profile.skills %}selected="{{ skills|json }}"{% endif %}
+            legend="....."></multi-select>
+          </div>
+          {# End skills #}
+
+          {# Public #}
+          <div class="col-span-2">
+            <div class="form-label">Public</div>
+            <label class="mt-2 inline-flex items-center cursor-pointer">
+              {% call macros::toggle_checkbox(id = "public", checked = profile.public) %}
+              <span class="ms-3 text-sm font-medium text-gray-900">Display in employers listing.</span>
+            </label>
+            <p class="form-legend">Lorem ipsum</p>
+          </div>
+          {# End Public #}
+
+          {# Open to relocation #}
+          <div class="col-span-2">
+            <div class="form-label">Relocation</div>
+            <label class="mt-2 inline-flex items-center cursor-pointer">
+              {% call macros::toggle_checkbox(id = "open_to_relocation", checked = profile.open_to_relocation.unwrap_or(false)) %}
+              <span class="ms-3 text-sm font-medium text-gray-900">Open.</span>
+            </label>
+            <p class="form-legend">Lorem ipsum</p>
+          </div>
+          {# End open to relocation #}
+
+          {# Open to remote #}
+          <div class="col-span-2">
+            <div class="form-label">Remove</div>
+            <label class="mt-2 inline-flex items-center cursor-pointer">
+              {% call macros::toggle_checkbox(id = "open_to_remote", checked = profile.open_to_remote.unwrap_or(false)) %}
+              <span class="ms-3 text-sm font-medium text-gray-900">Open.</span>
+            </label>
+            <p class="form-legend">Lorem ipsum</p>
+          </div>
+          {# End open to remote #}
+        </div>
+      </div>
+
+      <div class="border-b border-gray-900/10 pb-12">
+        {% call macros::form_title(title = "Social", description = "Lorem ipsum") %}
+
+        <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 max-w-4xl">
+          {# Website url #}
+          <div class="col-span-3">
+            <label for="website_url" class="form-label">Website url</label>
+            <div class="mt-2">
+              <input type="url"
+                     name="website_url"
+                     id="website_url"
+                     value="{{ profile.website_url|display_some }}"
+                     class="input-primary">
+            </div>
+          </div>
+          {# End website url #}
+
+          {# Facebook url #}
+          <div class="col-span-3">
+            <label for="facebook_url" class="form-label">Facebook url</label>
+            <div class="mt-2">
+              <input type="url"
+                     name="facebook_url"
+                     id="facebook_url"
+                     value="{{ profile.facebook_url|display_some }}"
+                     class="input-primary">
+            </div>
+          </div>
+          {# End facebook url #}
+
+          {# GitHub url #}
+          <div class="col-span-3">
+            <label for="github_url" class="form-label">GitHub url</label>
+            <div class="mt-2">
+              <input type="url"
+                     name="github_url"
+                     id="github_url"
+                     value="{{ profile.github_url|display_some }}"
+                     class="input-primary">
+            </div>
+          </div>
+          {# End github url #}
+
+          {# LinkedIn url #}
+          <div class="col-span-3">
+            <label for="linkedin_url" class="form-label">LinkedIn url</label>
+            <div class="mt-2">
+              <input type="url"
+                     name="linkedin_url"
+                     id="linkedin_url"
+                     value="{{ profile.linkedin_url|display_some }}"
+                     class="input-primary">
+            </div>
+          </div>
+          {# End linkedIn url #}
+
+          {# Twitter url #}
+          <div class="col-span-3">
+            <label for="twitter_url" class="form-label">Twitter url</label>
+            <div class="mt-2">
+              <input type="url"
+                     name="twitter_url"
+                     id="twitter_url"
+                     value="{{ profile.twitter_url|display_some }}"
+                     class="input-primary">
+            </div>
+          </div>
+          {# End twitter url #}
+        </div>
+      </div>
+
+      {# Education #}
+      <div class="border-b border-gray-900/10 pb-12">
+        <education-section education=" {%- if let Some(education) = profile.education -%}{{ education|json }}{%- endif -%} "></education-section>
+      </div>
+      {# End education #}
+
+      {# Experience #}
+      <div class="border-b border-gray-900/10 pb-12">
+        <experience-section experience=" {%- if let Some(experience) = profile.experience -%}{{ experience|json }}{%- endif -%} "></experience-section>
+      </div>
+      {# End experience #}
+
+      {# Certifications #}
+      <div class="border-b border-gray-900/10 pb-12">
+        <certifications-section certifications=" {%- if let Some(certifications) = profile.certifications -%}{{ certifications|json }}{%- endif -%} "></certifications-section>
+      </div>
+      {# End certifications #}
+
+      {# Projects #}
+      <div class="border-b border-gray-900/10 pb-12">
+        <projects-section projects=" {%- if let Some(projects) = profile.projects -%}{{ projects|json }}{%- endif -%} "></projects-section>
+      </div>
+      {# End projects #}
+
+      <div class="mt-6">
+        <button type="submit" class="btn-primary">Save</button>
+      </div>
+    </form>
+    {# End jobseeker form #}
+  </div>
+</div>

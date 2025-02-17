@@ -462,7 +462,8 @@ impl DBDashBoardEmployer for PgDB {
                 select employer_id, company, logo_id
                 from employer e
                 join employer_team et using (employer_id)
-                where et.user_id = $1::uuid;
+                where et.user_id = $1::uuid
+                order by company asc;
                 ",
                 &[&user_id],
             )

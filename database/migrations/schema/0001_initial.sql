@@ -127,10 +127,10 @@ create index job_seeker_profile_user_id_idx on job_seeker_profile (user_id);
 
 create table employer (
     employer_id uuid primary key default gen_random_uuid(),
-    member_id uuid not null references member on delete set null,
     job_board_id uuid not null references job_board on delete restrict,
     location_id uuid references location on delete set null,
     logo_id uuid references image (image_id) on delete set null,
+    member_id uuid references member on delete set null,
 
     company text not null check (company <> ''),
     created_at timestamptz not null default current_timestamp,

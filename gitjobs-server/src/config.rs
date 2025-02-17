@@ -34,7 +34,7 @@ impl Config {
         }
 
         figment
-            .merge(Env::prefixed("OCG_").split("__"))
+            .merge(Env::prefixed("GITJOBS_").split("__"))
             .extract()
             .map_err(Into::into)
     }

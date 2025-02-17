@@ -1,0 +1,21 @@
+apiVersion: v2
+name: gitjobs
+description: GitJobs is an open source job board platform
+type: application
+version: 0.1.0
+appVersion: 0.1.0
+kubeVersion: ">= 1.19.0-0"
+keywords:
+  - cncf
+  - job
+  - board
+maintainers:
+  - name: Sergio
+    email: tegioz@icloud.com
+  - name: Cintia
+    email: cynthiasg@icloud.com
+dependencies:
+  - name: postgresql
+    version: 16.3.2
+    repository: https://charts.bitnami.com/bitnami
+    condition: postgresql.enabled

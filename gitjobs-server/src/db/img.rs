@@ -18,7 +18,7 @@ pub(crate) trait DBImage {
     ) -> Result<Option<(Vec<u8>, ImageFormat)>>;
 
     /// Save image versions.
-    async fn save_image_versions(&self, versions: Vec<ImageVersion>) -> Result<Uuid>;
+    async fn save_image_versions(&self, job_board_id: &Uuid, versions: Vec<ImageVersion>) -> Result<Uuid>;
 }
 
 #[async_trait]
@@ -48,15 +48,18 @@ impl DBImage for PgDB {
 
     /// [DBImage::save_image_versions]
     #[instrument(skip(self), err)]
-    async fn save_image_versions(&self, versions: Vec<ImageVersion>) -> Result<Uuid> {
+    async fn save_image_versions(&self, job_board_id: &Uuid, versions: Vec<ImageVersion>) -> Result<Uuid> {
         // Begin transaction
         let mut db = self.pool.get().await?;
         let tx = db.transaction().await?;
 
         // Insert image identifier
         let image_id = Uuid::new_v4();
-        tx.execute("insert into image (image_id) values ($1::uuid)", &[&image_id])
-            .await?;
+        tx.execute(
+            "insert into image (image_id, job_board_id) values ($1::uuid, $2::uuid)",
+            &[&image_id, &job_board_id],
+        )
+        .await?;
 
         // Insert image versions
         for v in versions {

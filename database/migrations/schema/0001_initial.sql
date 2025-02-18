@@ -2,6 +2,25 @@ create extension pgcrypto;
 create extension postgis;
 create extension pg_trgm;
 
+create table location (
+    location_id uuid primary key,
+
+    city text not null check (city <> ''),
+    country text not null check (country <> ''),
+    tsdoc tsvector not null
+        generated always as (
+            setweight(to_tsvector('simple', city), 'A') ||
+            setweight(to_tsvector('simple', country), 'B') ||
+            setweight(to_tsvector('simple', coalesce(state, '')), 'B')
+        ) stored,
+
+    coordinates geography(point, 4326),
+    state text check (state <> '')
+);
+
+create index location_coordinates_idx on location using gist (coordinates);
+create index location_tsdoc_idx on location using gin (tsdoc);
+
 create table job_board (
     job_board_id uuid primary key default gen_random_uuid(),
 
@@ -42,28 +61,12 @@ create table "user" (
 
 create index user_job_board_id_idx on "user" (job_board_id);
 
-create table location (
-    location_id uuid primary key,
-
-    city text not null check (city <> ''),
-    country text not null check (country <> ''),
-    tsdoc tsvector not null
-        generated always as (
-            setweight(to_tsvector('simple', city), 'A') ||
-            setweight(to_tsvector('simple', country), 'B') ||
-            setweight(to_tsvector('simple', coalesce(state, '')), 'B')
-        ) stored,
-
-    coordinates geography(point, 4326),
-    state text check (state <> '')
-);
-
-create index location_coordinates_idx on location using gist (coordinates);
-create index location_tsdoc_idx on location using gin (tsdoc);
-
 create table image (
-    image_id uuid not null primary key
+    image_id uuid not null primary key,
+    job_board_id uuid not null references job_board on delete restrict
 );
+
+create index image_job_board_id_idx on image (job_board_id);
 
 create table image_version (
     image_id uuid not null references image on delete cascade,

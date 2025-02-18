@@ -14,6 +14,8 @@ use uuid::Uuid;
 
 use crate::{db::img::ImageFormat, handlers::error::HandlerError, img::DynImageStore};
 
+use super::extractors::JobBoardId;
+
 /// Handler that returns an image.
 #[instrument(skip_all, err)]
 pub(crate) async fn get(
@@ -40,6 +42,7 @@ pub(crate) async fn get(
 /// Handler that uploads an image.
 #[instrument(skip_all, err)]
 pub(crate) async fn upload(
+    JobBoardId(job_board_id): JobBoardId,
     State(image_store): State<DynImageStore>,
     mut multipart: Multipart,
 ) -> Result<impl IntoResponse, HandlerError> {
@@ -55,7 +58,7 @@ pub(crate) async fn upload(
     };
 
     // Save image to store
-    let image_id = image_store.save(&file_name, data.to_vec()).await?;
+    let image_id = image_store.save(&job_board_id, &file_name, data.to_vec()).await?;
 
     Ok((StatusCode::OK, image_id.to_string()).into_response())
 }

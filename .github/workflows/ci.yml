@@ -8,7 +8,7 @@ on:
 jobs:
   lint-and-test-server:
     runs-on:
-      labels: ubuntu-latest
+      labels: ubuntu-24.04-arm
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -26,7 +26,7 @@ jobs:
 
   lint-templates:
     runs-on:
-      labels: ubuntu-latest
+      labels: ubuntu-24.04-arm
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -41,7 +41,7 @@ jobs:
 
   check-js-files-format:
     runs-on:
-      labels: ubuntu-latest
+      labels: ubuntu-24.04-arm
     steps:
       - name: Checkout code
         uses: actions/checkout@v4

@@ -302,7 +302,7 @@
         <button id="preview-button"
                 type="button"
                 hx-post="/dashboard/employer/jobs/preview"
-                hx-include="#jobs-form input, #jobs-form radio, #jobs-form select, #jobs-form textarea"
+                hx-include="#jobs-form"
                 hx-ext="no-empty-vals"
                 hx-target="#preview-content"
                 hx-indicator="#preview-spinner"
@@ -345,7 +345,7 @@
 </form>
 
 {# Preview modal -#}
-{% include "dashboard/employer/jobs/preview_modal.html" %}
+{% include "misc/preview_modal.html" %}
 {# End preview modal -#}
 
 <script type="module">

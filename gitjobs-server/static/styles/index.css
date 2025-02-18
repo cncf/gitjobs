@@ -85,9 +85,19 @@ body {
   -webkit-mask-image: url('/static/images/icons/draft.svg')
 }
 
+.icon-email {
+  mask-image: url('/static/images/icons/email.svg');
+  -webkit-mask-image: url('/static/images/icons/email.svg')
+}
+
 .icon-eye {
   mask-image: url('/static/images/icons/eye.svg');
   -webkit-mask-image: url('/static/images/icons/eye.svg')
+}
+
+.icon-facebook {
+  mask-image: url('/static/images/icons/facebook.svg');
+  -webkit-mask-image: url('/static/images/icons/facebook.svg')
 }
 
 .icon-filter {
@@ -123,6 +133,16 @@ body {
 .icon-lfx {
   mask-image: url('/static/images/icons/lfx.svg');
   -webkit-mask-image: url('/static/images/icons/lfx.svg')
+}
+
+.icon-link {
+  mask-image: url('/static/images/icons/link.svg');
+  -webkit-mask-image: url('/static/images/icons/link.svg')
+}
+
+.icon-linkedin {
+  mask-image: url('/static/images/icons/linkedin.svg');
+  -webkit-mask-image: url('/static/images/icons/linkedin.svg')
 }
 
 .icon-list {
@@ -170,9 +190,19 @@ body {
   -webkit-mask-image: url('/static/images/icons/pencil.svg')
 }
 
+.icon-phone {
+  mask-image: url('/static/images/icons/phone.svg');
+  -webkit-mask-image: url('/static/images/icons/phone.svg')
+}
+
 .icon-plus {
   mask-image: url('/static/images/icons/plus.svg');
   -webkit-mask-image: url('/static/images/icons/plus.svg')
+}
+
+.icon-project {
+  mask-image: url('/static/images/icons/project.svg');
+  -webkit-mask-image: url('/static/images/icons/project.svg')
 }
 
 .icon-remote {
@@ -208,6 +238,11 @@ body {
 .icon-trash {
   mask-image: url('/static/images/icons/trash.svg');
   -webkit-mask-image: url('/static/images/icons/trash.svg')
+}
+
+.icon-twitter {
+  mask-image: url('/static/images/icons/twitter.svg');
+  -webkit-mask-image: url('/static/images/icons/twitter.svg')
 }
 
 .icon-user {

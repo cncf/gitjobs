@@ -1,6 +1,6 @@
 //! Some custom filters for templates.
 
-use chrono::{DateTime, Utc};
+use chrono::{DateTime, NaiveDate, Utc};
 
 /// Return the value if it is some, otherwise return an empty string.
 #[allow(clippy::unnecessary_wraps, clippy::ref_option)]
@@ -27,20 +27,42 @@ where
     }
 }
 
-/// Return the formatted date if it is some, otherwise return an empty string.
+/// Return the formatted datetime if it is some, otherwise return an empty
+/// string.
 #[allow(clippy::unnecessary_wraps, clippy::ref_option, dead_code)]
-pub(crate) fn display_some_date(value: &Option<DateTime<Utc>>, format: &str) -> rinja::Result<String> {
+pub(crate) fn display_some_datetime(value: &Option<DateTime<Utc>>, format: &str) -> rinja::Result<String> {
     match value {
         Some(value) => Ok(value.format(format).to_string()),
         None => Ok(String::new()),
     }
 }
 
+/// Return the formatted datetime if it is some, otherwise return the
+/// alternative value.
+#[allow(clippy::unnecessary_wraps, clippy::ref_option)]
+pub(crate) fn display_some_datetime_or<T>(
+    value: &Option<DateTime<Utc>>,
+    format: &str,
+    alternative: T,
+) -> rinja::Result<String>
+where
+    T: std::fmt::Display,
+{
+    match value {
+        Some(value) => Ok(value.format(format).to_string()),
+        None => Ok(alternative.to_string()),
+    }
+}
+
 /// Return the formatted date if it is some, otherwise return the alternative
 /// value.
-#[allow(clippy::unnecessary_wraps, clippy::ref_option)]
+#[allow(
+    clippy::unnecessary_wraps,
+    clippy::ref_option,
+    clippy::trivially_copy_pass_by_ref
+)]
 pub(crate) fn display_some_date_or<T>(
-    value: &Option<DateTime<Utc>>,
+    value: &Option<NaiveDate>,
     format: &str,
     alternative: T,
 ) -> rinja::Result<String>

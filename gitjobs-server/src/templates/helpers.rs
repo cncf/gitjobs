@@ -10,6 +10,9 @@ use super::dashboard::employer::employers::EmployerSummary;
 /// The date format used in the templates.
 pub(crate) const DATE_FORMAT: &str = "%Y-%m-%d";
 
+/// The date format used in the jobseeker preview.
+pub(crate) const DATE_FORMAT_2: &str = "%B %Y";
+
 /// Build url for an image version.
 pub(crate) fn build_image_url(image_id: &Uuid, version: &str) -> String {
     format!("/images/{image_id}/{version}")

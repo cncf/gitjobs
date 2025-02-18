@@ -90,146 +90,206 @@
           {# Skills #}
           {# TODO - get skills list #}
           <div class="col-span-full">
-            <multi-select id="skills" name="Skills" options='["kubernetes","docker","aws","gcp","azure","terraform","linux","helm","prometheus"]'
-            {% if let Some(skills) = profile.skills %}selected="{{ skills|json }}"{% endif %}
-            legend="....."></multi-select>
-          </div>
-          {# End skills #}
+            <multi-select id="skills" name="Skills" options="{{ skills|json }}"
+            {% if let Some(skills) = profile.skills -%}selected="{{ skills|json }}"{%- endif %} legend="....."></multi-select>
+            </div>
+            {# End skills #}
 
-          {# Public #}
-          <div class="col-span-2">
-            <div class="form-label">Public</div>
-            <label class="mt-2 inline-flex items-center cursor-pointer">
-              {% call macros::toggle_checkbox(id = "public", checked = profile.public) %}
-              <span class="ms-3 text-sm font-medium text-gray-900">Display in employers listing.</span>
-            </label>
-            <p class="form-legend">Lorem ipsum</p>
-          </div>
-          {# End Public #}
+            {# Public #}
+            <div class="col-span-2">
+              <div class="form-label">Public</div>
+              <label class="mt-2 inline-flex items-center cursor-pointer">
+                {% call macros::toggle_checkbox(id = "public", checked = profile.public) %}
+                <span class="ms-3 text-sm font-medium text-gray-900">Display in employers listing.</span>
+              </label>
+              <p class="form-legend">Lorem ipsum</p>
+            </div>
+            {# End Public #}
 
-          {# Open to relocation #}
-          <div class="col-span-2">
-            <div class="form-label">Relocation</div>
-            <label class="mt-2 inline-flex items-center cursor-pointer">
-              {% call macros::toggle_checkbox(id = "open_to_relocation", checked = profile.open_to_relocation.unwrap_or(false)) %}
-              <span class="ms-3 text-sm font-medium text-gray-900">Open.</span>
-            </label>
-            <p class="form-legend">Lorem ipsum</p>
-          </div>
-          {# End open to relocation #}
+            {# Open to relocation #}
+            <div class="col-span-2">
+              <div class="form-label">Relocation</div>
+              <label class="mt-2 inline-flex items-center cursor-pointer">
+                {% call macros::toggle_checkbox(id = "open_to_relocation", checked = profile.open_to_relocation.unwrap_or(false)) %}
+                <span class="ms-3 text-sm font-medium text-gray-900">Open.</span>
+              </label>
+              <p class="form-legend">Lorem ipsum</p>
+            </div>
+            {# End open to relocation #}
 
-          {# Open to remote #}
-          <div class="col-span-2">
-            <div class="form-label">Remove</div>
-            <label class="mt-2 inline-flex items-center cursor-pointer">
-              {% call macros::toggle_checkbox(id = "open_to_remote", checked = profile.open_to_remote.unwrap_or(false)) %}
-              <span class="ms-3 text-sm font-medium text-gray-900">Open.</span>
-            </label>
-            <p class="form-legend">Lorem ipsum</p>
+            {# Open to remote #}
+            <div class="col-span-2">
+              <div class="form-label">Remove</div>
+              <label class="mt-2 inline-flex items-center cursor-pointer">
+                {% call macros::toggle_checkbox(id = "open_to_remote", checked = profile.open_to_remote.unwrap_or(false)) %}
+                <span class="ms-3 text-sm font-medium text-gray-900">Open.</span>
+              </label>
+              <p class="form-legend">Lorem ipsum</p>
+            </div>
+            {# End open to remote #}
           </div>
-          {# End open to remote #}
         </div>
-      </div>
 
-      <div class="border-b border-gray-900/10 pb-12">
-        {% call macros::form_title(title = "Social", description = "Lorem ipsum") %}
+        <div class="border-b border-gray-900/10 pb-12">
+          {% call macros::form_title(title = "Social", description = "Lorem ipsum") %}
 
-        <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 max-w-4xl">
-          {# Website url #}
-          <div class="col-span-3">
-            <label for="website_url" class="form-label">Website url</label>
-            <div class="mt-2">
-              <input type="url"
-                     name="website_url"
-                     id="website_url"
-                     value="{{ profile.website_url|display_some }}"
-                     class="input-primary">
+          <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 max-w-4xl">
+            {# Website url #}
+            <div class="col-span-3">
+              <label for="website_url" class="form-label">Website url</label>
+              <div class="mt-2">
+                <input type="url"
+                       name="website_url"
+                       id="website_url"
+                       value="{{ profile.website_url|display_some }}"
+                       class="input-primary">
+              </div>
             </div>
-          </div>
-          {# End website url #}
+            {# End website url #}
 
-          {# Facebook url #}
-          <div class="col-span-3">
-            <label for="facebook_url" class="form-label">Facebook url</label>
-            <div class="mt-2">
-              <input type="url"
-                     name="facebook_url"
-                     id="facebook_url"
-                     value="{{ profile.facebook_url|display_some }}"
-                     class="input-primary">
+            {# Facebook url #}
+            <div class="col-span-3">
+              <label for="facebook_url" class="form-label">Facebook url</label>
+              <div class="mt-2">
+                <input type="url"
+                       name="facebook_url"
+                       id="facebook_url"
+                       value="{{ profile.facebook_url|display_some }}"
+                       class="input-primary">
+              </div>
             </div>
-          </div>
-          {# End facebook url #}
+            {# End facebook url #}
 
-          {# GitHub url #}
-          <div class="col-span-3">
-            <label for="github_url" class="form-label">GitHub url</label>
-            <div class="mt-2">
-              <input type="url"
-                     name="github_url"
-                     id="github_url"
-                     value="{{ profile.github_url|display_some }}"
-                     class="input-primary">
+            {# GitHub url #}
+            <div class="col-span-3">
+              <label for="github_url" class="form-label">GitHub url</label>
+              <div class="mt-2">
+                <input type="url"
+                       name="github_url"
+                       id="github_url"
+                       value="{{ profile.github_url|display_some }}"
+                       class="input-primary">
+              </div>
             </div>
-          </div>
-          {# End github url #}
+            {# End github url #}
 
-          {# LinkedIn url #}
-          <div class="col-span-3">
-            <label for="linkedin_url" class="form-label">LinkedIn url</label>
-            <div class="mt-2">
-              <input type="url"
-                     name="linkedin_url"
-                     id="linkedin_url"
-                     value="{{ profile.linkedin_url|display_some }}"
-                     class="input-primary">
+            {# LinkedIn url #}
+            <div class="col-span-3">
+              <label for="linkedin_url" class="form-label">LinkedIn url</label>
+              <div class="mt-2">
+                <input type="url"
+                       name="linkedin_url"
+                       id="linkedin_url"
+                       value="{{ profile.linkedin_url|display_some }}"
+                       class="input-primary">
+              </div>
             </div>
-          </div>
-          {# End linkedIn url #}
+            {# End linkedIn url #}
 
-          {# Twitter url #}
-          <div class="col-span-3">
-            <label for="twitter_url" class="form-label">Twitter url</label>
-            <div class="mt-2">
-              <input type="url"
-                     name="twitter_url"
-                     id="twitter_url"
-                     value="{{ profile.twitter_url|display_some }}"
-                     class="input-primary">
+            {# Twitter url #}
+            <div class="col-span-3">
+              <label for="twitter_url" class="form-label">Twitter url</label>
+              <div class="mt-2">
+                <input type="url"
+                       name="twitter_url"
+                       id="twitter_url"
+                       value="{{ profile.twitter_url|display_some }}"
+                       class="input-primary">
+              </div>
             </div>
+            {# End twitter url #}
           </div>
-          {# End twitter url #}
         </div>
-      </div>
 
-      {# Education #}
-      <div class="border-b border-gray-900/10 pb-12">
-        <education-section education=" {%- if let Some(education) = profile.education -%}{{ education|json }}{%- endif -%} "></education-section>
-      </div>
-      {# End education #}
+        {# Education #}
+        <div class="border-b border-gray-900/10 pb-12">
+          <education-section education=" {%- if let Some(education) = profile.education -%}{{ education|json }}{%- endif -%} "></education-section>
+        </div>
+        {# End education #}
 
-      {# Experience #}
-      <div class="border-b border-gray-900/10 pb-12">
-        <experience-section experience=" {%- if let Some(experience) = profile.experience -%}{{ experience|json }}{%- endif -%} "></experience-section>
-      </div>
-      {# End experience #}
+        {# Experience #}
+        <div class="border-b border-gray-900/10 pb-12">
+          <experience-section experience=" {%- if let Some(experience) = profile.experience -%}{{ experience|json }}{%- endif -%} "></experience-section>
+        </div>
+        {# End experience #}
 
-      {# Certifications #}
-      <div class="border-b border-gray-900/10 pb-12">
-        <certifications-section certifications=" {%- if let Some(certifications) = profile.certifications -%}{{ certifications|json }}{%- endif -%} "></certifications-section>
-      </div>
-      {# End certifications #}
+        {# Certifications #}
+        <div class="border-b border-gray-900/10 pb-12">
+          <certifications-section certifications=" {%- if let Some(certifications) = profile.certifications -%}{{ certifications|json }}{%- endif -%} "></certifications-section>
+        </div>
+        {# End certifications #}
 
-      {# Projects #}
-      <div class="border-b border-gray-900/10 pb-12">
-        <projects-section projects=" {%- if let Some(projects) = profile.projects -%}{{ projects|json }}{%- endif -%} "></projects-section>
-      </div>
-      {# End projects #}
+        {# Projects #}
+        <div class="border-b border-gray-900/10 pb-12">
+          <projects-section projects=" {%- if let Some(projects) = profile.projects -%}{{ projects|json }}{%- endif -%} "></projects-section>
+        </div>
+        {# End projects #}
 
-      <div class="mt-6">
-        <button type="submit" class="btn-primary">Save</button>
-      </div>
-    </form>
-    {# End jobseeker form #}
+        <div class="mt-6 flex justify-between items-center">
+          {# Preview #}
+          <div class="flex items-center gap-x-6">
+            {# Preview button #}
+            <button id="preview-button"
+                    type="button"
+                    hx-post="/dashboard/job-seeker/profile/preview"
+                    hx-include="#jobseeker-form, #photo_id"
+                    hx-ext="no-empty-vals"
+                    hx-target="#preview-content"
+                    hx-indicator="#preview-spinner"
+                    type="button"
+                    class="group btn-primary-outline">
+              <span class="hidden md:block">Preview</span>
+              <span class="block md:hidden">
+                <div class="svg-icon size-3 icon-eye group-hover:bg-white"></div>
+              </span>
+            </button>
+            {# End preview button #}
+
+            <div id="preview-spinner" class="hx-indicator">{% call macros::spinner(size = 5) %}</div>
+
+            {# Error preview #}
+            <div id="preview-error"
+                 class="hidden fixed top-5 end-5 p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 z-30"
+                 role="alert">
+              <span class="font-medium">Not available preview!</span> Please fill in the required fields.
+            </div>
+            {# End error preview #}
+          </div>
+          {# End preview #}
+
+          {# Save button #}
+          <div>
+            <button type="submit" class="btn-primary">Save</button>
+          </div>
+          {# End save button #}
+        </div>
+      </form>
+      {# End jobseeker form #}
+    </div>
   </div>
-</div>
+
+  {# Preview modal -#}
+  {% include "misc/preview_modal.html" %}
+  {# End preview modal -#}
+
+  <script type="module">
+    import {
+      toggleModalVisibility
+    } from '/static/js/common/common.js';
+
+    // On preview button click, show the preview modal
+    const previewButton = document.getElementById('preview-button');
+    previewButton.addEventListener('htmx:afterRequest', (e) => {
+      if (e.detail.successful) {
+        toggleModalVisibility('preview-modal');
+      } else {
+        // When the preview is not available, show an error message
+        const previewError = document.getElementById('preview-error');
+        previewError.classList.remove('hidden');
+        // Hide the error message after 5 seconds
+        setTimeout(() => {
+          previewError.classList.add('hidden');
+        }, 5000);
+      }
+    });
+  </script>

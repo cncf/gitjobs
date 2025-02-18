@@ -19,12 +19,18 @@ use crate::{
 
 /// Handler that returns the page to preview a profile.
 #[instrument(skip_all, err)]
-pub(crate) async fn preview_page(body: String) -> Result<impl IntoResponse, HandlerError> {
-    let mut profile: JobSeekerProfile = match serde_qs::from_str(&body).map_err(anyhow::Error::new) {
+pub(crate) async fn preview_page(
+    State(form_de): State<serde_qs::Config>,
+    body: String,
+) -> Result<impl IntoResponse, HandlerError> {
+    // Get profile information from body
+    let mut profile: JobSeekerProfile = match form_de.deserialize_str(&body).map_err(anyhow::Error::new) {
         Ok(profile) => profile,
         Err(e) => return Ok((StatusCode::UNPROCESSABLE_ENTITY, e.to_string()).into_response()),
     };
     profile.normalize();
+
+    // Prepare template
     let template = profile::PreviewPage { profile };
 
     Ok(Html(template.render()?).into_response())

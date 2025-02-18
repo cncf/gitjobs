@@ -102,13 +102,13 @@
 
             {# Published date #}
             <td class="px-3 xl:px-5 py-4 whitespace-nowrap w-32">
-              {{ job.published_at|display_some_date_or(DATE_FORMAT, "-") }}
+              {{ job.published_at|display_some_datetime_or(DATE_FORMAT, "-") }}
             </td>
             {# End published date #}
 
             {# Archived date #}
             <td class="hidden xl:table-cell px-3 xl:px-5 py-4 whitespace-nowrap w-32">
-              {{ job.archived_at|display_some_date_or(DATE_FORMAT, "-") }}
+              {{ job.archived_at|display_some_datetime_or(DATE_FORMAT, "-") }}
             </td>
             {# End archived date #}
 

@@ -18,7 +18,7 @@ use crate::{
         error::HandlerError,
         extractors::{JobBoardId, SelectedEmployerIdRequired},
     },
-    templates::dashboard::employer::jobs,
+    templates::dashboard::employer::jobs::{self, Job},
 };
 
 // Pages handlers.
@@ -88,13 +88,21 @@ pub(crate) async fn update_page(
 #[instrument(skip_all, err)]
 pub(crate) async fn add(
     State(db): State<DynDB>,
+    State(form_de): State<serde_qs::Config>,
     SelectedEmployerIdRequired(employer_id): SelectedEmployerIdRequired,
-    Form(mut job): Form<jobs::Job>,
+    body: String,
 ) -> Result<impl IntoResponse, HandlerError> {
+    // Get job information from body
+    let mut job: Job = match form_de.deserialize_str(&body).map_err(anyhow::Error::new) {
+        Ok(profile) => profile,
+        Err(e) => return Ok((StatusCode::UNPROCESSABLE_ENTITY, e.to_string()).into_response()),
+    };
     job.normalize();
+
+    // Add job to database
     db.add_job(&employer_id, &job).await?;
 
-    Ok(StatusCode::CREATED)
+    Ok(StatusCode::CREATED.into_response())
 }
 
 /// Handler that archives a job.
@@ -134,11 +142,19 @@ pub(crate) async fn publish(
 #[instrument(skip_all, err)]
 pub(crate) async fn update(
     State(db): State<DynDB>,
+    State(form_de): State<serde_qs::Config>,
     Path(job_id): Path<Uuid>,
-    Form(mut job): Form<jobs::Job>,
+    body: String,
 ) -> Result<impl IntoResponse, HandlerError> {
+    // Get job information from body
+    let mut job: Job = match form_de.deserialize_str(&body).map_err(anyhow::Error::new) {
+        Ok(profile) => profile,
+        Err(e) => return Ok((StatusCode::UNPROCESSABLE_ENTITY, e.to_string()).into_response()),
+    };
     job.normalize();
+
+    // Update job in database
     db.update_job(&job_id, &job).await?;
 
-    Ok(StatusCode::NO_CONTENT)
+    Ok(StatusCode::NO_CONTENT.into_response())
 }

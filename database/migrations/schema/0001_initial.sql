@@ -207,7 +207,6 @@ create table job (
     archived_at timestamptz,
     benefits text[],
     open_source int check (open_source >= 0 and open_source <= 100),
-    projects jsonb,
     published_at timestamptz,
     qualifications text check (qualifications <> ''),
     responsibilities text check (responsibilities <> ''),

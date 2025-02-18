@@ -79,7 +79,7 @@ impl DBDashBoardJobSeeker for PgDB {
                 open_to_relocation: row.get("open_to_relocation"),
                 open_to_remote: row.get("open_to_remote"),
                 phone: row.get("phone"),
-                photo_id: row.get("avatar_id"),
+                photo_id: row.get("photo_id"),
                 projects: row
                     .get::<_, Option<serde_json::Value>>("projects")
                     .map(|v| serde_json::from_value(v).expect("projects should be valid json")),

@@ -50,6 +50,7 @@ struct StaticFile;
 pub(crate) struct State {
     pub db: DynDB,
     pub image_store: DynImageStore,
+    pub form_de: serde_qs::Config,
 }
 
 /// Setup router.
@@ -59,6 +60,7 @@ pub(crate) fn setup(cfg: &HttpServerConfig, db: DynDB, image_store: DynImageStor
     let state = State {
         db: db.clone(),
         image_store,
+        form_de: serde_qs::Config::new(3, false),
     };
 
     // Setup authentication / authorization layer

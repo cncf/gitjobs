@@ -58,7 +58,9 @@
         <label for="description" class="form-label">
           Description <span class="asterisk">*</span>
         </label>
-        <div class="mt-2">{% call macros::markdown_editor(id = "description", required = true) %}</div>
+        <div class="mt-2">
+          <markdown-editor id="description" required></markdown-editor>
+        </div>
         <p class="form-legend">A short introduction of your company. You can use markdown to format the text.</p>
       </div>
       {# End Description #}

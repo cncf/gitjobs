@@ -93,7 +93,7 @@
             Description <span class="asterisk">*</span>
           </label>
           <div class="mt-2">
-            {% call macros::markdown_editor(id = "description", content = job.description, required = true) %}
+            <markdown-editor id="description" content="{{ job.description }}" required></markdown-editor>
           </div>
           <p class="form-legend">Description of the job. You can use markdown to format the text.</p>
         </div>
@@ -103,7 +103,7 @@
         <div class="col-span-full">
           <label for="responsibilities" class="form-label">Responsibilities</label>
           <div class="mt-2">
-            {% call macros::markdown_editor(id = "responsibilities", content = job.responsibilities|display_some) %}
+            <markdown-editor id="responsibilities" content="{{ job.responsibilities|display_some }}"></markdown-editor>
           </div>
           <p class="form-legend">
             Explain potential candidates what will they do at this job and what their responsibilities will be.
@@ -115,7 +115,7 @@
         <div class="col-span-full">
           <label for="qualifications" class="form-label">Qualifications</label>
           <div class="mt-2">
-            {% call macros::markdown_editor(id = "qualifications", content = job.qualifications|display_some) %}
+            <markdown-editor id="qualifications" content="{{ job.qualifications|display_some }}"></markdown-editor>
           </div>
           <p class="form-legend">Education, experience and skills required for the job.</p>
         </div>
@@ -160,7 +160,7 @@
         <div class="col-span-full">
           <label for="apply_instructions" class="form-label">Apply instructions</label>
           <div class="mt-2">
-            {% call macros::markdown_editor(id = "apply_instructions", content = job.apply_instructions|display_some) %}
+            <markdown-editor id="apply_instructions" content="{{ job.apply_instructions|display_some }}"></markdown-editor>
           </div>
           <p class="form-legend">Additional instructions on how to apply to the job position.</p>
         </div>

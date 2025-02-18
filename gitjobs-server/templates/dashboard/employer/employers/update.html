@@ -65,7 +65,7 @@
           Description <span class="asterisk">*</span>
         </label>
         <div class="mt-2">
-          {% call macros::markdown_editor(id = "description", content = employer.description, required = true) %}
+          <markdown-editor id="description" content="{{ employer.description }}" required></markdown-editor>
         </div>
         <p class="form-legend">A short introduction of your company. You can use markdown to format the text.</p>
       </div>

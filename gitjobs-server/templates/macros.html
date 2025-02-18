@@ -319,43 +319,6 @@
 {% endmacro search_project %}
 {# End search project #}
 
-{# Markdown editor -#}
-{% macro markdown_editor(id, content = "", required = false) %}
-  <div class="relative">
-    <textarea id="{{ id }}"
-              name="{{ id }}"
-              rows="3"
-              class="absolute top-0 left-0 opacity-0"
-              {% if required -%}
-              required
-              {%- endif %}>{{ content }}</textarea>
-  </div>
-
-  <script type="module">
-    const easyMDE = new EasyMDE({
-      element: document.getElementById('{{ id }}'),
-      forceSync: true,
-      hideIcons: ["side-by-side", "fullscreen", "guide", "heading", "image", "code"],
-      showIcons: ["code", "table", "undo", "redo", "horizontal-rule"],
-      initialValue: "{{ content }}",
-      status: false,
-      previewClass: "markdown",
-    });
-
-    // Force the textarea to be displayed if required
-    // This is necessary because the EasyMDE hides the textarea
-    // and the browser will not validate it
-    const onLoadMDE = () => {
-      const textarea = document.getElementById('{{ id }}');
-      if (textarea.required) {
-        textarea.style.display = 'block';
-      }
-    }
-    onLoadMDE();
-  </script>
-{% endmacro markdown_editor %}
-{# End markdown editor -#}
-
 {# Job status badge -#}
 {% macro job_status_badge(status, size = "xs") %}
   {# djlint:off H008 #}

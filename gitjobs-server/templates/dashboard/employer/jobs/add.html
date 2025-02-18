@@ -86,7 +86,9 @@
           <label for="description" class="form-label">
             Description <span class="asterisk">*</span>
           </label>
-          <div class="mt-2">{% call macros::markdown_editor(id = "description", required = true) %}</div>
+          <div class="mt-2">
+            <markdown-editor id="description" required></markdown-editor>
+          </div>
           <p class="form-legend">Description of the job. You can use markdown to format the text.</p>
         </div>
         {# End Job Description #}
@@ -94,7 +96,9 @@
         {# Job responsibilities #}
         <div class="col-span-full">
           <label for="responsibilities" class="form-label">Responsibilities</label>
-          <div class="mt-2">{% call macros::markdown_editor(id = "responsibilities") %}</div>
+          <div class="mt-2">
+            <markdown-editor id="responsibilities"></markdown-editor>
+          </div>
           <p class="form-legend">
             Explain potential candidates what will they do at this job and what their responsibilities will be.
           </p>
@@ -104,7 +108,9 @@
         {# Job qualifications #}
         <div class="col-span-full">
           <label for="qualifications" class="form-label">Qualifications</label>
-          <div class="mt-2">{% call macros::markdown_editor(id = "qualifications") %}</div>
+          <div class="mt-2">
+            <markdown-editor id="qualifications"></markdown-editor>
+          </div>
           <p class="form-legend">Education, experience and skills required for the job.</p>
         </div>
         {# End Job qualifications #}
@@ -127,7 +133,9 @@
         {# Apply instructions #}
         <div class="col-span-full">
           <label for="apply_instructions" class="form-label">Apply instructions</label>
-          <div class="mt-2">{% call macros::markdown_editor(id = "apply_instructions") %}</div>
+          <div class="mt-2">
+            <markdown-editor id="apply_instructions"></markdown-editor>
+          </div>
           <p class="form-legend">Additional instructions on how to apply to the job position.</p>
         </div>
         {# End apply instructions #}

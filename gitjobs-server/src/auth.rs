@@ -12,6 +12,7 @@ use axum_login::{
 use oauth2::{reqwest, TokenResponse};
 use password_auth::verify_password;
 use serde::{Deserialize, Serialize};
+use serde_with::skip_serializing_none;
 use time::Duration;
 use tower_sessions::{cookie::SameSite, CachingSessionStore, Expiry, SessionManagerLayer};
 use tower_sessions_moka_store::MokaStore;
@@ -333,6 +334,7 @@ impl std::fmt::Debug for User {
 }
 
 /// User information summary.
+#[skip_serializing_none]
 #[derive(Clone, Serialize, Deserialize)]
 #[allow(clippy::struct_field_names)]
 pub(crate) struct UserSummary {
@@ -341,7 +343,6 @@ pub(crate) struct UserSummary {
     pub username: String,
 
     pub has_password: Option<bool>,
-    #[serde(skip_serializing)]
     pub password: Option<String>,
 }
 

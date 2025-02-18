@@ -4,6 +4,7 @@
 use chrono::NaiveDate;
 use rinja::Template;
 use serde::{Deserialize, Serialize};
+use serde_with::skip_serializing_none;
 use uuid::Uuid;
 
 use crate::templates::helpers::normalize;
@@ -23,6 +24,7 @@ pub(crate) struct UpdatePage {
 }
 
 /// Job seeker profile.
+#[skip_serializing_none]
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub(crate) struct JobSeekerProfile {
     pub email: String,

@@ -65,13 +65,13 @@ impl DBDashBoardJobSeeker for PgDB {
                 summary: row.get("summary"),
                 certifications: row
                     .get::<_, Option<serde_json::Value>>("certifications")
-                    .map(|v| serde_json::from_value(v).expect("certifications to be valid json")),
+                    .map(|v| serde_json::from_value(v).expect("certifications should be valid json")),
                 education: row
                     .get::<_, Option<serde_json::Value>>("education")
-                    .map(|v| serde_json::from_value(v).expect("education to be valid json")),
+                    .map(|v| serde_json::from_value(v).expect("education should be valid json")),
                 experience: row
                     .get::<_, Option<serde_json::Value>>("experience")
-                    .map(|v| serde_json::from_value(v).expect("experience to be valid json")),
+                    .map(|v| serde_json::from_value(v).expect("experience should be valid json")),
                 facebook_url: row.get("facebook_url"),
                 github_url: row.get("github_url"),
                 linkedin_url: row.get("linkedin_url"),
@@ -82,7 +82,7 @@ impl DBDashBoardJobSeeker for PgDB {
                 photo_id: row.get("avatar_id"),
                 projects: row
                     .get::<_, Option<serde_json::Value>>("projects")
-                    .map(|v| serde_json::from_value(v).expect("projects to be valid json")),
+                    .map(|v| serde_json::from_value(v).expect("projects should be valid json")),
                 skills: row.get("skills"),
                 twitter_url: row.get("twitter_url"),
                 website_url: row.get("website_url"),
@@ -127,9 +127,9 @@ impl DBDashBoardJobSeeker for PgDB {
                 $3::text,
                 $4::boolean,
                 $5::text,
-                $6::jsonb,
-                $7::jsonb,
-                $8::jsonb,
+                nullif($6::jsonb, 'null'::jsonb),
+                nullif($7::jsonb, 'null'::jsonb),
+                nullif($8::jsonb, 'null'::jsonb),
                 $9::text,
                 $10::text,
                 $11::text,
@@ -138,7 +138,7 @@ impl DBDashBoardJobSeeker for PgDB {
                 $14::boolean,
                 $15::text,
                 $16::uuid,
-                $17::jsonb,
+                nullif($17::jsonb, 'null'::jsonb),
                 $18::text[],
                 $19::text,
                 $20::text
@@ -170,9 +170,9 @@ impl DBDashBoardJobSeeker for PgDB {
                 &profile.name,
                 &profile.public,
                 &profile.summary,
-                &serde_json::to_value(&profile.certifications).expect("certifications to be valid json"),
-                &serde_json::to_value(&profile.education).expect("education to be valid json"),
-                &serde_json::to_value(&profile.experience).expect("experience to be valid json"),
+                &serde_json::to_value(&profile.certifications).expect("certifications should be valid json"),
+                &serde_json::to_value(&profile.education).expect("education should be valid json"),
+                &serde_json::to_value(&profile.experience).expect("experience should be valid json"),
                 &profile.facebook_url,
                 &profile.github_url,
                 &profile.linkedin_url,
@@ -181,7 +181,7 @@ impl DBDashBoardJobSeeker for PgDB {
                 &profile.open_to_remote,
                 &profile.phone,
                 &profile.photo_id,
-                &serde_json::to_value(&profile.projects).expect("projects to be valid json"),
+                &serde_json::to_value(&profile.projects).expect("projects should be valid json"),
                 &profile.skills,
                 &profile.twitter_url,
                 &profile.website_url,

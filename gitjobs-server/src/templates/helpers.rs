@@ -46,7 +46,7 @@ pub(crate) fn build_location(
 
 /// Regular expression to match multiple hyphens.
 static MULTIPLE_HYPHENS: LazyLock<Regex> =
-    LazyLock::new(|| Regex::new(r"-{2,}").expect("exprs in MULTIPLE_HYPHENS to be valid"));
+    LazyLock::new(|| Regex::new(r"-{2,}").expect("exprs in MULTIPLE_HYPHENS should be valid"));
 
 /// Normalize string.
 pub(crate) fn normalize(s: &str) -> String {

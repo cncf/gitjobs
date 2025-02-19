@@ -131,9 +131,9 @@ export class MultiSelect extends LitElement {
           </ul>
         </div>
       </div>
-      <select id="${this.id}" name="${this.id}" multiple hidden class="hidden">
-        ${this.selected.map((option) => html`<option value="${option}" selected>${option}</option>`)}
-      </select>
+      ${this.selected.map(
+        (option) => html`<input type="hidden" name="${this.id}[]" value="${option}">${option}</input>`,
+      )}
     `;
   }
 

@@ -1,7 +1,9 @@
 {% import "macros.html" as macros %}
 
 <div class="space-y-12">
-  {% call macros::form_title(title = "Employer profile", description = "This information will be displayed in your jobs postings. You can update it any time.") %}
+  <div>
+    {% call macros::form_title(title = "Employer profile", description = "This information will be displayed in your jobs postings. You can update it any time.") %}
+  </div>
 
   <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 max-w-4xl">
     {# Form image #}

@@ -21,9 +21,13 @@ export class EducationSection extends LitElement {
   }
 
   addId() {
-    this.education = this.education.map((item, index) => {
-      return { ...item, id: index };
-    });
+    if (this.education === null) {
+      this.education = [];
+    } else {
+      this.education = this.education.map((item, index) => {
+        return { ...item, id: index };
+      });
+    }
   }
 
   _getData = () => {

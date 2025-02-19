@@ -119,10 +119,10 @@ export class CertificationsSection extends LitElement {
                 name="description"
                 content="${data.description || ""}"
                 .onChange="${(value) => this._onTextareaChange(value, index)}"
+                mini
                 required
               ></markdown-editor>
             </div>
-            <p class="form-legend">Lorem ipsum.</p>
           </div>
 
           <div class="col-span-3">
@@ -171,20 +171,26 @@ export class CertificationsSection extends LitElement {
 
   render() {
     return html`
-      <div class="flex justify-between items-center">
+      <div class="flex items-center space-x-6">
+        <div class="text-xl lg:text-2xl font-medium text-gray-900">Certifications</div>
         <div>
-          <div class="text-xl lg:text-2xl font-medium text-gray-900">Certifications</div>
-          <p class="mt-1 text-sm/6 text-gray-500">Lorem ipsum</p>
-        </div>
-        <div>
-          <button @click=${this._addCertificationEntry} type="button" class="group btn-primary-outline">
-            <div class="flex items-center space-x-3">
-              <div class="svg-icon size-3 icon-plus group-hover:bg-white"></div>
+          <button
+            @click=${this._addCertificationEntry}
+            type="button"
+            class="group btn-primary-outline btn-mini"
+          >
+            <div class="flex items-center space-x-1">
+              <div class="svg-icon size-2 icon-plus group-hover:bg-white"></div>
               <div>Add</div>
             </div>
           </button>
         </div>
       </div>
+      <p class="mt-1 text-sm/6 text-gray-500">
+        Provide certifications you have earned. You can add additional entries by clicking on the
+        <span class="italic">Add</span> button next to the title. Entries will be displayed in the order
+        provided.
+      </p>
       <div id="education-section">
         ${repeat(
           this.certifications,

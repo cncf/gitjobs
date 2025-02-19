@@ -14,12 +14,18 @@
 
   <div class="flex flex-col space-y-3">
     {# Name #}
-    <div class="uppercase text-2xl font-semibold">{{ profile.name }}</div>
+    <div class="capitalize text-2xl font-semibold">{{ profile.name }}</div>
     {# End name #}
 
     <div class="flex flex-wrap space-x-5">
       {# Email #}
-      {% call main_badge(content = profile.email, icon = "email") %}
+      <a href="mailto:{{ profile.email }}"
+         target="_blank"
+         rel="noopener noreferrer"
+         class="border rounded-full px-4 flex items-center text-gray-600 text-sm/6 space-x-2 cursor-pointer">
+        <div class="svg-icon size-4 icon-email bg-gray-500"></div>
+        <div>{{ profile.email }}</div>
+      </a>
       {# End email #}
 
       {# Phone #}
@@ -79,36 +85,17 @@
 
     <hr class="my-10 border-t border-gray-200">
     <div class="flex flex-col space-y-4">
-      {# Availability #}
-      {% call title(content = "open to") %}
-      <label class="inline-flex items-center">
-        <input type="checkbox"
-               value=""
-               class="sr-only peer"
-               disabled
-               {% if let Some(open_to_remote) = profile.open_to_remote -%}
-               {%- if open_to_remote -%}
-               checked
-               {%- endif -%}
-               {%- endif %}>
-        <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600">
-        </div>
-        <span class="ms-3 text-sm font-medium text-gray-700">Remote</span>
-      </label>
-      <label class="inline-flex items-center">
-        <input type="checkbox"
-               value=""
-               class="sr-only peer"
-               disabled
-               {% if let Some(open_to_relocation) = profile.open_to_relocation -%}
-               {%- if open_to_relocation -%}
-               checked
-               {%- endif -%}
-               {%- endif %}>
-        <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600">
-        </div>
-        <span class="ms-3 text-sm font-medium text-gray-700">Relocation</span>
-      </label>
+      {# Remote #}
+      {% if let Some(open_to_remote) = profile.open_to_remote %}
+        {% call toggle_option(title = "Open to work remotely", status = open_to_remote) %}
+      {% endif %}
+      {# End remote #}
+
+      {# Relocation #}
+      {% if let Some(open_to_relocation) = profile.open_to_relocation %}
+        {% call toggle_option(title = "Open to relocate", status = open_to_relocation) %}
+      {% endif %}
+      {# End remote #}
     </div>
 
     {# Skills #}
@@ -117,7 +104,7 @@
 
       <div>
         {% call title(content = "Skills") %}
-        <div class="text-gray-600 text-xs/6 flex flex-wrap mt-2">
+        <div class="text-gray-600 text-xs/6 flex flex-wrap pt-2">
           {% for skill in skills %}
             <div class="bg-gray-100 px-4 rounded-full inline-block capitalize mb-2 me-2">{{ skill|unnormalize }}</div>
           {% endfor %}
@@ -140,12 +127,14 @@
     {% if let Some(experience) = profile.experience %}
       <hr class="my-10 border-t border-gray-200">
       {% call title(content = "Experience") %}
-      <ol class="relative border-s border-gray-200">
-        {% for exp in experience %}
-          {% let end_date = exp.end_date|display_some_date_or(DATE_FORMAT_2, "Present") %}
-          {% call timeline_item(title = exp.title, entity = exp.company, description = exp.description, start_date = exp.start_date.format(DATE_FORMAT_2), end_date = end_date) %}
-        {% endfor %}
-      </ol>
+      <div class="pt-2">
+        <ol class="relative border-s border-gray-200">
+          {% for exp in experience %}
+            {% let end_date = exp.end_date|display_some_date_or(DATE_FORMAT_2, "Present") %}
+            {% call timeline_item(title = exp.title, entity = exp.company, description = exp.description, start_date = exp.start_date.format(DATE_FORMAT_2), end_date = end_date) %}
+          {% endfor %}
+        </ol>
+      </div>
     {% endif %}
     {# End experience #}
 
@@ -153,11 +142,13 @@
     {% if let Some(education) = profile.education %}
       <hr class="my-10 border-t border-gray-200">
       {% call title(content = "Education") %}
-      <ol class="relative border-s border-gray-200">
-        {% for ed in education %}
-          {% call timeline_item(title = ed.title, entity = ed.educational_institution, description = ed.description, start_date = ed.start_date.format(DATE_FORMAT_2), end_date = ed.end_date.format(DATE_FORMAT_2)) %}
-        {% endfor %}
-      </ol>
+      <div class="pt-2">
+        <ol class="relative border-s border-gray-200">
+          {% for ed in education %}
+            {% call timeline_item(title = ed.title, entity = ed.educational_institution, description = ed.description, start_date = ed.start_date.format(DATE_FORMAT_2), end_date = ed.end_date.format(DATE_FORMAT_2)) %}
+          {% endfor %}
+        </ol>
+      </div>
     {% endif %}
     {# End education #}
 
@@ -165,11 +156,13 @@
     {% if let Some(certifications) = profile.certifications %}
       <hr class="my-10 border-t border-gray-200">
       {% call title(content = "Certifications") %}
-      <ol class="relative border-s border-gray-200">
-        {% for c in certifications %}
-          {% call timeline_item(title = c.title, entity = c.provider, description = c.description, start_date = c.start_date.format(DATE_FORMAT_2), end_date = c.end_date.format(DATE_FORMAT_2)) %}
-        {% endfor %}
-      </ol>
+      <div class="pt-2">
+        <ol class="relative border-s border-gray-200">
+          {% for c in certifications %}
+            {% call timeline_item(title = c.title, entity = c.provider, description = c.description, start_date = c.start_date.format(DATE_FORMAT_2), end_date = c.end_date.format(DATE_FORMAT_2)) %}
+          {% endfor %}
+        </ol>
+      </div>
     {% endif %}
     {# End certifications #}
 
@@ -177,39 +170,42 @@
     {% if let Some(projects) = profile.projects %}
       <hr class="my-10 border-t border-gray-200">
       {% call title(content = "Projects") %}
-      <ol class="items-start sm:flex overflow-x-auto">
-        {% for p in projects %}
-          <li class="relative mb-6 sm:mb-0 min-w-[300px]">
-            {% if projects.len() > 1 %}
-              <div class="flex items-center">
-                <div class="z-10 flex items-center justify-center size-6 bg-gray-200 rounded-full shrink-0">
-                  <div class="svg-icon size-3 icon-project bg-gray-600"></div>
-                </div>
-                <div class="hidden sm:flex w-full bg-gray-200 h-0.5 dark:bg-gray-700"></div>
-              </div>
-            {% endif %}
-            <div class="mt-3 sm:pe-8">
-              <div class="text-lg font-semibold text-gray-900 truncate">{{ p.title }}</div>
-              <div class="text-sm/6 text-gray-500 italic">
-                <a href="{{ p.url }}"
-                   class="truncate"
-                   target="_blank"
-                   rel="noopener noreferrer">{{ p.url }}</a>
-              </div>
-              {% if let Some(source_url) = p.source_url %}
-                <div class="text-sm/6 text-gray-500 italic">
-                  <span class="text-xs text-gray-400 uppercase">Source:</span>
-                  <a href="{{ source_url }}"
-                     class="truncate"
-                     target="_blank"
-                     rel="noopener noreferrer">{{ source_url }}</a>
+      <div class="pt-2">
+        <ol class="items-start sm:flex overflow-x-auto">
+          {% for p in projects %}
+            <li class="relative mb-6 sm:mb-0 min-w-[300px] max-w-[300px]">
+              {% if !projects.is_empty() %}
+                <div class="flex items-center">
+                  <div class="z-10 flex items-center justify-center size-6 bg-gray-200 rounded-full shrink-0">
+                    <div class="svg-icon size-3 icon-project bg-gray-600"></div>
+                  </div>
+                  <div class="hidden sm:flex w-full bg-gray-200 h-0.5 dark:bg-gray-700"></div>
                 </div>
               {% endif %}
-              <div class="text-sm/6 text-gray-600 markdown mt-3">{{ p.description|md_to_html|safe }}</div>
-            </div>
-          </li>
-        {% endfor %}
-      </ol>
+              <div class="mt-3 sm:pe-8">
+                <div class="text-lg font-semibold text-gray-900 truncate">{{ p.title }}</div>
+                <div class="text-sm/6 text-gray-500 italic text-nowrap truncate">
+                  <span class="text-xs text-gray-400 uppercase">Url:</span>
+                  <a href="{{ p.url }}"
+                     class="truncate"
+                     target="_blank"
+                     rel="noopener noreferrer">{{ p.url }}</a>
+                </div>
+                {% if let Some(source_url) = p.source_url %}
+                  <div class="text-sm/6 text-gray-500 italic text-nowrap truncate">
+                    <span class="text-xs text-gray-400 uppercase">Source:</span>
+                    <a href="{{ source_url }}"
+                       class="truncate"
+                       target="_blank"
+                       rel="noopener noreferrer">{{ source_url }}</a>
+                  </div>
+                {% endif %}
+                <div class="text-sm/6 text-gray-600 markdown mt-3">{{ p.description|md_to_html|safe }}</div>
+              </div>
+            </li>
+          {% endfor %}
+        </ol>
+      </div>
     {% endif %}
     {# End projects #}
   </div>
@@ -246,3 +242,16 @@
     <div class="text-sm/6 text-gray-600 markdown">{{ description|md_to_html|safe }}</div>
   </li>
 {% endmacro timeline_item %}
+
+{% macro toggle_option(title, status = false) %}
+  <div class="flex space-x-4 items-center">
+    <div class="w-5">
+      {% if status %}
+        <div class="svg-icon size-3 icon-check bg-gray-700 mx-auto"></div>
+      {% else %}
+        <div class="svg-icon size-4 icon-close bg-gray-700 mx-auto"></div>
+      {% endif %}
+    </div>
+    <div class="text-sm/6">{{ title }}</div>
+  </div>
+{% endmacro toggle_option %}

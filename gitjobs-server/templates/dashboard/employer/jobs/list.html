@@ -66,7 +66,7 @@
       </tr>
     </thead>
     <tbody id="jobs-list">
-      {% if jobs.len() == 0 %}
+      {% if jobs.is_empty() %}
         <tr class="bg-white border-b">
           <td class="px-8 py-20 text-center" colspan="7">
             <div class="text-3xl mb-10">It looks like you haven't created any jobs yet.</div>

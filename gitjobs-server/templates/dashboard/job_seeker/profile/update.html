@@ -3,12 +3,14 @@
 {% let profile = profile.clone().unwrap_or_default() %}
 
 <div class="space-y-12">
-  <div>{% call macros::form_title(title = "Personal details", description = "Lorem ipsum") %}</div>
+  <div>
+    {% call macros::form_title(title = "Profile", description = "This information will be accessible to employers when you apply for a job. If you wish, you can also mark your profile as public and it will be displayed in the site profiles list.") %}
+  </div>
 
   <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 max-w-4xl">
     {# Form image #}
     <div class="col-span-full">
-      {% call macros::images_form(label = "Avatar", name = "photo_id", value = profile.photo_id|display_some) %}
+      {% call macros::images_form(label = "Photo", name = "photo_id", icon = "user", value = profile.photo_id|display_some) %}
     </div>
     {# End form image #}
   </div>
@@ -18,7 +20,8 @@
         hx-put="/dashboard/job-seeker/profile/update"
         hx-ext="no-empty-vals"
         hx-include="[name=photo_id]"
-        hx-trigger="submit">
+        hx-trigger="submit"
+        hx-indicator="#form-spinner">
     <div class="space-y-12">
       <div class="border-b border-gray-900/10 pb-12">
         <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-6 max-w-5xl">
@@ -42,22 +45,6 @@
           </div>
           {# End name #}
 
-          {# Email #}
-          <div class="col-span-3">
-            <label for="email" class="form-label">
-              Email <span class="asterisk">*</span>
-            </label>
-            <div class="mt-2">
-              <input type="email"
-                     name="email"
-                     id="email"
-                     value="{{ profile.email }}"
-                     class="input-primary"
-                     required>
-            </div>
-          </div>
-          {# End email #}
-
           {# Phone #}
           <div class="col-span-3">
             <label for="phone" class="form-label">Phone</label>
@@ -75,11 +62,26 @@
           </div>
           {# End phone #}
 
+          {# Email #}
+          <div class="col-span-3">
+            <label for="email" class="form-label">
+              Email <span class="asterisk">*</span>
+            </label>
+            <div class="mt-2">
+              <input type="email"
+                     name="email"
+                     id="email"
+                     value="{{ profile.email }}"
+                     class="input-primary"
+                     required>
+            </div>
+          </div>
+          {# End email #}
+
           {# Location #}
           <div class="col-span-full lg:col-span-3">
             <label for="ts_query" class="form-label">Location</label>
             {% call macros::location(location_id = profile.location_id|display_some, city = profile.city|display_some, state = profile.state|display_some, country = profile.country|display_some) %}
-            <p class="form-legend">Lorem ipsum</p>
           </div>
           {# End location #}
 
@@ -96,61 +98,57 @@
           {# End Summary #}
 
           {# Skills #}
-          {# TODO - get skills list #}
           <div class="col-span-full">
             <multi-select id="skills" name="Skills" options="{{ skills|json }}"
-            {% if let Some(skills) = profile.skills -%}selected="{{ skills|json }}"{%- endif %} legend="....."></multi-select>
+            {% if let Some(skills) = profile.skills -%}selected="{{ skills|json }}"{%- endif %} legend="Indicate your top skills."></multi-select>
             </div>
             {# End skills #}
 
-            {# Public #}
-            <div class="col-span-2">
-              <div class="form-label">Public</div>
-              <label class="mt-2 inline-flex items-center cursor-pointer">
-                {% call macros::toggle_checkbox(id = "public", checked = profile.public) %}
-                <span class="ms-3 text-sm font-medium text-gray-900">Display in employers listing.</span>
-              </label>
-              <p class="form-legend">Lorem ipsum</p>
-            </div>
-            {# End Public #}
-
             {# Open to relocation #}
-            <div class="col-span-2">
-              <div class="form-label">Relocation</div>
-              <label class="mt-2 inline-flex items-center cursor-pointer">
+            <div class="col-span-full">
+              <label class="inline-flex items-center cursor-pointer">
                 {% call macros::toggle_checkbox(id = "open_to_relocation", checked = profile.open_to_relocation.unwrap_or(false)) %}
-                <span class="ms-3 text-sm font-medium text-gray-900">Open.</span>
+                <span class="ms-3 text-sm font-medium text-gray-900">Open to relocation</span>
               </label>
-              <p class="form-legend">Lorem ipsum</p>
             </div>
             {# End open to relocation #}
 
             {# Open to remote #}
-            <div class="col-span-2">
-              <div class="form-label">Remove</div>
-              <label class="mt-2 inline-flex items-center cursor-pointer">
+            <div class="col-span-full">
+              <label class="inline-flex items-center cursor-pointer">
                 {% call macros::toggle_checkbox(id = "open_to_remote", checked = profile.open_to_remote.unwrap_or(false)) %}
-                <span class="ms-3 text-sm font-medium text-gray-900">Open.</span>
+                <span class="ms-3 text-sm font-medium text-gray-900">Open to remote work</span>
               </label>
-              <p class="form-legend">Lorem ipsum</p>
             </div>
             {# End open to remote #}
+
+            {# Public #}
+            <div class="col-span-full">
+              <label class="inline-flex items-center cursor-pointer">
+                {% call macros::toggle_checkbox(id = "public", checked = profile.public) %}
+                <span class="ms-3 text-sm font-medium text-gray-900">Display profile publicly in the profiles list of the site</span>
+              </label>
+            </div>
+            {# End Public #}
           </div>
         </div>
 
         <div class="border-b border-gray-900/10 pb-12">
-          {% call macros::form_title(title = "Social", description = "Lorem ipsum") %}
+          {% call macros::form_title(title = "Links", description = "Some links where employers can find out more about you and your work.") %}
 
-          <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 max-w-4xl">
+          <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 max-w-5xl">
             {# Website url #}
             <div class="col-span-3">
               <label for="website_url" class="form-label">Website url</label>
-              <div class="mt-2">
+              <div class="mt-2 relative">
+                <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
+                  <div class="svg-icon size-4 icon-link bg-gray-300"></div>
+                </div>
                 <input type="url"
                        name="website_url"
                        id="website_url"
                        value="{{ profile.website_url|display_some }}"
-                       class="input-primary">
+                       class="input-primary ps-10">
               </div>
             </div>
             {# End website url #}
@@ -158,12 +156,15 @@
             {# Facebook url #}
             <div class="col-span-3">
               <label for="facebook_url" class="form-label">Facebook url</label>
-              <div class="mt-2">
+              <div class="mt-2 relative">
+                <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
+                  <div class="svg-icon size-4 icon-facebook bg-gray-300"></div>
+                </div>
                 <input type="url"
                        name="facebook_url"
                        id="facebook_url"
                        value="{{ profile.facebook_url|display_some }}"
-                       class="input-primary">
+                       class="input-primary ps-10">
               </div>
             </div>
             {# End facebook url #}
@@ -171,12 +172,15 @@
             {# GitHub url #}
             <div class="col-span-3">
               <label for="github_url" class="form-label">GitHub url</label>
-              <div class="mt-2">
+              <div class="mt-2 relative">
+                <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
+                  <div class="svg-icon size-4 icon-github bg-gray-300"></div>
+                </div>
                 <input type="url"
                        name="github_url"
                        id="github_url"
                        value="{{ profile.github_url|display_some }}"
-                       class="input-primary">
+                       class="input-primary ps-10">
               </div>
             </div>
             {# End github url #}
@@ -184,12 +188,15 @@
             {# LinkedIn url #}
             <div class="col-span-3">
               <label for="linkedin_url" class="form-label">LinkedIn url</label>
-              <div class="mt-2">
+              <div class="mt-2 relative">
+                <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
+                  <div class="svg-icon size-4 icon-linkedin bg-gray-300"></div>
+                </div>
                 <input type="url"
                        name="linkedin_url"
                        id="linkedin_url"
                        value="{{ profile.linkedin_url|display_some }}"
-                       class="input-primary">
+                       class="input-primary ps-10">
               </div>
             </div>
             {# End linkedIn url #}
@@ -197,29 +204,32 @@
             {# Twitter url #}
             <div class="col-span-3">
               <label for="twitter_url" class="form-label">Twitter url</label>
-              <div class="mt-2">
+              <div class="mt-2 relative">
+                <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
+                  <div class="svg-icon size-4 icon-twitter bg-gray-300"></div>
+                </div>
                 <input type="url"
                        name="twitter_url"
                        id="twitter_url"
                        value="{{ profile.twitter_url|display_some }}"
-                       class="input-primary">
+                       class="input-primary ps-10">
               </div>
             </div>
             {# End twitter url #}
           </div>
         </div>
 
-        {# Education #}
-        <div class="border-b border-gray-900/10 pb-12">
-          <education-section education=" {%- if let Some(education) = profile.education -%}{{ education|json }}{%- endif -%} "></education-section>
-        </div>
-        {# End education #}
-
         {# Experience #}
         <div class="border-b border-gray-900/10 pb-12">
           <experience-section experience=" {%- if let Some(experience) = profile.experience -%}{{ experience|json }}{%- endif -%} "></experience-section>
         </div>
         {# End experience #}
+
+        {# Education #}
+        <div class="border-b border-gray-900/10 pb-12">
+          <education-section education=" {%- if let Some(education) = profile.education -%}{{ education|json }}{%- endif -%} "></education-section>
+        </div>
+        {# End education #}
 
         {# Certifications #}
         <div class="border-b border-gray-900/10 pb-12">
@@ -253,7 +263,7 @@
             </button>
             {# End preview button #}
 
-            <div id="preview-spinner" class="hx-indicator">{% call macros::spinner(size = 5) %}</div>
+            <div id="preview-spinner" class="hx-spinner">{% call macros::spinner(size = 5) %}</div>
 
             {# Error preview #}
             <div id="preview-error"
@@ -271,6 +281,7 @@
           </div>
           {# End save button #}
         </div>
+        <div id="form-spinner"></div>
       </form>
       {# End jobseeker form #}
     </div>

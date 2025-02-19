@@ -12,7 +12,6 @@ use crate::templates::{auth, dashboard::job_seeker, filters, PageId};
 #[allow(clippy::struct_field_names)]
 pub(crate) struct Page {
     pub content: Content,
-    #[allow(dead_code)]
     pub page_id: PageId,
     pub logged_in: bool,
 

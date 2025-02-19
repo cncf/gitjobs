@@ -46,7 +46,7 @@
     <input type="hidden" name="city" id="city" value="{{ city }}">
     <input type="hidden" name="state" id="state" value="{{ state }}">
     <input type="hidden" name="country" id="country" value="{{ country }}">
-    <div id="location-spinner" class="hx-indicator absolute end-10 top-1">{% call spinner(size = 5) %}</div>
+    <div id="location-spinner" class="hx-spinner absolute end-10 top-1">{% call spinner(size = 5) %}</div>
     <div class="absolute end-1.5 top-1.5 peer-placeholder-shown:hidden">
       <button id="clean-location" type="button" class="mt-[2px]">
         <div class="svg-icon size-5 bg-gray-400 hover:bg-gray-700 icon-close"></div>
@@ -167,7 +167,7 @@
            name="member_logo_url"
            id="member_logo_url"
            value="{{ member_logo_url }}">
-    <div id="member-spinner" class="hx-indicator absolute end-10 top-1">{% call spinner(size = 5) %}</div>
+    <div id="member-spinner" class="hx-spinner absolute end-10 top-1">{% call spinner(size = 5) %}</div>
     <div class="absolute end-1.5 top-1.5 peer-placeholder-shown:hidden">
       <button id="clean-member" type="button" class="mt-[2px]">
         <div class="svg-icon size-5 bg-gray-400 hover:bg-gray-700 icon-close"></div>
@@ -260,7 +260,7 @@
            autocapitalize="off"
            spellcheck="false"
            autocomplete="off">
-    <div id="project-spinner" class="hx-indicator absolute end-10 top-1">{% call spinner(size = 5) %}</div>
+    <div id="project-spinner" class="hx-spinner absolute end-10 top-1">{% call spinner(size = 5) %}</div>
     <div class="absolute end-1.5 top-1.5 peer-placeholder-shown:hidden">
       <button id="clean-project" type="button" class="mt-[2px]">
         <div class="svg-icon size-5 bg-gray-400 hover:bg-gray-700 icon-close"></div>
@@ -501,7 +501,7 @@
     <label for="{{ name }}" class="form-label">{{ label }}</label>
     <div class="mt-3 flex items-stretch gap-x-5">
       <div class="relative flex items-center size-24 min-w-24 bg-gray-200 rounded-xl overflow-hidden">
-        <div id="images-spinner" class="hx-indicator absolute z-10 start-5 top-5">
+        <div id="images-spinner" class="hx-spinner absolute z-10 start-5 top-5">
           {% call spinner(size = 14, bg_color = "gray-300") %}
         </div>
 

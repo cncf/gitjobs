@@ -7,6 +7,7 @@ export class MarkdownEditor extends LitElement {
     content: { type: String },
     required: { type: Boolean },
     onChange: { type: Function },
+    mini: { type: Boolean },
   };
 
   textareaRef = createRef();
@@ -18,6 +19,7 @@ export class MarkdownEditor extends LitElement {
     this.content = "";
     this.required = false;
     this.onChange = undefined;
+    this.mini = false;
   }
 
   createRenderRoot() {
@@ -56,18 +58,13 @@ export class MarkdownEditor extends LitElement {
 
   render() {
     return html`
-      <div class="relative">
+      <div class="relative text-sm/6 ${this.mini ? "mini" : ""}">
         <textarea
           ${ref(this.textareaRef)}
           name="${this.id}"
-          data-name="${this.name}"
-          rows="3"
-          class="absolute top-0 left-0 opacity-0"
+          class="absolute top-0 left-0 opacity-0 p-0"
           ?required=${this.required}
-        >
-          ${this.content}
-        </textarea
-        >
+        ></textarea>
       </div>
     `;
   }

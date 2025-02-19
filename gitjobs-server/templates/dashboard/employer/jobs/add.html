@@ -4,7 +4,8 @@
 <form id="jobs-form"
       hx-post="/dashboard/employer/jobs/add"
       hx-ext="no-empty-vals"
-      hx-trigger="submit">
+      hx-trigger="submit"
+      hx-indicator="#form-spinner">
   <div class="space-y-12">
     <div class="border-b border-gray-900/10 pb-12">
       {% call macros::form_title(title = "Job details", description = "Please add as many details about this job as possible. You can save it as a draft and come back later to finish it.") %}
@@ -293,7 +294,7 @@
 
         {# Projects #}
         <div class="col-span-full lg:col-span-3">
-          <label for="project" class="form-label">CNCF Projects</label>
+          <label for="project" class="form-label">CNCF projects</label>
           {% call macros::search_project() %}
           <p class="form-legend">
             If the job position involves contributing to any CNCF projects, please list them here.
@@ -325,7 +326,7 @@
         </button>
         {# End preview button #}
 
-        <div id="preview-spinner" class="hx-indicator">{% call macros::spinner(size = 5) %}</div>
+        <div id="preview-spinner" class="hx-spinner">{% call macros::spinner(size = 5) %}</div>
 
         {# Error preview #}
         <div id="preview-error"
@@ -337,7 +338,7 @@
       </div>
       {# End preview #}
 
-      <div class="flex items-center justify-end gap-x-6">
+      <div class="flex items-center justify-end gap-x-6 relative">
         {# Cancel button #}
         <a href="/dashboard/employer?tab=jobs" class="btn-primary-outline">Cancel</a>
         {# End cancel button #}
@@ -349,6 +350,8 @@
         {# Publish button #}
         <button id="publish-job" type="button" class="btn-primary">Publish</button>
         {# End publish button #}
+
+        <div id="form-spinner"></div>
       </div>
     </div>
   </div>

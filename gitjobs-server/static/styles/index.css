@@ -13,7 +13,7 @@ body {
   font-size: inherit;
 }
 
-.markdown p, .markdown ul, .markdown ol, .markdown blockquote, .markdown pre, .markdown table {
+.markdown p:not(:last-child), .markdown ul:not(:last-child), .markdown ol:not(:last-child), .markdown blockquote:not(:last-child), .markdown pre:not(:last-child), .markdown table:not(:last-child) {
   margin-bottom: 0.5rem;
 }
 /* End markdown */
@@ -21,8 +21,7 @@ body {
 /* Select styles */
 .select {
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-  background-position-x: right 8px;
-  background-position-y: 50%;
+  background-position: right 0.5rem center;
   background-repeat: no-repeat;
   background-size: 21px 21px;
 }
@@ -33,6 +32,11 @@ body {
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
   mask-position: center;
+}
+
+.icon-applications {
+  mask-image: url('/static/images/icons/applications.svg');
+  -webkit-mask-image: url('/static/images/icons/applications.svg')
 }
 
 .icon-archive {
@@ -257,13 +261,13 @@ body {
 /* End icons */
 
 /* Spinner */
-.hx-indicator {
-  display:none;
+.hx-spinner {
+  display: none;
 }
-.htmx-request .hx-indicator {
+.htmx-request .hx-spinner {
   display: inline;
 }
-.htmx-request.hx-indicator {
+.htmx-request.hx-spinner {
   display: inline;
 }
 /* End spinner */
@@ -285,6 +289,15 @@ body {
 .EasyMDEContainer .CodeMirror-scroll {
   max-height: 180px;
   min-height: 180px;
+}
+
+.mini .EasyMDEContainer .CodeMirror {
+  height: 140px;
+}
+
+.mini .EasyMDEContainer .CodeMirror-scroll {
+  max-height: 100px;
+  min-height: 100px;
 }
 
 .EasyMDEContainer button {

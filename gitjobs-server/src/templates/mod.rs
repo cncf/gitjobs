@@ -11,7 +11,7 @@ pub(crate) mod jobboard;
 pub(crate) mod misc;
 
 /// Identifier for a page.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub(crate) enum PageId {
     EmployerDashboard,

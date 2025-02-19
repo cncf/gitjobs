@@ -1,7 +1,7 @@
 {% import "macros.html" as macros %}
 
 <div class="bg-white divide-y divide-gray-100 rounded-lg shadow w-full border mt-1">
-  {% if projects.len() == 0 %}
+  {% if projects.is_empty() %}
     <div class="px-8 py-4 text-sm/6 text-gray-600 italic">No projects found</div>
   {% else %}
     <ul class="text-sm text-gray-700 overflow-auto max-h-[180px]">

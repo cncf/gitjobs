@@ -21,7 +21,6 @@ pub(crate) struct Page {
     pub content: Content,
     pub employers: Vec<employer::employers::EmployerSummary>,
     pub logged_in: bool,
-    #[allow(dead_code)]
     pub page_id: PageId,
 
     pub name: Option<String>,
@@ -42,11 +41,6 @@ impl Content {
     /// Check if the content is the account page.
     fn is_account(&self) -> bool {
         matches!(self, Content::Account(_))
-    }
-
-    /// Check if the content is the employer initial setup page.
-    fn is_employer_initial_setup(&self) -> bool {
-        matches!(self, Content::EmployerInitialSetup(_))
     }
 
     /// Check if the content is the jobs page.

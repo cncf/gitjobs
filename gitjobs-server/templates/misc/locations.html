@@ -1,6 +1,6 @@
 <div class="bg-white divide-y divide-gray-100 rounded-lg shadow w-full border mt-1">
-  {% if locations.len() == 0 %}
-    <div class="p-8 text-sm text-gray-600 italic">No locations found</div>
+  {% if locations.is_empty() %}
+    <div class="px-8 py-4 text-sm/6 text-gray-600 italic">No locations found</div>
   {% else %}
     <ul class="py-2 text-sm text-gray-700 overflow-auto max-h-[180px]">
       {% for l in locations %}

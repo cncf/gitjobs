@@ -141,7 +141,7 @@
         encodeParameters: (xhr, parameters, elt) => {
           // Remove empty values from the parameters
           for (const key of [...parameters.keys()]) {
-            if (parameters.get(key) === "") {
+            if (parameters.get(key).trim() === "") {
               parameters.delete(key);
             }
           }

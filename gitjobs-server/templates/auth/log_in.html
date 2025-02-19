@@ -57,7 +57,7 @@
       </form>
 
       {# Messages #}
-      {% if messages.len() > 0 %}
+      {% if !messages.is_empty() %}
         <div class="p-4 mt-10 text-md max-w-sm mx-auto text-red-800 rounded-lg bg-red-50"
              role="alert">
           {% for message in messages %}<p>{{ message }}</p>{% endfor %}

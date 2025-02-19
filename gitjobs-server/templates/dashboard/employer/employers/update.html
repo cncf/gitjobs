@@ -18,7 +18,8 @@
         hx-put="/dashboard/employer/employers/update"
         hx-ext="no-empty-vals"
         hx-include="[name=logo_id]"
-        hx-trigger="submit">
+        hx-trigger="submit"
+        hx-indicator="#form-spinner">
     <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 max-w-4xl">
       {# Company name #}
       <div class="col-span-3">
@@ -45,10 +46,10 @@
 
       {# Member #}
       <div class="col-span-full">
-        <label for="member" class="form-label">Member</label>
+        <label for="member" class="form-label">CNCF member</label>
         {% call macros::search_member(member_id = employer.member_id|display_some, member_name = employer.member_name|display_some, member_level = employer.member_level|display_some, member_logo_url = employer.member_logo_url|display_some) %}
         <p class="form-legend">
-          If your company is a member of the CNCF please select the corresponding member entry. Jobs posted by members fill be featured across the site. False membership claims may lead to the suspension of the employer and associated user accounts.
+          If your company is a member of the CNCF please select the corresponding member entry. Jobs posted by members will be featured across the site. False membership claims may lead to the suspension of the employer and associated user accounts.
         </p>
         <div id="selected-member" class="flex space-x-5">
           {% if let Some(member_id) = employer.member_id %}
@@ -126,11 +127,18 @@
       {# End Public #}
     </div>
 
-    {# Submit employer form button #}
-    <div class="mt-12 flex justify-end items-center border-t border-gray-900/10 pt-6">
-      <button type="submit" class="btn-primary">Save</button>
+    <div class="mt-12 flex items-center justify-end gap-x-6 border-t border-gray-900/10 pt-6">
+      {# Cancel button #}
+      <a href="/dashboard/employer?tab=profile" class="btn-primary-outline">Cancel</a>
+      {# End cancel button #}
+
+      <div class="relative">
+        <div id="form-spinner"></div>
+        {# Submit employer form button #}
+        <button type="submit" class="btn-primary">Save</button>
+        {# End submit employer form button #}
+      </div>
     </div>
-    {# End submit employer form button #}
   </form>
   {# End employer form #}
 </div>

@@ -4,13 +4,16 @@
 use rinja::Template;
 use serde::{Deserialize, Serialize};
 
-use crate::templates::{auth, dashboard::job_seeker, filters};
+use crate::templates::{auth, dashboard::job_seeker, filters, CurrentPage};
 
 /// Home page template.
 #[derive(Debug, Clone, Template)]
 #[template(path = "dashboard/job_seeker/home.html")]
+#[allow(clippy::struct_field_names)]
 pub(crate) struct Page {
     pub content: Content,
+    #[allow(dead_code)]
+    pub current_page: CurrentPage,
     pub logged_in: bool,
 
     pub name: Option<String>,

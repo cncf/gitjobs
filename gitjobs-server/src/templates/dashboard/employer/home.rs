@@ -10,13 +10,17 @@ use crate::templates::{
     dashboard::employer,
     filters,
     helpers::{build_image_url, find_employer},
+    CurrentPage,
 };
 
 /// Home page template.
 #[derive(Debug, Clone, Template)]
 #[template(path = "dashboard/employer/home.html")]
+#[allow(clippy::struct_field_names)]
 pub(crate) struct Page {
     pub content: Content,
+    #[allow(dead_code)]
+    pub current_page: CurrentPage,
     pub employers: Vec<employer::employers::EmployerSummary>,
     pub logged_in: bool,
 

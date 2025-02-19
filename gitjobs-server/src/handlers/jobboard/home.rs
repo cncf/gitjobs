@@ -1,4 +1,4 @@
-//! This module defines the HTTP handlers for the jobs page.
+//! This module defines the HTTP handlers for the job board home page.
 
 use anyhow::Result;
 use axum::{
@@ -11,14 +11,19 @@ use tracing::instrument;
 use crate::{
     db::DynDB,
     handlers::{error::HandlerError, extractors::JobBoardId},
-    templates::jobboard::jobs::Page,
+    templates::{jobboard::home::Page, CurrentPage},
 };
 
-/// Handler that returns the jobs page.
+/// Handler that returns the home page.
 #[instrument(skip_all, err)]
 pub(crate) async fn page(
     State(_db): State<DynDB>,
     JobBoardId(_job_board_id): JobBoardId,
 ) -> Result<impl IntoResponse, HandlerError> {
-    Ok(Html(Page {}.render()?))
+    Ok(Html(
+        Page {
+            current_page: CurrentPage::JobBoard,
+        }
+        .render()?,
+    ))
 }

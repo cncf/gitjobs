@@ -4,12 +4,16 @@ use axum_messages::Message;
 use rinja::Template;
 use serde::{Deserialize, Serialize};
 
-use crate::{auth::UserSummary, templates::filters};
+use crate::{
+    auth::UserSummary,
+    templates::{filters, CurrentPage},
+};
 
 /// Log in page.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
 #[template(path = "auth/log_in.html")]
 pub(crate) struct LogInPage {
+    pub current_page: CurrentPage,
     pub logged_in: bool,
     pub messages: Vec<Message>,
 
@@ -22,6 +26,7 @@ pub(crate) struct LogInPage {
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
 #[template(path = "auth/sign_up.html")]
 pub(crate) struct SignUpPage {
+    pub current_page: CurrentPage,
     pub logged_in: bool,
 
     pub name: Option<String>,

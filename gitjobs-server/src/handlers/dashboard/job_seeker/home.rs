@@ -22,6 +22,7 @@ use crate::{
             home::{self, Content, Tab},
             profile,
         },
+        CurrentPage,
     },
 };
 
@@ -60,6 +61,7 @@ pub(crate) async fn page(
     // Prepare template
     let template = home::Page {
         content,
+        current_page: CurrentPage::JobSeekerDashboard,
         logged_in: true,
         name: Some(user.name),
         username: Some(user.username),

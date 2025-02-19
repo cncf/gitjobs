@@ -83,6 +83,10 @@ export class EducationSection extends LitElement {
                 name="education[${index}][title]"
                 class="input-primary"
                 value="${data.title || ""}"
+                autocomplete="off"
+                autocorrect="off"
+                autocapitalize="off"
+                spellcheck="false"
                 required
               />
             </div>
@@ -98,6 +102,10 @@ export class EducationSection extends LitElement {
                 name="education[${index}][educational_institution]"
                 class="input-primary"
                 value="${data.educational_institution || ""}"
+                autocomplete="off"
+                autocorrect="off"
+                autocapitalize="off"
+                spellcheck="false"
                 required
               />
             </div>

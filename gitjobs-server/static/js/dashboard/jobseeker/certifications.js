@@ -83,6 +83,10 @@ export class CertificationsSection extends LitElement {
                 name="certifications[${index}][title]"
                 class="input-primary"
                 value="${data.title || ""}"
+                autocomplete="off"
+                autocorrect="off"
+                autocapitalize="off"
+                spellcheck="false"
                 required
               />
             </div>
@@ -98,6 +102,10 @@ export class CertificationsSection extends LitElement {
                 name="certifications[${index}][provider]"
                 class="input-primary"
                 value="${data.provider || ""}"
+                autocomplete="off"
+                autocorrect="off"
+                autocapitalize="off"
+                spellcheck="false"
                 required
               />
             </div>

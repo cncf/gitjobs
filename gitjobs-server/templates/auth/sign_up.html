@@ -32,7 +32,15 @@
               Name <span class="asterisk">*</span>
             </label>
             <div class="mt-2">
-              <input id="name" name="name" type="text" class="input-primary" required>
+              <input id="name"
+                     name="name"
+                     type="text"
+                     class="input-primary"
+                     autocomplete="off"
+                     autocorrect="off"
+                     autocapitalize="off"
+                     spellcheck="false"
+                     required>
             </div>
           </div>
           {# End name #}
@@ -58,6 +66,10 @@
                      name="username"
                      type="text"
                      class="input-primary"
+                     autocomplete="off"
+                     autocorrect="off"
+                     autocapitalize="off"
+                     spellcheck="false"
                      required>
             </div>
           </div>
@@ -88,6 +100,7 @@
                      id="password_confirmation"
                      name="password_confirmation"
                      class="input-primary"
+                     oninvalid="this.setCustomValidity('Passwords do not match')"
                      pattern=""
                      required>
             </div>
@@ -109,7 +122,7 @@
         <button type="submit" class="btn-primary w-full mt-10">Submit</button>
 
         {# Log in link #}
-        <div class="mt-5 mb-1 text-sm text-gray-600">
+        <div class="mt-5 text-sm text-gray-600">
           Already have an account? <a href="/log-in{%- if let Some(next_url) = next_url -%}?next_url={{ next_url }}{%- endif -%}"
     class="text-primary-700 hover:text-primary-900">Sign In</a>
         </div>

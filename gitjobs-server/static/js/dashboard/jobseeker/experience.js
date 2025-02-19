@@ -83,6 +83,10 @@ export class ExperienceSection extends LitElement {
                 name="experience[${index}][title]"
                 class="input-primary"
                 value="${data.title || ""}"
+                autocomplete="off"
+                autocorrect="off"
+                autocapitalize="off"
+                spellcheck="false"
                 required
               />
             </div>
@@ -98,6 +102,10 @@ export class ExperienceSection extends LitElement {
                 name="experience[${index}][company]"
                 class="input-primary"
                 value="${data.company || ""}"
+                autocomplete="off"
+                autocorrect="off"
+                autocapitalize="off"
+                spellcheck="false"
                 required
               />
             </div>

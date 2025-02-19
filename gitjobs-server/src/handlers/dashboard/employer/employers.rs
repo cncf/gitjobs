@@ -91,5 +91,5 @@ pub(crate) async fn update(
 ) -> Result<impl IntoResponse, HandlerError> {
     db.update_employer(&employer_id, &employer).await?;
 
-    Ok(StatusCode::NO_CONTENT)
+    Ok((StatusCode::NO_CONTENT, [("HX-Refresh", "true")]))
 }

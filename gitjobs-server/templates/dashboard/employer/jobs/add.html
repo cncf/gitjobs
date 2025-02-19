@@ -16,7 +16,15 @@
             Title <span class="asterisk">*</span>
           </label>
           <div class="mt-2">
-            <input type="text" name="title" id="title" class="input-primary" required>
+            <input type="text"
+                   name="title"
+                   id="title"
+                   class="input-primary"
+                   autocomplete="off"
+                   autocorrect="off"
+                   autocapitalize="off"
+                   spellcheck="false"
+                   required>
           </div>
           <p class="form-legend">Job position (e.g. Backend engineer).</p>
         </div>
@@ -120,15 +128,6 @@
           <multi-select id="skills" name="Skills" options="{{ skills|json }}" legend="Relevant skills for this job position."></multi-select>
         </div>
         {# End job skills #}
-
-        {# Projects #}
-        <div class="col-span-full lg:col-span-3">
-          <label for="project" class="form-label">Projects</label>
-          {% call macros::search_project() %}
-          <p class="form-legend">Lorem ipsum.</p>
-          <div id="selected-projects" class="flex space-x-5"></div>
-        </div>
-        {# End projects #}
 
         {# Apply instructions #}
         <div class="col-span-full">
@@ -291,6 +290,17 @@
           </p>
         </div>
         {# End Upstream commitment #}
+
+        {# Projects #}
+        <div class="col-span-full lg:col-span-3">
+          <label for="project" class="form-label">CNCF Projects</label>
+          {% call macros::search_project() %}
+          <p class="form-legend">
+            If the job position involves contributing to any CNCF projects, please list them here.
+          </p>
+          <div id="selected-projects" class="flex space-x-5"></div>
+        </div>
+        {# End projects #}
       </div>
     </div>
     {# End Open Source #}

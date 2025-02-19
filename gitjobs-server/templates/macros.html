@@ -32,6 +32,10 @@
            value="{{ value }}"
            class="input-primary peer ps-10"
            placeholder="Search location"
+           autocomplete="off"
+           autocorrect="off"
+           autocapitalize="off"
+           spellcheck="false"
            {% if required %}required{% endif %}>
     <input type="hidden"
            name="location_id"
@@ -145,6 +149,10 @@
            value=""
            class="input-primary peer ps-10"
            placeholder="Search member"
+           autocomplete="off"
+           autocorrect="off"
+           autocapitalize="off"
+           spellcheck="false"
            autocomplete="off">
     <input type="hidden" name="member_id" id="member_id" value="{{ member_id }}">
     <input type="hidden"
@@ -247,6 +255,10 @@
            value=""
            class="input-primary peer ps-10"
            placeholder="Search project"
+           autocomplete="off"
+           autocorrect="off"
+           autocapitalize="off"
+           spellcheck="false"
            autocomplete="off">
     <div id="project-spinner" class="hx-indicator absolute end-10 top-1">{% call spinner(size = 5) %}</div>
     <div class="absolute end-1.5 top-1.5 peer-placeholder-shown:hidden">
@@ -324,7 +336,7 @@
   {# djlint:off H008 #}
   {% match status %}
   {% when JobStatus::Archived %}
-  <span class='bg-red-100 text-red-800 text-{{ size }} {%- if size == "xs" %} px-2.5 py-0.5 {%- else %} px-3 py-1 {%- endif %} rounded-full capitalize tracking-wide'>{{ status }}</span>
+  <span class='bg-orange-100 text-orange-800 text-{{ size }} {%- if size == "xs" %} px-2.5 py-0.5 {%- else %} px-3 py-1 {%- endif %} rounded-full capitalize tracking-wide'>{{ status }}</span>
   {% when JobStatus::Draft %}
   <span class='bg-blue-100 text-blue-800 text-{{ size }} {%- if size == "xs" %} px-2.5 py-0.5 {%- else %} px-3 py-1 {%- endif %} rounded-full capitalize tracking-wide'>{{ status }}</span>
   {% when JobStatus::Published %}

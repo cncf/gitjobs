@@ -12,13 +12,16 @@
       <div class="items-center justify-between hidden md:w-full md:flex">
         <ul class="flex flex-col p-0 font-medium md:space-x-5 md:flex-row">
           <li>
-            <a href="#" class="block p-2 text-gray-900 hover:text-primary-500">Employers</a>
+            <button class="block p-2 text-gray-900 hover:text-primary-500"
+                    title="Coming soon!">Employes</button>
           </li>
           <li>
-            <a href="#" class="block p-2 text-gray-900 hover:text-primary-500">Profile</a>
+            <button class="block p-2 text-gray-900 hover:text-primary-500"
+                    title="Coming soon!">Profiles</button>
           </li>
           <li>
-            <a href="#" class="block p-2 text-gray-900 hover:text-primary-500">About</a>
+            <button class="block p-2 text-gray-900 hover:text-primary-500"
+                    title="Coming soon!">About</button>
           </li>
         </ul>
       </div>
@@ -45,7 +48,7 @@
 
           {# Dropdown user #}
           <div id="dropdown-user"
-               class="dropdown absolute hidden z-10 end-0 top-10 w-[200px] bg-white divide-y divide-gray-100 rounded-lg shadow border">
+               class="dropdown absolute hidden z-10 end-0 top-10 w-[250px] bg-white divide-y divide-gray-100 rounded-lg shadow border">
             <ul class="text-gray-700">
               <li>
                 <div class="flex flex-col px-4 py-2">
@@ -77,6 +80,15 @@
                   <div class="flex items-center">
                     <div class="svg-icon size-4 icon-user bg-gray-600"></div>
                     <div class="ms-2 text-xs/6">Account</div>
+                  </div>
+                </a>
+              </li>
+              <li>
+                <a href="/log-out"
+                   class="inline-block w-full text-start px-4 py-2 hover:bg-gray-100">
+                  <div class="flex items-center">
+                    <div class="svg-icon size-4 icon-logout bg-gray-600"></div>
+                    <div class="ms-2 text-xs/6">Log out</div>
                   </div>
                 </a>
               </li>

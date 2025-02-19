@@ -91,6 +91,10 @@ export class MultiSelect extends LitElement {
               @focus=${() => (this.visibleDropdown = true)}
               .value="${this.enteredValue}"
               placeholder="Type to search"
+              autocomplete="off"
+              autocorrect="off"
+              autocapitalize="off"
+              spellcheck="false"
               class="flex flex-grow p-0 ps-1.5 rounded-md text-gray-900 max-w-full min-w-[80px] border-0 focus:ring-0 sm:text-sm/6"
             />
           </div>

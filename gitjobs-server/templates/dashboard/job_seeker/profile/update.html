@@ -33,6 +33,10 @@
                      id="name"
                      value="{{ profile.name }}"
                      class="input-primary"
+                     autocomplete="off"
+                     autocorrect="off"
+                     autocapitalize="off"
+                     spellcheck="false"
                      required>
             </div>
           </div>
@@ -62,7 +66,11 @@
                      name="phone"
                      id="phone"
                      value="{{ profile.phone|display_some }}"
-                     class="input-primary">
+                     class="input-primary"
+                     autocomplete="off"
+                     autocorrect="off"
+                     autocapitalize="off"
+                     spellcheck="false">
             </div>
           </div>
           {# End phone #}

@@ -6,10 +6,10 @@
       hx-trigger="submit">
   <div class="space-y-12">
     <div>
-      {% call macros::form_title(title = "Account", description = "Lorem ipsum") %}
+      {% call macros::form_title(title = "Account", description = "You can update your personal user account details here.") %}
       <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-6 max-w-5xl">
         {# Name #}
-        <div class="col-span-4">
+        <div class="col-span-3">
           <label for="name" class="form-label">
             Name <span class="asterisk">*</span>
           </label>
@@ -19,10 +19,16 @@
                    id="name"
                    value="{{ user_summary.name }}"
                    class="input-primary"
+                   autocomplete="off"
+                   autocorrect="off"
+                   autocapitalize="off"
+                   spellcheck="false"
                    required>
           </div>
         </div>
         {# End name #}
+
+        <div class="col-span-3"></div>
 
         {# Username #}
         <div class="col-span-3">
@@ -35,6 +41,10 @@
                    id="username"
                    value="{{ user_summary.username }}"
                    class="input-primary"
+                   autocomplete="off"
+                   autocorrect="off"
+                   autocapitalize="off"
+                   spellcheck="false"
                    required>
           </div>
         </div>
@@ -76,7 +86,7 @@
         hx-target="body">
     <div class="space-y-12">
       <div>
-        {% call macros::form_title(title = "Update password", description = "Lorem ipsum") %}
+        {% call macros::form_title(title = "Update password", description = "After updating your password all your current sessions will be terminated and you will need to log back in.") %}
 
         <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-6 max-w-5xl">
           <div class="col-span-3">
@@ -116,6 +126,7 @@
                      id="password_confirmation"
                      name="password_confirmation"
                      class="input-primary"
+                     oninvalid="this.setCustomValidity('Passwords do not match')"
                      pattern=""
                      required>
             </div>

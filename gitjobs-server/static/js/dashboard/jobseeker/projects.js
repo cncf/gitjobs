@@ -82,6 +82,10 @@ export class ProjectsSection extends LitElement {
                 name="projects[${index}][title]"
                 class="input-primary"
                 value="${data.title || ""}"
+                autocomplete="off"
+                autocorrect="off"
+                autocapitalize="off"
+                spellcheck="false"
                 required
               />
             </div>
@@ -97,6 +101,10 @@ export class ProjectsSection extends LitElement {
                 name="projects[${index}][url]"
                 class="input-primary"
                 value="${data.url || ""}"
+                autocomplete="off"
+                autocorrect="off"
+                autocapitalize="off"
+                spellcheck="false"
                 required
               />
             </div>
@@ -112,6 +120,10 @@ export class ProjectsSection extends LitElement {
                 name="projects[${index}][source_url]"
                 class="input-primary"
                 value="${data.source_url || ""}"
+                autocomplete="off"
+                autocorrect="off"
+                autocapitalize="off"
+                spellcheck="false"
               />
             </div>
           </div>

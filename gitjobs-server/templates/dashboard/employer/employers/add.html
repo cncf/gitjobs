@@ -2,7 +2,7 @@
 
 <div class="space-y-12">
   <div>
-    {% call macros::form_title(title = "Employer profile", description = "This information will be displayed in your jobs postings. You can update it any time.") %}
+    {% call macros::form_title(title = "Employer profile", description = "This information will be displayed in your jobs postings. You can update it at anytime.") %}
   </div>
 
   <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 max-w-4xl">
@@ -29,6 +29,10 @@
                  name="company"
                  id="company"
                  class="input-primary"
+                 autocomplete="off"
+                 autocorrect="off"
+                 autocapitalize="off"
+                 spellcheck="false"
                  required>
         </div>
         <p class="form-legend">Your company's trade name.</p>
@@ -36,6 +40,17 @@
       {# End Company name #}
 
       <div class="col-span-3"></div>
+
+      {# Member #}
+      <div class="col-span-full">
+        <label for="ts_query" class="form-label">Member</label>
+        {% call macros::search_member() %}
+        <p class="form-legend">
+          If your company is a member of the CNCF please select the corresponding member entry. Jobs posted by members fill be featured across the site. False membership claims may lead to the suspension of the employer and associated user accounts.
+        </p>
+        <div id="selected-member" class="flex space-x-5"></div>
+      </div>
+      {# End member #}
 
       {# Location #}
       <div class="col-span-full lg:col-span-3">
@@ -67,15 +82,6 @@
       </div>
       {# End Description #}
 
-      {# Member #}
-      <div class="col-span-full lg:col-span-3">
-        <label for="ts_query" class="form-label">Member</label>
-        {% call macros::search_member() %}
-        <p class="form-legend">Lorem ipsum.</p>
-        <div id="selected-member" class="flex space-x-5"></div>
-      </div>
-      {# End member #}
-
       {# Public #}
       <div class="col-span-full">
         <div class="form-label">Public</div>
@@ -91,8 +97,14 @@
     </div>
 
     {# Submit employer form button #}
-    <div class="mt-12 flex justify-end items-center border-t border-gray-900/10 pt-6">
+    <div class="mt-12 flex items-center justify-end gap-x-6 border-t border-gray-900/10 pt-6">
+      {# Cancel button #}
+      <a href="/dashboard/employer?tab=profile" class="btn-primary-outline">Cancel</a>
+      {# End cancel button #}
+
+      {# Submit form #}
       <button type="submit" class="btn-primary">Save</button>
+      {# End submit form #}
     </div>
     {# End submit employer form button #}
   </form>

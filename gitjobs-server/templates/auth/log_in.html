@@ -31,6 +31,10 @@
                  id="username"
                  name="username"
                  class="input-primary"
+                 autocomplete="off"
+                 autocorrect="off"
+                 autocapitalize="off"
+                 spellcheck="false"
                  required />
         </div>
         <div>
@@ -46,7 +50,7 @@
         <button type="submit" class="btn-primary w-full mt-10">Submit</button>
         {# End submit button #}
 
-        <div class="mt-5 mb-1 text-sm text-gray-600">
+        <div class="mt-5 text-sm text-gray-600">
           Don't have an account? <a href="/sign-up{%- if let Some(next_url) = next_url -%}?next_url={{ next_url }}{%- endif -%}"
     class="text-primary-700 hover:text-primary-900">Sign up</a>.
         </div>

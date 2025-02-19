@@ -24,6 +24,7 @@ pub(crate) struct PreviewPage {
 #[template(path = "dashboard/job_seeker/profile/update.html")]
 pub(crate) struct UpdatePage {
     pub profile: Option<JobSeekerProfile>,
+    pub skills: Vec<String>,
 }
 
 /// Job seeker profile.

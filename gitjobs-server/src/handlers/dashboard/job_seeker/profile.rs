@@ -1,7 +1,5 @@
 //! This module defines the HTTP handlers for the profile page.
 
-// Pages handlers.
-
 use axum::{
     extract::State,
     response::{Html, IntoResponse},
@@ -13,7 +11,7 @@ use tracing::instrument;
 use crate::{
     auth::AuthSession,
     db::DynDB,
-    handlers::error::HandlerError,
+    handlers::{error::HandlerError, extractors::JobBoardId},
     templates::dashboard::job_seeker::profile::{self, JobSeekerProfile},
 };
 
@@ -37,12 +35,22 @@ pub(crate) async fn preview_page(body: String) -> Result<impl IntoResponse, Hand
 pub(crate) async fn update_page(
     auth_session: AuthSession,
     State(db): State<DynDB>,
+    JobBoardId(job_board_id): JobBoardId,
 ) -> Result<impl IntoResponse, HandlerError> {
+    // Get user from session
     let Some(user) = auth_session.user else {
         return Ok(StatusCode::FORBIDDEN.into_response());
     };
-    let profile = db.get_job_seeker_profile(&user.user_id).await?;
-    let template = profile::UpdatePage { profile };
+
+    // Prepare template
+    let (profile, job_board) = tokio::try_join!(
+        db.get_job_seeker_profile(&user.user_id),
+        db.get_job_board(&job_board_id)
+    )?;
+    let template = profile::UpdatePage {
+        profile,
+        skills: job_board.skills,
+    };
 
     Ok(Html(template.render()?).into_response())
 }

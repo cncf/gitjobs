@@ -4,7 +4,7 @@
 use rinja::Template;
 use serde::{Deserialize, Serialize};
 
-use crate::templates::{auth, dashboard::job_seeker, filters, CurrentPage};
+use crate::templates::{auth, dashboard::job_seeker, filters, PageId};
 
 /// Home page template.
 #[derive(Debug, Clone, Template)]
@@ -13,7 +13,7 @@ use crate::templates::{auth, dashboard::job_seeker, filters, CurrentPage};
 pub(crate) struct Page {
     pub content: Content,
     #[allow(dead_code)]
-    pub current_page: CurrentPage,
+    pub page_id: PageId,
     pub logged_in: bool,
 
     pub name: Option<String>,

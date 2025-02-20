@@ -10,7 +10,7 @@ use crate::templates::{
     dashboard::employer,
     filters,
     helpers::{build_image_url, find_employer},
-    CurrentPage,
+    PageId,
 };
 
 /// Home page template.
@@ -19,10 +19,10 @@ use crate::templates::{
 #[allow(clippy::struct_field_names)]
 pub(crate) struct Page {
     pub content: Content,
-    #[allow(dead_code)]
-    pub current_page: CurrentPage,
     pub employers: Vec<employer::employers::EmployerSummary>,
     pub logged_in: bool,
+    #[allow(dead_code)]
+    pub page_id: PageId,
 
     pub name: Option<String>,
     pub selected_employer_id: Option<Uuid>,

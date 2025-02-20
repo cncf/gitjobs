@@ -22,7 +22,7 @@ use crate::{
             home::{self, Content, Tab},
             jobs,
         },
-        CurrentPage,
+        PageId,
     },
 };
 
@@ -66,7 +66,7 @@ pub(crate) async fn page(
     let employers = db.list_employers(&user.user_id).await?;
     let template = home::Page {
         content,
-        current_page: CurrentPage::EmployerDashboard,
+        page_id: PageId::EmployerDashboard,
         employers,
         logged_in: true,
         name: Some(user.name),

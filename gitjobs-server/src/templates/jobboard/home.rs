@@ -3,11 +3,11 @@
 use rinja::Template;
 use serde::{Deserialize, Serialize};
 
-use crate::templates::CurrentPage;
+use crate::templates::PageId;
 
 /// Home page template.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
 #[template(path = "jobboard/home.html")]
 pub(crate) struct Page {
-    pub current_page: CurrentPage,
+    pub page_id: PageId,
 }

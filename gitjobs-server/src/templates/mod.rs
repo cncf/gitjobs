@@ -10,10 +10,10 @@ mod helpers;
 pub(crate) mod jobboard;
 pub(crate) mod misc;
 
-/// The current page being rendered.
+/// Identifier for a page.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-pub(crate) enum CurrentPage {
+pub(crate) enum PageId {
     EmployerDashboard,
     JobBoard,
     JobSeekerDashboard,

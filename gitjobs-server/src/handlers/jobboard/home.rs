@@ -11,7 +11,7 @@ use tracing::instrument;
 use crate::{
     db::DynDB,
     handlers::{error::HandlerError, extractors::JobBoardId},
-    templates::{jobboard::home::Page, CurrentPage},
+    templates::{jobboard::home::Page, PageId},
 };
 
 /// Handler that returns the home page.
@@ -22,7 +22,7 @@ pub(crate) async fn page(
 ) -> Result<impl IntoResponse, HandlerError> {
     Ok(Html(
         Page {
-            current_page: CurrentPage::JobBoard,
+            page_id: PageId::JobBoard,
         }
         .render()?,
     ))

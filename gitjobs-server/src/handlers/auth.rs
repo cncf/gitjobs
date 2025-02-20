@@ -24,7 +24,7 @@ use crate::{
         error::HandlerError,
         extractors::{JobBoardId, OAuth2},
     },
-    templates::{self, CurrentPage},
+    templates::{self, PageId},
 };
 
 /// Log in URL.
@@ -51,11 +51,11 @@ pub(crate) async fn log_in_page(
     Query(query): Query<HashMap<String, String>>,
 ) -> Result<impl IntoResponse, HandlerError> {
     let template = templates::auth::LogInPage {
-        current_page: CurrentPage::LogIn,
         logged_in: false,
         messages: messages.into_iter().collect(),
         name: None,
         next_url: query.get("next_url").cloned(),
+        page_id: PageId::LogIn,
         username: None,
     };
 
@@ -68,10 +68,10 @@ pub(crate) async fn sign_up_page(
     Query(query): Query<HashMap<String, String>>,
 ) -> Result<impl IntoResponse, HandlerError> {
     let template = templates::auth::SignUpPage {
-        current_page: CurrentPage::SignUp,
         logged_in: false,
         name: None,
         next_url: query.get("next_url").cloned(),
+        page_id: PageId::SignUp,
         username: None,
     };
 

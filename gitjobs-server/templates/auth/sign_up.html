@@ -123,7 +123,8 @@
 
         {# Log in link #}
         <div class="mt-5 text-sm text-gray-600">
-          Already have an account? <a href="/log-in{%- if let Some(next_url) = next_url -%}?next_url={{ next_url }}{%- endif -%}"
+          Already have an account? <a hx-boost="true"
+    href="/log-in{%- if let Some(next_url) = next_url -%}?next_url={{ next_url }}{%- endif -%}"
     class="text-primary-700 hover:text-primary-900">Sign In</a>
         </div>
         {# End log in link #}

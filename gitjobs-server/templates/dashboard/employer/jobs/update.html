@@ -389,7 +389,9 @@
 
       <div class="flex items-center justify-end gap-x-6 relative">
         {# Cancel button #}
-        <a href="/dashboard/employer?tab=jobs" class="btn-primary-outline">Cancel</a>
+        <a hx-boost="true"
+           href="/dashboard/employer?tab=jobs"
+           class="btn-primary-outline">Cancel</a>
         {# End cancel button #}
 
         {# When status is published #}

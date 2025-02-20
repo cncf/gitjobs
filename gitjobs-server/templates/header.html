@@ -2,7 +2,7 @@
 <nav class="bg-white fixed w-full z-20 top-0 start-0 border-b border-gray-200 h-20 drop-shadow-sm">
   <div class="flex items-center justify-between max-w-screen-xxl flex flex-wrap items-center justify-between mx-auto px-5 h-full">
     <div class="flex space-x-10">
-      <a href="/" class="flex items-center min-w-[210px]">
+      <a hx-boost="true" href="/" class="flex items-center min-w-[210px]">
         <img src="/static/images/logo.png"
              height="33"
              width="210"
@@ -36,8 +36,12 @@
       {% if logged_in %}
         {% if page_id == PageId::JobBoard %}
           <div class="flex items-center space-x-5">
-            <a href="/dashboard/employer?tab=jobs" class="btn-primary-outline">Post a job</a>
-            <a href="/dashboard/employer?tab=profile" class="btn-primary-outline">Create profile</a>
+            <a hx-boost="true"
+               href="/dashboard/employer?tab=jobs"
+               class="btn-primary-outline">Post a job</a>
+            <a hx-boost="true"
+               href="/dashboard/employer?tab=profile"
+               class="btn-primary-outline">Create profile</a>
           </div>
         {% endif %}
         <div class="ms-10">
@@ -57,7 +61,8 @@
                 </div>
               </li>
               <li class="border-t mt-2 pt-2">
-                <a href="/dashboard/employer?tab=profile"
+                <a hx-boost="true"
+                   href="/dashboard/employer?tab=profile"
                    class="inline-block w-full text-start px-4 py-2 hover:bg-gray-100">
                   <div class="flex items-center">
                     <div class="svg-icon size-4 icon-company bg-gray-600"></div>
@@ -66,7 +71,8 @@
                 </a>
               </li>
               <li>
-                <a href="/dashboard/job-seeker?tab=profile"
+                <a hx-boost="true"
+                   href="/dashboard/job-seeker?tab=profile"
                    class="inline-block w-full text-start px-4 py-2 hover:bg-gray-100">
                   <div class="flex items-center">
                     <div class="svg-icon size-4 icon-search bg-gray-600"></div>
@@ -90,7 +96,7 @@
 
         {# When user is not logged in, we display a button to go to login page #}
       {% else %}
-        <a class="btn-primary" href="/log-in">Log In</a>
+        <a hx-boost="true" class="btn-primary" href="/log-in">Log In</a>
       {% endif %}
     </div>
   </div>

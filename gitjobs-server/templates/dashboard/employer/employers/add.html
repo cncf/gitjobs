@@ -99,7 +99,9 @@
 
     <div class="mt-12 flex items-center justify-end gap-x-6 border-t border-gray-900/10 pt-6">
       {# Cancel button #}
-      <a href="/dashboard/employer?tab=profile" class="btn-primary-outline">Cancel</a>
+      <a hx-boost="true"
+         href="/dashboard/employer?tab=profile"
+         class="btn-primary-outline">Cancel</a>
       {# End cancel button #}
 
       <div class="relative">

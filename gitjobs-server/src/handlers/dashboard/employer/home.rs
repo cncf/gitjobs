@@ -8,6 +8,7 @@ use axum::{
     http::StatusCode,
     response::{Html, IntoResponse},
 };
+use axum_messages::Messages;
 use rinja::Template;
 use tracing::instrument;
 
@@ -30,6 +31,7 @@ use crate::{
 #[instrument(skip_all, err)]
 pub(crate) async fn page(
     auth_session: AuthSession,
+    messages: Messages,
     State(db): State<DynDB>,
     Query(query): Query<HashMap<String, String>>,
     SelectedEmployerIdOptional(employer_id): SelectedEmployerIdOptional,
@@ -58,7 +60,10 @@ pub(crate) async fn page(
         }
         Tab::Profile => {
             let employer = db.get_employer(&employer_id.expect("to be some")).await?;
-            Content::Profile(employers::UpdatePage { employer })
+            Content::Profile(employers::UpdatePage {
+                employer,
+                messages: messages.into_iter().collect(),
+            })
         }
     };
 

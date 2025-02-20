@@ -262,16 +262,7 @@
               </span>
             </button>
             {# End preview button #}
-
             <div id="preview-spinner" class="hx-spinner">{% call macros::spinner(size = 5) %}</div>
-
-            {# Error preview #}
-            <div id="preview-error"
-                 class="hidden fixed top-5 end-5 p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 z-30"
-                 role="alert">
-              <span class="font-medium">Not available preview!</span> Please fill in the required fields.
-            </div>
-            {# End error preview #}
           </div>
           {# End preview #}
 
@@ -295,6 +286,21 @@
     import {
       toggleModalVisibility
     } from '/static/js/common/common.js';
+    import {
+      showErrorAlert,
+      showSuccessAlert
+    } from '/static/js/common/alerts.js';
+
+    const jobSeekerForm = document.getElementById('jobseeker-form');
+    jobSeekerForm.addEventListener('htmx:afterRequest', (e) => {
+      if (e.detail.elt.id === 'jobseeker-form') {
+        if (e.detail.successful) {
+          showSuccessAlert('Profile updated successfully!');
+        } else {
+          showErrorAlert('Something went wrong updating the profile, please try again later.');
+        }
+      }
+    });
 
     // On preview button click, show the preview modal
     const previewButton = document.getElementById('preview-button');
@@ -303,12 +309,7 @@
         toggleModalVisibility('preview-modal');
       } else {
         // When the preview is not available, show an error message
-        const previewError = document.getElementById('preview-error');
-        previewError.classList.remove('hidden');
-        // Hide the error message after 5 seconds
-        setTimeout(() => {
-          previewError.classList.add('hidden');
-        }, 5000);
+        showErrorAlert('Something went wrong previewing the profile, please try again later.');
       }
     });
   </script>

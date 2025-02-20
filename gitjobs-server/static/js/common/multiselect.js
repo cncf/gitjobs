@@ -103,7 +103,9 @@ export class MultiSelect extends LitElement {
         <div
           class=${`${
             !this.visibleDropdown ? "hidden" : ""
-          } absolute start-0 z-10 bg-white divide-y divide-gray-100 rounded-lg shadow w-full border mt-1`}
+          } absolute start-0 z-10 bg-white divide-y divide-gray-100 rounded-lg shadow w-full border mt-1 ${
+            this.legend ? "top-10" : ""
+          }`}
         >
           <ul class="text-sm text-gray-700 overflow-x-auto max-h-[150px]">
             ${this.visibleOptions.map((option) => {

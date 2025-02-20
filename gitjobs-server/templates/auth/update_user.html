@@ -1,7 +1,8 @@
 {% import "macros.html" as macros %}
 
 {# Update user details form #}
-<form hx-put="/account/update/details"
+<form id="user-details-form"
+      hx-put="/account/update/details"
       hx-ext="no-empty-vals"
       hx-trigger="submit">
   <div class="space-y-12">
@@ -80,7 +81,8 @@
   <hr class="w-full h-px mx-auto my-12 bg-gray-200 border-0">
 
   {# Update user password form #}
-  <form hx-put="/account/update/password"
+  <form id="password-form"
+        hx-put="/account/update/password"
         hx-ext="no-empty-vals"
         hx-trigger="submit"
         hx-target="body">
@@ -151,3 +153,31 @@
     });
   </script>
 {% endif %}
+
+<script type="module">
+  import {
+    showErrorAlert,
+    showSuccessAlert
+  } from '/static/js/common/alerts.js';
+
+  const userDetailsForm = document.getElementById('user-details-form');
+  const passwordForm = document.getElementById('password-form');
+
+  userDetailsForm.addEventListener('htmx:afterRequest', (e) => {
+    if (e.detail.successful) {
+      showSuccessAlert('User details updated successfully!');
+    } else {
+      showErrorAlert('Something went wrong updating the user details, please try again later.');
+    }
+  });
+
+  if (passwordForm) {
+    passwordForm.addEventListener('htmx:afterRequest', (e) => {
+      if (e.detail.successful) {
+        showSuccessAlert('Password updated successfully!');
+      } else {
+        showErrorAlert('Something went wrong updating the password, please try again later.');
+      }
+    });
+  }
+</script>

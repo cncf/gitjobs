@@ -4,6 +4,8 @@
 {% block main %}
   <div class="container max-w-md m-auto px-2 py-28">
     <div class="bg-white p-10 border rounded-3xl">
+      <div class="mb-8">{% call macros::form_title(title = "Log In") %}</div>
+
       <div class="flex items-center justify-between space-x-5 mb-2 lg:space-x-10">
         {# GitHub login #}
         <div class="w-full">
@@ -23,8 +25,6 @@
 
       <form action="/log-in{%- if let Some(next_url) = next_url -%}?next_url={{ next_url }}{%- endif -%}"
             method="post">
-        <div class="mb-8">{% call macros::form_title(title = "Log In") %}</div>
-
         <div class="mb-5">
           <label for="username" class="block mb-2 text-sm font-medium text-gray-900">Username</label>
           <input type="text"
@@ -58,10 +58,7 @@
 
       {# Messages #}
       {% if !messages.is_empty() %}
-        <div class="p-4 mt-10 text-md max-w-sm mx-auto text-red-800 rounded-lg bg-red-50"
-             role="alert">
-          {% for message in messages %}<p>{{ message }}</p>{% endfor %}
-        </div>
+        {% call macros::alerts(messages) %}
       {% endif %}
       {# End messages #}
     </div>

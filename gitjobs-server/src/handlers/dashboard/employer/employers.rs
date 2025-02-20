@@ -7,6 +7,7 @@ use axum::{
     response::{Html, IntoResponse},
 };
 use axum_extra::extract::Form;
+use axum_messages::Messages;
 use rinja::Template;
 use tower_sessions::Session;
 use tracing::instrument;
@@ -27,8 +28,13 @@ use crate::{
 
 /// Handler that returns the page to add a new employer.
 #[instrument(skip_all, err)]
-pub(crate) async fn add_page(State(_db): State<DynDB>) -> Result<impl IntoResponse, HandlerError> {
-    let template = employers::AddPage {};
+pub(crate) async fn add_page(
+    messages: Messages,
+    State(_db): State<DynDB>,
+) -> Result<impl IntoResponse, HandlerError> {
+    let template = employers::AddPage {
+        messages: messages.into_iter().collect(),
+    };
 
     Ok(Html(template.render()?))
 }
@@ -36,11 +42,15 @@ pub(crate) async fn add_page(State(_db): State<DynDB>) -> Result<impl IntoRespon
 /// Handler that returns the page to update an employer.
 #[instrument(skip_all, err)]
 pub(crate) async fn update_page(
+    messages: Messages,
     State(db): State<DynDB>,
     SelectedEmployerIdRequired(employer_id): SelectedEmployerIdRequired,
 ) -> Result<impl IntoResponse, HandlerError> {
     let employer = db.get_employer(&employer_id).await?;
-    let template = employers::UpdatePage { employer };
+    let template = employers::UpdatePage {
+        employer,
+        messages: messages.into_iter().collect(),
+    };
 
     Ok(Html(template.render()?))
 }
@@ -51,6 +61,7 @@ pub(crate) async fn update_page(
 #[instrument(skip_all, err)]
 pub(crate) async fn add(
     auth_session: AuthSession,
+    messages: Messages,
     session: Session,
     State(db): State<DynDB>,
     JobBoardId(job_board_id): JobBoardId,
@@ -63,6 +74,7 @@ pub(crate) async fn add(
 
     // Add employer to database
     let employer_id = db.add_employer(&job_board_id, &user.user_id, &employer).await?;
+    messages.success("Employer added successfully.");
 
     // Use new employer as the selected employer for the session
     session.insert(SELECTED_EMPLOYER_ID_KEY, employer_id).await?;
@@ -85,11 +97,13 @@ pub(crate) async fn select(
 /// Handler that updates an employer.
 #[instrument(skip_all, err)]
 pub(crate) async fn update(
+    messages: Messages,
     State(db): State<DynDB>,
     SelectedEmployerIdRequired(employer_id): SelectedEmployerIdRequired,
     Form(employer): Form<employers::Employer>,
 ) -> Result<impl IntoResponse, HandlerError> {
     db.update_employer(&employer_id, &employer).await?;
+    messages.success("Employer updated successfully.");
 
-    Ok((StatusCode::NO_CONTENT, [("HX-Refresh", "true")]))
+    Ok((StatusCode::NO_CONTENT, [("HX-Refresh", "true")]).into_response())
 }

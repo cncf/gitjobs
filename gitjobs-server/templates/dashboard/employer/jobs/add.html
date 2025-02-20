@@ -325,20 +325,13 @@
           </span>
         </button>
         {# End preview button #}
-
         <div id="preview-spinner" class="hx-spinner">{% call macros::spinner(size = 5) %}</div>
-
-        {# Error preview #}
-        <div id="preview-error"
-             class="hidden fixed top-5 end-5 p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 z-30"
-             role="alert">
-          <span class="font-medium">Not available preview!</span> Please fill in the required fields.
-        </div>
-        {# End error preview #}
       </div>
       {# End preview #}
 
       <div class="flex items-center justify-end gap-x-6 relative">
+        <div id="form-spinner"></div>
+
         {# Cancel button #}
         <a hx-boost="true"
            href="/dashboard/employer?tab=jobs"
@@ -352,8 +345,6 @@
         {# Publish button #}
         <button id="publish-job" type="button" class="btn-primary">Publish</button>
         {# End publish button #}
-
-        <div id="form-spinner"></div>
       </div>
     </div>
   </div>
@@ -371,6 +362,10 @@
   import {
     toggleModalVisibility
   } from '/static/js/common/common.js';
+  import {
+    showErrorAlert,
+    showSuccessAlert
+  } from '/static/js/common/alerts.js';
 
   const jobsForm = document.getElementById('jobs-form');
 
@@ -391,7 +386,12 @@
   jobsForm.addEventListener('htmx:afterRequest', (e) => {
     // Check if the form is the jobs form and not the input ts_query requesting locations
     if (e.detail.elt.id === 'jobs-form') {
-      updateJobsList();
+      if (e.detail.successful) {
+        showSuccessAlert('Job added successfully!');
+        updateJobsList();
+      } else {
+        showErrorAlert('Something went wrong adding the job, please try again later.');
+      }
     }
   });
 
@@ -399,9 +399,18 @@
   const publishBtn = document.getElementById('publish-job');
   if (publishBtn) {
     publishBtn.addEventListener('click', () => {
+      const form = document.getElementById('jobs-form');
       // Update the job status to published
-      document.querySelector('#jobs-form input[name="status"]').value = 'published';
-      triggerActionOnForm('jobs-form', 'submit');
+      form.querySelector('input[name="status"]').value = 'published';
+
+      // Check if the form is valid before submitting,
+      // htmx does not trigger the form validation
+      // when submitting the form from not a submit button
+      if (!form.checkValidity()) {
+        form.reportValidity();
+      } else {
+        triggerActionOnForm('jobs-form', 'submit');
+      }
     });
   }
 
@@ -412,12 +421,7 @@
       toggleModalVisibility('preview-modal');
     } else {
       // When the preview is not available, show an error message
-      const previewError = document.getElementById('preview-error');
-      previewError.classList.remove('hidden');
-      // Hide the error message after 5 seconds
-      setTimeout(() => {
-        previewError.classList.add('hidden');
-      }, 5000);
+      showErrorAlert('Something went wrong previewing the job, please try again later.');
     }
   });
 </script>

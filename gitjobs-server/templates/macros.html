@@ -551,6 +551,21 @@
       </div>
     </div>
   </form>
+  <script type="module">
+    import {
+      showErrorAlert,
+      showSuccessAlert
+    } from '/static/js/common/alerts.js';
+
+    const imagesForm = document.getElementById('images-form');
+    imagesForm.addEventListener('htmx:afterRequest', (e) => {
+      if (e.detail.successful) {
+        showSuccessAlert('Image added successfully!');
+      } else {
+        showErrorAlert('Something went wrong adding the image, please try again later.');
+      }
+    });
+  </script>
   {# End images form #}
 
   {# Input hidden #}
@@ -608,3 +623,24 @@
   </div>
 {% endmacro dropdown_card %}
 {# End dropdown card #}
+
+{# Alerts #}
+{# djlint:off #}
+{% macro alerts(messages) %}
+  <script type="module">
+    import { showErrorAlert, showSuccessAlert } from '/static/js/common/alerts.js';
+
+    {% for message in messages %}
+      {% match message.level %}
+        {% when Level::Success %}
+          showSuccessAlert('{{ message }}');
+        {% when Level::Error %}
+          showErrorAlert('{{ message }}');
+        {% when _ %}
+          {# Do nothing #}
+      {% endmatch %}
+    {% endfor %}
+</script>
+{% endmacro alerts %}
+{# djlint:on #}
+{# End alerts #}

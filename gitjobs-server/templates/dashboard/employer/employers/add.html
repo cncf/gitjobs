@@ -97,7 +97,7 @@
       {# End Public #}
     </div>
 
-    <div class="mt-12 flex items-center justify-end gap-x-6 border-t border-gray-900/10 pt-6">
+    <div class="mt-12 flex items-center justify-end gap-x-6 border-t border-gray-900/10 pt-12">
       {# Cancel button #}
       <a hx-boost="true"
          href="/dashboard/employer?tab=profile"
@@ -112,5 +112,27 @@
       </div>
     </div>
   </form>
+  {# Messages #}
+  {% if !messages.is_empty() %}
+    {{ messages|json }}
+    {% call macros::alerts(messages) %}
+  {% endif %}
+  {# End messages #}
   {# End employer form #}
 </div>
+<script type="module">
+  import {
+    showErrorAlert,
+  } from '/static/js/common/alerts.js';
+
+  const employerForm = document.getElementById('employer-form');
+
+  employerForm.addEventListener('htmx:afterRequest', (e) => {
+    // Check if the form is the employer form and not the input ts_query requesting locations
+    if (e.detail.elt.id === 'employer-form') {
+      if (!e.detail.successful) {
+        showErrorAlert('Something went wrong adding the profile, please try again later.');
+      }
+    }
+  });
+</script>

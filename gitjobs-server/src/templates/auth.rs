@@ -1,6 +1,6 @@
 //! This module defines some templates used for authentication.
 
-use axum_messages::Message;
+use axum_messages::{Level, Message};
 use rinja::Template;
 use serde::{Deserialize, Serialize};
 
@@ -28,6 +28,7 @@ pub(crate) struct LogInPage {
 pub(crate) struct SignUpPage {
     pub page_id: PageId,
     pub logged_in: bool,
+    pub messages: Vec<Message>,
 
     pub name: Option<String>,
     pub next_url: Option<String>,

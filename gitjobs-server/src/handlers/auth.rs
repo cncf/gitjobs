@@ -42,6 +42,9 @@ pub(crate) const OAUTH2_NEXT_URL_KEY: &str = "oauth2.next_url";
 /// Key to store the selected employer id in the session.
 pub(crate) const SELECTED_EMPLOYER_ID_KEY: &str = "selected_employer_id";
 
+/// Sign up URL.
+pub(crate) const SIGN_UP_URL: &str = "/sign-up";
+
 // Pages handlers.
 
 /// Handler that returns the log in page.
@@ -65,10 +68,12 @@ pub(crate) async fn log_in_page(
 /// Handler that returns the sign up page.
 #[instrument(skip_all, err)]
 pub(crate) async fn sign_up_page(
+    messages: Messages,
     Query(query): Query<HashMap<String, String>>,
 ) -> Result<impl IntoResponse, HandlerError> {
     let template = templates::auth::SignUpPage {
         logged_in: false,
+        messages: messages.into_iter().collect(),
         name: None,
         next_url: query.get("next_url").cloned(),
         page_id: PageId::SignUp,
@@ -225,6 +230,7 @@ pub(crate) async fn oauth2_redirect(
 /// Handler that signs up a new user.
 #[instrument(skip_all)]
 pub(crate) async fn sign_up(
+    messages: Messages,
     State(db): State<DynDB>,
     JobBoardId(job_board_id): JobBoardId,
     Query(query): Query<HashMap<String, String>>,
@@ -237,9 +243,13 @@ pub(crate) async fn sign_up(
 
     // Sign up the user
     user_summary.password = Some(password_auth::generate_hash(&password));
-    _ = db.sign_up_user(&job_board_id, &user_summary, true).await?;
+    if db.sign_up_user(&job_board_id, &user_summary, true).await.is_err() {
+        // Redirect to the sign up page on error
+        messages.error("Something went wrong while signing up. Please try again later.");
+        return Ok(Redirect::to(SIGN_UP_URL).into_response());
+    }
 
-    // Redirect to the log in page
+    // Redirect to the log in page on success
     let log_in_url = get_log_in_url(query.get("next_url"));
     Ok(Redirect::to(&log_in_url).into_response())
 }

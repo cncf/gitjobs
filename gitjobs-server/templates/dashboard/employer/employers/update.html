@@ -60,7 +60,9 @@
                       class="rounded-full bg-gray-100 hover:bg-gray-200 absolute top-1 end-1">
                 <div class="svg-icon size-5 bg-gray-400 hover:bg-gray-700 icon-close"></div>
               </button>
-              {% call macros::dropdown_card(name = employer.member_name|display_some, label = employer.member_level|display_some, logo_url = employer.member_logo_url|display_some) %}
+              {% let level = employer.member_level|display_some %}
+              {% let label = &format!("CNCF {} member", level) %}
+              {% call macros::dropdown_card(name = employer.member_name|display_some, label = label, logo_url = employer.member_logo_url|display_some) %}
             </div>
             <script type="module">
               import {
@@ -118,7 +120,7 @@
         <div class="form-label">Public</div>
         <label class="mt-2 inline-flex items-center cursor-pointer">
           {% call macros::toggle_checkbox(id = "public", checked = employer.public) %}
-          <span class="ms-3 text-sm font-medium text-gray-900">Display in employers listing.</span>
+          <span class="ms-3 text-sm font-medium text-gray-900">Display in employers listing</span>
         </label>
         <p class="form-legend">
           Your company will be listed in the employers section of the site. This may help attracting more applicants to your jobs.

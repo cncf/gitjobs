@@ -171,37 +171,28 @@
       <hr class="my-10 border-t border-gray-200">
       {% call title(content = "Projects") %}
       <div class="pt-2">
-        <ol class="items-start sm:flex overflow-x-auto">
+        <ol class="relative border-s border-gray-200">
           {% for p in projects %}
-            <li class="relative mb-6 sm:mb-0 min-w-[300px] max-w-[300px]">
-              {% if !projects.is_empty() %}
-                <div class="flex items-center">
-                  <div class="z-10 flex items-center justify-center size-6 bg-gray-200 rounded-full shrink-0">
-                    <div class="svg-icon size-3 icon-project bg-gray-600"></div>
-                  </div>
-                  <div class="hidden sm:flex w-full bg-gray-200 h-0.5 dark:bg-gray-700"></div>
-                </div>
-              {% endif %}
-              <div class="mt-3 sm:pe-8">
-                <div class="text-lg font-semibold text-gray-900 truncate">{{ p.title }}</div>
+            <li class="mb-10 ms-4">
+              <div class="absolute size-3 bg-gray-300 rounded-full mt-1 -start-1.5 border border-white"></div>
+              <div class="text-lg font-semibold text-gray-900">{{ p.title }}</div>
+              <div class="text-sm/6 text-gray-500 italic text-nowrap truncate">
+                <span class="text-xs text-gray-400 uppercase">Url:</span>
+                <a href="{{ p.url }}"
+                   class="truncate"
+                   target="_blank"
+                   rel="noopener noreferrer">{{ p.url }}</a>
+              </div>
+              {% if let Some(source_url) = p.source_url %}
                 <div class="text-sm/6 text-gray-500 italic text-nowrap truncate">
-                  <span class="text-xs text-gray-400 uppercase">Url:</span>
-                  <a href="{{ p.url }}"
+                  <span class="text-xs text-gray-400 uppercase">Source:</span>
+                  <a href="{{ source_url }}"
                      class="truncate"
                      target="_blank"
-                     rel="noopener noreferrer">{{ p.url }}</a>
+                     rel="noopener noreferrer">{{ source_url }}</a>
                 </div>
-                {% if let Some(source_url) = p.source_url %}
-                  <div class="text-sm/6 text-gray-500 italic text-nowrap truncate">
-                    <span class="text-xs text-gray-400 uppercase">Source:</span>
-                    <a href="{{ source_url }}"
-                       class="truncate"
-                       target="_blank"
-                       rel="noopener noreferrer">{{ source_url }}</a>
-                  </div>
-                {% endif %}
-                <div class="text-sm/6 text-gray-600 markdown mt-3">{{ p.description|md_to_html|safe }}</div>
-              </div>
+              {% endif %}
+              <div class="text-sm/6 text-gray-600 markdown">{{ p.description|md_to_html|safe }}</div>
             </li>
           {% endfor %}
         </ol>
@@ -244,14 +235,14 @@
 {% endmacro timeline_item %}
 
 {% macro toggle_option(title, status = false) %}
-  <div class="flex space-x-4 items-center">
-    <div class="w-5">
+  <div class="flex space-x-2 items-center">
+    <div class="w-4">
       {% if status %}
         <div class="svg-icon size-3 icon-check bg-gray-700 mx-auto"></div>
       {% else %}
         <div class="svg-icon size-4 icon-close bg-gray-700 mx-auto"></div>
       {% endif %}
     </div>
-    <div class="text-sm/6">{{ title }}</div>
+    <div class="text-xs/6">{{ title }}</div>
   </div>
 {% endmacro toggle_option %}

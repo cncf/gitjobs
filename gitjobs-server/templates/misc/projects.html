@@ -15,7 +15,8 @@
                   data-maturity="{{ p.maturity }}"
                   data-logo-url="{{ p.logo_url }}"
                   class="btn-project px-4 py-2 w-full hover:bg-gray-100 group-[.active]:bg-gray-100">
-            {% call macros::dropdown_card(name = p.name, label = p.maturity, logo_url = p.logo_url) %}
+            {% let label = &format!("CNCF {}", p.maturity) %}
+            {% call macros::dropdown_card(name = p.name, label = label, logo_url = p.logo_url) %}
           </button>
         </li>
       {% endfor %}

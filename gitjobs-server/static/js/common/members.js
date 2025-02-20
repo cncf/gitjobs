@@ -4,7 +4,7 @@ export const addMemberCard = (id, name, level, logo_url, elId) => {
   // Remove previous selected member
   document.getElementById("selected-member").innerHTML = "";
 
-  addCard(id, name, level, logo_url, elId, removeSelectedMember);
+  addCard(id, name, `CNCF ${level} member`, logo_url, elId, removeSelectedMember);
 };
 
 export const removeSelectedMember = () => {

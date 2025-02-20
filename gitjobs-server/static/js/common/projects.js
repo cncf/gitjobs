@@ -17,7 +17,7 @@ export const addProjectCard = (id, name, maturity, logo_url, elId) => {
     <input type="hidden"
       name="projects[${cardsNumber}][logo_url]"
       value="${logo_url}">`;
-  addCard(id, name, maturity, logo_url, elId, removeSelectedProject, inputs);
+  addCard(id, name, `CNCF ${maturity}`, logo_url, elId, removeSelectedProject, inputs);
 };
 
 export const removeSelectedProject = (id) => {

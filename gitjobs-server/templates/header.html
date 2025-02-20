@@ -13,14 +13,17 @@
         <ul class="flex flex-col p-0 font-medium md:space-x-5 md:flex-row">
           <li>
             <button class="block p-2 text-gray-900 hover:text-primary-500"
-                    title="Coming soon!">Employes</button>
+                    disabled
+                    title="Coming soon!">Employers</button>
           </li>
           <li>
             <button class="block p-2 text-gray-900 hover:text-primary-500"
+                    disabled
                     title="Coming soon!">Profiles</button>
           </li>
           <li>
             <button class="block p-2 text-gray-900 hover:text-primary-500"
+                    disabled
                     title="Coming soon!">About</button>
           </li>
         </ul>
@@ -46,14 +49,14 @@
           {# Dropdown user #}
           <div id="dropdown-user"
                class="dropdown absolute hidden z-10 end-0 top-10 w-[250px] bg-white divide-y divide-gray-100 rounded-lg shadow border">
-            <ul class="text-gray-700">
+            <ul class="text-gray-700 my-2">
               <li>
                 <div class="flex flex-col px-4 py-2">
                   <div class="font-medium text-sm/6 truncate text-gray-700 mb-3">{{ username|display_some }}</div>
                   <div class="text-xs/4 truncate">{{ name|display_some }}</div>
                 </div>
               </li>
-              <li class="border-t">
+              <li class="border-t mt-2 pt-2">
                 <a href="/dashboard/employer?tab=profile"
                    class="inline-block w-full text-start px-4 py-2 hover:bg-gray-100">
                   <div class="flex items-center">
@@ -71,16 +74,7 @@
                   </div>
                 </a>
               </li>
-              <li class="border-t">
-                <a href="/dashboard/employer?tab=account"
-                   class="inline-block w-full text-start px-4 py-2 hover:bg-gray-100">
-                  <div class="flex items-center">
-                    <div class="svg-icon size-4 icon-user bg-gray-600"></div>
-                    <div class="ms-2 text-xs/6">Account</div>
-                  </div>
-                </a>
-              </li>
-              <li>
+              <li class="border-t mt-2 pt-2">
                 <a href="/log-out"
                    class="inline-block w-full text-start px-4 py-2 hover:bg-gray-100">
                   <div class="flex items-center">

@@ -11,7 +11,8 @@
       <div class="flex justify-between items-end">
         {% call dashboard_macros::menu_title(text = "Employer") %}
         <div>
-          <button hx-get="/dashboard/employer/employers/add"
+          <button id="add-employer-button"
+                  hx-get="/dashboard/employer/employers/add"
                   hx-trigger="click"
                   hx-target="#dashboard-content"
                   class="group btn-primary-outline btn-mini mb-1">
@@ -120,6 +121,13 @@
           // Remove event listener when dropdown is closed
           document.removeEventListener('click', () => {});
         }
+      });
+    }
+
+    const addEmployerButton = document.getElementById('add-employer-button');
+    if (addEmployerButton) {
+      addEmployerButton.addEventListener('htmx:afterRequest', () => {
+        history.pushState({}, "Employer", '/dashboard/employer');
       });
     }
   </script>

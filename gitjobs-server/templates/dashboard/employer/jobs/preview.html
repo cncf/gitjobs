@@ -83,17 +83,10 @@
       {% endif %}
       {# End job qualifications #}
 
-      {# Company information #}
-      <div>
-        {% call content_heading(content = "About company") %}
-        <div class="text-sm/6 text-gray-600 markdown">{{ employer.description|md_to_html|safe }}</div>
-      </div>
-      {# End company information #}
-
       {# Skills #}
       {% if let Some(skills) = job.skills %}
         <div class="mb-5">
-          {% call content_heading(content = "Skills") %}
+          {% call content_heading(content = "Required skills") %}
           <div class="flex gap-x-5 mt-2">
             {% for skill in skills %}
               {% call macros::badge(content = skill|unnormalize) %}
@@ -106,7 +99,7 @@
       {# Benefits #}
       {% if let Some(benefits) = job.benefits %}
         <div class="mb-5">
-          {% call content_heading(content = "Compensation") %}
+          {% call content_heading(content = "Benefits") %}
           <div class="flex gap-x-5 mt-2">
             {% for benefit in benefits %}
               {% call macros::badge(content = benefit|unnormalize) %}
@@ -124,6 +117,13 @@
         </div>
       {% endif %}
       {# End application #}
+
+      {# Company information #}
+      <div>
+        {% call content_heading(content = "About company") %}
+        <div class="text-sm/6 text-gray-600 markdown">{{ employer.description|md_to_html|safe }}</div>
+      </div>
+      {# End company information #}
     </div>
     {# End content #}
   </div>
@@ -173,7 +173,7 @@
         -
       {% endif %}
       {% if let Some(salary_period) = job.salary_period %}
-        <div class="text-gray-900 text-xs italic ms-2">({{ salary_period }})</div>
+        <div class="text-gray-900 text-xs ms-2">({{ salary_period }})</div>
       {% endif %}
       {# End fixed salary #}
       {% when SalaryKind::Range %}
@@ -190,14 +190,14 @@
 
         {% if let Some(salary_max) = job.salary_max %}
           <div class="flex items-baseline text-gray-900 text-sm">
-            <span class="mx-2">-</span>
+            <span class="mx-1">-</span>
             {% call currency(value = job.salary_currency) %}
             {{ salary_max }}
           </div>
         {% endif %}
 
         {% if let Some(salary_period) = job.salary_period %}
-          <div class="text-gray-900 text-xs italic ms-2">({{ salary_period }})</div>
+          <div class="text-gray-900 text-xs ms-2">({{ salary_period }})</div>
         {% endif %}
       </div>
       {# End range salary #}
@@ -243,7 +243,8 @@
   <div class="flex flex-col space-y-3">
     {% for p in projects %}
       <div class="border rounded-lg p-2 text-sm/5 bg-white w-full">
-        {% call macros::dropdown_card(name = p.name, label = p.maturity, logo_url = p.logo_url, line_height = 5) %}
+        {% let label = &format!("CNCF {}", p.maturity) %}
+        {% call macros::dropdown_card(name = p.name, label = label, logo_url = p.logo_url, line_height = 5) %}
       </div>
     {% endfor %}
   </div>
@@ -284,7 +285,7 @@
 
 {# Badge with percentage bar #}
 {% macro badge_percentage_bar(percentage = 0) %}
-  <div class="mt-1 flex space-x-2 items-center w-full">
+  <div class="-mt-1 flex space-x-2 items-center w-full">
     <div class="w-full bg-gray-200 rounded-full h-1.5 my-2">
       <div class="bg-primary-600 h-1.5 rounded-full"
            style="width: {{ percentage }}%"></div>

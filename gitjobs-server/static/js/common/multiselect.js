@@ -105,12 +105,6 @@ export class MultiSelect extends LitElement {
             !this.visibleDropdown ? "hidden" : ""
           } absolute start-0 z-10 bg-white divide-y divide-gray-100 rounded-lg shadow w-full border mt-1`}
         >
-          ${this.enteredValue.length > 0
-            ? html`<div class="flex items-center justify-between py-2 px-4">
-                <div class="truncate">${this.enteredValue}</div>
-                <button type="button" @click=${() => this._onClickOption()} class="btn-primary">Add</button>
-              </div>`
-            : ""}
           <ul class="text-sm text-gray-700 overflow-x-auto max-h-[150px]">
             ${this.visibleOptions.map((option) => {
               const isSelected = this.selected.includes(option);
@@ -133,6 +127,14 @@ export class MultiSelect extends LitElement {
               </li>`;
             })}
           </ul>
+          ${this.enteredValue.length > 0
+            ? html`<div class="flex items-center justify-between py-1 px-4">
+                <div class="truncate text-sm leading-[27px] ps-5">${this.enteredValue}</div>
+                <button type="button" @click=${() => this._onClickOption()} class="btn-primary btn-mini">
+                  Add
+                </button>
+              </div>`
+            : ""}
         </div>
       </div>
       ${this.selected.map((option) => html`<input type="hidden" name="${this.id}[]" value="${option}" />`)}

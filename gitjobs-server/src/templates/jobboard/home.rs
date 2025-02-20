@@ -3,7 +3,7 @@
 use rinja::Template;
 use serde::{Deserialize, Serialize};
 
-use crate::templates::PageId;
+use crate::templates::{filters, PageId};
 
 /// Home page template.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]

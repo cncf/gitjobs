@@ -158,7 +158,8 @@
     {# End Header #}
 
     {# Main Content #}
-    <div class="flex min-h-screen">
+    <div class="flex min-h-screen
+                {% if page_id == PageId::JobBoard -%}bg-jobboard{%- endif %}">
       {% block main %}
       {% endblock main %}
     </div>

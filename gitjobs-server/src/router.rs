@@ -38,7 +38,7 @@ use crate::{
 #[cfg(debug_assertions)]
 pub(crate) const DEFAULT_CACHE_DURATION: usize = 0; // No cache
 #[cfg(not(debug_assertions))]
-pub(crate) const DEFAULT_CACHE_DURATION: usize = 60 * 5; // 5 minutes
+pub(crate) const DEFAULT_CACHE_DURATION: usize = 0; // No cache
 
 /// Embed static files in the binary.
 #[derive(Embed)]

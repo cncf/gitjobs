@@ -38,8 +38,8 @@ export const processNewHtmxUrl = (idEl, method, data) => {
 };
 
 // Function to check if the status of the XHR request is successful
-export const isSuccessfulXHRStatus = (xhr) => {
-  if (xhr.status >= 200 && xhr.status < 300) {
+export const isSuccessfulXHRStatus = (status) => {
+  if (status >= 200 && status < 300) {
     return true;
   } else {
     return false;

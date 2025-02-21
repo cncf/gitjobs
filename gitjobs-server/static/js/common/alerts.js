@@ -30,6 +30,7 @@ export const showErrorAlert = (message) => {
     text: message,
     icon: "error",
     showConfirmButton: true,
+    timer: 30000,
     ...getCommonAlertOptions(),
   });
 };

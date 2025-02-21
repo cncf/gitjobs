@@ -114,7 +114,7 @@ pub(crate) async fn update(
         StatusCode::NO_CONTENT,
         [(
             "HX-Location",
-            r#"{"path":"/dashboard/employer", "target":"body"}"#,
+            r#"{"path":"/dashboard/employer?tab=profile", "target":"body"}"#,
         )],
     )
         .into_response())

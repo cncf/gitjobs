@@ -555,7 +555,7 @@
     const imagesForm = document.getElementById('images-form');
     imagesForm.addEventListener('htmx:afterRequest', (e) => {
       if (e.detail.successful) {
-        showSuccessAlert('Image added successfully!');
+        showSuccessAlert('Image added successfully.');
       } else {
         showErrorAlert('Something went wrong adding the image, please try again later.');
       }

@@ -295,7 +295,7 @@
     jobSeekerForm.addEventListener('htmx:afterRequest', (e) => {
       if (e.detail.elt.id === 'jobseeker-form') {
         if (e.detail.successful) {
-          showSuccessAlert('Profile updated successfully!');
+          showSuccessAlert('Profile updated successfully.');
         } else {
           showErrorAlert('Something went wrong updating the profile, please try again later.');
         }

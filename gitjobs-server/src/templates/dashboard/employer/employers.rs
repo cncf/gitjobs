@@ -1,6 +1,5 @@
 //! This module defines some templates and types used to manage employers.
 
-use axum_messages::{Level, Message};
 use rinja::Template;
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
@@ -11,9 +10,7 @@ use crate::templates::{filters, helpers::build_location};
 /// Add employer page template.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
 #[template(path = "dashboard/employer/employers/add.html")]
-pub(crate) struct AddPage {
-    pub messages: Vec<Message>,
-}
+pub(crate) struct AddPage {}
 
 /// Employer initial setup page template.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
@@ -25,7 +22,6 @@ pub(crate) struct InitialSetupPage {}
 #[template(path = "dashboard/employer/employers/update.html")]
 pub(crate) struct UpdatePage {
     pub employer: Employer,
-    pub messages: Vec<Message>,
 }
 
 /// Employer summary.

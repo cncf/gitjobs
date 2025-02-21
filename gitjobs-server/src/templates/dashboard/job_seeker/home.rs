@@ -1,6 +1,7 @@
 //! This module defines some templates and types used in the job seeker
 //! dashboard home page.
 
+use axum_messages::{Level, Message};
 use rinja::Template;
 use serde::{Deserialize, Serialize};
 
@@ -14,6 +15,7 @@ pub(crate) struct Page {
     pub content: Content,
     pub page_id: PageId,
     pub logged_in: bool,
+    pub messages: Vec<Message>,
 
     pub name: Option<String>,
     pub username: Option<String>,

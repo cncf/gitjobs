@@ -258,6 +258,7 @@ pub(crate) async fn sign_up(
 #[instrument(skip_all, err)]
 pub(crate) async fn update_user_details(
     auth_session: AuthSession,
+    messages: Messages,
     State(db): State<DynDB>,
     Form(user_summary): Form<auth::UserSummary>,
 ) -> Result<impl IntoResponse, HandlerError> {
@@ -269,8 +270,9 @@ pub(crate) async fn update_user_details(
     // Update user in database
     let user_id = user.user_id;
     db.update_user_details(&user_id, &user_summary).await?;
+    messages.success("User details updated successfully.");
 
-    Ok(StatusCode::NO_CONTENT.into_response())
+    Ok((StatusCode::NO_CONTENT, [("HX-Trigger", "refresh-body")]).into_response())
 }
 
 /// Handler that updates the user's password.

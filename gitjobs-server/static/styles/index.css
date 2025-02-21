@@ -1,24 +1,8 @@
-/* Body min-width */
-body {
-  min-width: 910px;
-}
-
-.bg-jobboard::before {
-  content: "";
-  position: fixed;
-  top: 80px;
-  left: 0;
-  right: 0;
-  z-index: -1;
-
-  display: block;
+.bg-jobboard {
   background-image: url('/static/images/background.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: repeat;
-  width: 100%;
-  height: 100%;
-
   opacity: 0.075;
 }
 
@@ -28,12 +12,45 @@ body {
   list-style-position: inside;
 }
 
+.markdown ol li {
+  list-style-type: decimal;
+  list-style-position: inside;
+}
+
 .markdown h1, .markdown h2, .markdown h3, .markdown h4, .markdown h5, .markdown h6 {
   font-size: inherit;
 }
 
 .markdown p:not(:last-child), .markdown ul:not(:last-child), .markdown ol:not(:last-child), .markdown blockquote:not(:last-child), .markdown pre:not(:last-child), .markdown table:not(:last-child) {
   margin-bottom: 0.5rem;
+}
+
+.markdown blockquote {
+  margin: 1rem 0;
+  padding: 0.5rem 1rem;
+  border-left: 3px solid #e2e8f0;
+  background-color: #f8fafc;
+  font-style: italic;
+}
+
+.markdown table {
+  max-width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+
+.markdown table td, .markdown table th {
+  border: 1px solid #e2e8f0;
+  padding: 0.5rem;
+}
+
+.markdown a {
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+.markdown hr {
+  margin: 1rem 0;
 }
 /* End markdown */
 
@@ -47,7 +64,8 @@ body {
 
 /* Icons */
 .svg-icon {
-  mask-size: 100%;
+  mask-size: contain;
+  -webkit-mask-size: contain;
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
   mask-position: center;
@@ -307,7 +325,7 @@ body {
 
 .EasyMDEContainer .CodeMirror-scroll {
   max-height: 180px;
-  min-height: 180px;
+  min-height: 180px !important;
 }
 
 .mini .EasyMDEContainer .CodeMirror {
@@ -316,7 +334,7 @@ body {
 
 .mini .EasyMDEContainer .CodeMirror-scroll {
   max-height: 100px;
-  min-height: 100px;
+  min-height: 100px !important;
 }
 
 .EasyMDEContainer button {
@@ -333,6 +351,11 @@ body {
 
 .EasyMDEContainer .cm-spell-error:not(.cm-url):not(.cm-comment):not(.cm-tag):not(.cm-word) {
   background: transparent;
+}
+
+.EasyMDEContainer .editor-preview-active {
+  background-color: white;
+  padding: 1rem;
 }
 
 /* Hide separator when empty block of icons */

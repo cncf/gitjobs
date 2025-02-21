@@ -1,6 +1,7 @@
 //! This module defines some templates and types used in the employer dashboard
 //! home page.
 
+use axum_messages::{Level, Message};
 use rinja::Template;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -20,6 +21,7 @@ pub(crate) struct Page {
     pub content: Content,
     pub employers: Vec<employer::employers::EmployerSummary>,
     pub logged_in: bool,
+    pub messages: Vec<Message>,
     pub page_id: PageId,
 
     pub name: Option<String>,

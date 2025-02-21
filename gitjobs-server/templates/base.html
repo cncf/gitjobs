@@ -44,7 +44,7 @@
     <style type="text/tailwindcss">
       @layer components {
         .btn-primary {
-          @apply cursor-pointer rounded-full bg-primary-600 border border-primary-600 px-5 py-2 text-sm text-white hover:bg-primary-900 hover:border-primary-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600;
+          @apply cursor-pointer rounded-full bg-primary-600 border border-primary-600 px-5 py-2 text-sm text-white hover:bg-primary-900 hover:border-primary-900 focus:ring-0 focus:outline-none focus:ring-transparent;
         }
 
         .btn-primary .svg-icon {
@@ -52,7 +52,7 @@
         }
 
         .btn-secondary {
-          @apply cursor-pointer rounded-full bg-primary-50 border border-primary-900 px-5 py-2 text-sm text-primary-900 hover:bg-primary-100 hover:border-primary-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600;
+          @apply cursor-pointer rounded-full bg-primary-50 border border-primary-900 px-5 py-2 text-sm text-primary-900 hover:bg-primary-100 hover:border-primary-900 focus:ring-0 focus:outline-none focus:ring-transparent;
         }
 
         .btn-secondary .svg-icon {
@@ -60,7 +60,7 @@
         }
 
         .btn-tertiary {
-          @apply cursor-pointer text-sm/6 text-gray-900 px-5 py-2 border-transparent rounded-full hover:bg-gray-50 hover:border-gray-50;
+          @apply cursor-pointer text-sm/6 text-gray-900 px-5 py-2 border-transparent rounded-full focus:ring-0 focus:outline-none focus:ring-transparent hover:bg-gray-50 hover:border-gray-50;
         }
 
         .btn-tertiary .svg-icon {
@@ -68,7 +68,7 @@
         }
 
         .btn-primary-outline {
-          @apply cursor-pointer text-primary-600 border border-primary-600 bg-white rounded-full hover:text-white hover:bg-primary-900 hover:border-primary-900 focus:ring-4 focus:outline-none focus:ring-primary-300 text-sm px-5 py-2;
+          @apply cursor-pointer text-primary-600 border border-primary-600 bg-white rounded-full hover:text-white hover:bg-primary-900 hover:border-primary-900 focus:ring-0 focus:outline-none focus:ring-transparent text-sm px-5 py-2;
         }
 
         .btn-primary-outline .svg-icon {
@@ -156,14 +156,25 @@
       });
     </script>
   </head>
-  <body class="h-screen font-inter bg-base">
+  <body class="h-screen font-inter bg-base" hx-get hx-trigger="refresh-body">
     {# Header #}
     {% include "header.html" %}
     {# End Header #}
 
+    {# View for small devices #}
+    <div class="flex md:hidden justify-center items-center w-full h-full">
+      <div class="fixed top-0 start-0 end-0 -z-1 block w-full h-full bg-jobboard"></div>
+      <div class="text-center bg-base border border-4 border-primary-600 border-dashed rounded-3xl text-2xl font-medium text-gray-800 p-10 m-10">
+        This site is not optimized yet for mobile devices
+      </div>
+    </div>
+    {# End view for small devices #}
+
     {# Main Content #}
-    <div class="flex min-h-screen
-                {% if page_id == PageId::JobBoard -%}bg-jobboard{%- endif %}">
+    <div class="hidden md:flex min-h-screen">
+      {% if page_id == PageId::JobBoard %}
+        <div class="fixed top-[80px] start-0 end-0 -z-1 block w-full h-full bg-jobboard"></div>
+      {% endif %}
       {% block main %}
       {% endblock main %}
     </div>

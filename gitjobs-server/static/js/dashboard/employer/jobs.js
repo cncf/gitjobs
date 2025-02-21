@@ -7,8 +7,3 @@ export const triggerActionOnForm = (formId, action) => {
     htmx.trigger(form, action);
   }
 };
-
-export const updateJobsList = () => {
-  const refreshButton = document.getElementById("refresh-table");
-  htmx.trigger(refreshButton, "click");
-};

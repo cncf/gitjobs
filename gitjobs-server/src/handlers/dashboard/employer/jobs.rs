@@ -109,7 +109,7 @@ pub(crate) async fn add(
     // Add job to database
     db.add_job(&employer_id, &job).await?;
 
-    Ok(StatusCode::CREATED.into_response())
+    Ok((StatusCode::CREATED, [("HX-Trigger", "refresh-jobs-table")]).into_response())
 }
 
 /// Handler that archives a job.
@@ -120,7 +120,7 @@ pub(crate) async fn archive(
 ) -> Result<impl IntoResponse, HandlerError> {
     db.archive_job(&job_id).await?;
 
-    Ok(StatusCode::NO_CONTENT)
+    Ok((StatusCode::NO_CONTENT, [("HX-Trigger", "refresh-jobs-table")]))
 }
 
 /// Handler that deletes a job.
@@ -131,7 +131,7 @@ pub(crate) async fn delete(
 ) -> Result<impl IntoResponse, HandlerError> {
     db.delete_job(&job_id).await?;
 
-    Ok(StatusCode::NO_CONTENT)
+    Ok((StatusCode::NO_CONTENT, [("HX-Trigger", "refresh-jobs-table")]))
 }
 
 /// Handler that publishes a job.
@@ -142,7 +142,7 @@ pub(crate) async fn publish(
 ) -> Result<impl IntoResponse, HandlerError> {
     db.publish_job(&job_id).await?;
 
-    Ok(StatusCode::NO_CONTENT)
+    Ok((StatusCode::NO_CONTENT, [("HX-Trigger", "refresh-jobs-table")]))
 }
 
 /// Handler that updates a job.
@@ -163,5 +163,5 @@ pub(crate) async fn update(
     // Update job in database
     db.update_job(&job_id, &job).await?;
 
-    Ok(StatusCode::NO_CONTENT.into_response())
+    Ok((StatusCode::NO_CONTENT, [("HX-Trigger", "refresh-jobs-table")]).into_response())
 }

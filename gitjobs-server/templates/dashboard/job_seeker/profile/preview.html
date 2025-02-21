@@ -2,12 +2,12 @@
   {# Photo #}
   {% if let Some(photo_id) = profile.photo_id %}
     {% let photo = &self::build_image_url(photo_id, "small") %}
-    <div class="bg-gray-100 p-2 size-24 rounded-full flex items-center justify-center">
+    <div>
       <img src="{{ photo }}"
            alt="{{ profile.name }} photo"
-           height="80"
-           width="80"
-           class="size-18 rounded-full">
+           height="96"
+           width="96"
+           class="size-24 rounded-lg">
     </div>
   {% endif %}
   {# End photo #}
@@ -51,6 +51,10 @@
 
     {# Social #}
     <div class="flex flex-col space-y-3">
+      {# Email #}
+      {% call social_link(url = profile.email, icon = "email", is_email = true) %}
+      {# End email #}
+
       {# Website url #}
       {% if let Some(website_url) = profile.website_url %}
         {% call social_link(url = website_url, icon = "link") %}
@@ -214,8 +218,8 @@
   <div class="uppercase text-gray-800 tracking-[0.25rem] font-semibold mb-3">{{ content }}</div>
 {% endmacro title %}
 
-{% macro social_link(url, icon) %}
-  <a href="url"
+{% macro social_link(url, icon, is_email = false) %}
+  <a href="{%- if is_email -%}mailto:{%- endif -%}{{ url }}"
      class="btn-tertiary border btn-mini flex items-center space-x-2"
      target="_blank"
      rel="noopener noreferrer">

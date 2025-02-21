@@ -156,26 +156,21 @@
 
 <script type="module">
   import {
-    showErrorAlert,
-    showSuccessAlert
+    showErrorAlert
   } from '/static/js/common/alerts.js';
 
   const userDetailsForm = document.getElementById('user-details-form');
   const passwordForm = document.getElementById('password-form');
 
   userDetailsForm.addEventListener('htmx:afterRequest', (e) => {
-    if (e.detail.successful) {
-      showSuccessAlert('User details updated successfully!');
-    } else {
+    if (!e.detail.successful) {
       showErrorAlert('Something went wrong updating the user details, please try again later.');
     }
   });
 
   if (passwordForm) {
     passwordForm.addEventListener('htmx:afterRequest', (e) => {
-      if (e.detail.successful) {
-        showSuccessAlert('Password updated successfully!');
-      } else {
+      if (!e.detail.successful) {
         showErrorAlert('Something went wrong updating the password, please try again later.');
       }
     });

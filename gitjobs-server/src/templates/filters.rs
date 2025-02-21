@@ -1,6 +1,7 @@
 //! Some custom filters for templates.
 
 use chrono::{DateTime, NaiveDate, Utc};
+use tracing::error;
 
 /// Return the value if it is some, otherwise return an empty string.
 #[allow(clippy::unnecessary_wraps, clippy::ref_option)]
@@ -78,7 +79,14 @@ where
 /// Filter to convert markdown to html.
 #[allow(clippy::unnecessary_wraps, clippy::ref_option)]
 pub(crate) fn md_to_html(s: &str) -> rinja::Result<String> {
-    Ok(markdown::to_html(s))
+    let options = markdown::Options::gfm();
+    match markdown::to_html_with_options(s, &options) {
+        Ok(html) => Ok(html),
+        Err(e) => {
+            error!("error converting markdown to html: {}", e);
+            Ok("error converting markdown to html".to_string())
+        }
+    }
 }
 
 /// Return the unnormalized version of the string provided.

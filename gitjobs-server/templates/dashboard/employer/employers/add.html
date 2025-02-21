@@ -112,12 +112,6 @@
       </div>
     </div>
   </form>
-  {# Messages #}
-  {% if !messages.is_empty() %}
-    {{ messages|json }}
-    {% call macros::alerts(messages) %}
-  {% endif %}
-  {# End messages #}
   {# End employer form #}
 </div>
 <script type="module">

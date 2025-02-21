@@ -3,6 +3,7 @@ const getCommonAlertOptions = () => {
     position: "top-end",
     buttonsStyling: false,
     iconColor: "var(--primary-color)",
+    backdrop: false,
     customClass: {
       popup: "pb-10 pt-5 px-0 rounded-2xl max-w-[400px] shadow-lg",
       title: "text-md",

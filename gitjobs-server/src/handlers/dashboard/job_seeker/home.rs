@@ -9,6 +9,7 @@ use axum::{
     http::StatusCode,
     response::{Html, IntoResponse},
 };
+use axum_messages::Messages;
 use rinja::Template;
 use tracing::instrument;
 
@@ -29,6 +30,7 @@ use crate::{
 #[instrument(skip_all, err)]
 pub(crate) async fn page(
     auth_session: AuthSession,
+    messages: Messages,
     State(db): State<DynDB>,
     JobBoardId(job_board_id): JobBoardId,
     Query(query): Query<HashMap<String, String>>,
@@ -61,6 +63,7 @@ pub(crate) async fn page(
     let template = home::Page {
         content,
         logged_in: true,
+        messages: messages.into_iter().collect(),
         name: Some(user.name),
         page_id: PageId::JobSeekerDashboard,
         username: Some(user.username),

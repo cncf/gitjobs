@@ -71,7 +71,7 @@ export class CertificationsSection extends LitElement {
     return html`<div class="mt-10">
       <div class="flex">
         <div
-          class="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 border border-2 border-dashed p-8 rounded-lg bg-gray-50/25 w-2/3"
+          class="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 border border-2 border-dashed p-8 rounded-lg bg-gray-50/25 w-3/4 lg:w-2/3"
         >
           <div class="col-span-3">
             <label class="form-label"> Title <span class="asterisk">*</span> </label>

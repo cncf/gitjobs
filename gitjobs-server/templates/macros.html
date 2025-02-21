@@ -473,9 +473,9 @@
 {# Radio box #}
 {% macro radio_box(name, value, label, icon, checked = "", required = false) %}
   <div class="flex items-center px-3 py-2 border border-gray-200 rounded-md">
-    <div class="svg-icon size-4 icon-{{ icon }} bg-gray-600 cursor-pointer"></div>
+    <div class="hidden lg:block svg-icon size-4 icon-{{ icon }} bg-gray-600 cursor-pointer"></div>
     <label for="{{ name }}-{{ value }}"
-           class="ms-2 text-sm text-gray-900 flex-grow sm:text-sm/6 cursor-pointer">{{ label }}</label>
+           class="ms-2 text-xs lg:text-sm text-gray-900 flex-grow cursor-pointer">{{ label }}</label>
     <input id="{{ name }}-{{ value }}"
            type="radio"
            value="{{ value }}"
@@ -489,7 +489,7 @@
 
 {# Form image #}
 {% macro images_form(label, name, icon = "company", value = "") %}
-  {% let empty_image = value == "" %}
+  {% let empty_image = value.is_empty() %}
 
   {# Images form #}
   <form id="images-form"
@@ -531,12 +531,7 @@
           <label for="logo"
                  class="btn-primary btn-mini cursor-pointer whitespace-nowrap">
             <input type="file" id="logo" name="logo" class="hidden" />
-            {% if empty_image %}
-              Upload
-            {% else %}
-              Edit
-            {% endif %}
-            image
+            Upload image
           </label>
           {# End input file #}
 

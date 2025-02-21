@@ -82,26 +82,19 @@
 {% endblock menu %}
 
 {% block dashboard_main %}
-  <div id="dashboard-content" class="p-4 sm:p-6 lg:p-12">
+  <div id="dashboard-content"
+       hx-get="/dashboard/employer/jobs/list"
+       hx-trigger="refresh-jobs-table"
+       class="p-4 sm:p-6 lg:p-12">
     {# Content -#}
     {{ content|safe }}
     {# End Content #}
   </div>
 
-  {# Refresh table button #}
-  <button id="refresh-table"
-          hx-get="/dashboard/employer/jobs/list"
-          hx-target="#dashboard-content"
-          class="hidden">Refresh table</button>
-  {# End refresh table button #}
-
   <script type="module">
     import {
       processNewHtmxUrl
     } from '/static/js/common/common.js';
-    import {
-      updateJobsList
-    } from '/static/js/dashboard/employer/jobs.js';
 
     const employerBtn = document.getElementById('employer-btn');
     const dropdownEmployers = document.getElementById('dropdown-employers');
@@ -131,6 +124,11 @@
       });
     }
   </script>
+  {# Messages #}
+  {% if !messages.is_empty() %}
+    {% call macros::alerts(messages) %}
+  {% endif %}
+  {# End messages #}
 {% endblock dashboard_main %}
 
 {% macro employer_content_list(company, logo_id) %}

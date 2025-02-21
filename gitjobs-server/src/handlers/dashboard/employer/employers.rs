@@ -28,13 +28,8 @@ use crate::{
 
 /// Handler that returns the page to add a new employer.
 #[instrument(skip_all, err)]
-pub(crate) async fn add_page(
-    messages: Messages,
-    State(_db): State<DynDB>,
-) -> Result<impl IntoResponse, HandlerError> {
-    let template = employers::AddPage {
-        messages: messages.into_iter().collect(),
-    };
+pub(crate) async fn add_page(State(_db): State<DynDB>) -> Result<impl IntoResponse, HandlerError> {
+    let template = employers::AddPage {};
 
     Ok(Html(template.render()?))
 }
@@ -42,15 +37,11 @@ pub(crate) async fn add_page(
 /// Handler that returns the page to update an employer.
 #[instrument(skip_all, err)]
 pub(crate) async fn update_page(
-    messages: Messages,
     State(db): State<DynDB>,
     SelectedEmployerIdRequired(employer_id): SelectedEmployerIdRequired,
 ) -> Result<impl IntoResponse, HandlerError> {
     let employer = db.get_employer(&employer_id).await?;
-    let template = employers::UpdatePage {
-        employer,
-        messages: messages.into_iter().collect(),
-    };
+    let template = employers::UpdatePage { employer };
 
     Ok(Html(template.render()?))
 }
@@ -79,7 +70,14 @@ pub(crate) async fn add(
     // Use new employer as the selected employer for the session
     session.insert(SELECTED_EMPLOYER_ID_KEY, employer_id).await?;
 
-    Ok((StatusCode::CREATED, [("HX-Refresh", "true")]).into_response())
+    Ok((
+        StatusCode::CREATED,
+        [(
+            "HX-Location",
+            r#"{"path":"/dashboard/employer", "target":"body"}"#,
+        )],
+    )
+        .into_response())
 }
 
 /// Handler that selects an employer.
@@ -91,7 +89,14 @@ pub(crate) async fn select(
     // Update the selected employer in the session
     session.insert(SELECTED_EMPLOYER_ID_KEY, employer_id).await?;
 
-    Ok((StatusCode::NO_CONTENT, [("HX-Refresh", "true")]))
+    Ok((
+        StatusCode::NO_CONTENT,
+        [(
+            "HX-Location",
+            r#"{"path":"/dashboard/employer", "target":"body"}"#,
+        )],
+    )
+        .into_response())
 }
 
 /// Handler that updates an employer.
@@ -105,5 +110,12 @@ pub(crate) async fn update(
     db.update_employer(&employer_id, &employer).await?;
     messages.success("Employer updated successfully.");
 
-    Ok((StatusCode::NO_CONTENT, [("HX-Refresh", "true")]).into_response())
+    Ok((
+        StatusCode::NO_CONTENT,
+        [(
+            "HX-Location",
+            r#"{"path":"/dashboard/employer", "target":"body"}"#,
+        )],
+    )
+        .into_response())
 }

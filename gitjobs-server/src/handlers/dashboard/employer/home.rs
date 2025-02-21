@@ -59,10 +59,7 @@ pub(crate) async fn page(
         }
         Tab::Profile => {
             let employer = db.get_employer(&employer_id.expect("to be some")).await?;
-            Content::Profile(employers::UpdatePage {
-                employer,
-                messages: messages.into_iter().collect(),
-            })
+            Content::Profile(employers::UpdatePage { employer })
         }
     };
 
@@ -70,9 +67,10 @@ pub(crate) async fn page(
     let employers = db.list_employers(&user.user_id).await?;
     let template = home::Page {
         content,
-        page_id: PageId::EmployerDashboard,
         employers,
         logged_in: true,
+        messages: messages.into_iter().collect(),
+        page_id: PageId::EmployerDashboard,
         name: Some(user.name),
         selected_employer_id: employer_id,
         username: Some(user.username),

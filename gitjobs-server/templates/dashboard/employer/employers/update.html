@@ -144,17 +144,11 @@
       </div>
     </div>
   </form>
-  {# Messages #}
-  {% if !messages.is_empty() %}
-    {{ messages|json }}
-    {% call macros::alerts(messages) %}
-  {% endif %}
-  {# End messages #}
   {# End employer form #}
 </div>
 <script type="module">
   import {
-    showErrorAlert,
+    showErrorAlert
   } from '/static/js/common/alerts.js';
 
   const employerForm = document.getElementById('employer-form');
@@ -162,6 +156,7 @@
   employerForm.addEventListener('htmx:afterRequest', (e) => {
     // Check if the form is the employer form and not the input ts_query requesting locations
     if (e.detail.elt.id === 'employer-form') {
+      window.scrollTo(0, 0);
       if (!e.detail.successful) {
         showErrorAlert('Something went wrong updating the profile, please try again later.');
       }

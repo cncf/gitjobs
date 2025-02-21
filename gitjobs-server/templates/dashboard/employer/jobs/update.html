@@ -35,7 +35,7 @@
         {# End Job title #}
 
         {# Job status #}
-        <input type="hidden" name="status" value="draft">
+        <input type="hidden" name="status" value="{{ job.status }}">
         {# End job status #}
 
         {# Job location #}
@@ -274,6 +274,7 @@
           <div class="mt-2 grid grid-cols-1">
             <select id="salary_period" name="salary_period" class="select-primary">
               {% call macros::select_option(value = "", label = "", selected = job.salary_period|display_some) %}
+              {% call macros::select_option(value = "hourly", label = "Hourly") %}
               {% call macros::select_option(value = "daily", label = "Daily", selected = job.salary_period|display_some) %}
               {% call macros::select_option(value = "weekly", label = "Weekly", selected = job.salary_period|display_some) %}
               {% call macros::select_option(value = "fortnightly", label = "Fortnightly", selected = job.salary_period|display_some) %}
@@ -415,8 +416,7 @@
 
 <script type="module">
   import {
-    triggerActionOnForm,
-    updateJobsList
+    triggerActionOnForm
   } from '/static/js/dashboard/employer/jobs.js';
   import {
     toggleModalVisibility
@@ -441,13 +441,11 @@
     }
   });
 
-  // After the form is submitted, update the jobs list
   jobsForm.addEventListener('htmx:afterRequest', (e) => {
     // Check if the form is the jobs form and not the input ts_query requesting locations
     if (e.detail.elt.id === 'jobs-form') {
       if (e.detail.successful) {
         showSuccessAlert('Job updated successfully!');
-        updateJobsList();
       } else {
         showErrorAlert('Something went wrong updating the job, please try again later.');
       }

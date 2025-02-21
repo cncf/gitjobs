@@ -2,19 +2,19 @@
 
 use std::{collections::HashMap, sync::Arc};
 
-use anyhow::{bail, Result};
+use anyhow::{Result, bail};
 use async_trait::async_trait;
 use axum::http::header::{AUTHORIZATION, USER_AGENT};
 use axum_login::{
-    tower_sessions::{self, session, session_store},
     AuthManagerLayer, AuthManagerLayerBuilder,
+    tower_sessions::{self, session, session_store},
 };
-use oauth2::{reqwest, TokenResponse};
+use oauth2::{TokenResponse, reqwest};
 use password_auth::verify_password;
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use time::Duration;
-use tower_sessions::{cookie::SameSite, CachingSessionStore, Expiry, SessionManagerLayer};
+use tower_sessions::{CachingSessionStore, Expiry, SessionManagerLayer, cookie::SameSite};
 use tower_sessions_moka_store::MokaStore;
 use uuid::Uuid;
 

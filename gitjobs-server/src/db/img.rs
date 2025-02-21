@@ -5,7 +5,7 @@ use async_trait::async_trait;
 use tracing::instrument;
 use uuid::Uuid;
 
-use crate::{img::ImageVersion, PgDB};
+use crate::{PgDB, img::ImageVersion};
 
 /// Trait that defines some database operations used to manage images.
 #[async_trait]

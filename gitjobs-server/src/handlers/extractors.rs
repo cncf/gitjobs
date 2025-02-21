@@ -5,7 +5,7 @@ use std::sync::Arc;
 use anyhow::Result;
 use axum::{
     extract::{FromRequestParts, Path},
-    http::{header::HOST, request::Parts, StatusCode},
+    http::{StatusCode, header::HOST, request::Parts},
 };
 use cached::proc_macro::cached;
 use tower_sessions::Session;

@@ -6,11 +6,11 @@ use tracing::instrument;
 use uuid::Uuid;
 
 use crate::{
+    PgDB,
     templates::dashboard::employer::{
         employers::{Employer, EmployerSummary},
         jobs::{Job, JobBoard, JobSummary},
     },
-    PgDB,
 };
 
 /// Trait that defines some database operations used in the employer dashboard.

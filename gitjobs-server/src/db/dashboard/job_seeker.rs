@@ -6,7 +6,7 @@ use async_trait::async_trait;
 use tracing::instrument;
 use uuid::Uuid;
 
-use crate::{templates::dashboard::job_seeker::profile::JobSeekerProfile, PgDB};
+use crate::{PgDB, templates::dashboard::job_seeker::profile::JobSeekerProfile};
 
 /// Trait that defines some database operations used in the job seeker
 /// dashboard.

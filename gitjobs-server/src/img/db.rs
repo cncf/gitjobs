@@ -6,7 +6,7 @@ use uuid::Uuid;
 
 use crate::{
     db::DynDB,
-    img::{generate_versions, is_svg, ImageFormat, ImageStore, ImageVersion},
+    img::{ImageFormat, ImageStore, ImageVersion, generate_versions, is_svg},
 };
 
 /// Database-backed image store.

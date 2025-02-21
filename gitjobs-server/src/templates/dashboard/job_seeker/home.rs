@@ -4,7 +4,7 @@
 use rinja::Template;
 use serde::{Deserialize, Serialize};
 
-use crate::templates::{auth, dashboard::job_seeker, filters, PageId};
+use crate::templates::{PageId, auth, dashboard::job_seeker, filters};
 
 /// Home page template.
 #[derive(Debug, Clone, Template)]

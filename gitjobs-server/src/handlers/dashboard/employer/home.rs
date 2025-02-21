@@ -17,13 +17,12 @@ use crate::{
     db::DynDB,
     handlers::{error::HandlerError, extractors::SelectedEmployerIdOptional},
     templates::{
-        auth,
+        PageId, auth,
         dashboard::employer::{
             employers,
             home::{self, Content, Tab},
             jobs,
         },
-        PageId,
     },
 };
 

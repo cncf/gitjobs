@@ -3,15 +3,15 @@
 
 use anyhow::Result;
 use axum::{
+    Router,
     extract::FromRef,
     http::{
-        header::{CACHE_CONTROL, CONTENT_TYPE},
         HeaderValue, StatusCode, Uri,
+        header::{CACHE_CONTROL, CONTENT_TYPE},
     },
     middleware,
     response::IntoResponse,
     routing::{delete, get, post, put},
-    Router,
 };
 use axum_login::login_required;
 use axum_messages::MessagesManagerLayer;

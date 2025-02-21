@@ -5,8 +5,8 @@ use std::{collections::HashMap, path::PathBuf};
 use anyhow::Result;
 use deadpool_postgres::Config as DbConfig;
 use figment::{
-    providers::{Env, Format, Serialized, Yaml},
     Figment,
+    providers::{Env, Format, Serialized, Yaml},
 };
 use serde::{Deserialize, Serialize};
 use tracing::instrument;

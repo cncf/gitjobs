@@ -12,7 +12,7 @@ use crate::{
     auth::AuthSession,
     db::DynDB,
     handlers::{error::HandlerError, extractors::JobBoardId},
-    templates::{jobboard::home::Page, PageId},
+    templates::{PageId, jobboard::home::Page},
 };
 
 /// Handler that returns the home page.

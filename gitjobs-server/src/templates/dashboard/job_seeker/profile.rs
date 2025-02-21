@@ -9,7 +9,7 @@ use uuid::Uuid;
 
 use crate::templates::{
     filters,
-    helpers::{build_image_url, build_location, normalize, DATE_FORMAT_2},
+    helpers::{DATE_FORMAT_2, build_image_url, build_location, normalize},
 };
 
 /// Profile preview page template.

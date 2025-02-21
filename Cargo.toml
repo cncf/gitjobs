@@ -7,18 +7,18 @@ members = [
 [workspace.package]
 version = "0.0.1"
 license = "Apache-2.0"
-edition = "2021"
-rust-version = "1.84"
+edition = "2024"
+rust-version = "1.85"
 
 [workspace.dependencies]
-anyhow = "1.0.95"
+anyhow = "1.0.96"
 async-trait = "0.1.86"
 axum = { version = "0.8.1", features = ["macros", "multipart"] }
 axum-login = "0.17.0"
 axum-extra = { version = "0.10.0", features = ["form"] }
 axum-messages = "0.8.0"
 cached = { version = "0.54.0", features = ["async"] }
-clap = { version = "4.5.28", features = ["derive"] }
+clap = { version = "4.5.30", features = ["derive"] }
 chrono = { version = "0.4.39", features = ["serde"] }
 chrono-tz = { version = "0.10.1", features = ["serde"] }
 deadpool-postgres = { version = "0.14.1", features = ["serde"] }
@@ -30,7 +30,7 @@ mime_guess = "2.0.5"
 minify-html = "0.15.0"
 num-format = "0.4.4"
 oauth2 = "5.0.0"
-openssl = { version = "0.10.70", features = ["vendored"] }
+openssl = { version = "0.10.71", features = ["vendored"] }
 palette = "0.7.6"
 password-auth = "1.0.0"
 postgres-openssl = "0.5.1"
@@ -38,9 +38,9 @@ regex = "1.11.1"
 reqwest = { version = "0.12.12", features = ["json"] }
 rinja = { git = "https://github.com/rinja-rs/rinja", rev = "535df5e", features = ["serde_json"] }
 rust-embed = "8.5.0"
-serde = { version = "1.0.217", features = ["derive"] }
+serde = { version = "1.0.218", features = ["derive"] }
 serde_html_form = "0.2.7"
-serde_json = "1.0.138"
+serde_json = "1.0.139"
 serde_qs = "0.13.0"
 serde_with = "3.12.0"
 thiserror = "2.0.11"
@@ -66,4 +66,4 @@ tower-sessions-moka-store = "0.15.0"
 tracing = "0.1.41"
 tracing-subscriber = { version = "0.3.19", features = ["env-filter", "json"] }
 unicode-segmentation = "1.12.0"
-uuid = { version = "1.13.1", features = ["serde", "v4"] }
+uuid = { version = "1.14.0", features = ["serde", "v4"] }

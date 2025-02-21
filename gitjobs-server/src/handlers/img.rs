@@ -6,8 +6,8 @@ use axum::{
     response::IntoResponse,
 };
 use reqwest::{
-    header::{CONTENT_LENGTH, CONTENT_TYPE},
     StatusCode,
+    header::{CONTENT_LENGTH, CONTENT_TYPE},
 };
 use tracing::instrument;
 use uuid::Uuid;

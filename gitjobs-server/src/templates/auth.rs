@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     auth::UserSummary,
-    templates::{filters, PageId},
+    templates::{PageId, filters},
 };
 
 /// Log in page.

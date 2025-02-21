@@ -6,11 +6,10 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::templates::{
-    auth,
+    PageId, auth,
     dashboard::employer,
     filters,
     helpers::{build_image_url, find_employer},
-    PageId,
 };
 
 /// Home page template.

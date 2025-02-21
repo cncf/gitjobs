@@ -14,8 +14,7 @@ use password_auth::verify_password;
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use time::Duration;
-use tower_sessions::{CachingSessionStore, Expiry, SessionManagerLayer, cookie::SameSite};
-use tower_sessions_moka_store::MokaStore;
+use tower_sessions::{Expiry, SessionManagerLayer, cookie::SameSite};
 use uuid::Uuid;
 
 use crate::{
@@ -24,22 +23,18 @@ use crate::{
 };
 
 /// Type alias for the auth layer.
-pub(crate) type AuthLayer = AuthManagerLayer<AuthnBackend, CachingSessionStore<MokaStore, SessionStore>>;
+pub(crate) type AuthLayer = AuthManagerLayer<AuthnBackend, SessionStore>;
 
 /// Setup router authentication/authorization layer.
 pub(crate) fn setup_layer(cfg: &HttpServerConfig, db: DynDB) -> Result<AuthLayer> {
-    // Setup session store
-    let session_store = SessionStore::new(db.clone());
-    let moka_store = MokaStore::new(Some(1000));
-    let caching_session_store = CachingSessionStore::new(moka_store, session_store);
-
     // Setup session layer
+    let session_store = SessionStore::new(db.clone());
     let secure = if let Some(cookie) = &cfg.cookie {
         cookie.secure.unwrap_or(true)
     } else {
         true
     };
-    let session_layer = SessionManagerLayer::new(caching_session_store)
+    let session_layer = SessionManagerLayer::new(session_store)
         .with_expiry(Expiry::OnInactivity(Duration::days(7)))
         .with_http_only(true)
         .with_same_site(SameSite::Lax)

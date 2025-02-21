@@ -150,16 +150,17 @@
   import {
     showErrorAlert
   } from '/static/js/common/alerts.js';
+  import {
+    isSuccessfulXHRStatus
+  } from '/static/js/common/common.js';
 
   const employerForm = document.getElementById('employer-form');
 
-  employerForm.addEventListener('htmx:afterRequest', (e) => {
+  employerForm.addEventListener('htmx:afterOnLoad', (e) => {
     // Check if the form is the employer form and not the input ts_query requesting locations
-    if (e.detail.elt.id === 'employer-form') {
+    if (!isSuccessfulXHRStatus(e.detail.xhr.status)) {
       window.scrollTo(0, 0);
-      if (!e.detail.successful) {
-        showErrorAlert('Something went wrong updating the profile, please try again later.');
-      }
+      showErrorAlert('Something went wrong updating the profile, please try again later.');
     }
   });
 </script>

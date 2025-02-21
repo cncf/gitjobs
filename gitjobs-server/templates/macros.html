@@ -551,10 +551,13 @@
       showErrorAlert,
       showSuccessAlert
     } from '/static/js/common/alerts.js';
+    import {
+      isSuccessfulXHRStatus
+    } from '/static/js/common/common.js';
 
     const imagesForm = document.getElementById('images-form');
     imagesForm.addEventListener('htmx:afterRequest', (e) => {
-      if (e.detail.successful) {
+      if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
         showSuccessAlert('Image added successfully.');
       } else {
         showErrorAlert('Something went wrong adding the image, please try again later.');
@@ -568,6 +571,10 @@
   {# End input hidden #}
 
   <script type="module">
+    import {
+      isSuccessfulXHRStatus
+    } from '/static/js/common/common.js';
+
     // On clean image button click, remove the image and the clear button, and show the placeholder
     const cleanImage = document.getElementById('clean-image');
     const inputHidden = document.getElementById('{{ name }}');
@@ -584,7 +591,7 @@
     // On image upload, show the image and the clear button, and hide the placeholder
     const imagesForm = document.getElementById('images-form');
     imagesForm.addEventListener('htmx:afterRequest', (e) => {
-      if (e.detail.successful) {
+      if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
         const imageId = e.detail.xhr.response;
         inputHidden.value = imageId;
         cleanImage.disabled = false;
@@ -592,7 +599,7 @@
         image.setAttribute('src', `/images/${imageId}/small`);
         image.classList.remove('hidden');
       } else {
-        // TODO: Show an error message
+        showErrorAlert('Something went wrong adding the image, please try again later.');
       }
     });
   </script>

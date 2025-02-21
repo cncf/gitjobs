@@ -360,7 +360,8 @@
     triggerActionOnForm
   } from '/static/js/dashboard/employer/jobs.js';
   import {
-    toggleModalVisibility
+    toggleModalVisibility,
+    isSuccessfulXHRStatus
   } from '/static/js/common/common.js';
   import {
     showErrorAlert,
@@ -385,7 +386,7 @@
   jobsForm.addEventListener('htmx:afterRequest', (e) => {
     // Check if the form is the jobs form and not the input ts_query requesting locations
     if (e.detail.elt.id === 'jobs-form') {
-      if (e.detail.successful) {
+      if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
         showSuccessAlert('Job added successfully.');
       } else {
         showErrorAlert('Something went wrong adding the job, please try again later.');
@@ -415,7 +416,7 @@
   // On preview button click, show the preview modal
   const previewButton = document.getElementById('preview-button');
   previewButton.addEventListener('htmx:afterRequest', (e) => {
-    if (e.detail.successful) {
+    if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
       toggleModalVisibility('preview-modal');
     } else {
       // When the preview is not available, show an error message

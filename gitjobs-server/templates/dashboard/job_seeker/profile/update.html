@@ -284,7 +284,8 @@
 
   <script type="module">
     import {
-      toggleModalVisibility
+      toggleModalVisibility,
+      isSuccessfulXHRStatus
     } from '/static/js/common/common.js';
     import {
       showErrorAlert,
@@ -294,7 +295,7 @@
     const jobSeekerForm = document.getElementById('jobseeker-form');
     jobSeekerForm.addEventListener('htmx:afterRequest', (e) => {
       if (e.detail.elt.id === 'jobseeker-form') {
-        if (e.detail.successful) {
+        if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
           showSuccessAlert('Profile updated successfully.');
         } else {
           showErrorAlert('Something went wrong updating the profile, please try again later.');
@@ -305,7 +306,7 @@
     // On preview button click, show the preview modal
     const previewButton = document.getElementById('preview-button');
     previewButton.addEventListener('htmx:afterRequest', (e) => {
-      if (e.detail.successful) {
+      if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
         toggleModalVisibility('preview-modal');
       } else {
         // When the preview is not available, show an error message

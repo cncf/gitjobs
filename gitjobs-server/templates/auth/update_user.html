@@ -158,19 +158,22 @@
   import {
     showErrorAlert
   } from '/static/js/common/alerts.js';
+  import {
+    isSuccessfulXHRStatus
+  } from '/static/js/common/common.js';
 
   const userDetailsForm = document.getElementById('user-details-form');
   const passwordForm = document.getElementById('password-form');
 
   userDetailsForm.addEventListener('htmx:afterRequest', (e) => {
-    if (!e.detail.successful) {
+    if (!isSuccessfulXHRStatus(e.detail.xhr.status)) {
       showErrorAlert('Something went wrong updating the user details, please try again later.');
     }
   });
 
   if (passwordForm) {
     passwordForm.addEventListener('htmx:afterRequest', (e) => {
-      if (!e.detail.successful) {
+      if (!isSuccessfulXHRStatus(e.detail.xhr.status)) {
         showErrorAlert('Something went wrong updating the password, please try again later.');
       }
     });

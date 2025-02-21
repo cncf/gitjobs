@@ -2,8 +2,9 @@
 
 **GitJobs** is an open source job board platform.
 
-> [!WARNING]
-> This project is currently in the early stages of development and is not yet ready for production use.
+| ![Screenshot 1](docs/screenshots/gitjobs1.png?raw=true) | ![Screenshot 2](docs/screenshots/gitjobs2.png?raw=true) |
+| ------------------------------------------------------- | ------------------------------------------------------- |
+| ![Screenshot 3](docs/screenshots/gitjobs3.png?raw=true) | ![Screenshot 4](docs/screenshots/gitjobs4.png?raw=true) |
 
 ## Contributing
 

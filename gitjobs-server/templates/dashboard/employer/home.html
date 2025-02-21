@@ -3,7 +3,10 @@
 {% import "dashboard/macros.html" as dashboard_macros %}
 
 {% block menu %}
-  <div class="font-semibold text-gray-900 text-2xl mt-3 mb-6">Dashboard</div>
+  <div class="flex justify-between items-center mt-3 mb-6">
+    <div class="font-semibold text-gray-900 text-2xl">Dashboard</div>
+    <div id="dashboard-spinner" class="hx-spinner -mt-1.5 relative">{% call macros::spinner(size = 5) %}</div>
+  </div>
 
   <div class="max-h-full w-full flex flex-col space-y-5 mb-5 overflow-y-auto">
     {# Employer #}
@@ -15,7 +18,8 @@
                   hx-get="/dashboard/employer/employers/add"
                   hx-trigger="click"
                   hx-target="#dashboard-content"
-                  class="group btn-primary-outline btn-mini mb-1">
+                  class="group btn-primary-outline btn-mini mb-1"
+                  hx-indicator="#dashboard-spinner">
             <div class="flex items-center space-x-1">
               <div class="svg-icon size-2 icon-plus group-hover:bg-white"></div>
               <div>Add</div>

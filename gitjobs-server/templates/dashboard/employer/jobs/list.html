@@ -124,6 +124,7 @@
                 <div>
                   <button hx-get="/dashboard/employer/jobs/{{ job.job_id }}/update"
                           hx-target="#dashboard-content"
+                          hx-indicator="#dashboard-spinner"
                           class="btn-tertiary p-2">
                     <div class="svg-icon size-4 icon-pencil"></div>
                   </button>
@@ -144,6 +145,7 @@
                         <li>
                           <button hx-put="/dashboard/employer/jobs/{{ job.job_id }}/publish"
                                   hx-target="#dashboard-content"
+                                  hx-indicator="#dashboard-spinner"
                                   class="w-full text-start px-4 py-2 hover:bg-gray-100">
                             <div class="flex items-center">
                               <div class="svg-icon size-4 icon-send bg-gray-600"></div>
@@ -155,6 +157,7 @@
                       <li>
                         <button hx-delete="/dashboard/employer/jobs/{{ job.job_id }}/delete"
                                 hx-target="#dashboard-content"
+                                hx-indicator="#dashboard-spinner"
                                 hx-confirm="Are you sure you wish to delete this job?"
                                 class="w-full text-start px-4 py-2 hover:bg-gray-100">
                           <div class="flex items-center">
@@ -167,6 +170,7 @@
                         <li>
                           <button hx-put="/dashboard/employer/jobs/{{ job.job_id }}/archive"
                                   hx-target="#dashboard-content"
+                                  hx-indicator="#dashboard-spinner"
                                   class="w-full text-start px-4 py-2 hover:bg-gray-100">
                             <div class="flex items-center">
                               <div class="svg-icon size-4 icon-archive bg-gray-600"></div>

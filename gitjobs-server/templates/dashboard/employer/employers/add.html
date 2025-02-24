@@ -17,7 +17,8 @@
         hx-ext="no-empty-vals"
         hx-include="[name=logo_id]"
         hx-trigger="submit"
-        hx-indicator="#form-spinner">
+        hx-indicator="#dashboard-spinner, #save-spinner"
+        hx-disabled-elt="button[type=submit], #cancel-button">
 
     <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 max-w-4xl">
       {# Company name #}
@@ -99,15 +100,20 @@
 
     <div class="mt-12 flex items-center justify-end gap-x-6 border-t border-gray-900/10 pt-12">
       {# Cancel button #}
-      <a hx-boost="true"
-         href="/dashboard/employer?tab=profile"
-         class="btn-primary-outline">Cancel</a>
+      <button id="cancel-button"
+              hx-get="/dashboard/employer"
+              hx-target="body"
+              hx-indicator="#dashboard-spinner"
+              hx-push-url="true"
+              class="btn-primary-outline">Cancel</button>
       {# End cancel button #}
 
       <div class="relative">
-        <div id="form-spinner"></div>
         {# Submit employer form button #}
-        <button type="submit" class="btn-primary">Save</button>
+        <button type="submit" class="btn-primary">
+          {% call macros::btn_spinner(id = "save-spinner", bg_color = "white", fill_color = "primary-300") %}
+          Save
+        </button>
         {# End submit employer form button #}
       </div>
     </div>

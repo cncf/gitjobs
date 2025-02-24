@@ -9,6 +9,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#f9fafb" />
+    <meta name="htmx-config" content='{"includeIndicatorStyles": false}'>
 
     {# TODO - primary color #}
     <style>
@@ -44,7 +45,7 @@
     <style type="text/tailwindcss">
       @layer components {
         .btn-primary {
-          @apply cursor-pointer rounded-full bg-primary-600 border border-primary-600 px-5 py-2 text-sm text-white hover:bg-primary-900 hover:border-primary-900 focus:ring-0 focus:outline-none focus:ring-transparent;
+          @apply enabled:cursor-pointer rounded-full bg-primary-600 border border-primary-600 px-5 py-2 text-sm text-white hover:enabled:bg-primary-900 hover:enabled:border-primary-900 focus:ring-0 focus:outline-none focus:ring-transparent relative overflow-hidden;
         }
 
         .btn-primary .svg-icon {
@@ -52,7 +53,7 @@
         }
 
         .btn-secondary {
-          @apply cursor-pointer rounded-full bg-primary-50 border border-primary-900 px-5 py-2 text-sm text-primary-900 hover:bg-primary-100 hover:border-primary-900 focus:ring-0 focus:outline-none focus:ring-transparent;
+          @apply enabled:cursor-pointer rounded-full bg-primary-50 border border-primary-900 px-5 py-2 text-sm text-primary-900 hover:enabled:bg-primary-100 hover:enabled:border-primary-900 focus:ring-0 focus:outline-none focus:ring-transparent relative overflow-hidden;
         }
 
         .btn-secondary .svg-icon {
@@ -60,7 +61,7 @@
         }
 
         .btn-tertiary {
-          @apply cursor-pointer text-sm/6 text-gray-900 px-5 py-2 border-transparent rounded-full focus:ring-0 focus:outline-none focus:ring-transparent hover:bg-gray-50 hover:border-gray-50;
+          @apply enabled:cursor-pointer text-sm/6 text-gray-900 px-5 py-2 border-transparent rounded-full focus:ring-0 focus:outline-none focus:ring-transparent hover:enabled:bg-gray-50 hover:enabled:border-gray-50 relative overflow-hidden;
         }
 
         .btn-tertiary .svg-icon {
@@ -68,7 +69,7 @@
         }
 
         .btn-primary-outline {
-          @apply cursor-pointer text-primary-600 border border-primary-600 bg-white rounded-full hover:text-white hover:bg-primary-900 hover:border-primary-900 focus:ring-0 focus:outline-none focus:ring-transparent text-sm px-5 py-2;
+          @apply enabled:cursor-pointer text-primary-600 border border-primary-600 bg-white rounded-full hover:enabled:text-white hover:enabled:bg-primary-900 hover:enabled:border-primary-900 focus:ring-0 focus:outline-none focus:ring-transparent text-sm px-5 py-2 relative overflow-hidden;
         }
 
         .btn-primary-outline .svg-icon {

@@ -7,7 +7,8 @@
       hx-put="/dashboard/employer/jobs/{{ job_id }}/update"
       hx-ext="no-empty-vals"
       hx-trigger="submit"
-      hx-indicator="#form-spinner">
+      hx-indicator="#dashboard-spinner, #save-spinner"
+      hx-disabled-elt="button[type=submit], #publish-job, #cancel-button, #preview-button">
   <div class="space-y-12">
     <div class="border-b border-gray-900/10 pb-12">
       {% call macros::form_title(title = "Job details", description = "Please add as many details about this job as possible. You can save it as a draft and come back later to finish it.") %}
@@ -373,35 +374,44 @@
           <span class="block md:hidden">
             <div class="svg-icon size-3 icon-eye group-hover:bg-white"></div>
           </span>
+          {% call macros::btn_spinner(id = "preview-spinner") %}
         </button>
         {# End preview button #}
-        <div id="preview-spinner" class="hx-spinner">{% call macros::spinner(size = 5) %}</div>
       </div>
       {# End preview #}
 
       <div class="flex items-center justify-end gap-x-6 relative">
-        <div id="form-spinner"></div>
-
         {# Cancel button #}
-        <a hx-boost="true"
-           href="/dashboard/employer?tab=jobs"
-           class="btn-primary-outline">Cancel</a>
+        <button id="cancel-button"
+                hx-get="/dashboard/employer?tab=jobs"
+                hx-target="body"
+                hx-indicator="#dashboard-spinner"
+                class="btn-primary-outline">Cancel</button>
         {# End cancel button #}
 
         {# When status is published #}
         {% if job.status == JobStatus::Published %}
           {# Save button #}
-          <button type="submit" class="btn-primary">Save</button>
+          <button type="submit" class="btn-primary">
+            {% call macros::btn_spinner(id = "save-spinner", bg_color = "white", fill_color = "primary-300") %}
+            Save
+          </button>
           {# End save button #}
 
           {# When status is not published #}
         {% else %}
           {# Save button #}
-          <button type="submit" class="btn-secondary">Save</button>
+          <button type="submit" class="btn-secondary">
+            {% call macros::btn_spinner(id = "save-spinner", bg_color = "white", fill_color = "primary-900") %}
+            Save
+          </button>
           {# End save button #}
 
           {# Publish button #}
-          <button id="publish-job" type="button" class="btn-primary">Publish</button>
+          <button id="publish-job" type="button" class="btn-primary">
+            {% call macros::btn_spinner(id = "publish-spinner", bg_color = "white", fill_color = "primary-300") %}
+            Publish
+          </button>
           {# End publish button #}
         {% endif %}
       </div>
@@ -445,6 +455,9 @@
   jobsForm.addEventListener('htmx:afterRequest', (e) => {
     // Check if the form is the jobs form and not the input ts_query requesting locations
     if (e.detail.elt.id === 'jobs-form') {
+      // Update hx-spinner
+      jobsForm.setAttribute('hx-indicator', '#dashboard-spinner, #save-spinner');
+
       if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
         showSuccessAlert('Job updated successfully.');
       } else {
@@ -457,15 +470,16 @@
   const publishBtn = document.getElementById('publish-job');
   if (publishBtn) {
     publishBtn.addEventListener('click', () => {
-      const form = document.getElementById('jobs-form');
+      // Update hx-spinner
+      jobsForm.setAttribute('hx-indicator', '#dashboard-spinner, #publish-spinner');
       // Update the job status to published
-      form.querySelector('input[name="status"]').value = 'published';
+      jobsForm.querySelector('input[name="status"]').value = 'published';
 
       // Check if the form is valid before submitting,
       // htmx does not trigger the form validation
       // when submitting the form from not a submit button
-      if (!form.checkValidity()) {
-        form.reportValidity();
+      if (!jobsForm.checkValidity()) {
+        jobsForm.reportValidity();
       } else {
         triggerActionOnForm('jobs-form', 'submit');
       }

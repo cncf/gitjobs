@@ -34,6 +34,7 @@
     <button id="add-job-button"
             hx-get="/dashboard/employer/jobs/add"
             hx-target="#dashboard-content"
+            hx-indicator="#dashboard-spinner"
             class="btn-primary">Add Job</button>
   </div>
   {# End add job button #}
@@ -125,6 +126,7 @@
                   <button hx-get="/dashboard/employer/jobs/{{ job.job_id }}/update"
                           hx-target="#dashboard-content"
                           hx-indicator="#dashboard-spinner"
+                          hx-disabled-elt="this"
                           class="btn-tertiary p-2">
                     <div class="svg-icon size-4 icon-pencil"></div>
                   </button>

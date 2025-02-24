@@ -1,3 +1,5 @@
+{% import "macros.html" as macros %}
+
 <div class="w-full m-auto content-center">
   <div class="text-3xl mb-10 text-gray-500">Set up your first employer</div>
 
@@ -12,7 +14,11 @@
   <div class="flex justify-center">
     <button hx-get="/dashboard/employer/employers/add"
             hx-trigger="click"
-            hx-target="#dashboard-content"
-            class="btn-primary">Set up employer</button>
+            hx-target="#dashboard-content, #initial-spinner"
+            hx-disabled-elt="this"
+            class="btn-primary">
+      {% call macros::btn_spinner(id = "initial-spinner", bg_color = "white", fill_color = "primary-300") %}
+      Set up employer
+    </button>
   </div>
 </div>

@@ -1,8 +1,8 @@
 {# Spinner -#}
-{% macro spinner(size = 4, bg_color = "gray-200", extra_styles = "") %}
+{% macro spinner(size = 4, bg_color = "gray-200", fill_color="primary-600", extra_styles = "") %}
   <div role="status" class="{{ extra_styles }}">
     <svg aria-hidden="true"
-         class="inline size-{{ size }} text-{{ bg_color }} animate-spin fill-primary-600"
+         class="inline size-{{ size }} text-{{ bg_color }} animate-spin fill-{{ fill_color }}"
          viewBox="0 0 100 101"
          fill="none"
          xmlns="http://www.w3.org/2000/svg">
@@ -13,6 +13,18 @@
   </div>
 {% endmacro spinner %}
 {# End spinner -#}
+
+{# Button spinner #}
+{% macro btn_spinner(id, size = 5, bg_color = "gray-200", fill_color="primary-600") %}
+  <div id="{{ id }}"
+       class="top-0 start-0 bottom-0 end-0 bg-inherit absolute hx-spinner">
+    <div class="flex items-center justify-center h-full w-full">
+      {% call spinner(size = size, fill_color = fill_color, bg_color = bg_color) %}
+    </div>
+  </div>
+
+{% endmacro btn_spinner %}
+{# End button spinner #}
 
 {# Location -#}
 {% macro location(location_id = "", city = "", state = "", country = "", required = false) %}
@@ -497,7 +509,8 @@
         hx-encoding="multipart/form-data"
         hx-trigger="change from:#logo"
         hx-swap="none"
-        hx-indicator="#images-spinner">
+        hx-indicator="#images-spinner"
+        hx-disabled-elt="#clean-image, input[type=file]">
     <label for="{{ name }}" class="form-label">{{ label }}</label>
     <div class="mt-3 flex items-stretch gap-x-5">
       <div class="relative flex items-center size-24 min-w-24 bg-gray-200 rounded-xl overflow-hidden">

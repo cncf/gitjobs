@@ -4,7 +4,9 @@
 <form id="user-details-form"
       hx-put="/account/update/details"
       hx-ext="no-empty-vals"
-      hx-trigger="submit">
+      hx-trigger="submit"
+      hx-indicator="#dashboard-spinner, #save-user-spinner"
+      hx-disabled-elt="button[type=submit]">
   <div class="space-y-12">
     <div>
       {% call macros::form_title(title = "Account", description = "You can update your personal user account details here.") %}
@@ -70,7 +72,10 @@
     </div>
 
     <div class="mt-6">
-      <button type="submit" class="btn-primary">Save</button>
+      <button type="submit" class="btn-primary">
+        {% call macros::btn_spinner(id = "save-user-spinner", bg_color = "white", fill_color = "primary-300") %}
+        Save
+      </button>
     </div>
   </div>
 </form>
@@ -85,7 +90,9 @@
         hx-put="/account/update/password"
         hx-ext="no-empty-vals"
         hx-trigger="submit"
-        hx-target="body">
+        hx-target="body"
+        hx-indicator="#dashboard-spinner, #update-password-spinner"
+        hx-disabled-elt="button[type=submit]">
     <div class="space-y-12">
       <div>
         {% call macros::form_title(title = "Update password", description = "After updating your password all your current sessions will be terminated and you will need to log back in.") %}
@@ -137,7 +144,10 @@
       </div>
 
       <div class="mt-6 items-center">
-        <button type="submit" class="btn-primary">Save</button>
+        <button type="submit" class="btn-primary">
+          {% call macros::btn_spinner(id = "update-password-spinner", bg_color = "white", fill_color = "primary-300") %}
+          Save
+        </button>
       </div>
     </div>
   </form>

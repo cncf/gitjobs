@@ -21,7 +21,8 @@
         hx-ext="no-empty-vals"
         hx-include="[name=photo_id]"
         hx-trigger="submit"
-        hx-indicator="#form-spinner">
+        hx-indicator="#dashboard-spinner, #save-spinner"
+        hx-disabled-elt="button[type=submit], #preview-button">
     <div class="space-y-12">
       <div class="border-b border-gray-900/10 pb-12">
         <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-6 max-w-5xl">
@@ -254,22 +255,25 @@
                     hx-ext="no-empty-vals"
                     hx-target="#preview-content"
                     hx-indicator="#preview-spinner"
+                    hx-disabled-elt="this"
                     type="button"
                     class="group btn-primary-outline">
               <span class="hidden md:block">Preview</span>
               <span class="block md:hidden">
                 <div class="svg-icon size-3 icon-eye group-hover:bg-white"></div>
               </span>
+              {% call macros::btn_spinner(id = "preview-spinner") %}
             </button>
             {# End preview button #}
-            <div id="preview-spinner" class="hx-spinner">{% call macros::spinner(size = 5) %}</div>
           </div>
           {# End preview #}
 
           {# Save button #}
           <div>
-            <div id="form-spinner"></div>
-            <button type="submit" class="btn-primary">Save</button>
+            <button type="submit" class="btn-primary">
+              {% call macros::btn_spinner(id = "save-spinner", bg_color = "white", fill_color = "primary-300") %}
+              Save
+            </button>
           </div>
           {# End save button #}
         </div>

@@ -17,7 +17,7 @@ pub(crate) trait ImageStore {
     async fn get(&self, image_id: Uuid, version: &str) -> Result<Option<(Vec<u8>, ImageFormat)>>;
 
     /// Save an image to the store.
-    async fn save(&self, job_board_id: &Uuid, filename: &str, data: Vec<u8>) -> Result<Uuid>;
+    async fn save(&self, job_board_id: &Uuid, user_id: &Uuid, filename: &str, data: Vec<u8>) -> Result<Uuid>;
 }
 
 /// Type alias to represent an `ImageStore` trait object.

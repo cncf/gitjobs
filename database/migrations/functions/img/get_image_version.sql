@@ -3,11 +3,12 @@
 create or replace function get_image_version(p_image_id uuid, p_version text)
 returns table(data bytea, format text) as $$
 begin
+    -- PNG
     return query select iv.data, 'png' as format from image_version iv
     where image_id = p_image_id and version = p_version;
-
     if found then return; end if;
 
+    -- SVG
     return query select iv.data, 'svg' as format from image_version iv
     where image_id = p_image_id and version = 'svg';
 end

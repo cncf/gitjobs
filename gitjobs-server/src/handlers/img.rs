@@ -12,9 +12,12 @@ use reqwest::{
 use tracing::instrument;
 use uuid::Uuid;
 
-use crate::{db::img::ImageFormat, handlers::error::HandlerError, img::DynImageStore};
-
-use super::extractors::JobBoardId;
+use crate::{
+    auth::AuthSession,
+    db::img::ImageFormat,
+    handlers::{error::HandlerError, extractors::JobBoardId},
+    img::DynImageStore,
+};
 
 /// Handler that returns an image.
 #[instrument(skip_all, err)]
@@ -42,10 +45,16 @@ pub(crate) async fn get(
 /// Handler that uploads an image.
 #[instrument(skip_all, err)]
 pub(crate) async fn upload(
+    auth_session: AuthSession,
     JobBoardId(job_board_id): JobBoardId,
     State(image_store): State<DynImageStore>,
     mut multipart: Multipart,
 ) -> Result<impl IntoResponse, HandlerError> {
+    // Get user from session
+    let Some(user) = auth_session.user else {
+        return Ok(StatusCode::FORBIDDEN.into_response());
+    };
+
     // Get image file name and data from the multipart form data
     let (file_name, data) = if let Ok(Some(field)) = multipart.next_field().await {
         let file_name = field.file_name().unwrap_or_default().to_string();
@@ -58,7 +67,9 @@ pub(crate) async fn upload(
     };
 
     // Save image to store
-    let image_id = image_store.save(&job_board_id, &file_name, data.to_vec()).await?;
+    let image_id = image_store
+        .save(&job_board_id, &user.user_id, &file_name, data.to_vec())
+        .await?;
 
     Ok((StatusCode::OK, image_id.to_string()).into_response())
 }

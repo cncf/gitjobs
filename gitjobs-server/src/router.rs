@@ -69,7 +69,7 @@ pub(crate) fn setup(cfg: &HttpServerConfig, db: DynDB, image_store: DynImageStor
     // Setup sub-routers
     let employer_dashboard_router = setup_employer_dashboard_router(state.clone());
     let job_seeker_dashboard_router = setup_job_seeker_dashboard_router();
-    let images_router = setup_images_router();
+    let images_router = setup_images_router(state.clone());
 
     // Setup main router
     let mut router = Router::new()
@@ -184,10 +184,16 @@ fn setup_job_seeker_dashboard_router() -> Router<State> {
 
 /// Setup images router.
 #[instrument(skip_all)]
-fn setup_images_router() -> Router<State> {
-    Router::new()
-        .route("/", post(img::upload))
-        .route("/{:image_id}/{:version}", get(img::get))
+fn setup_images_router(state: State) -> Router<State> {
+    // Setup middleware
+    let check_user_has_image_access =
+        middleware::from_fn_with_state(state.clone(), auth::user_has_image_access);
+
+    // Setup router
+    Router::new().route("/", post(img::upload)).route(
+        "/{:image_id}/{:version}",
+        get(img::get).layer(check_user_has_image_access),
+    )
 }
 
 /// Handler that takes care of health check requests.

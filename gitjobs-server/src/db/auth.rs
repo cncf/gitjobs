@@ -54,6 +54,9 @@ pub(crate) trait DBAuth {
     /// Update user password.
     async fn update_user_password(&self, user_id: &Uuid, new_password: &str) -> Result<()>;
 
+    /// Check if the user has access to the image.
+    async fn user_has_image_access(&self, user_id: &Uuid, image_id: &Uuid) -> Result<bool>;
+
     /// Check if the user owns the employer.
     async fn user_owns_employer(&self, user_id: &Uuid, employer_id: &Uuid) -> Result<bool>;
 
@@ -399,6 +402,22 @@ impl DBAuth for PgDB {
         Ok(())
     }
 
+    /// [DBAuth::user_has_image_access]
+    #[instrument(skip(self), err)]
+    async fn user_has_image_access(&self, user_id: &Uuid, image_id: &Uuid) -> Result<bool> {
+        trace!("checking in database if user has access to image");
+
+        let db = self.pool.get().await?;
+        let row = db
+            .query_one(
+                "select user_has_image_access($1::uuid, $2::uuid);",
+                &[&user_id, &image_id],
+            )
+            .await?;
+
+        Ok(row.get(0))
+    }
+
     /// [DBAuth::user_owns_employer]
     #[instrument(skip(self), err)]
     async fn user_owns_employer(&self, user_id: &Uuid, employer_id: &Uuid) -> Result<bool> {
@@ -413,13 +432,13 @@ impl DBAuth for PgDB {
                     from employer_team
                     where user_id = $1::uuid
                     and employer_id = $2::uuid
-                );
+                ) as owns_employer;
                 ",
                 &[&user_id, &employer_id],
             )
             .await?;
 
-        Ok(row.get(0))
+        Ok(row.get("owns_employer"))
     }
 
     /// [DBAuth::user_owns_job]
@@ -437,12 +456,12 @@ impl DBAuth for PgDB {
                     join employer_team et using (employer_id)
                     where et.user_id = $1::uuid
                     and j.job_id = $2::uuid
-                );
+                ) as owns_job;
                 ",
                 &[&user_id, &job_id],
             )
             .await?;
 
-        Ok(row.get(0))
+        Ok(row.get("owns_job"))
     }
 }

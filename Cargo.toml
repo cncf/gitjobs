@@ -18,7 +18,7 @@ axum-login = "0.17.0"
 axum-extra = { version = "0.10.0", features = ["form"] }
 axum-messages = "0.8.0"
 cached = { version = "0.54.0", features = ["async"] }
-clap = { version = "4.5.30", features = ["derive"] }
+clap = { version = "4.5.31", features = ["derive"] }
 chrono = { version = "0.4.39", features = ["serde"] }
 chrono-tz = { version = "0.10.1", features = ["serde"] }
 deadpool-postgres = { version = "0.14.1", features = ["serde"] }
@@ -37,7 +37,7 @@ postgres-openssl = "0.5.1"
 regex = "1.11.1"
 reqwest = { version = "0.12.12", features = ["json"] }
 rinja = { git = "https://github.com/rinja-rs/rinja", rev = "535df5e", features = ["serde_json"] }
-rust-embed = "8.5.0"
+rust-embed = "8.6.0"
 serde = { version = "1.0.218", features = ["derive"] }
 serde_html_form = "0.2.7"
 serde_json = "1.0.139"
@@ -65,4 +65,4 @@ tower-sessions = { version = "0.14.0", features = ["signed"] }
 tracing = "0.1.41"
 tracing-subscriber = { version = "0.3.19", features = ["env-filter", "json"] }
 unicode-segmentation = "1.12.0"
-uuid = { version = "1.14.0", features = ["serde", "v4"] }
+uuid = { version = "1.15.0", features = ["serde", "v4"] }

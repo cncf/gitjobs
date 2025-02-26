@@ -20,7 +20,7 @@ export const showSuccessAlert = (message) => {
     text: message,
     icon: "success",
     showConfirmButton: false,
-    timer: 3000,
+    timer: 5000,
     ...getCommonAlertOptions(),
   });
 };

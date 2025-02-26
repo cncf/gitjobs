@@ -45,3 +45,11 @@ export const isSuccessfulXHRStatus = (status) => {
     return false;
   }
 };
+
+// Function to check if an object is empty
+export const isObjectEmpty = (obj) => {
+  // Remove the id key from the object
+  const objectWithoutId = { ...obj };
+  delete objectWithoutId.id;
+  return Object.values(objectWithoutId).every((x) => x === null || x === "" || typeof x === "undefined");
+};

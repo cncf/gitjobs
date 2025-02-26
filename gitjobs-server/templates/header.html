@@ -38,10 +38,10 @@
           <div class="flex items-center space-x-5">
             <a hx-boost="true"
                href="/dashboard/employer"
-               class="btn-primary-outline">Post a job</a>
+               class="btn-primary-outline-anchor w-[140px]">Post a job</a>
             <a hx-boost="true"
                href="/dashboard/job-seeker"
-               class="btn-primary-outline">Create profile</a>
+               class="btn-primary-outline-anchor w-[140px]">Create profile</a>
           </div>
         {% endif %}
         <div class="ms-10">
@@ -98,7 +98,12 @@
 
         {# When user is not logged in, we display a button to go to login page #}
       {% else %}
-        <a hx-boost="true" class="btn-primary" href="/log-in">Log In</a>
+        <div class="flex items-center space-x-5">
+          <a hx-boost="true"
+             class="btn-primary-outline-anchor w-28"
+             href="/sign-up">Sign Up</a>
+          <a hx-boost="true" class="btn-primary-anchor w-28" href="/log-in">Log In</a>
+        </div>
       {% endif %}
     </div>
   </div>

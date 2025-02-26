@@ -131,6 +131,11 @@
   -webkit-mask-image: url('/static/images/icons/email.svg')
 }
 
+.icon-eraser {
+  mask-image: url('/static/images/icons/eraser.svg');
+  -webkit-mask-image: url('/static/images/icons/eraser.svg')
+}
+
 .icon-eye {
   mask-image: url('/static/images/icons/eye.svg');
   -webkit-mask-image: url('/static/images/icons/eye.svg')
@@ -139,6 +144,11 @@
 .icon-facebook {
   mask-image: url('/static/images/icons/facebook.svg');
   -webkit-mask-image: url('/static/images/icons/facebook.svg')
+}
+
+.icon-file_badge {
+  mask-image: url('/static/images/icons/file_badge.svg');
+  -webkit-mask-image: url('/static/images/icons/file_badge.svg')
 }
 
 .icon-filter {
@@ -239,6 +249,16 @@
 .icon-plus {
   mask-image: url('/static/images/icons/plus.svg');
   -webkit-mask-image: url('/static/images/icons/plus.svg')
+}
+
+.icon-plus_bottom {
+  mask-image: url('/static/images/icons/plus_bottom.svg');
+  -webkit-mask-image: url('/static/images/icons/plus_bottom.svg')
+}
+
+.icon-plus_top {
+  mask-image: url('/static/images/icons/plus_top.svg');
+  -webkit-mask-image: url('/static/images/icons/plus_top.svg')
 }
 
 .icon-project {

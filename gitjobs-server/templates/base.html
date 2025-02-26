@@ -45,15 +45,19 @@
     <style type="text/tailwindcss">
       @layer components {
         .btn-primary {
-          @apply enabled:cursor-pointer rounded-full bg-primary-600 border border-primary-600 px-5 py-2 text-sm text-white hover:enabled:bg-primary-900 hover:enabled:border-primary-900 focus:ring-0 focus:outline-none focus:ring-transparent relative overflow-hidden;
+          @apply enabled:cursor-pointer rounded-full text-center bg-primary-600 border border-primary-600 px-5 py-2 text-sm text-white hover:enabled:bg-primary-900 hover:enabled:border-primary-900 focus:ring-0 focus:outline-none focus:ring-transparent relative overflow-hidden;
         }
 
-        .btn-primary .svg-icon {
+        .btn-primary-anchor {
+          @apply cursor-pointer rounded-full text-center bg-primary-600 border border-primary-600 px-5 py-2 text-sm text-white hover:bg-primary-900 hover:border-primary-900 focus:ring-0 focus:outline-none focus:ring-transparent relative overflow-hidden;
+        }
+
+        .btn-primary .svg-icon, .btn-primary-anchor .svg-icon {
           @apply bg-white;
         }
 
         .btn-secondary {
-          @apply enabled:cursor-pointer rounded-full bg-primary-50 border border-primary-900 px-5 py-2 text-sm text-primary-900 hover:enabled:bg-primary-100 hover:enabled:border-primary-900 focus:ring-0 focus:outline-none focus:ring-transparent relative overflow-hidden;
+          @apply enabled:cursor-pointer rounded-full text-center bg-primary-50 border border-primary-900 px-5 py-2 text-sm text-primary-900 hover:enabled:bg-primary-100 hover:enabled:border-primary-900 focus:ring-0 focus:outline-none focus:ring-transparent relative overflow-hidden;
         }
 
         .btn-secondary .svg-icon {
@@ -61,18 +65,26 @@
         }
 
         .btn-tertiary {
-          @apply enabled:cursor-pointer text-sm/6 text-gray-900 px-5 py-2 border-transparent rounded-full focus:ring-0 focus:outline-none focus:ring-transparent hover:enabled:bg-gray-50 hover:enabled:border-gray-50 relative overflow-hidden;
+          @apply enabled:cursor-pointer text-center text-sm/6 text-gray-900 px-5 py-2 border-transparent rounded-full focus:ring-0 focus:outline-none focus:ring-transparent hover:enabled:bg-gray-50 hover:enabled:border-gray-50 relative overflow-hidden;
         }
 
-        .btn-tertiary .svg-icon {
+        .btn-tertiary-anchor {
+          @apply cursor-pointer text-center text-sm/6 text-gray-900 px-5 py-2 border-transparent rounded-full focus:ring-0 focus:outline-none focus:ring-transparent hover:bg-gray-50 hover:border-gray-50 relative overflow-hidden;
+        }
+
+        .btn-tertiary .svg-icon, .btn-tertiary-anchor .svg-icon {
           @apply bg-gray-900;
         }
 
         .btn-primary-outline {
-          @apply enabled:cursor-pointer text-primary-600 border border-primary-600 bg-white rounded-full hover:enabled:text-white hover:enabled:bg-primary-900 hover:enabled:border-primary-900 focus:ring-0 focus:outline-none focus:ring-transparent text-sm px-5 py-2 relative overflow-hidden;
+          @apply enabled:cursor-pointer text-center text-primary-600 border border-primary-600 bg-white rounded-full hover:enabled:text-white hover:enabled:bg-primary-900 hover:enabled:border-primary-900 focus:ring-0 focus:outline-none focus:ring-transparent text-sm px-5 py-2 relative overflow-hidden;
         }
 
-        .btn-primary-outline .svg-icon {
+         .btn-primary-outline-anchor {
+          @apply cursor-pointer text-center text-primary-600 border border-primary-600 bg-white rounded-full hover:text-white hover:bg-primary-900 hover:border-primary-900 focus:ring-0 focus:outline-none focus:ring-transparent text-sm px-5 py-2 relative overflow-hidden;
+        }
+
+        .btn-primary-outline .svg-icon, .btn-primary-outline-anchor .svg-icon {
           @apply bg-primary-600;
         }
 

@@ -218,7 +218,7 @@
 
 {% macro social_link(url, icon, is_email = false) %}
   <a href="{%- if is_email -%}mailto:{%- endif -%}{{ url }}"
-     class="btn-tertiary border btn-mini flex items-center space-x-2"
+     class="btn-tertiary-anchor border btn-mini flex items-center space-x-2"
      target="_blank"
      rel="noopener noreferrer">
     <div class="svg-icon size-3 bg-gray-300 icon-{{ icon }}"></div>

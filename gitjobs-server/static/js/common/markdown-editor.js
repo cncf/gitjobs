@@ -43,6 +43,8 @@ export class MarkdownEditor extends LitElement {
       initialValue: this.content,
       status: false,
       previewClass: "markdown",
+      // Fix for hidden textarea
+      autoRefresh: { delay: 300 },
     });
 
     easyMDE.codemirror.on("change", () => {
@@ -51,9 +53,8 @@ export class MarkdownEditor extends LitElement {
       }
     });
 
-    if (this.required) {
-      textarea.style.display = "block";
-    }
+    // Update display of textare to avoid console errors if required attribute is set
+    textarea.style.display = "block";
   }
 
   render() {

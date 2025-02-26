@@ -46,8 +46,10 @@
         {% endif %}
         <div class="ms-10">
           <button id="dropdown-button"
-                  class="cursor-pointer rounded-full bg-gray-400 border border-gray-400 text-white hover:bg-gray-500 hover:border-gray-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-400 size-[38px] p-0.5 border-2 overflow-hidden">
-            <div class="svg-icon size-6 icon-user m-auto bg-white"></div>
+                  class="cursor-pointer group rounded-full bg-white border text-xl border-primary-500 text-primary-600 hover:text-primary-800 hover:border-primary-800 size-[38px] p-0.5 overflow-hidden">
+            {% let name = name|display_some %}
+            {% let initial = name.chars().nth(0).unwrap_or('-') %}
+            <div class="font-semibold uppercase mt-px">{{ initial }}</div>
           </button>
 
           {# Dropdown user #}
@@ -57,7 +59,7 @@
               <li>
                 <div class="flex flex-col px-4 py-2">
                   <div class="font-medium text-sm/6 truncate text-gray-700 mb-3">{{ username|display_some }}</div>
-                  <div class="text-xs/4 truncate">{{ name|display_some }}</div>
+                  <div class="text-xs/4 truncate">{{ name }}</div>
                 </div>
               </li>
               <li class="border-t mt-2 pt-2">

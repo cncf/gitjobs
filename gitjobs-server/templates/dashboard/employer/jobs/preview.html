@@ -32,7 +32,7 @@
     </div>
   </div>
 
-  {% if let Some(member_level) = employer.member_level %}
+  {% if let Some(member) = employer.member %}
     <div class="w-1/4 ps-3">
       <div class="flex gap-x-2 items-center bg-gray-50 border rounded-lg p-2 max-w-full min-w-full">
         <div>
@@ -43,9 +43,9 @@
                class="size-10">
         </div>
         <div class="flex flex-col justify-start min-w-0">
-          <div class="truncate text-start text-gray-700 font-medium">{{ employer.member_name|display_some }}</div>
+          <div class="truncate text-start text-gray-700 font-medium">{{ member.name }}</div>
           <div class="truncate text-nowrap uppercase max-w-[100%] text-xs/4 font-medium text-gray-400">
-            CNCF {{ member_level }} member
+            CNCF {{ member.level }} member
           </div>
         </div>
       </div>
@@ -208,7 +208,7 @@
 
 {# Location #}
 {% call job_details_subheading(content = "Location") %}
-{% let location = &self::build_location(job.city.as_deref(), job.state.as_deref(), job.country.as_deref())|display_some_or("-") %}
+{% let location = job.location|display_some_or("-") %}
 
 {% match job.workplace %}
 {% when Workplace::Remote %}

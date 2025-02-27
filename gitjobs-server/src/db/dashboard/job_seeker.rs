@@ -48,9 +48,14 @@ impl DBDashBoardJobSeeker for PgDB {
                     p.skills,
                     p.twitter_url,
                     p.website_url,
-                    l.city,
-                    l.country,
-                    l.state
+                    (
+                        select nullif(jsonb_strip_nulls(jsonb_build_object(
+                            'location_id', l.location_id,
+                            'city', l.city,
+                            'country', l.country,
+                            'state', l.state
+                        )), '{}'::jsonb)
+                    ) as location
                 from job_seeker_profile p
                 left join location l using (location_id)
                 where user_id = $1::uuid;
@@ -75,7 +80,9 @@ impl DBDashBoardJobSeeker for PgDB {
                 facebook_url: row.get("facebook_url"),
                 github_url: row.get("github_url"),
                 linkedin_url: row.get("linkedin_url"),
-                location_id: row.get("location_id"),
+                location: row
+                    .get::<_, Option<serde_json::Value>>("location")
+                    .map(|v| serde_json::from_value(v).expect("location should be valid json")),
                 open_to_relocation: row.get("open_to_relocation"),
                 open_to_remote: row.get("open_to_remote"),
                 phone: row.get("phone"),
@@ -86,9 +93,6 @@ impl DBDashBoardJobSeeker for PgDB {
                 skills: row.get("skills"),
                 twitter_url: row.get("twitter_url"),
                 website_url: row.get("website_url"),
-                city: row.get("city"),
-                country: row.get("country"),
-                state: row.get("state"),
             });
 
         Ok(profile)
@@ -176,7 +180,7 @@ impl DBDashBoardJobSeeker for PgDB {
                 &profile.facebook_url,
                 &profile.github_url,
                 &profile.linkedin_url,
-                &profile.location_id,
+                &profile.location.as_ref().map(|l| l.location_id),
                 &profile.open_to_relocation,
                 &profile.open_to_remote,
                 &profile.phone,

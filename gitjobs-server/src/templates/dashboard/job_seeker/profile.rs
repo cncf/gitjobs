@@ -9,7 +9,8 @@ use uuid::Uuid;
 
 use crate::templates::{
     filters,
-    helpers::{DATE_FORMAT_2, build_image_url, build_location, normalize},
+    helpers::{DATE_FORMAT_2, build_image_url, format_location, normalize},
+    misc::Location,
 };
 
 /// Profile preview page template.
@@ -37,21 +38,18 @@ pub(crate) struct JobSeekerProfile {
     pub summary: String,
 
     pub certifications: Option<Vec<Certification>>,
-    pub city: Option<String>,
-    pub country: Option<String>,
     pub education: Option<Vec<Education>>,
     pub experience: Option<Vec<Experience>>,
     pub facebook_url: Option<String>,
     pub github_url: Option<String>,
     pub linkedin_url: Option<String>,
-    pub location_id: Option<Uuid>,
+    pub location: Option<Location>,
     pub open_to_relocation: Option<bool>,
     pub open_to_remote: Option<bool>,
     pub phone: Option<String>,
     pub photo_id: Option<Uuid>,
     pub projects: Option<Vec<Project>>,
     pub skills: Option<Vec<String>>,
-    pub state: Option<String>,
     pub twitter_url: Option<String>,
     pub website_url: Option<String>,
 }

@@ -18,8 +18,8 @@ pub(crate) fn build_image_url(image_id: &Uuid, version: &str) -> String {
     format!("/images/{image_id}/{version}")
 }
 
-/// Build location string from the location information provided.
-pub(crate) fn build_location(
+/// Format location string from the location information provided.
+pub(crate) fn format_location(
     city: Option<&str>,
     state: Option<&str>,
     country: Option<&str>,

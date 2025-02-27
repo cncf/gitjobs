@@ -14,11 +14,7 @@
             <div class="location-text truncate"
                  data-city="{{ l.city }}"
                  data-state="{{ l.state|display_some }}"
-                 data-country="{{ l.country }}">
-              {# djlint:off #}
-                 {{ &l.format()|display_some }}
-              {# djlint:on #}
-            </div>
+                 data-country="{{ l.country }}">{{ l }}</div>
           </button>
         </li>
       {% endfor %}

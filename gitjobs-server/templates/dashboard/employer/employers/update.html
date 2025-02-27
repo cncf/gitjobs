@@ -48,32 +48,35 @@
       {# Member #}
       <div class="col-span-full">
         <label for="member" class="form-label">CNCF member</label>
-        {% call macros::search_member(member_id = employer.member_id|display_some, member_name = employer.member_name|display_some, member_level = employer.member_level|display_some, member_logo_url = employer.member_logo_url|display_some) %}
+        {% if let Some(member) = employer.member %}
+          {% call macros::search_member(member_id = member.member_id, member_name = member.name, member_level = member.level, member_logo_url = member.logo_url) %}
+        {% else %}
+          {% call macros::search_member() %}
+        {% endif %}
         <p class="form-legend">
           If your company is a member of the CNCF please select the corresponding member entry. Jobs posted by members will be featured across the site. False membership claims may lead to the suspension of the employer and associated user accounts.
         </p>
         <div id="selected-member" class="flex space-x-5">
-          {% if let Some(member_id) = employer.member_id %}
+          {% if let Some(member) = employer.member %}
             <div class="relative border rounded-lg p-4 pe-10 bg-white mt-4 min-w-64">
-              <button id="remove-{{ member_id }}"
-                      data-id="{{ member_id }}"
+              <button id="remove-{{ member.member_id }}"
+                      data-id="{{ member.member_id }}"
                       type="button"
                       class="rounded-full bg-gray-100 hover:bg-gray-200 absolute top-1 end-1">
                 <div class="svg-icon size-5 bg-gray-400 hover:bg-gray-700 icon-close"></div>
               </button>
-              {% let level = employer.member_level|display_some %}
-              {% let label = &format!("CNCF {} member", level) %}
-              {% call macros::dropdown_card(name = employer.member_name|display_some, label = label, logo_url = employer.member_logo_url|display_some) %}
+              {% let label = &format!("CNCF {} member", member.level) %}
+              {% call macros::dropdown_card(name = member.name, label = label, logo_url = member.logo_url) %}
             </div>
             <script type="module">
               import {
                 removeSelectedMember
               } from '/static/js/common/members.js';
 
-              const removeBtn = document.getElementById('remove-{{ member_id }}');
+              const removeBtn = document.getElementById('remove-{{ member.member_id }}');
               if (removeBtn) {
                 removeBtn.addEventListener('click', () => {
-                  removeSelectedMember('{{ member_id }}');
+                  removeSelectedMember('{{ member.member_id }}');
                 });
               }
             </script>
@@ -85,7 +88,11 @@
       {# Location #}
       <div class="col-span-full lg:col-span-3">
         <label for="ts_query" class="form-label">Location</label>
-        {% call macros::location(location_id = employer.location_id|display_some, city = employer.city|display_some, state = employer.state|display_some, country = employer.country|display_some) %}
+        {% if let Some(location) = employer.location %}
+          {% call macros::location(location_id = location.location_id, city = location.city, state = location.state|display_some, country = location.country) %}
+        {% else %}
+          {% call macros::location() %}
+        {% endif %}
         <p class="form-legend">Location of the headquarters of your company.</p>
       </div>
       {# End location #}

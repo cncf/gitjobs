@@ -35,9 +35,7 @@
       {# End phone #}
 
       {# Location #}
-      {% if let Some(location_id) = profile.location_id %}
-        {% let location = &self::build_location(profile.city.as_deref(), profile.state.as_deref(), profile.country.as_deref())|display_some %}
-
+      {% if let Some(location) = profile.location %}
         {% call main_badge(content = location, icon = "location") %}
       {% endif %}
       {# End location #}

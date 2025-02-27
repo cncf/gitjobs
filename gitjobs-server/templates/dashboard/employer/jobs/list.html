@@ -79,7 +79,7 @@
         </tr>
       {% else %}
         {% for job in jobs %}
-          {% let location = &self::build_location(job.city.as_deref(), None, job.country.as_deref())|display_some_or("-") %}
+          {% let location = &self::format_location(job.city.as_deref(), None, job.country.as_deref())|display_some_or("-") %}
           <tr class="odd:bg-white even:bg-gray-50/50 border-b">
             {# Title job #}
             <th scope="row"

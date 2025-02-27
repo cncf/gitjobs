@@ -9,8 +9,8 @@ use uuid::Uuid;
 
 use crate::templates::{
     filters,
-    helpers::{DATE_FORMAT, build_image_url, build_location, normalize},
-    misc::Project,
+    helpers::{DATE_FORMAT, build_image_url, format_location, normalize},
+    misc::{Location, Project},
 };
 
 use super::employers::Employer;
@@ -62,14 +62,6 @@ pub(crate) struct JobSummary {
     pub published_at: Option<DateTime<Utc>>,
 }
 
-impl JobSummary {
-    /// Get the location of the job.
-    #[allow(dead_code)]
-    pub(crate) fn location(&self) -> Option<String> {
-        build_location(self.city.as_deref(), None, self.country.as_deref())
-    }
-}
-
 /// Job details.
 #[skip_serializing_none]
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -85,10 +77,8 @@ pub(crate) struct Job {
     pub apply_instructions: Option<String>,
     pub apply_url: Option<String>,
     pub benefits: Option<Vec<String>>,
-    pub city: Option<String>,
-    pub country: Option<String>,
     pub job_id: Option<Uuid>,
-    pub location_id: Option<Uuid>,
+    pub location: Option<Location>,
     pub open_source: Option<i32>,
     pub projects: Option<Vec<Project>>,
     pub published_at: Option<DateTime<Utc>>,
@@ -100,22 +90,11 @@ pub(crate) struct Job {
     pub salary_max: Option<i64>,
     pub salary_period: Option<String>,
     pub skills: Option<Vec<String>>,
-    pub state: Option<String>,
     pub updated_at: Option<DateTime<Utc>>,
     pub upstream_commitment: Option<i32>,
 }
 
 impl Job {
-    /// Get the location of the job.
-    #[allow(dead_code)]
-    pub(crate) fn location(&self) -> Option<String> {
-        build_location(
-            self.city.as_deref(),
-            self.state.as_deref(),
-            self.country.as_deref(),
-        )
-    }
-
     /// Normalize some fields.
     pub(crate) fn normalize(&mut self) {
         // Benefits

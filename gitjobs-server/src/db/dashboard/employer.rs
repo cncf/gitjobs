@@ -90,9 +90,9 @@ impl DBDashBoardEmployer for PgDB {
                     &employer.company,
                     &employer.description,
                     &employer.public,
-                    &employer.location_id,
+                    &employer.location.as_ref().map(|l| l.location_id),
                     &employer.logo_id,
-                    &employer.member_id,
+                    &employer.member.as_ref().map(|m| m.member_id),
                     &employer.website_url,
                 ],
             )
@@ -181,7 +181,7 @@ impl DBDashBoardEmployer for PgDB {
                     &employer_id,
                     &job.type_.to_string(),
                     &job.status.to_string(),
-                    &job.location_id,
+                    &job.location.as_ref().map(|l| l.location_id),
                     &job.workplace.to_string(),
                     &job.title,
                     &job.description,
@@ -269,12 +269,22 @@ impl DBDashBoardEmployer for PgDB {
                     e.logo_id,
                     e.member_id,
                     e.website_url,
-                    l.city,
-                    l.country,
-                    l.state,
-                    m.name as member_name,
-                    m.level as member_level,
-                    m.logo_url as member_logo_url
+                    (
+                        select nullif(jsonb_strip_nulls(jsonb_build_object(
+                            'location_id', l.location_id,
+                            'city', l.city,
+                            'country', l.country,
+                            'state', l.state
+                        )), '{}'::jsonb)
+                    ) as location,
+                    (
+                        select nullif(jsonb_strip_nulls(jsonb_build_object(
+                            'member_id', m.member_id,
+                            'name', m.name,
+                            'level', m.level,
+                            'logo_url', m.logo_url
+                        )), '{}'::jsonb)
+                    ) as member
                 from employer e
                 left join location l using (location_id)
                 left join member m using (member_id)
@@ -287,15 +297,13 @@ impl DBDashBoardEmployer for PgDB {
             company: row.get("company"),
             description: row.get("description"),
             public: row.get("public"),
-            city: row.get("city"),
-            country: row.get("country"),
-            location_id: row.get("location_id"),
+            location: row
+                .get::<_, Option<serde_json::Value>>("location")
+                .map(|v| serde_json::from_value(v).expect("location should be valid json")),
             logo_id: row.get("logo_id"),
-            member_id: row.get("member_id"),
-            member_name: row.get("member_name"),
-            member_level: row.get("member_level"),
-            member_logo_url: row.get("member_logo_url"),
-            state: row.get("state"),
+            member: row
+                .get::<_, Option<serde_json::Value>>("member")
+                .map(|v| serde_json::from_value(v).expect("member should be valid json")),
             website_url: row.get("website_url"),
         };
 
@@ -356,9 +364,14 @@ impl DBDashBoardEmployer for PgDB {
                     j.skills,
                     j.updated_at,
                     j.upstream_commitment,
-                    l.city,
-                    l.country,
-                    l.state,
+                    (
+                        select nullif(jsonb_strip_nulls(jsonb_build_object(
+                            'location_id', l.location_id,
+                            'city', l.city,
+                            'country', l.country,
+                            'state', l.state
+                        )), '{}'::jsonb)
+                    ) as location,
                     (
                         select json_agg(json_build_object(
                             'project_id', p.project_id,
@@ -387,10 +400,10 @@ impl DBDashBoardEmployer for PgDB {
             apply_instructions: row.get("apply_instructions"),
             apply_url: row.get("apply_url"),
             benefits: row.get("benefits"),
-            city: row.get("city"),
-            country: row.get("country"),
             job_id: row.get("job_id"),
-            location_id: row.get("location_id"),
+            location: row
+                .get::<_, Option<serde_json::Value>>("location")
+                .map(|v| serde_json::from_value(v).expect("location should be valid json")),
             open_source: row.get("open_source"),
             projects: row
                 .get::<_, Option<serde_json::Value>>("projects")
@@ -404,7 +417,6 @@ impl DBDashBoardEmployer for PgDB {
             salary_max: row.get("salary_max"),
             salary_period: row.get("salary_period"),
             skills: row.get("skills"),
-            state: row.get("state"),
             updated_at: row.get("updated_at"),
             upstream_commitment: row.get("upstream_commitment"),
         };
@@ -524,9 +536,9 @@ impl DBDashBoardEmployer for PgDB {
                 &employer.company,
                 &employer.description,
                 &employer.public,
-                &employer.location_id,
+                &employer.location.as_ref().map(|l| l.location_id),
                 &employer.logo_id,
-                &employer.member_id,
+                &employer.member.as_ref().map(|m| m.member_id),
                 &employer.website_url,
             ],
         )
@@ -573,7 +585,7 @@ impl DBDashBoardEmployer for PgDB {
                 &job_id,
                 &job.type_.to_string(),
                 &job.status.to_string(),
-                &job.location_id,
+                &job.location.as_ref().map(|l| l.location_id),
                 &job.workplace.to_string(),
                 &job.title,
                 &job.description,

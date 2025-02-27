@@ -28,7 +28,7 @@
 
 {# Location -#}
 {% macro location(location_id = "", city = "", state = "", country = "", required = false) %}
-  {% let value = &self::build_location(Some(city), Some(state), Some(country))|display_some %}
+  {% let value = &self::format_location(Some(city), Some(state), Some(country))|display_some %}
   <div class="mt-2 relative">
     <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
       <div class="svg-icon size-4 icon-search bg-gray-300"></div>
@@ -50,14 +50,17 @@
            spellcheck="false"
            {% if required %}required{% endif %}>
     <input type="hidden"
-           name="location_id"
+           name="location[location_id]"
            id="location_id"
            value="{{ location_id }}"
            data-location="{{ value }}"
            {% if required %}required{% endif %}>
-    <input type="hidden" name="city" id="city" value="{{ city }}">
-    <input type="hidden" name="state" id="state" value="{{ state }}">
-    <input type="hidden" name="country" id="country" value="{{ country }}">
+    <input type="hidden" name="location[city]" id="city" value="{{ city }}">
+    <input type="hidden" name="location[state]" id="state" value="{{ state }}">
+    <input type="hidden"
+           name="location[country]"
+           id="country"
+           value="{{ country }}">
     <div id="location-spinner" class="hx-spinner absolute end-10 top-1">{% call spinner(size = 5) %}</div>
     <div class="absolute end-1.5 top-1.5 peer-placeholder-shown:hidden">
       <button id="clean-location" type="button" class="mt-[2px]">
@@ -166,17 +169,20 @@
            autocapitalize="off"
            spellcheck="false"
            autocomplete="off">
-    <input type="hidden" name="member_id" id="member_id" value="{{ member_id }}">
     <input type="hidden"
-           name="member_name"
+           name="member[member_id]"
+           id="member_id"
+           value="{{ member_id }}">
+    <input type="hidden"
+           name="member[name]"
            id="member_name"
            value="{{ member_name }}">
     <input type="hidden"
-           name="member_level"
+           name="member[level]"
            id="member_level"
            value="{{ member_level }}">
     <input type="hidden"
-           name="member_logo_url"
+           name="member[logo_url]"
            id="member_logo_url"
            value="{{ member_logo_url }}">
     <div id="member-spinner" class="hx-spinner absolute end-10 top-1">{% call spinner(size = 5) %}</div>

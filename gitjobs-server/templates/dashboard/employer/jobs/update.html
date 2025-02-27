@@ -42,7 +42,11 @@
         {# Job location #}
         <div class="col-span-full lg:col-span-3">
           <label for="ts_query" class="form-label">Location</label>
-          {% call macros::location(location_id = job.location_id|display_some, city = job.city|display_some, state = job.state|display_some, country = job.country|display_some) %}
+          {% if let Some(location) = job.location %}
+            {% call macros::location(location_id = location.location_id, city = location.city, state = location.state|display_some, country = location.country) %}
+          {% else %}
+            {% call macros::location() %}
+          {% endif %}
           <p class="form-legend">Location of the job.</p>
         </div>
         {# End Job location #}

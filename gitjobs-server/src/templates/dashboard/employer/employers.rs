@@ -5,7 +5,11 @@ use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use uuid::Uuid;
 
-use crate::templates::{filters, helpers::build_location};
+use crate::templates::{
+    filters,
+    helpers::format_location,
+    misc::{Location, Member},
+};
 
 /// Add employer page template.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
@@ -42,26 +46,8 @@ pub(crate) struct Employer {
     pub description: String,
     pub public: bool,
 
-    pub city: Option<String>,
-    pub country: Option<String>,
-    pub location_id: Option<Uuid>,
+    pub location: Option<Location>,
     pub logo_id: Option<Uuid>,
-    pub member_id: Option<Uuid>,
-    pub member_name: Option<String>,
-    pub member_level: Option<String>,
-    pub member_logo_url: Option<String>,
-    pub state: Option<String>,
+    pub member: Option<Member>,
     pub website_url: Option<String>,
-}
-
-impl Employer {
-    /// Get the location of the employer.
-    #[allow(dead_code)]
-    pub(crate) fn location(&self) -> Option<String> {
-        build_location(
-            self.city.as_deref(),
-            self.state.as_deref(),
-            self.country.as_deref(),
-        )
-    }
 }

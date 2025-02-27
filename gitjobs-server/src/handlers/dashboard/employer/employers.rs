@@ -6,7 +6,6 @@ use axum::{
     http::StatusCode,
     response::{Html, IntoResponse},
 };
-use axum_extra::extract::Form;
 use axum_messages::Messages;
 use rinja::Template;
 use tower_sessions::Session;
@@ -21,7 +20,7 @@ use crate::{
         error::HandlerError,
         extractors::{JobBoardId, SelectedEmployerIdRequired},
     },
-    templates::dashboard::employer::employers,
+    templates::dashboard::employer::employers::{self, Employer},
 };
 
 // Pages handlers.
@@ -55,12 +54,19 @@ pub(crate) async fn add(
     messages: Messages,
     session: Session,
     State(db): State<DynDB>,
+    State(form_de): State<serde_qs::Config>,
     JobBoardId(job_board_id): JobBoardId,
-    Form(employer): Form<employers::Employer>,
+    body: String,
 ) -> Result<impl IntoResponse, HandlerError> {
     // Get user from session
     let Some(user) = auth_session.user else {
         return Ok((StatusCode::FORBIDDEN).into_response());
+    };
+
+    // Get employer information from body
+    let employer: Employer = match form_de.deserialize_str(&body).map_err(anyhow::Error::new) {
+        Ok(profile) => profile,
+        Err(e) => return Ok((StatusCode::UNPROCESSABLE_ENTITY, e.to_string()).into_response()),
     };
 
     // Add employer to database
@@ -104,9 +110,17 @@ pub(crate) async fn select(
 pub(crate) async fn update(
     messages: Messages,
     State(db): State<DynDB>,
+    State(form_de): State<serde_qs::Config>,
     SelectedEmployerIdRequired(employer_id): SelectedEmployerIdRequired,
-    Form(employer): Form<employers::Employer>,
+    body: String,
 ) -> Result<impl IntoResponse, HandlerError> {
+    // Get employer information from body
+    let employer: Employer = match form_de.deserialize_str(&body).map_err(anyhow::Error::new) {
+        Ok(profile) => profile,
+        Err(e) => return Ok((StatusCode::UNPROCESSABLE_ENTITY, e.to_string()).into_response()),
+    };
+
+    // Update employer in database
     db.update_employer(&employer_id, &employer).await?;
     messages.success("Employer updated successfully.");
 

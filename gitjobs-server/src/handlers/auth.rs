@@ -24,7 +24,8 @@ use crate::{
         error::HandlerError,
         extractors::{JobBoardId, OAuth2},
     },
-    templates::{self, PageId},
+    notifications::{DynNotificationsManager, Notification, NotificationKind},
+    templates::{self, PageId, notifications::EmailVerification},
 };
 
 /// Log in URL.
@@ -103,7 +104,7 @@ pub(crate) async fn log_in(
         .await
         .map_err(|e| HandlerError::Auth(e.to_string()))?
     else {
-        messages.error("Invalid credentials");
+        messages.error("Invalid credentials. Please make sure you have verified your email address.");
         let log_in_url = get_log_in_url(query.get("next_url"));
         return Ok(Redirect::to(&log_in_url));
     };
@@ -154,7 +155,7 @@ pub(crate) async fn oauth2_callback(
     Path(provider): Path<OAuth2Provider>,
     Query(OAuth2AuthorizationResponse { code, state }): Query<OAuth2AuthorizationResponse>,
 ) -> Result<impl IntoResponse, HandlerError> {
-    const OAUTH2_AUTHORIZATION_FAILED: &str = "OAuth2 authorization failed";
+    const OAUTH2_AUTHORIZATION_FAILED: &str = "OAuth2 authorization failed.";
 
     // Verify csrf state
     let Some(state_in_session) = session.remove::<oauth2::CsrfToken>(OAUTH2_CSRF_STATE_KEY).await? else {
@@ -232,6 +233,7 @@ pub(crate) async fn oauth2_redirect(
 pub(crate) async fn sign_up(
     messages: Messages,
     State(db): State<DynDB>,
+    State(notifications_manager): State<DynNotificationsManager>,
     JobBoardId(job_board_id): JobBoardId,
     Query(query): Query<HashMap<String, String>>,
     Form(mut user_summary): Form<auth::UserSummary>,
@@ -241,12 +243,29 @@ pub(crate) async fn sign_up(
         return Ok((StatusCode::BAD_REQUEST, "password not provided").into_response());
     };
 
-    // Sign up the user
+    // Generate password hash
     user_summary.password = Some(password_auth::generate_hash(&password));
-    if db.sign_up_user(&job_board_id, &user_summary, true).await.is_err() {
+
+    // Sign up the user
+    let Ok((user, email_verification_code)) = db.sign_up_user(&job_board_id, &user_summary, false).await
+    else {
         // Redirect to the sign up page on error
         messages.error("Something went wrong while signing up. Please try again later.");
         return Ok(Redirect::to(SIGN_UP_URL).into_response());
+    };
+
+    // Enqueue email verification notification
+    if let Some(code) = email_verification_code {
+        let template_data = EmailVerification {
+            link: format!("/verify-email/{code}"),
+        };
+        let notification = Notification {
+            kind: NotificationKind::EmailVerification,
+            user_id: user.user_id,
+            template_data: Some(serde_json::to_value(&template_data)?),
+        };
+        notifications_manager.enqueue(&notification).await?;
+        messages.success("Please verify your email to complete the sign up process.");
     }
 
     // Redirect to the log in page on success
@@ -304,6 +323,23 @@ pub(crate) async fn update_user_password(
     db.update_user_password(&user.user_id, &input.new_password).await?;
 
     Ok(Redirect::to(LOG_OUT_URL).into_response())
+}
+
+/// Handler that verifies the user's email.
+#[instrument(skip_all, err)]
+pub(crate) async fn verify_email(
+    messages: Messages,
+    State(db): State<DynDB>,
+    Path(code): Path<Uuid>,
+) -> Result<impl IntoResponse, HandlerError> {
+    // Verify the email
+    if db.verify_email(&code).await.is_ok() {
+        messages.success("Email verified successfully. You can now log in using your credentials.");
+    } else {
+        messages.error("Error verifying email (please note that links are only valid for 24 hours).");
+    }
+
+    Ok(Redirect::to(LOG_IN_URL).into_response())
 }
 
 // Authorization middleware.

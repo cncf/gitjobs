@@ -8,6 +8,7 @@ use auth::DBAuth;
 use dashboard::DBDashBoard;
 use deadpool_postgres::Pool;
 use img::DBImage;
+use notifications::DBNotifications;
 use tracing::instrument;
 use uuid::Uuid;
 
@@ -16,11 +17,12 @@ use crate::templates::misc::{Location, Member, Project};
 mod auth;
 mod dashboard;
 pub(crate) mod img;
+mod notifications;
 
 /// Abstraction layer over the database. Trait that defines some operations a
 /// DB implementation must support.
 #[async_trait]
-pub(crate) trait DB: DBAuth + DBDashBoard + DBImage {
+pub(crate) trait DB: DBAuth + DBDashBoard + DBImage + DBNotifications {
     /// Get the job board id from the host provided.
     async fn get_job_board_id(&self, host: &str) -> Result<Option<Uuid>>;
 

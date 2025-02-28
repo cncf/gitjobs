@@ -9,6 +9,7 @@ mod filters;
 mod helpers;
 pub(crate) mod jobboard;
 pub(crate) mod misc;
+pub(crate) mod notifications;
 
 /// Identifier for a page.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]

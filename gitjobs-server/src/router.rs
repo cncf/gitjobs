@@ -32,6 +32,7 @@ use crate::{
         misc::{search_locations, search_members, search_projects},
     },
     img::DynImageStore,
+    notifications::DynNotificationsManager,
 };
 
 /// Default cache duration.
@@ -51,16 +52,23 @@ pub(crate) struct State {
     pub db: DynDB,
     pub image_store: DynImageStore,
     pub form_de: serde_qs::Config,
+    pub notifications_manager: DynNotificationsManager,
 }
 
 /// Setup router.
 #[instrument(skip_all)]
-pub(crate) fn setup(cfg: &HttpServerConfig, db: DynDB, image_store: DynImageStore) -> Result<Router> {
+pub(crate) fn setup(
+    cfg: &HttpServerConfig,
+    db: DynDB,
+    image_store: DynImageStore,
+    notifications_manager: DynNotificationsManager,
+) -> Result<Router> {
     // Setup router state
     let state = State {
         db: db.clone(),
         image_store,
         form_de: serde_qs::Config::new(3, false),
+        notifications_manager,
     };
 
     // Setup authentication / authorization layer
@@ -91,10 +99,11 @@ pub(crate) fn setup(cfg: &HttpServerConfig, db: DynDB, image_store: DynImageStor
         .route("/health-check", get(health_check))
         .route("/jobs", get(jobboard::home::page))
         .route("/log-in", get(auth::log_in_page).post(auth::log_in))
-        .route("/log-in/oauth2/{:provider}", get(auth::oauth2_redirect))
-        .route("/log-in/oauth2/{:provider}/callback", get(auth::oauth2_callback))
+        .route("/log-in/oauth2/{provider}", get(auth::oauth2_redirect))
+        .route("/log-in/oauth2/{provider}/callback", get(auth::oauth2_callback))
         .route("/log-out", get(auth::log_out))
         .route("/sign-up", get(auth::sign_up_page).post(auth::sign_up))
+        .route("/verify-email/{code}", get(auth::verify_email))
         .route_layer(MessagesManagerLayer)
         .route_layer(auth_layer)
         .route_layer(ServiceBuilder::new().layer(TraceLayer::new_for_http()))
@@ -137,7 +146,7 @@ fn setup_employer_dashboard_router(state: State) -> Router<State> {
             get(dashboard::employer::employers::update_page).put(dashboard::employer::employers::update),
         )
         .route(
-            "/employers/{:employer_id}/select",
+            "/employers/{employer_id}/select",
             put(dashboard::employer::employers::select).layer(check_user_owns_employer.clone()),
         )
         .route("/jobs/list", get(dashboard::employer::jobs::list_page))
@@ -147,19 +156,19 @@ fn setup_employer_dashboard_router(state: State) -> Router<State> {
         )
         .route("/jobs/preview", post(dashboard::employer::jobs::preview_page))
         .route(
-            "/jobs/{:job_id}/archive",
+            "/jobs/{job_id}/archive",
             put(dashboard::employer::jobs::archive).layer(check_user_owns_job.clone()),
         )
         .route(
-            "/jobs/{:job_id}/delete",
+            "/jobs/{job_id}/delete",
             delete(dashboard::employer::jobs::delete).layer(check_user_owns_job.clone()),
         )
         .route(
-            "/jobs/{:job_id}/publish",
+            "/jobs/{job_id}/publish",
             put(dashboard::employer::jobs::publish).layer(check_user_owns_job.clone()),
         )
         .route(
-            "/jobs/{:job_id}/update",
+            "/jobs/{job_id}/update",
             get(dashboard::employer::jobs::update_page)
                 .layer(check_user_owns_job.clone())
                 .put(dashboard::employer::jobs::update)
@@ -191,7 +200,7 @@ fn setup_images_router(state: State) -> Router<State> {
 
     // Setup router
     Router::new().route("/", post(img::upload)).route(
-        "/{:image_id}/{:version}",
+        "/{image_id}/{version}",
         get(img::get).layer(check_user_has_image_access),
     )
 }

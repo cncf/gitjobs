@@ -156,7 +156,8 @@ impl AuthnBackend {
         {
             user
         } else {
-            self.db.sign_up_user(&creds.job_board_id, &user_summary, true).await?
+            let (user, _) = self.db.sign_up_user(&creds.job_board_id, &user_summary, true).await?;
+            user
         };
 
         Ok(Some(user))

@@ -12,6 +12,9 @@ pub(crate) enum HandlerError {
     #[error("auth error: {0}")]
     Auth(String),
 
+    #[error("serde json error: {0}")]
+    Serde(#[from] serde_json::Error),
+
     #[error("session error: {0}")]
     Session(#[from] tower_sessions::session::Error),
 

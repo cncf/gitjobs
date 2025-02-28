@@ -22,6 +22,7 @@ mod config;
 mod db;
 mod handlers;
 mod img;
+mod notifications;
 mod router;
 mod templates;
 
@@ -63,8 +64,11 @@ async fn main() -> Result<()> {
     // Setup image store
     let image_store = Arc::new(DbImageStore::new(db.clone()));
 
+    // Setup notifications manager
+    let notifications_manager = Arc::new(notifications::PgNotificationsManager::new(db.clone()));
+
     // Setup and launch HTTP server
-    let router = router::setup(&cfg.server, db, image_store)?;
+    let router = router::setup(&cfg.server, db, image_store, notifications_manager)?;
     let listener = TcpListener::bind(&cfg.server.addr).await?;
     info!("server started");
     info!(%cfg.server.addr, "listening");

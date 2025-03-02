@@ -24,7 +24,7 @@ use crate::{
         error::HandlerError,
         extractors::{JobBoardId, OAuth2},
     },
-    notifications::{DynNotificationsManager, Notification, NotificationKind},
+    notifications::{DynNotificationsManager, NewNotification, NotificationKind},
     templates::{self, PageId, notifications::EmailVerification},
 };
 
@@ -259,7 +259,7 @@ pub(crate) async fn sign_up(
         let template_data = EmailVerification {
             link: format!("/verify-email/{code}"),
         };
-        let notification = Notification {
+        let notification = NewNotification {
             kind: NotificationKind::EmailVerification,
             user_id: user.user_id,
             template_data: Some(serde_json::to_value(&template_data)?),

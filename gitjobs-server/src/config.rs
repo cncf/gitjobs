@@ -19,6 +19,7 @@ pub(crate) struct Config {
     pub db: DbConfig,
     pub log: LogConfig,
     pub server: HttpServerConfig,
+    pub email: EmailConfig,
 }
 
 impl Config {
@@ -89,4 +90,13 @@ pub(crate) struct OAuth2ProviderConfig {
     pub redirect_uri: String,
     pub scopes: Vec<String>,
     pub token_url: String,
+}
+
+/// Email configuration.
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
+pub(crate) struct EmailConfig {
+    pub smtp_user_name: String,
+    pub smtp_password: String,
+    pub host: String,
+    pub port: u16,
 }

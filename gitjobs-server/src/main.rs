@@ -6,9 +6,13 @@ use anyhow::{Context, Result};
 use clap::Parser;
 use deadpool_postgres::Runtime;
 use img::db::DbImageStore;
+use notifications::NotificationsManager;
 use openssl::ssl::{SslConnector, SslMethod, SslVerifyMode};
 use postgres_openssl::MakeTlsConnector;
+use std::env;
 use tokio::{net::TcpListener, signal};
+use tokio_util::sync::CancellationToken;
+use tokio_util::task::TaskTracker;
 use tracing::{error, info};
 use tracing_subscriber::EnvFilter;
 
@@ -64,8 +68,16 @@ async fn main() -> Result<()> {
     // Setup image store
     let image_store = Arc::new(DbImageStore::new(db.clone()));
 
-    // Setup notifications manager
-    let notifications_manager = Arc::new(notifications::PgNotificationsManager::new(db.clone()));
+    // Setup and launch notifications manager
+    let tracker = TaskTracker::new();
+    let token = CancellationToken::new();
+    let notifications_manager = Arc::new(notifications::PgNotificationsManager::new(
+        db.clone(),
+        cfg.email,
+        tracker.clone(),
+        token.clone(),
+    ));
+    notifications_manager.clone().run().await;
 
     // Setup and launch HTTP server
     let router = router::setup(&cfg.server, db, image_store, notifications_manager)?;
@@ -80,6 +92,11 @@ async fn main() -> Result<()> {
         return Err(err.into());
     }
     info!("server stopped");
+
+    // Stop notifications manager
+    token.cancel();
+    tracker.close();
+    tracker.wait().await;
 
     Ok(())
 }

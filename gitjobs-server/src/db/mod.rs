@@ -1,14 +1,18 @@
 //! This module defines an abstraction layer over the database.
 
-use std::sync::Arc;
+use std::{collections::HashMap, sync::Arc};
 
 use anyhow::Result;
 use async_trait::async_trait;
 use auth::DBAuth;
 use dashboard::DBDashBoard;
-use deadpool_postgres::Pool;
+use deadpool_postgres::{Client, Pool};
 use img::DBImage;
 use notifications::DBNotifications;
+use std::time::{Duration, SystemTime};
+use tokio::select;
+use tokio::sync::RwLock;
+use tokio_util::sync::CancellationToken;
 use tracing::instrument;
 use uuid::Uuid;
 
@@ -34,6 +38,18 @@ pub(crate) trait DB: DBAuth + DBDashBoard + DBImage + DBNotifications {
 
     /// Search projects.
     async fn search_projects(&self, job_board_id: &Uuid, name: &str) -> Result<Vec<Project>>;
+
+    /// Begin transaction.
+    async fn tx_begin(&self) -> Result<Uuid>;
+
+    /// Commit transaction.
+    async fn tx_commit(&self, conn_id: Uuid) -> Result<()>;
+
+    /// Rollback transaction.
+    async fn tx_rollback(&self, conn_id: Uuid) -> Result<()>;
+
+    /// Discard transactions that have been active too long.
+    async fn txs_cleaner(&self, token: CancellationToken);
 }
 
 /// Type alias to represent a DB trait object.
@@ -42,12 +58,14 @@ pub(crate) type DynDB = Arc<dyn DB + Send + Sync>;
 /// DB implementation backed by `PostgreSQL`.
 pub(crate) struct PgDB {
     pool: Pool,
+    txs_conns: Arc<RwLock<HashMap<Uuid, (Client, SystemTime)>>>,
 }
 
 impl PgDB {
     /// Create a new `PgDB` instance.
     pub(crate) fn new(pool: Pool) -> Self {
-        Self { pool }
+        let txs_conns = Arc::new(RwLock::new(HashMap::new()));
+        Self { pool, txs_conns }
     }
 }
 
@@ -164,5 +182,73 @@ impl DB for PgDB {
             .collect();
 
         Ok(projects)
+    }
+
+    /// [DB::tx_begin]
+    #[instrument(skip(self), err)]
+    async fn tx_begin(&self) -> Result<Uuid> {
+        let tx = self.pool.get().await?;
+        tx.batch_execute("BEGIN").await?;
+        let conn_id = Uuid::new_v4();
+        let mut txs_conns = self.txs_conns.write().await;
+        txs_conns.insert(conn_id, (tx, SystemTime::now()));
+
+        Ok(conn_id)
+    }
+
+    /// [DB::tx_commit]
+    #[instrument(skip(self), err)]
+    async fn tx_commit(&self, conn_id: Uuid) -> Result<()> {
+        let mut txs_conns = self.txs_conns.write().await;
+        let (tx, _) = txs_conns.remove(&conn_id).unwrap();
+
+        tx.batch_execute("COMMIT").await?;
+
+        Ok(())
+    }
+
+    /// [DB::tx_rollback]
+    #[instrument(skip(self), err)]
+    async fn tx_rollback(&self, conn_id: Uuid) -> Result<()> {
+        let mut txs_conns = self.txs_conns.write().await;
+        let (tx, _) = txs_conns.remove(&conn_id).unwrap();
+
+        tx.batch_execute("ROLLBACK").await?;
+
+        Ok(())
+    }
+
+    /// [DB::txs_cleaner]
+    async fn txs_cleaner(&self, token: CancellationToken) {
+        let clients = self.txs_conns.clone();
+        tokio::spawn(async move {
+            loop {
+                if token.is_cancelled() {
+                    break;
+                }
+                select! {
+                    () = token.cancelled() => break,
+                    () = tokio::time::sleep(std::time::Duration::from_secs(5)) => {}
+                };
+
+                let clients_reader = clients.read().await;
+                let mut clients_to_discard: Vec<Uuid> = vec![];
+                let max_time = Duration::from_secs(5);
+
+                for (id, (_, ts)) in clients_reader.iter() {
+                    if ts.elapsed().unwrap() >= max_time {
+                        clients_to_discard.push(*id);
+                    }
+                }
+
+                if !clients_to_discard.is_empty() {
+                    let mut clients_writer = clients.write().await;
+
+                    for id in clients_to_discard {
+                        let _ = clients_writer.remove(&id).unwrap();
+                    }
+                }
+            }
+        });
     }
 }

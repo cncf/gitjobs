@@ -21,6 +21,8 @@ deadpool-postgres = { workspace = true }
 emojis = { workspace = true }
 figment = { workspace = true }
 image = { workspace = true }
+mail-builder = "0.4.0"
+mail-send = "0.5.0"
 markdown = { workspace = true }
 mime_guess = { workspace = true }
 minify-html = { workspace = true }
@@ -46,6 +48,7 @@ tokio-postgres = { workspace = true }
 tower = { workspace = true }
 tower-http = { workspace = true }
 tower-sessions = { workspace = true }
+tokio-util = { version = "0.7.13", features = ["full"] }
 tracing = { workspace = true }
 tracing-subscriber = { workspace = true }
 unicode-segmentation = { workspace = true }

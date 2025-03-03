@@ -1,0 +1,89 @@
+{% import "macros.html" as macros %}
+
+{% macro filters(device = "desktop") %}
+  {# Job type #}
+  <div class="px-6 py-7 pt-5 border-b border-gray-100">
+    {% call filters_title(text = "Kind") %}
+    <div class="mt-3 flex flex-col space-y-3">
+      {# Full time #}
+      {% call macros::checkbox_box(name = "kind[]", value = JobKind::FullTime, label = "Full Time", icon = "signature", active_filters = filters.kind, required = false, device = device) %}
+      {# End Full time #}
+
+      {# Part time #}
+      {% call macros::checkbox_box(name = "kind[]", value = JobKind::PartTime, label = "Part Time", icon = "hour_glass", active_filters = filters.kind, required = false, device = device) %}
+      {# End Part time #}
+
+      {# Contractor #}
+      {% call macros::checkbox_box(name = "kind[]", value = JobKind::Contractor, label = "Contractor", icon = "clipboard", active_filters = filters.kind, required = false, device = device) %}
+      {# End Contractor #}
+
+      {# Internship #}
+      {% call macros::checkbox_box(name = "kind[]", value = JobKind::Internship, label = "Internship", icon = "graduation_cap", active_filters = filters.kind, required = false, device = device) %}
+      {# End Internship #}
+    </div>
+  </div>
+  {# End job type #}
+
+  {# Workplace #}
+  <div class="px-6 py-7 pt-5 border-b border-gray-100">
+    {% call filters_title(text = "Workplace") %}
+    <div class="mt-3 flex flex-col space-y-3">
+      {# On site #}
+      {% call macros::checkbox_box(name = "workplace[]", value = Workplace::OnSite, label = "On Site", icon = "office_chair", active_filters = filters.workplace, required = false, device = device) %}
+      {# End On site #}
+
+      {# Remote #}
+      {% call macros::checkbox_box(name = "workplace[]", value = Workplace::Remote, label = "Remote", icon = "remote", active_filters = filters.workplace, required = false, device = device) %}
+      {# End Remote #}
+
+      {# Hybrid #}
+      {% call macros::checkbox_box(name = "workplace[]", value = Workplace::Hybrid, label = "Hybrid", icon = "buildings", active_filters = filters.workplace, required = false, device = device) %}
+      {# End Hybrid #}
+    </div>
+  </div>
+  {# End workplace #}
+
+  {# Location #}
+  <div class="px-6 py-7 pt-5 border-b border-gray-100">
+    {% call filters_title(text = "Location") %}
+    <div class="mt-2 grid grid-cols-1">
+      <select id="{{ device }}-distance" name="distance" class="select-primary">
+        {% call macros::select_option(value = "", label = "Distance in miles", disabled = true) %}
+        {% call macros::select_option(value = "10", label = "10 miles") %}
+        {% call macros::select_option(value = "25", label = "25 miles") %}
+        {% call macros::select_option(value = "50", label = "50 miles") %}
+        {% call macros::select_option(value = "100", label = "100 miles") %}
+        {% call macros::select_option(value = "200", label = "200 miles") %}
+      </select>
+    </div>
+  </div>
+  {# End location #}
+
+  {# Skills #}
+  <div>
+    <collapsible-filter title="Skills" name="skills" options='["kubernetes","docker","aws","gcp","azure","terraform","linux","helm","prometheus"]' form="{{ device }}-jobs-form" {%- if let Some(filters_skills) = filters.skills %}selected="{{ filters_skills|json }}"{%- endif -%}></collapsible-filter>
+  </div>
+  {# End skills #}
+
+  {# Benefits #}
+  <div>
+    <collapsible-filter title="Benefits" name="benefits" options='["401k","flexible-hours","remote-friendly","health-insurance","paid-time-off","4-day-workweek","company-retreats","home-office-budget","learning-budget","mental-wellness-bugdet","equity-compensation","no-whiteboard-interview"]' form="{{ device }}-jobs-form" {%- if let Some(filters_benefits) = filters.benefits %}selected="{{ filters_benefits|json }}"{%- endif -%}></collapsible-filter>
+  </div>
+  {# End benefits #}
+
+  {# Salary #}
+  <div class="px-6 py-7 pt-5 border-b border-gray-100">{% call filters_title(text = "Salary") %}</div>
+  {# End salary #}
+
+  {# Projects #}
+  <div class="px-6 py-7 pt-5 border-b border-gray-100">{% call filters_title(text = "Projects") %}</div>
+  {# End projects #}
+
+  {# Open source #}
+  <div class="px-6 py-7 pt-5">{% call filters_title(text = "Open source") %}</div>
+  {# End open source #}
+{% endmacro filters %}
+
+{% macro filters_title(text) %}
+  <div class="font-semibold text-black text-sm/6">{{ text }}</div>
+{% endmacro filters_title %}

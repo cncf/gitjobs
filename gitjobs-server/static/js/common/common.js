@@ -53,3 +53,8 @@ export const isObjectEmpty = (obj) => {
   delete objectWithoutId.id;
   return Object.values(objectWithoutId).every((x) => x === null || x === "" || typeof x === "undefined");
 };
+
+// Function to unnormalize text
+export const unnormalize = (text) => {
+  return text.replace(/-/g, " ");
+};

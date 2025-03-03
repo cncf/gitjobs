@@ -1,4 +1,5 @@
 import { LitElement, html } from "https://cdn.jsdelivr.net/gh/lit/dist@3/core/lit-core.min.js";
+import { unnormalize } from "/static/js/common/common.js";
 
 export class MultiSelect extends LitElement {
   static properties = {
@@ -52,10 +53,6 @@ export class MultiSelect extends LitElement {
     if (!this.contains(e.target)) {
       this.visibleDropdown = false;
     }
-  };
-
-  unnormalize(text) {
-    return text.replace(/-/g, " ");
   }
 
   render() {
@@ -72,7 +69,7 @@ export class MultiSelect extends LitElement {
                   class="inline-flex items-center text-nowrap max-w-[100%] ps-2 pe-0.5 py-0.5 me-2 text-xs font-medium text-gray-800 bg-gray-100 rounded-full"
                 >
                   <div class="flex items-center w-full">
-                    <div class="truncate capitalize">${this.unnormalize(option)}</div>
+                    <div class="truncate capitalize">${unnormalize(option)}</div>
                     <button
                       type="button"
                       @click=${() => this._onRemoveBadge(option)}
@@ -123,7 +120,7 @@ export class MultiSelect extends LitElement {
                     <div class="size-3 me-2">
                       ${isSelected ? html`<div class="svg-icon size-3 icon-check bg-gray-400"></div>` : ""}
                     </div>
-                    <div class="truncate">${this.unnormalize(option)}</div>
+                    <div class="truncate">${unnormalize(option)}</div>
                   </div>
                 </button>
               </li>`;

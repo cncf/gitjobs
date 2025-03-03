@@ -1,1 +1,141 @@
-<h1>Jobs explore section</h1>
+{% import "jobboard/jobs/filters.html" as filters_macros %}
+
+{# Mobile filters -#}
+<div id="drawer-filters"
+     class="fixed top-0 left-0 z-[1100] h-screen overflow-y-auto transition-transform -translate-x-full bg-white w-80 border border-r shadow-lg"
+     tabindex="-1"
+     aria-labelledby="drawer-label">
+  {# Close button -#}
+  <button id="close-filters"
+          type="button"
+          class="group bg-transparent hover:bg-gray-200 rounded-full text-sm w-8 h-8 absolute top-4 end-2.5 flex items-center justify-center">
+    <div class="svg-icon h-4 w-4 bg-gray-400 group-hover:bg-gray-900 icon-close"></div>
+    <span class="sr-only">Close menu</span>
+  </button>
+  {# End close button -#}
+
+  {# Filters content -#}
+  {# Header Filters -#}
+  <div class="flex justify-between items-center border-solid border-0 border-b border-gray-100 p-5">
+    <div class="font-semibold text-sm text-black">Filters</div>
+  </div>
+  {# End header filters -#}
+
+  {% call filters_macros::filters(device = "mobile") %}
+  {# End filters content -#}
+
+  <div class="text-end p-5">
+    <button class="btn-primary-outline btn-mini">
+      <div class="flex items-center space-x-1">
+        <div class="svg-icon size-3 icon-close group-hover:bg-white"></div>
+        <div>Reset</div>
+      </div>
+    </button>
+  </div>
+</div>
+{# Overlay -#}
+<div id="drawer-backdrop"
+     class="hidden bg-gray-900/50 fixed inset-0 z-[1050]"></div>
+{# End overlay -#}
+{# End mobile filters -#}
+
+<div class="relative container mx-auto max-w-7xl px-4 mt-[6.25rem] pb-[3.5rem] sm:px-6 lg:px-8">
+  <div class="flex items-start ">
+
+    {# Filters #}
+    <div class="relative hidden w-[28%] xl:w-2/6 lg:block bg-white border rounded-3xl">
+
+      {# Header #}
+      <div class="flex justify-between items-center border-solid border-0 border-b border-gray-100 p-5">
+        <div class="font-semibold text-sm text-black">Filters</div>
+
+        <div>
+          <button class="btn-primary-outline btn-mini">
+            <div class="flex items-center space-x-1">
+              <div class="svg-icon size-3 icon-close group-hover:bg-white"></div>
+              <div>Reset</div>
+            </div>
+          </button>
+        </div>
+      </div>
+      {# End header #}
+
+      <form id="desktop-jobs-form"
+            hx-get='/jobs/section/results'
+            hx-trigger="change"
+            hx-target="#jobs-results"
+            hx-include="[name='ts_query']"
+            hx-ext="no-empty-vals"
+            hx-boost="true">
+        {% call filters_macros::filters() %}
+      </form>
+    </div>
+    {# End filters #}
+
+    {# Content #}
+    <div class="relative w-full lg:w-[72%] xl:w-3/4 lg:pl-6 xl:pl-10 self-stretch">
+      <div class="relative flex flex-col bg-white border rounded-3xl pt-5 md:pt-7 h-full">
+        <div class="flex items-center mb-6 md:mb-10 px-5 md:px-7">
+          <div class="flex">
+            {# Mobile filters button -#}
+            <div class="flex me-6 lg:hidden">
+              <button id="open-filters" class="btn-primary-outline group p-3">
+                <div class="svg-icon size-3 icon-filter group-hover:bg-white"></div>
+              </button>
+            </div>
+            {# End mobile filters button -#}
+
+            {# Searchbar #}
+            <div class="relative">
+              <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
+                <div class="svg-icon size-4 icon-search bg-gray-300"></div>
+              </div>
+              <input id="ts_query"
+                     name="ts_query"
+                     type="text"
+                     value=""
+                     class="input-primary peer ps-10 w-96"
+                     placeholder="Search jobs"
+                     autocomplete="off"
+                     autocorrect="off"
+                     autocapitalize="off"
+                     spellcheck="false">
+              <div class="absolute end-1.5 top-1.5 peer-placeholder-shown:hidden">
+                <button id="clean-search-jobs" type="button" class="mt-[2px]">
+                  <div class="svg-icon size-5 bg-gray-400 hover:bg-gray-700 icon-close"></div>
+                </button>
+              </div>
+            </div>
+            {# End searchbar #}
+          </div>
+        </div>
+
+        {# Results #}
+        <div class="flex flex-row items-center justify-between px-5 md:px-7">1-10 from 256 jobs</div>
+        {# End results #}
+
+        <div id="jobs-results">
+          {# Results #}
+          {{ results_section|safe }}
+          {# End results #}
+        </div>
+      </div>
+      {# End content #}
+    </div>
+  </div>
+</div>
+<script type="module">
+  import {
+    open,
+    close
+  } from '/static/js/jobboard/filters.js';
+
+  const openFiltersBtn = document.getElementById('open-filters');
+  openFiltersBtn.addEventListener('click', open);
+
+  const closeFiltersBtn = document.getElementById('close-filters');
+  closeFiltersBtn.addEventListener('click', close);
+
+  const backdropFilters = document.getElementById('drawer-backdrop');
+  backdropFilters.addEventListener('click', close);
+</script>

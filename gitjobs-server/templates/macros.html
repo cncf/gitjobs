@@ -385,8 +385,10 @@
 {# End toggle checkbox #}
 
 {# Select option #}
-{% macro select_option(value, label, selected = "") %}
-  <option value="{{ value }}" {% if value == selected|ref %}selected{% endif %}>{{ label }}</option>
+{% macro select_option(value, label, selected = "", disabled = false) %}
+  <option value="{{ value }}"
+          {% if value == selected|ref %}selected{% endif %}
+          {% if disabled %}disabled{% endif %}>{{ label }}</option>
 {% endmacro select_option %}
 {# End select option #}
 
@@ -504,6 +506,23 @@
   </div>
 {% endmacro radio_box %}
 {# End radio box #}
+
+{# Checkbox box #}
+{% macro checkbox_box(name, value, label, icon, active_filters, required = false, device = "") %}
+  <div class="flex items-center px-3 py-2 border border-gray-200 rounded-md">
+    <div class="hidden lg:block svg-icon size-4 icon-{{ icon }} bg-gray-600 cursor-pointer"></div>
+    <label for="{%- if !device.is_empty() -%}{{ device }}-{%- endif -%}{{ name }}-{{ value }}"
+           class="ms-2 text-xs lg:text-sm text-gray-900 flex-grow cursor-pointer">{{ label }}</label>
+    <input id="{%- if !device.is_empty() -%}{{ device }}-{%- endif -%}{{ name }}-{{ value }}"
+           type="checkbox"
+           value="{{ value }}"
+           name="{{ name }}"
+           class="checkbox-primary"
+           {%- if let Some(active_filters) = active_filters -%} {%- if active_filters.contains(value) -%}checked{%- endif -%} {%- endif %}
+           {% if required %}required{% endif %}>
+  </div>
+{% endmacro checkbox_box %}
+{# End checkbox box #}
 
 {# Form image #}
 {% macro images_form(label, name, icon = "company", value = "") %}
@@ -647,6 +666,18 @@
   </div>
 {% endmacro dropdown_card %}
 {# End dropdown card #}
+
+{# Alert box #}
+{% macro alert_box(title, content) %}
+  <div class="p-10 md:p-14">
+    <div class="border border-primary-300 p-10 text-sm text-gray-800 rounded-lg bg-primary-50 text-center"
+         role="alert">
+      <div class="text-xl mb-6">{{ title }}</div>
+      {{ content }}
+    </div>
+  </div>
+{% endmacro alert_box %}
+{# End alert box #}
 
 {# Alerts #}
 {# djlint:off #}

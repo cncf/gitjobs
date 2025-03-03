@@ -83,6 +83,26 @@
   -webkit-mask-image: url('/static/images/icons/archive.svg')
 }
 
+.icon-arrow_left_double {
+  mask-image: url('/static/images/icons/arrow_left_double.svg');
+  -webkit-mask-image: url('/static/images/icons/arrow_left_double.svg')
+}
+
+.icon-arrow_left {
+  mask-image: url('/static/images/icons/arrow_left.svg');
+  -webkit-mask-image: url('/static/images/icons/arrow_left.svg')
+}
+
+.icon-arrow_right_double {
+  mask-image: url('/static/images/icons/arrow_right_double.svg');
+  -webkit-mask-image: url('/static/images/icons/arrow_right_double.svg')
+}
+
+.icon-arrow_right {
+  mask-image: url('/static/images/icons/arrow_right.svg');
+  -webkit-mask-image: url('/static/images/icons/arrow_right.svg')
+}
+
 .icon-briefcase {
   mask-image: url('/static/images/icons/briefcase.svg');
   -webkit-mask-image: url('/static/images/icons/briefcase.svg')
@@ -101,6 +121,11 @@
 .icon-caret_down {
   mask-image: url('/static/images/icons/caret_down.svg');
   -webkit-mask-image: url('/static/images/icons/caret_down.svg')
+}
+
+.icon-caret_up {
+  mask-image: url('/static/images/icons/caret_up.svg');
+  -webkit-mask-image: url('/static/images/icons/caret_up.svg')
 }
 
 .icon-check {

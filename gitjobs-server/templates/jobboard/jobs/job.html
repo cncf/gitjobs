@@ -1,1 +1,239 @@
-<h1>Job page</h1>
+{% extends "base.html" %}
+{% import "macros.html" as macros %}
+{% import "dashboard/employer/jobs/preview.html" as macros_preview %}
+
+{% block main %}
+  <div class="relative container flex flex-col bg-white border rounded-3xl mx-auto max-w-7xl p-4 m-5 mt-[6.25rem] sm:p-6 lg:p-8">
+    <div class="flex items-center border-b pb-10">
+      <div class="flex-grow">
+        <div class="flex-grow flex items-stretch gap-x-5 min-w-0">
+          {# Image #}
+          <div class="min-w-[56px]">
+            {# {% if let Some(logo_id) = job.employer.logo_id %}
+              {% let logo = &self::build_image_url(logo_id, "small") %}
+              <img class="size-14 rounded-lg" height="56" width="56" src="{{ logo }}" alt="{{ job.employer.company }} logo">
+            {% else %} #}
+            <div class="rounded-full size-14 bg-gray-200 p-1 flex">
+              <div class="svg-icon size-8 icon-company bg-gray-600 m-auto"></div>
+            </div>
+            {# {% endif %} #}
+          </div>
+          {# End image #}
+
+          <div class="flex flex-col justify-center min-w-0">
+            {# Title #}
+            <div class="text-xl font-stretch-condensed font-medium text-gray-900 truncate">{{ job.title }}</div>
+            {# End title #}
+
+            {# Company #}
+            <div class="text-sm/6 text-gray-500 italic">{{ job.employer.company }}</div>
+            {# End company #}
+          </div>
+        </div>
+      </div>
+
+      {% if let Some(member) = job.employer.member %}
+        <div class="w-1/4 ps-3">
+          <div class="flex gap-x-2 items-center bg-gray-50 border rounded-lg p-2 max-w-full min-w-full">
+            <div>
+              <img src="/static/images/cncf_icon.svg"
+                   alt="CNCF icon"
+                   height="40"
+                   width="40"
+                   class="size-10">
+            </div>
+            <div class="flex flex-col justify-start min-w-0">
+              <div class="truncate text-start text-gray-700 font-medium">{{ member.name }}</div>
+              <div class="truncate text-nowrap uppercase max-w-[100%] text-xs/4 font-medium text-gray-400">
+                CNCF {{ member.level }} member
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="flex flex-grow items-stretch">
+      <div class="w-3/4 border-e me-10 pe-10 pt-10">
+
+        {# Content #}
+        <div class="flex flex-col space-y-6">
+          {# Job description #}
+          <div>
+            {% call macros_preview::content_heading(content = "Job description", margin = 0) %}
+            <div class="text-sm/6 text-gray-600 markdown">{{ job.description|md_to_html|safe }}</div>
+          </div>
+          {# End job description #}
+
+          {# Job responsibilities #}
+          {% if let Some(responsibilities) = job.responsibilities %}
+            <div>
+              {% call macros_preview::content_heading(content = "Responsibilities") %}
+              <div class="text-sm/6 text-gray-600 markdown">{{ responsibilities|md_to_html|safe }}</div>
+            </div>
+          {% endif %}
+          {# End job responsibilities #}
+
+          {# Job qualifications #}
+          {% if let Some(qualifications) = job.qualifications %}
+            <div>
+              {% call macros_preview::content_heading(content = "Qualifications") %}
+              <div class="text-sm/6 text-gray-600 markdown">{{ qualifications|md_to_html|safe }}</div>
+            </div>
+          {% endif %}
+          {# End job qualifications #}
+
+          {# Skills #}
+          {% if let Some(skills) = job.skills %}
+            <div class="mb-5">
+              {% call macros_preview::content_heading(content = "Required skills") %}
+              <div class="flex gap-x-5 mt-2">
+                {% for skill in skills %}
+                  {% call macros::badge(content = skill|unnormalize) %}
+                {% endfor %}
+              </div>
+            </div>
+          {% endif %}
+          {# End skills #}
+
+          {# Benefits #}
+          {% if let Some(benefits) = job.benefits %}
+            <div class="mb-5">
+              {% call macros_preview::content_heading(content = "Benefits") %}
+              <div class="flex gap-x-5 mt-2">
+                {% for benefit in benefits %}
+                  {% call macros::badge(content = benefit|unnormalize) %}
+                {% endfor %}
+              </div>
+            </div>
+          {% endif %}
+          {# End benefits #}
+
+          {# Application #}
+          {% if let Some(apply_instructions) = job.apply_instructions %}
+            <div>
+              {% call macros_preview::content_heading(content = "Apply instructions") %}
+              <div class="text-sm/6 text-gray-600 markdown">{{ apply_instructions|md_to_html|safe }}</div>
+            </div>
+          {% endif %}
+          {# End application #}
+
+          {# Company information #}
+          {# <div>
+            {% call macros_preview::content_heading(content = "About company") %}
+            <div class="text-sm/6 text-gray-600 markdown">{{ job.employer.description|md_to_html|safe }}</div>
+          </div> #}
+          {# End company information #}
+        </div>
+        {# End content #}
+      </div>
+
+      {# Right column #}
+      <div class="w-1/4 pt-6">
+        {# Published date #}
+        {% call macros_preview::job_details_subheading(content = "Published") %}
+        {% call macros_preview::job_details_content(text = job.published_at|display_some_datetime_or(DATE_FORMAT, "-")) %}
+        {# End published date #}
+
+        {# Last update #}
+        {% call macros_preview::job_details_subheading(content = "Last updated") %}
+        {% call macros_preview::job_details_content(text = job.updated_at|display_some_datetime_or(DATE_FORMAT, "-")) %}
+        {# End last update #}
+
+        {# Type #}
+        {% call macros_preview::job_details_subheading(content = "Job type") %}
+        {% call macros_preview::job_kind(kind = job.kind) %}
+        {# End type #}
+
+        {# Salary #}
+        {% call macros_preview::job_details_subheading(content = "Salary") %}
+        <div class="flex items-baseline text-xs/6">
+          {# {% let salary_kind = job.salary_kind() %}
+          {% match salary_kind %}
+          {% when SalaryKind::Fixed %}
+          {# Fixed salary #}
+<div class="flex items-baseline">
+{% if let Some(salary) = job.salary %}
+<div class="flex items-baseline font-medium text-gray-900 text-sm">
+{% call macros_preview::currency(value = job.salary_currency) %}
+{{ salary }}
+</div>
+{% else %}
+-
+{% endif %}
+{% if let Some(salary_period) = job.salary_period %}
+<div class="text-gray-900 text-xs ms-2">({{ salary_period }})</div>
+{% endif %}
+</div>
+{# End fixed salary #}
+{% when SalaryKind::Range %}
+{# Range salary #}
+<div class="flex items-baseline">
+{% if let Some(salary_min) = job.salary_min %}
+<div class="flex items-baseline font-medium text-gray-900 text-sm">
+{% call macros_preview::currency(value = job.salary_currency) %}
+{{ salary_min }}
+</div>
+{% else %}
+-
+{% endif %}
+
+{% if let Some(salary_max) = job.salary_max %}
+<div class="flex items-baseline text-gray-900 text-sm">
+<span class="mx-1">-</span>
+{% call macros_preview::currency(value = job.salary_currency) %}
+{{ salary_max }}
+</div>
+{% endif %}
+
+{% if let Some(salary_period) = job.salary_period %}
+<div class="text-gray-900 text-xs ms-2">({{ salary_period }})</div>
+{% endif %}
+</div>
+{# End range salary #}
+{% endmatch %} #}
+        </div>
+        {# End salary #}
+
+        {# Location #}
+        {% call macros_preview::job_details_subheading(content = "Location") %}
+        {% call macros_preview::job_workplace(workplace = job.workplace, location = job.location|display_some_or("-")) %}
+        {# End location #}
+
+        {# Open source #}
+        {% if let Some(open_source) = job.open_source %}
+          {% if open_source + 0 > 0 %}
+            {% call macros_preview::job_details_subheading(content = "Time working on open source") %}
+            {% call macros_preview::badge_percentage_bar(percentage = open_source) %}
+          {% endif %}
+        {% endif %}
+        {# End open source #}
+
+        {# Upstream commitment #}
+        {% if let Some(upstream_commitment) = job.upstream_commitment %}
+          {% if upstream_commitment + 0 > 0 %}
+            {% call macros_preview::job_details_subheading(content = "Time working on upstream projects") %}
+            {% call macros_preview::badge_percentage_bar(percentage = upstream_commitment) %}
+          {% endif %}
+        {% endif %}
+        {# End Upstream commitment #}
+
+        {# Projects #}
+        {% if let Some(projects) = job.projects %}
+          {% call macros_preview::job_details_subheading(content = "CNCF projects you'd work on") %}
+          <div class="flex flex-col space-y-3">
+            {% for p in projects %}
+              <div class="border rounded-lg p-2 text-sm/5 bg-white w-full">
+                {% let label = &format!("CNCF {}", p.maturity) %}
+                {% call macros::dropdown_card(name = p.name, label = label, logo_url = p.logo_url, line_height = 5) %}
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+        {# End projects #}
+
+      </div>
+      {# End right column #}
+    </div>
+  </div>
+{% endblock main %}

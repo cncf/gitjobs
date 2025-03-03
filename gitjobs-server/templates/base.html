@@ -39,6 +39,7 @@
     <script type="module" src="/static/js/dashboard/jobseeker/experience.js"></script>
     <script type="module" src="/static/js/dashboard/jobseeker/certifications.js"></script>
     <script type="module" src="/static/js/dashboard/jobseeker/projects.js"></script>
+    <script type="module" src="/static/js/common/collapsible-filter.js"></script>
     <script src="https://unpkg.com/easymde/dist/easymde.min.js"></script>
     <script src=" https://cdn.jsdelivr.net/npm/sweetalert2@11.17.2/dist/sweetalert2.all.min.js "></script>
 
@@ -102,6 +103,10 @@
 
         .radio-primary {
           @apply w-4 h-4 text-primary-600 border border-gray-200 bg-gray-50 cursor-pointer focus:ring-primary-500 focus:ring-2;
+        }
+
+        .checkbox-primary {
+          @apply w-4 h-4 rounded-sm text-primary-600 border border-gray-200 bg-gray-50 cursor-pointer focus:ring-primary-500 focus:ring-2;
         }
 
         .asterisk {
@@ -185,9 +190,6 @@
 
     {# Main Content #}
     <div class="hidden md:flex min-h-screen">
-      {% if page_id == PageId::JobBoard %}
-        <div class="fixed top-[80px] start-0 end-0 -z-10 block w-full h-full bg-jobboard"></div>
-      {% endif %}
       {% block main %}
       {% endblock main %}
     </div>

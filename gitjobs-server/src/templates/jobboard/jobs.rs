@@ -9,7 +9,8 @@ use uuid::Uuid;
 use crate::templates::{
     PageId,
     dashboard::employer::jobs::{JobKind, SalaryKind, Workplace},
-    helpers::option_is_none_or_default,
+    filters,
+    helpers::{DATE_FORMAT, option_is_none_or_default},
     misc::{Location, Member, Project},
     pagination::{NavigationLinks, Pagination},
 };

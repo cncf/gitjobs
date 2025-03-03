@@ -1,1 +1,66 @@
-<h1>Jobs results section</h1>
+{% import "macros.html" as macros %}
+{% import "dashboard/employer/jobs/preview.html" as macros_preview %}
+
+<div class="flex flex-col divide-y divide-gray-100 border-b border-t border-gray-100 mt-5 md:mt-7">
+  {% if jobs.len() == 0 %}
+    {# Placeholder cards -#}
+    {% call macros::alert_box(title = "We're sorry!", content = "We can't seem to find any jobs that match your search criteria. You can reset your filters or try a different search.") %}
+    {# End placeholder cards -#}
+  {% else %}
+    {# Cards -#}
+    {% for job in jobs %}
+      <a hx-get="/jobs/{{ job.job_id }}"
+         hx-target="body"
+         hx-push-url="true"
+         class="p-5 md:p-7 cursor-pointer hover:bg-gray-50">
+        <div class="flex flex-1 flex-row items-center space-x-4 w-full">
+          {# Company logo #}
+          <div class="shrink-0">
+            <div class="rounded-full size-24 bg-gray-200 p-1 flex">
+              <div class="svg-icon size-14 icon-company bg-gray-600 m-auto"></div>
+            </div>
+          </div>
+          {# End company logo #}
+
+          {# Info #}
+          <div class="flex-grow min-w-0 content-center">
+            {# Title #}
+            <div class="text-lg font-stretch-condensed font-medium text-gray-900 truncate">{{ job.title }}</div>
+            {# End title #}
+
+            {# Company #}
+            <div class="text-sm/6 text-gray-500 italic mb-2">{{ job.employer.company }}</div>
+            {# End company #}
+
+            <div class="flex space-x-6">
+              {# Type #}
+              <div class="flex items-center space-x-2 text-xs/6 border rounded-full px-3 py-1">
+                {% call macros_preview::job_kind(kind = job.kind) %}
+              </div>
+              {# End type #}
+
+              {# Workplace #}
+              <div class="flex items-center space-x-2 text-xs/6 border rounded-full px-3 py-1">
+                {% call macros_preview::job_workplace(workplace = job.workplace, location = job.location|display_some_or("-")) %}
+              </div>
+              {# End workplace #}
+            </div>
+          </div>
+          {# End info #}
+
+          {# Published date #}
+          <div class="shrink-0 self-start text-xs/6 font-semibold text-gray-500 pt-2">
+            26 Feb
+            {# {{ job.published_at|display_some_date_or(DATE_FORMAT_2, "-") }} #}
+          </div>
+          {# End published date #}
+        </div>
+      </a>
+    {% endfor %}
+    {# End cards -#}
+  {% endif %}
+</div>
+
+{# Pagination -#}
+{% if jobs.len() > 0 %}{{ navigation_links|safe }}{% endif %}
+{# End pagination -#}

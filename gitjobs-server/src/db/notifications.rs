@@ -113,6 +113,7 @@ impl DBNotifications for PgDB {
             "
             update notification set
                 processed = true,
+                processed_at = current_timestamp,
                 error = $2::text
             where notification_id = $1::uuid;
             ",

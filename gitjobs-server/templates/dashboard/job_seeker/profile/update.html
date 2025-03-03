@@ -317,7 +317,6 @@
       <form id="education-form">
         <div class="flex flex-col space-y-12">
           <education-section education="{%- if let Some(education) = profile.education -%}{{ education|json }}{%- endif -%}"></education-section>
-          <div class="border-b border-gray-900/10"></div>
           <certifications-section certifications="{%- if let Some(certifications) = profile.certifications -%}{{ certifications|json }}{%- endif -%}"></certifications-section>
         </div>
       </form>

@@ -9,12 +9,14 @@
 /* Markdown */
 .markdown ul li {
   list-style-type: disc;
-  list-style-position: inside;
+  list-style-position: outside;
+  margin-left: 1rem;
 }
 
 .markdown ol li {
   list-style-type: decimal;
-  list-style-position: inside;
+  list-style-position: outside;
+  margin-left: 1rem;
 }
 
 .markdown h1, .markdown h2, .markdown h3, .markdown h4, .markdown h5, .markdown h6 {

@@ -1391,7 +1391,6 @@ dependencies = [
  "emojis",
  "figment",
  "image",
- "mail-builder",
  "mail-send",
  "markdown",
  "mime_guess",

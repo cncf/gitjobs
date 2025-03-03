@@ -26,6 +26,23 @@ db:
   user: postgres
   password: postgres
 
+# Email configuration
+email:
+  # From address used in emails
+  fromAddress: ""
+  # From name used in emails
+  fromName: ""
+  # SMTP server configuration
+  smtp:
+    # Hostname
+    host: ""
+    # Port
+    port: 587
+    # Username
+    username: ""
+    # Password
+    password: ""
+
 # Log configuration
 log:
   # Output format [json|pretty]
@@ -42,6 +59,9 @@ dbmigrator:
 server:
   # Address to listen on
   addr: 0.0.0.0:9000
+
+  # Base URL
+  baseUrl: "https://{YOUR_GITJOBS_HOSTNAME}"
 
   # Basic auth configuration
   basicAuth:

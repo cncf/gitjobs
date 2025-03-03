@@ -6,7 +6,7 @@ use anyhow::{Context, Result};
 use clap::Parser;
 use deadpool_postgres::Runtime;
 use img::db::DbImageStore;
-use notifications::NotificationsManager;
+use notifications::PgNotificationsManager;
 use openssl::ssl::{SslConnector, SslMethod, SslVerifyMode};
 use postgres_openssl::MakeTlsConnector;
 use std::env;
@@ -58,29 +58,35 @@ async fn main() -> Result<()> {
         LogFormat::Pretty => ts.init(),
     };
 
+    // Setup task tracker and cancellation token
+    let tracker = TaskTracker::new();
+    let cancellation_token = CancellationToken::new();
+
     // Setup database
     let mut builder = SslConnector::builder(SslMethod::tls())?;
     builder.set_verify(SslVerifyMode::NONE);
     let connector = MakeTlsConnector::new(builder.build());
     let pool = cfg.db.create_pool(Some(Runtime::Tokio1), connector)?;
     let db = Arc::new(PgDB::new(pool));
+    {
+        let db = db.clone();
+        let cancellation_token = cancellation_token.clone();
+        tracker.spawn(async move {
+            db.tx_cleaner(cancellation_token).await;
+        });
+    }
 
     // Setup image store
     let image_store = Arc::new(DbImageStore::new(db.clone()));
 
     // Setup and launch notifications manager
-    let tracker = TaskTracker::new();
-    let token = CancellationToken::new();
-    let notifications_manager = Arc::new(notifications::PgNotificationsManager::new(
-        db.clone(),
-        cfg.email,
-        tracker.clone(),
-        token.clone(),
-    ));
-    notifications_manager.clone().run().await;
+    let notifications_manager = Arc::new(
+        PgNotificationsManager::new(db.clone(), cfg.email, tracker.clone(), cancellation_token.clone())
+            .await?,
+    );
 
     // Setup and launch HTTP server
-    let router = router::setup(&cfg.server, db, image_store, notifications_manager)?;
+    let router = router::setup(cfg.server.clone(), db, image_store, notifications_manager)?;
     let listener = TcpListener::bind(&cfg.server.addr).await?;
     info!("server started");
     info!(%cfg.server.addr, "listening");
@@ -93,9 +99,9 @@ async fn main() -> Result<()> {
     }
     info!("server stopped");
 
-    // Stop notifications manager
-    token.cancel();
+    // Ask all tasks to stop and wait for them to finish
     tracker.close();
+    cancellation_token.cancel();
     tracker.wait().await;
 
     Ok(())

@@ -49,6 +49,7 @@ struct StaticFile;
 /// Router's state.
 #[derive(Clone, FromRef)]
 pub(crate) struct State {
+    pub cfg: HttpServerConfig,
     pub db: DynDB,
     pub image_store: DynImageStore,
     pub form_de: serde_qs::Config,
@@ -58,13 +59,14 @@ pub(crate) struct State {
 /// Setup router.
 #[instrument(skip_all)]
 pub(crate) fn setup(
-    cfg: &HttpServerConfig,
+    cfg: HttpServerConfig,
     db: DynDB,
     image_store: DynImageStore,
     notifications_manager: DynNotificationsManager,
 ) -> Result<Router> {
     // Setup router state
     let state = State {
+        cfg: cfg.clone(),
         db: db.clone(),
         image_store,
         form_de: serde_qs::Config::new(3, false),
@@ -72,7 +74,7 @@ pub(crate) fn setup(
     };
 
     // Setup authentication / authorization layer
-    let auth_layer = crate::auth::setup_layer(cfg, db)?;
+    let auth_layer = crate::auth::setup_layer(&cfg, db)?;
 
     // Setup sub-routers
     let employer_dashboard_router = setup_employer_dashboard_router(state.clone());

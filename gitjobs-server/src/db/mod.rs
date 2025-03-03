@@ -2,16 +2,17 @@
 
 use std::{collections::HashMap, sync::Arc};
 
-use anyhow::Result;
+use anyhow::{Result, bail};
 use async_trait::async_trait;
 use auth::DBAuth;
+use chrono::{DateTime, TimeDelta, Utc};
 use dashboard::DBDashBoard;
 use deadpool_postgres::{Client, Pool};
 use img::DBImage;
 use notifications::DBNotifications;
-use std::time::{Duration, SystemTime};
-use tokio::select;
+use std::time::Duration;
 use tokio::sync::RwLock;
+use tokio::{select, time::sleep};
 use tokio_util::sync::CancellationToken;
 use tracing::instrument;
 use uuid::Uuid;
@@ -22,6 +23,15 @@ mod auth;
 mod dashboard;
 pub(crate) mod img;
 mod notifications;
+
+/// Error message when a transaction client is not found.
+const TX_CLIENT_NOT_FOUND: &str = "transaction client not found, it probably timed out";
+
+/// How often the transaction cleaner should run (in seconds).
+const TXS_CLEANER_FREQUENCY: Duration = Duration::from_secs(10);
+
+/// How long a transaction client should be kept alive.
+const TXS_CLIENT_TIMEOUT: TimeDelta = TimeDelta::seconds(10);
 
 /// Abstraction layer over the database. Trait that defines some operations a
 /// DB implementation must support.
@@ -43,13 +53,10 @@ pub(crate) trait DB: DBAuth + DBDashBoard + DBImage + DBNotifications {
     async fn tx_begin(&self) -> Result<Uuid>;
 
     /// Commit transaction.
-    async fn tx_commit(&self, conn_id: Uuid) -> Result<()>;
+    async fn tx_commit(&self, client_id: Uuid) -> Result<()>;
 
     /// Rollback transaction.
-    async fn tx_rollback(&self, conn_id: Uuid) -> Result<()>;
-
-    /// Discard transactions that have been active too long.
-    async fn txs_cleaner(&self, token: CancellationToken);
+    async fn tx_rollback(&self, client_id: Uuid) -> Result<()>;
 }
 
 /// Type alias to represent a DB trait object.
@@ -58,14 +65,45 @@ pub(crate) type DynDB = Arc<dyn DB + Send + Sync>;
 /// DB implementation backed by `PostgreSQL`.
 pub(crate) struct PgDB {
     pool: Pool,
-    txs_conns: Arc<RwLock<HashMap<Uuid, (Client, SystemTime)>>>,
+    txs_clients: RwLock<HashMap<Uuid, (Client, DateTime<Utc>)>>,
 }
 
 impl PgDB {
     /// Create a new `PgDB` instance.
     pub(crate) fn new(pool: Pool) -> Self {
-        let txs_conns = Arc::new(RwLock::new(HashMap::new()));
-        Self { pool, txs_conns }
+        Self {
+            pool,
+            txs_clients: RwLock::new(HashMap::new()),
+        }
+    }
+
+    /// Process that cleans up transactions clients that have timed out.
+    pub(crate) async fn tx_cleaner(&self, cancellation_token: CancellationToken) {
+        loop {
+            // Check if we've been asked to stop or pause until next run
+            select! {
+                () = cancellation_token.cancelled() => break,
+                () = sleep(TXS_CLEANER_FREQUENCY) => {}
+            };
+
+            // Collect timed out clients to discard
+            let clients_reader = self.txs_clients.read().await;
+            let mut clients_to_discard: Vec<Uuid> = vec![];
+            for (id, (_, ts)) in clients_reader.iter() {
+                if Utc::now() - ts > TXS_CLIENT_TIMEOUT {
+                    clients_to_discard.push(*id);
+                }
+            }
+            drop(clients_reader);
+
+            // Discard timed out clients
+            if !clients_to_discard.is_empty() {
+                let mut clients_writer = self.txs_clients.write().await;
+                for id in clients_to_discard {
+                    clients_writer.remove(&id);
+                }
+            }
+        }
     }
 }
 
@@ -187,68 +225,45 @@ impl DB for PgDB {
     /// [DB::tx_begin]
     #[instrument(skip(self), err)]
     async fn tx_begin(&self) -> Result<Uuid> {
-        let tx = self.pool.get().await?;
-        tx.batch_execute("BEGIN").await?;
-        let conn_id = Uuid::new_v4();
-        let mut txs_conns = self.txs_conns.write().await;
-        txs_conns.insert(conn_id, (tx, SystemTime::now()));
+        // Get client from pool and begin transaction
+        let db = self.pool.get().await?;
+        db.batch_execute("begin;").await?;
 
-        Ok(conn_id)
+        // Track client used for the transaction
+        let client_id = Uuid::new_v4();
+        let mut txs_clients = self.txs_clients.write().await;
+        txs_clients.insert(client_id, (db, Utc::now()));
+
+        Ok(client_id)
     }
 
     /// [DB::tx_commit]
     #[instrument(skip(self), err)]
-    async fn tx_commit(&self, conn_id: Uuid) -> Result<()> {
-        let mut txs_conns = self.txs_conns.write().await;
-        let (tx, _) = txs_conns.remove(&conn_id).unwrap();
+    async fn tx_commit(&self, client_id: Uuid) -> Result<()> {
+        // Get client used for the transaction
+        let mut txs_clients = self.txs_clients.write().await;
+        let Some((tx, _)) = txs_clients.remove(&client_id) else {
+            bail!(TX_CLIENT_NOT_FOUND);
+        };
 
-        tx.batch_execute("COMMIT").await?;
+        // Commit transaction
+        tx.batch_execute("commit;").await?;
 
         Ok(())
     }
 
     /// [DB::tx_rollback]
     #[instrument(skip(self), err)]
-    async fn tx_rollback(&self, conn_id: Uuid) -> Result<()> {
-        let mut txs_conns = self.txs_conns.write().await;
-        let (tx, _) = txs_conns.remove(&conn_id).unwrap();
+    async fn tx_rollback(&self, client_id: Uuid) -> Result<()> {
+        // Get client used for the transaction
+        let mut txs_clients = self.txs_clients.write().await;
+        let Some((tx, _)) = txs_clients.remove(&client_id) else {
+            bail!(TX_CLIENT_NOT_FOUND);
+        };
 
-        tx.batch_execute("ROLLBACK").await?;
+        // Rollback transaction
+        tx.batch_execute("rollback;").await?;
 
         Ok(())
-    }
-
-    /// [DB::txs_cleaner]
-    async fn txs_cleaner(&self, token: CancellationToken) {
-        let clients = self.txs_conns.clone();
-        tokio::spawn(async move {
-            loop {
-                if token.is_cancelled() {
-                    break;
-                }
-                select! {
-                    () = token.cancelled() => break,
-                    () = tokio::time::sleep(std::time::Duration::from_secs(5)) => {}
-                };
-
-                let clients_reader = clients.read().await;
-                let mut clients_to_discard: Vec<Uuid> = vec![];
-                let max_time = Duration::from_secs(5);
-
-                for (id, (_, ts)) in clients_reader.iter() {
-                    if ts.elapsed().unwrap() >= max_time {
-                        clients_to_discard.push(*id);
-                    }
-                }
-
-                if !clients_to_discard.is_empty() {
-                    let mut clients_writer = clients.write().await;
-
-                    for id in clients_to_discard {
-                        let _ = clients_writer.remove(&id).unwrap();
-                    }
-                }
-            }
-        });
     }
 }

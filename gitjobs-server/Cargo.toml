@@ -21,7 +21,7 @@ deadpool-postgres = { workspace = true }
 emojis = { workspace = true }
 figment = { workspace = true }
 image = { workspace = true }
-mail-send = { workspace = true }
+lettre = { workspace = true }
 markdown = { workspace = true }
 mime_guess = { workspace = true }
 minify-html = { workspace = true }

@@ -25,7 +25,7 @@ deadpool-postgres = { version = "0.14.1", features = ["serde"] }
 emojis = "0.6.4"
 figment = { version = "0.10.19", features = ["yaml", "env"] }
 image = "0.25.5"
-mail-send = "0.5.0"
+lettre = { version = "0.11.14", default-features = false, features = ["builder", "hostname", "pool", "smtp-transport", "tokio1-rustls-tls"] }
 markdown = "1.0.0-alpha.22"
 mime_guess = "2.0.5"
 minify-html = "0.15.0"

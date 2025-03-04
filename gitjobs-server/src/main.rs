@@ -80,10 +80,12 @@ async fn main() -> Result<()> {
     let image_store = Arc::new(DbImageStore::new(db.clone()));
 
     // Setup and launch notifications manager
-    let notifications_manager = Arc::new(
-        PgNotificationsManager::new(db.clone(), cfg.email, tracker.clone(), cancellation_token.clone())
-            .await?,
-    );
+    let notifications_manager = Arc::new(PgNotificationsManager::new(
+        db.clone(),
+        cfg.email,
+        tracker.clone(),
+        cancellation_token.clone(),
+    )?);
 
     // Setup and launch HTTP server
     let router = router::setup(cfg.server.clone(), db, image_store, notifications_manager)?;

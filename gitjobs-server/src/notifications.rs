@@ -5,13 +5,14 @@ use std::{sync::Arc, time::Duration};
 
 use anyhow::Result;
 use async_trait::async_trait;
-use mail_send::{Credentials, SmtpClient, SmtpClientBuilder, mail_builder::MessageBuilder};
+use lettre::{
+    AsyncSmtpTransport, AsyncTransport, Tokio1Executor,
+    message::{Mailbox, MessageBuilder, header::ContentType},
+    transport::smtp::authentication::Credentials,
+};
 use rinja::Template;
 use serde::{Deserialize, Serialize};
-use tokio::{
-    io::{AsyncRead, AsyncWrite},
-    time::sleep,
-};
+use tokio::time::sleep;
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 use tracing::{error, info, instrument};
 use uuid::Uuid;
@@ -50,7 +51,7 @@ pub(crate) struct PgNotificationsManager {
 
 impl PgNotificationsManager {
     /// Create a new `PgNotificationsManager` instance.
-    pub(crate) async fn new(
+    pub(crate) fn new(
         db: DynDB,
         cfg: EmailConfig,
         tracker: TaskTracker,
@@ -62,29 +63,30 @@ impl PgNotificationsManager {
             tracker,
             cancellation_token,
         };
-        notifications_manager.run().await?;
+        notifications_manager.run()?;
         info!("notifications manager started");
 
         Ok(notifications_manager)
     }
 
     /// Run notifications manager.
-    async fn run(&self) -> Result<()> {
+    fn run(&self) -> Result<()> {
+        // Setup smtp client
+        let smtp_client = AsyncSmtpTransport::<Tokio1Executor>::relay(&self.cfg.smtp.host)?
+            .credentials(Credentials::new(
+                self.cfg.smtp.username.clone(),
+                self.cfg.smtp.password.clone(),
+            ))
+            .build();
+
         // Setup and run some workers to deliver notifications
         for _ in 1..=NUM_WORKERS {
-            let smtp_client = SmtpClientBuilder::new(&self.cfg.smtp.host, self.cfg.smtp.port)
-                .credentials(Credentials::new(&self.cfg.smtp.username, &self.cfg.smtp.password))
-                .implicit_tls(false)
-                .connect()
-                .await?;
-
             let mut worker = Worker {
                 db: self.db.clone(),
                 cfg: self.cfg.clone(),
-                smtp_client,
+                smtp_client: smtp_client.clone(),
                 cancellation_token: self.cancellation_token.clone(),
             };
-
             self.tracker.spawn(async move {
                 worker.run().await;
             });
@@ -104,14 +106,14 @@ impl NotificationsManager for PgNotificationsManager {
 }
 
 /// Worker in charge of delivering notifications.
-pub struct Worker<T: AsyncRead + AsyncWrite + Unpin> {
+pub struct Worker {
     db: DynDB,
     cfg: EmailConfig,
-    smtp_client: SmtpClient<T>,
+    smtp_client: AsyncSmtpTransport<Tokio1Executor>,
     cancellation_token: CancellationToken,
 }
 
-impl<T: AsyncRead + AsyncWrite + Unpin> Worker<T> {
+impl Worker {
     /// Run the worker.
     pub async fn run(&mut self) {
         loop {
@@ -174,13 +176,17 @@ impl<T: AsyncRead + AsyncWrite + Unpin> Worker<T> {
 
             // Send email
             let message = MessageBuilder::new()
-                .from((self.cfg.from_name.as_str(), self.cfg.from_address.as_str()))
-                .to(notification.email.as_str())
+                .from(Mailbox::new(
+                    Some(self.cfg.from_name.clone()),
+                    self.cfg.from_address.parse()?,
+                ))
+                .to(notification.email.parse()?)
+                .header(ContentType::TEXT_HTML)
                 .subject(subject)
-                .html_body(body);
+                .body(body)?;
             let error = match self.smtp_client.send(message).await {
                 Err(err) => Some(err.to_string()),
-                Ok(()) => None,
+                Ok(_) => None,
             };
 
             // Update notification with result

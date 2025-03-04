@@ -56,7 +56,7 @@ impl FromRequestParts<router::State> for JobBoardId {
     time = 86400,
     key = "String",
     convert = r#"{ String::from(host) }"#,
-    sync_writes = true,
+    sync_writes = "default",
     result = true
 )]
 #[instrument(skip(db), err)]

@@ -142,17 +142,17 @@
 
     {# Type #}
     {% call job_details_subheading(content = "Job type") %}
-    {% let job_type = job.type_.to_string().as_str()|unnormalize %}
+    {% let job_kind = job.kind.to_string().as_str()|unnormalize %}
 
-    {% match job.type_ %}
-    {% when JobType::FullTime %}
-    {% call job_details_content(text = job_type, icon = "signature", extra_styles = "capitalize") %}
-    {% when JobType::PartTime %}
-    {% call job_details_content(text = job_type, icon = "hour_glass", extra_styles = "capitalize") %}
-    {% when JobType::Contractor %}
-    {% call job_details_content(text = job_type, icon = "clipboard", extra_styles = "capitalize") %}
-    {% when JobType::Internship %}
-    {% call job_details_content(text = job_type, icon = "graduation_cap", extra_styles = "capitalize") %}
+    {% match job.kind %}
+    {% when JobKind::FullTime %}
+    {% call job_details_content(text = job_kind, icon = "signature", extra_styles = "capitalize") %}
+    {% when JobKind::PartTime %}
+    {% call job_details_content(text = job_kind, icon = "hour_glass", extra_styles = "capitalize") %}
+    {% when JobKind::Contractor %}
+    {% call job_details_content(text = job_kind, icon = "clipboard", extra_styles = "capitalize") %}
+    {% when JobKind::Internship %}
+    {% call job_details_content(text = job_kind, icon = "graduation_cap", extra_styles = "capitalize") %}
   {% endmatch %}
   {# End type #}
 

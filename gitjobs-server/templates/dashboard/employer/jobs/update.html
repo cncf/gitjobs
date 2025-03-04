@@ -58,19 +58,19 @@
           </label>
           <div class="mt-2 grid grid-cols-4 gap-x-6">
             {# Full time #}
-            {% call macros::radio_box(name = "type", value = JobType::FullTime, label = "Full Time", icon = "signature", checked = job.type_, required = true) %}
+            {% call macros::radio_box(name = "type", value = JobKind::FullTime, label = "Full Time", icon = "signature", checked = job.kind, required = true) %}
             {# End Full time #}
 
             {# Part time #}
-            {% call macros::radio_box(name = "type", value = JobType::PartTime, label = "Part Time", icon = "hour_glass", checked = job.type_, required = true) %}
+            {% call macros::radio_box(name = "type", value = JobKind::PartTime, label = "Part Time", icon = "hour_glass", checked = job.kind, required = true) %}
             {# End Part time #}
 
             {# Contractor #}
-            {% call macros::radio_box(name = "type", value = JobType::Contractor, label = "Contractor", icon = "clipboard", checked = job.type_, required = true) %}
+            {% call macros::radio_box(name = "type", value = JobKind::Contractor, label = "Contractor", icon = "clipboard", checked = job.kind, required = true) %}
             {# End Contractor #}
 
             {# Internship #}
-            {% call macros::radio_box(name = "type", value = JobType::Internship, label = "Internship", icon = "graduation_cap", checked = job.type_, required = true) %}
+            {% call macros::radio_box(name = "type", value = JobKind::Internship, label = "Internship", icon = "graduation_cap", checked = job.kind, required = true) %}
             {# End Internship #}
           </div>
         </div>

@@ -70,8 +70,7 @@ pub(crate) struct Job {
     pub description: String,
     pub status: JobStatus,
     pub title: String,
-    #[serde(rename = "type")]
-    pub type_: JobType,
+    pub kind: JobKind,
     pub workplace: Workplace,
 
     pub apply_instructions: Option<String>,
@@ -154,36 +153,36 @@ impl std::str::FromStr for JobStatus {
     }
 }
 
-/// Job type.
+/// Job kind.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
-pub(crate) enum JobType {
+pub(crate) enum JobKind {
     Contractor,
     Internship,
     FullTime,
     PartTime,
 }
 
-impl std::fmt::Display for JobType {
+impl std::fmt::Display for JobKind {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            JobType::Contractor => write!(f, "contractor"),
-            JobType::Internship => write!(f, "internship"),
-            JobType::FullTime => write!(f, "full-time"),
-            JobType::PartTime => write!(f, "part-time"),
+            JobKind::Contractor => write!(f, "contractor"),
+            JobKind::Internship => write!(f, "internship"),
+            JobKind::FullTime => write!(f, "full-time"),
+            JobKind::PartTime => write!(f, "part-time"),
         }
     }
 }
 
-impl std::str::FromStr for JobType {
+impl std::str::FromStr for JobKind {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
-            "contractor" => Ok(JobType::Contractor),
-            "internship" => Ok(JobType::Internship),
-            "full-time" => Ok(JobType::FullTime),
-            "part-time" => Ok(JobType::PartTime),
+            "contractor" => Ok(JobKind::Contractor),
+            "internship" => Ok(JobKind::Internship),
+            "full-time" => Ok(JobKind::FullTime),
+            "part-time" => Ok(JobKind::PartTime),
             _ => Err("invalid job type".to_string()),
         }
     }

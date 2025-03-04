@@ -9,6 +9,7 @@ use chrono::{DateTime, TimeDelta, Utc};
 use dashboard::DBDashBoard;
 use deadpool_postgres::{Client, Pool};
 use img::DBImage;
+use jobboard::DBJobBoard;
 use notifications::DBNotifications;
 use std::time::Duration;
 use tokio::sync::RwLock;
@@ -22,6 +23,7 @@ use crate::templates::misc::{Location, Member, Project};
 mod auth;
 mod dashboard;
 pub(crate) mod img;
+pub(crate) mod jobboard;
 mod notifications;
 
 /// Error message when a transaction client is not found.
@@ -36,7 +38,7 @@ const TXS_CLIENT_TIMEOUT: TimeDelta = TimeDelta::seconds(10);
 /// Abstraction layer over the database. Trait that defines some operations a
 /// DB implementation must support.
 #[async_trait]
-pub(crate) trait DB: DBAuth + DBDashBoard + DBImage + DBNotifications {
+pub(crate) trait DB: DBAuth + DBDashBoard + DBImage + DBNotifications + DBJobBoard {
     /// Get the job board id from the host provided.
     async fn get_job_board_id(&self, host: &str) -> Result<Option<Uuid>>;
 

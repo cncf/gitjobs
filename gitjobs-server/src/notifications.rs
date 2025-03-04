@@ -14,7 +14,7 @@ use rinja::Template;
 use serde::{Deserialize, Serialize};
 use tokio::time::sleep;
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
-use tracing::{error, info, instrument};
+use tracing::{error, instrument};
 use uuid::Uuid;
 
 use crate::{config::EmailConfig, db::DynDB, templates::notifications::EmailVerification};
@@ -64,7 +64,6 @@ impl PgNotificationsManager {
             cancellation_token,
         };
         notifications_manager.run()?;
-        info!("notifications manager started");
 
         Ok(notifications_manager)
     }
@@ -106,7 +105,7 @@ impl NotificationsManager for PgNotificationsManager {
 }
 
 /// Worker in charge of delivering notifications.
-pub struct Worker {
+struct Worker {
     db: DynDB,
     cfg: EmailConfig,
     smtp_client: AsyncSmtpTransport<Tokio1Executor>,
@@ -115,7 +114,7 @@ pub struct Worker {
 
 impl Worker {
     /// Run the worker.
-    pub async fn run(&mut self) {
+    async fn run(&mut self) {
         loop {
             // Try to deliver a pending notification
             match self.deliver_notification().await {
@@ -129,9 +128,10 @@ impl Worker {
                     () = sleep(PAUSE_ON_NONE) => {},
                     () = self.cancellation_token.cancelled() => break,
                 },
-                Err(_) => {
+                Err(err) => {
                     // Something went wrong delivering the notification, pause
                     // unless we've been asked to stop
+                    error!("error delivering notification: {err}");
                     tokio::select! {
                         () = sleep(PAUSE_ON_ERROR) => {},
                         () = self.cancellation_token.cancelled() => break,
@@ -148,7 +148,7 @@ impl Worker {
 
     /// Deliver pending notification (if any).
     #[instrument(skip(self), err)]
-    pub async fn deliver_notification(&mut self) -> Result<Option<()>> {
+    async fn deliver_notification(&mut self) -> Result<Option<()>> {
         // Begin transaction
         let client_id = self.db.tx_begin().await?;
 
@@ -174,23 +174,14 @@ impl Worker {
                 }
             };
 
-            // Send email
-            let message = MessageBuilder::new()
-                .from(Mailbox::new(
-                    Some(self.cfg.from_name.clone()),
-                    self.cfg.from_address.parse()?,
-                ))
-                .to(notification.email.parse()?)
-                .header(ContentType::TEXT_HTML)
-                .subject(subject)
-                .body(body)?;
-            let error = match self.smtp_client.send(message).await {
+            // Prepare message and send email
+            let err = match self.send_email(&notification.email, subject, body).await {
+                Ok(()) => None,
                 Err(err) => Some(err.to_string()),
-                Ok(_) => None,
             };
 
             // Update notification with result
-            if let Err(err) = self.db.update_notification(client_id, notification, error).await {
+            if let Err(err) = self.db.update_notification(client_id, notification, err).await {
                 error!("error updating notification: {err}");
             }
         }
@@ -200,11 +191,30 @@ impl Worker {
 
         Ok(Some(()))
     }
+
+    /// Send email to the given address.
+    async fn send_email(&self, to_address: &str, subject: &str, body: String) -> Result<()> {
+        // Prepare message
+        let message = MessageBuilder::new()
+            .from(Mailbox::new(
+                Some(self.cfg.from_name.clone()),
+                self.cfg.from_address.parse()?,
+            ))
+            .to(to_address.parse()?)
+            .header(ContentType::TEXT_HTML)
+            .subject(subject)
+            .body(body)?;
+
+        // Send email
+        self.smtp_client.send(message).await?;
+
+        Ok(())
+    }
 }
 
 /// Information required to create a new notification.
 #[derive(Debug, Clone)]
-pub struct NewNotification {
+pub(crate) struct NewNotification {
     pub kind: NotificationKind,
     pub user_id: Uuid,
 
@@ -214,7 +224,7 @@ pub struct NewNotification {
 /// Information required to deliver a notification.
 #[derive(Debug, Clone)]
 #[allow(clippy::struct_field_names)]
-pub struct Notification {
+pub(crate) struct Notification {
     pub notification_id: Uuid,
     pub email: String,
     pub kind: NotificationKind,
@@ -225,7 +235,7 @@ pub struct Notification {
 /// Notification kind.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
-pub enum NotificationKind {
+pub(crate) enum NotificationKind {
     EmailVerification,
 }
 

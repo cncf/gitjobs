@@ -11,7 +11,7 @@ use crate::{
     PgDB,
     templates::{
         dashboard::employer::jobs::Job,
-        jobboard::jobs::{Filters, FiltersOptions},
+        jobboard::jobs::{Filters, FiltersOptions, JobSummary},
     },
 };
 
@@ -195,7 +195,7 @@ impl DBJobBoard for PgDB {
 /// Jobs search results.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub(crate) struct JobsSearchOutput {
-    pub jobs: Vec<Job>,
+    pub jobs: Vec<JobSummary>,
     pub total: Total,
 }
 

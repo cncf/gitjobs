@@ -46,25 +46,17 @@ begin
     return query
     with filtered_jobs as (
         select
-            j.description,
-            j.status,
             j.title,
             j.kind,
             j.workplace,
-            j.apply_instructions,
-            j.apply_url,
-            j.benefits,
             j.job_id,
             j.open_source,
             j.published_at,
-            j.qualifications,
-            j.responsibilities,
             j.salary,
             j.salary_currency,
             j.salary_min,
             j.salary_max,
             j.salary_period,
-            j.skills,
             j.updated_at,
             j.upstream_commitment,
             (
@@ -86,10 +78,19 @@ begin
                 left join job_project using (project_id)
                 left join job using (job_id)
                 where job_id = j.job_id
-            ) as projects
+            ) as projects,
+            (
+                select nullif(jsonb_strip_nulls(jsonb_build_object(
+                    'member_id', m.member_id,
+                    'name', m.name,
+                    'level', m.level,
+                    'logo_url', m.logo_url
+                )), '{}'::jsonb)
+            ) as member
         from job j
         join employer e on j.employer_id = e.employer_id
         left join location l on j.location_id = l.location_id
+        left join member m on e.member_id = m.member_id
         where e.job_board_id = p_board_id
         and j.status = 'published'
         and
@@ -118,29 +119,22 @@ begin
     select
         (
             select coalesce(json_agg(json_build_object(
-                'description', description,
-                'status', status,
                 'title', title,
                 'kind', kind,
                 'workplace', workplace,
-                'apply_instructions', apply_instructions,
-                'apply_url', apply_url,
-                'benefits', benefits,
                 'job_id', job_id,
                 'open_source', open_source,
                 'published_at', published_at,
-                'qualifications', qualifications,
-                'responsibilities', responsibilities,
                 'salary', salary,
                 'salary_currency', salary_currency,
                 'salary_min', salary_min,
                 'salary_max', salary_max,
                 'salary_period', salary_period,
-                'skills', skills,
                 'updated_at', updated_at,
                 'upstream_commitment', upstream_commitment,
                 'location', location,
-                'projects', projects
+                'projects', projects,
+                'member', member
             )), '[]')
             from (
                 select *

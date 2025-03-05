@@ -132,7 +132,7 @@ impl DBDashBoardEmployer for PgDB {
                 "
                 insert into job (
                     employer_id,
-                    type,
+                    kind,
                     status,
                     location_id,
                     workplace,
@@ -267,7 +267,6 @@ impl DBDashBoardEmployer for PgDB {
                     e.public,
                     e.location_id,
                     e.logo_id,
-                    e.member_id,
                     e.website_url,
                     (
                         select nullif(jsonb_strip_nulls(jsonb_build_object(
@@ -560,7 +559,7 @@ impl DBDashBoardEmployer for PgDB {
             "
             update job
             set
-                type = $2::text,
+                kind = $2::text,
                 status = $3::text,
                 location_id = $4::uuid,
                 workplace = $5::text,

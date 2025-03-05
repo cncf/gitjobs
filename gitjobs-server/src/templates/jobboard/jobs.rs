@@ -1,6 +1,7 @@
 //! This module defines some templates and types used in the jobs pages.
 
 use anyhow::Result;
+use chrono::{DateTime, Utc};
 use rinja::Template;
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
@@ -9,6 +10,7 @@ use tracing::trace;
 use crate::templates::{
     PageId,
     dashboard::employer::jobs::{Job, JobKind, Workplace},
+    misc::{Location, Member, Project},
 };
 
 /// Default pagination limit.
@@ -87,11 +89,34 @@ pub(crate) struct FilterOption {
 #[template(path = "jobboard/jobs/results_section.html")]
 #[allow(clippy::struct_field_names)]
 pub(crate) struct ResultsSection {
-    pub jobs: Vec<Job>,
+    pub jobs: Vec<JobSummary>,
     pub navigation_links: NavigationLinks,
     pub total: usize,
 
     pub offset: Option<usize>,
+}
+
+/// Job summary.
+#[skip_serializing_none]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub(crate) struct JobSummary {
+    pub job_id: uuid::Uuid,
+    pub kind: JobKind,
+    pub title: String,
+    pub workplace: Workplace,
+
+    pub location: Option<Location>,
+    pub member: Option<Member>,
+    pub open_source: Option<i32>,
+    pub projects: Option<Vec<Project>>,
+    pub published_at: Option<DateTime<Utc>>,
+    pub salary: Option<i64>,
+    pub salary_currency: Option<String>,
+    pub salary_min: Option<i64>,
+    pub salary_max: Option<i64>,
+    pub salary_period: Option<String>,
+    pub updated_at: Option<DateTime<Utc>>,
+    pub upstream_commitment: Option<i32>,
 }
 
 /// Results navigation links.

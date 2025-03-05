@@ -391,6 +391,7 @@ impl DBDashBoardEmployer for PgDB {
                 &[&job_id],
             )
             .await?;
+
         let job = Job {
             description: row.get("description"),
             status: row.get::<_, String>("status").parse().expect("valid job status"),

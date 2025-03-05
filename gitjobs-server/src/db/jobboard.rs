@@ -19,7 +19,7 @@ use crate::{
 #[async_trait]
 pub(crate) trait DBJobBoard {
     /// Get job.
-    async fn get_job_jobboard(&self, job_id: &Uuid) -> Result<Job>;
+    async fn get_job_jobboard(&self, job_id: &Uuid) -> Result<Option<Job>>;
 
     /// Get filters options used to search jobs.
     async fn get_jobs_filters_options(&self) -> Result<FiltersOptions>;
@@ -32,10 +32,10 @@ pub(crate) trait DBJobBoard {
 impl DBJobBoard for PgDB {
     /// [DBJobBoard::get_job_jobboard]
     #[instrument(skip(self), err)]
-    async fn get_job_jobboard(&self, job_id: &Uuid) -> Result<Job> {
+    async fn get_job_jobboard(&self, job_id: &Uuid) -> Result<Option<Job>> {
         let db = self.pool.get().await?;
         let row = db
-            .query_one(
+            .query_opt(
                 "
                 select
                     j.description,
@@ -88,37 +88,42 @@ impl DBJobBoard for PgDB {
                 &[&job_id],
             )
             .await?;
-        let job = Job {
-            description: row.get("description"),
-            status: row.get::<_, String>("status").parse().expect("valid job status"),
-            title: row.get("title"),
-            kind: row.get::<_, String>("kind").parse().expect("valid job kind"),
-            workplace: row.get::<_, String>("workplace").parse().expect("valid workplace"),
-            apply_instructions: row.get("apply_instructions"),
-            apply_url: row.get("apply_url"),
-            benefits: row.get("benefits"),
-            job_id: row.get("job_id"),
-            location: row
-                .get::<_, Option<serde_json::Value>>("location")
-                .map(|v| serde_json::from_value(v).expect("location should be valid json")),
-            open_source: row.get("open_source"),
-            projects: row
-                .get::<_, Option<serde_json::Value>>("projects")
-                .map(|v| serde_json::from_value(v).expect("projects should be valid json")),
-            published_at: row.get("published_at"),
-            qualifications: row.get("qualifications"),
-            responsibilities: row.get("responsibilities"),
-            salary: row.get("salary"),
-            salary_currency: row.get("salary_currency"),
-            salary_min: row.get("salary_min"),
-            salary_max: row.get("salary_max"),
-            salary_period: row.get("salary_period"),
-            skills: row.get("skills"),
-            updated_at: row.get("updated_at"),
-            upstream_commitment: row.get("upstream_commitment"),
-        };
 
-        Ok(job)
+        if let Some(row) = row {
+            let job = Job {
+                description: row.get("description"),
+                status: row.get::<_, String>("status").parse().expect("valid job status"),
+                title: row.get("title"),
+                kind: row.get::<_, String>("kind").parse().expect("valid job kind"),
+                workplace: row.get::<_, String>("workplace").parse().expect("valid workplace"),
+                apply_instructions: row.get("apply_instructions"),
+                apply_url: row.get("apply_url"),
+                benefits: row.get("benefits"),
+                job_id: row.get("job_id"),
+                location: row
+                    .get::<_, Option<serde_json::Value>>("location")
+                    .map(|v| serde_json::from_value(v).expect("location should be valid json")),
+                open_source: row.get("open_source"),
+                projects: row
+                    .get::<_, Option<serde_json::Value>>("projects")
+                    .map(|v| serde_json::from_value(v).expect("projects should be valid json")),
+                published_at: row.get("published_at"),
+                qualifications: row.get("qualifications"),
+                responsibilities: row.get("responsibilities"),
+                salary: row.get("salary"),
+                salary_currency: row.get("salary_currency"),
+                salary_min: row.get("salary_min"),
+                salary_max: row.get("salary_max"),
+                salary_period: row.get("salary_period"),
+                skills: row.get("skills"),
+                updated_at: row.get("updated_at"),
+                upstream_commitment: row.get("upstream_commitment"),
+            };
+
+            Ok(Some(job))
+        } else {
+            Ok(None)
+        }
     }
 
     /// [DBJobBoard::get_jobs_filters_options]

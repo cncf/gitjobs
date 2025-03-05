@@ -5,6 +5,7 @@ use axum::{
     extract::{Path, RawQuery, State},
     response::{Html, IntoResponse},
 };
+use reqwest::StatusCode;
 use rinja::Template;
 use tracing::instrument;
 use uuid::Uuid;
@@ -15,7 +16,7 @@ use crate::{
     handlers::{error::HandlerError, extractors::JobBoardId},
     templates::{
         PageId,
-        jobboard::jobs::{ExploreSection, Filters, JobPage, JobsPage, ResultsSection},
+        jobboard::jobs::{ExploreSection, Filters, JobPage, JobsPage, NavigationLinks, ResultsSection},
     },
 };
 
@@ -37,12 +38,16 @@ pub(crate) async fn jobs_page(
     )?;
 
     // Prepare template
-    let offset = filters.offset;
     let template = JobsPage {
         explore_section: ExploreSection {
-            filters,
+            filters: filters.clone(),
             filters_options,
-            results_section: ResultsSection { jobs, total, offset },
+            results_section: ResultsSection {
+                navigation_links: NavigationLinks::from_filters(&filters, total)?,
+                jobs,
+                total,
+                offset: filters.offset,
+            },
         },
         logged_in: auth_session.user.is_some(),
         page_id: PageId::JobBoard,
@@ -68,11 +73,15 @@ pub(crate) async fn explore_section(
     )?;
 
     // Prepare template
-    let offset = filters.offset;
     let template = ExploreSection {
-        filters,
+        filters: filters.clone(),
         filters_options,
-        results_section: ResultsSection { jobs, total, offset },
+        results_section: ResultsSection {
+            navigation_links: NavigationLinks::from_filters(&filters, total)?,
+            jobs,
+            total,
+            offset: filters.offset,
+        },
     };
 
     Ok(Html(template.render()?))
@@ -90,8 +99,12 @@ pub(crate) async fn results_section(
     let JobsSearchOutput { jobs, total } = db.search_jobs(&job_board_id, &filters).await?;
 
     // Prepare template
-    let offset = filters.offset;
-    let template = ResultsSection { jobs, total, offset };
+    let template = ResultsSection {
+        navigation_links: NavigationLinks::from_filters(&filters, total)?,
+        jobs,
+        total,
+        offset: filters.offset,
+    };
 
     Ok(Html(template.render()?))
 }
@@ -104,7 +117,9 @@ pub(crate) async fn job_page(
     Path(job_id): Path<Uuid>,
 ) -> Result<impl IntoResponse, HandlerError> {
     // Get job information
-    let job = db.get_job_jobboard(&job_id).await?;
+    let Some(job) = db.get_job_jobboard(&job_id).await? else {
+        return Ok(StatusCode::NOT_FOUND.into_response());
+    };
 
     // Prepare template
     let template = JobPage {
@@ -115,5 +130,5 @@ pub(crate) async fn job_page(
         username: auth_session.user.as_ref().map(|u| u.username.clone()),
     };
 
-    Ok(Html(template.render()?))
+    Ok(Html(template.render()?).into_response())
 }

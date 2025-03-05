@@ -3,11 +3,11 @@ create or replace function search_jobs(p_board_id uuid, p_filters jsonb)
 returns table(jobs json, total bigint) as $$
 declare
     v_kind text[];
-    v_workplace text[];
     v_limit int := coalesce((p_filters->>'limit')::int, 10);
     v_offset int := coalesce((p_filters->>'offset')::int, 0);
     v_sort_by text := coalesce(p_filters->>'sort_by', 'date');
     v_tsquery_with_prefix_matching tsquery;
+    v_workplace text[];
 begin
     -- Prepare filters
     if p_filters ? 'kind' then

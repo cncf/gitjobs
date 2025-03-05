@@ -3,12 +3,12 @@
 use anyhow::Result;
 use rinja::Template;
 use serde::{Deserialize, Serialize};
+use serde_with::skip_serializing_none;
 use tracing::trace;
 
 use crate::templates::{
     PageId,
     dashboard::employer::jobs::{Job, JobKind, Workplace},
-    filters,
 };
 
 /// Jobs page template.
@@ -46,19 +46,15 @@ pub(crate) struct ResultsSection {
 }
 
 /// Filters used in the jobs explore section.
+#[skip_serializing_none]
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde_with::apply(
-    Option => #[serde(skip_serializing_if = "Option::is_none")],
-    Vec => #[serde(default)],
-)]
 pub(crate) struct Filters {
-    pub kind: Vec<JobKind>,
-    pub workplace: Vec<Workplace>,
-
+    pub kind: Option<Vec<JobKind>>,
     pub limit: Option<usize>,
     pub offset: Option<usize>,
     pub sort_by: Option<String>,
     pub ts_query: Option<String>,
+    pub workplace: Option<Vec<Workplace>>,
 }
 
 impl Filters {

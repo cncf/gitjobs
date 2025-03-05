@@ -28,12 +28,14 @@ pub(crate) async fn page(
     RawQuery(raw_query): RawQuery,
     JobBoardId(job_board_id): JobBoardId,
 ) -> Result<impl IntoResponse, HandlerError> {
-    // Prepare template
+    // Get filter options and jobs that match the query
     let filters = Filters::new(&raw_query.unwrap_or_default())?;
     let (filters_options, JobsSearchOutput { jobs, total }) = tokio::try_join!(
         db.get_jobs_filters_options(),
         db.search_jobs(&job_board_id, &filters)
     )?;
+
+    // Prepare template
     let offset = filters.offset;
     let template = Page {
         explore_section: ExploreSection {
@@ -57,12 +59,14 @@ pub(crate) async fn explore_section(
     RawQuery(raw_query): RawQuery,
     JobBoardId(job_board_id): JobBoardId,
 ) -> Result<impl IntoResponse, HandlerError> {
-    // Prepare template
+    // Get filter options and jobs that match the query
     let filters = Filters::new(&raw_query.unwrap_or_default())?;
     let (filters_options, JobsSearchOutput { jobs, total }) = tokio::try_join!(
         db.get_jobs_filters_options(),
         db.search_jobs(&job_board_id, &filters)
     )?;
+
+    // Prepare template
     let offset = filters.offset;
     let template = ExploreSection {
         filters,
@@ -80,9 +84,11 @@ pub(crate) async fn results_section(
     RawQuery(raw_query): RawQuery,
     JobBoardId(job_board_id): JobBoardId,
 ) -> Result<impl IntoResponse, HandlerError> {
-    // Prepare template
+    // Get jobs that match the query
     let filters = Filters::new(&raw_query.unwrap_or_default())?;
     let JobsSearchOutput { jobs, total } = db.search_jobs(&job_board_id, &filters).await?;
+
+    // Prepare template
     let offset = filters.offset;
     let template = ResultsSection { jobs, total, offset };
 

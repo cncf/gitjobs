@@ -47,7 +47,7 @@ impl DBJobBoard for PgDB {
                             order by name asc
                         ) as kinds
                     ),
-                    'workspace', (
+                    'workplace', (
                         select coalesce(json_agg(json_build_object(
                             'name', name,
                             'value', name
@@ -56,9 +56,9 @@ impl DBJobBoard for PgDB {
                             select name
                             from workplace
                             order by name asc
-                        ) as workspaces
+                        ) as workplaces
                     )
-                );
+                )::text as filters_options;
                 ",
                 &[],
             )

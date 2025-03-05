@@ -96,7 +96,7 @@ pub(crate) fn setup(
             login_url = LOG_IN_URL,
             redirect_field = "next_url"
         ))
-        .route("/", get(jobboard::jobs::page))
+        .route("/", get(jobboard::home::page))
         .route("/about", get(jobboard::about::page))
         .route("/health-check", get(health_check))
         .route("/jobs", get(jobboard::jobs::page))

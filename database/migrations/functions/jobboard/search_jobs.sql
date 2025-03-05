@@ -2,17 +2,29 @@
 create or replace function search_jobs(p_board_id uuid, p_filters jsonb)
 returns table(jobs json, total bigint) as $$
 declare
+    v_benefits text[];
     v_kind text[];
     v_limit int := coalesce((p_filters->>'limit')::int, 10);
     v_offset int := coalesce((p_filters->>'offset')::int, 0);
+    v_open_source int := (p_filters->>'open_source')::int;
+    v_skills text[];
     v_sort_by text := coalesce(p_filters->>'sort_by', 'date');
     v_tsquery_with_prefix_matching tsquery;
+    v_upstream_commitment int := (p_filters->>'upstream_commitment')::int;
     v_workplace text[];
 begin
     -- Prepare filters
+    if p_filters ? 'benefits' then
+        select array_agg(e::text) into v_benefits
+        from jsonb_array_elements_text(p_filters->'benefits') e;
+    end if;
     if p_filters ? 'kind' then
         select array_agg(e::text) into v_kind
         from jsonb_array_elements_text(p_filters->'kind') e;
+    end if;
+    if p_filters ? 'skills' then
+        select array_agg(e::text) into v_skills
+        from jsonb_array_elements_text(p_filters->'skills') e;
     end if;
     if p_filters ? 'workplace' then
         select array_agg(e::text) into v_workplace
@@ -81,11 +93,23 @@ begin
         where e.job_board_id = p_board_id
         and j.status = 'published'
         and
+            case when cardinality(v_benefits) > 0 then
+            j.benefits @> v_benefits else true end
+        and
             case when cardinality(v_kind) > 0 then
             j.kind = any(v_kind) else true end
         and
+            case when cardinality(v_skills) > 0 then
+            j.skills @> v_skills else true end
+        and
             case when cardinality(v_workplace) > 0 then
             j.workplace = any(v_workplace) else true end
+        and
+            case when v_open_source is not null then
+            j.open_source >= v_open_source else true end
+        and
+            case when v_upstream_commitment is not null then
+            j.upstream_commitment >= v_upstream_commitment else true end
         and
             case when v_tsquery_with_prefix_matching is not null then
                 v_tsquery_with_prefix_matching @@ j.tsdoc

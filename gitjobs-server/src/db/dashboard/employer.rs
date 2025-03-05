@@ -35,7 +35,7 @@ pub(crate) trait DBDashBoardEmployer {
     async fn get_job_board(&self, job_board_id: &Uuid) -> Result<JobBoard>;
 
     /// Get job.
-    async fn get_job(&self, job_id: &Uuid) -> Result<Job>;
+    async fn get_job_dashboard(&self, job_id: &Uuid) -> Result<Job>;
 
     /// List employer jobs.
     async fn list_employer_jobs(&self, employer_id: &Uuid) -> Result<Vec<JobSummary>>;
@@ -334,9 +334,9 @@ impl DBDashBoardEmployer for PgDB {
         Ok(job_board)
     }
 
-    /// [DBDashBoardEmployer::get_job]
+    /// [DBDashBoardEmployer::get_job_dashboard]
     #[instrument(skip(self), err)]
-    async fn get_job(&self, job_id: &Uuid) -> Result<Job> {
+    async fn get_job_dashboard(&self, job_id: &Uuid) -> Result<Job> {
         let db = self.pool.get().await?;
         let row = db
             .query_one(

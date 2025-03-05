@@ -1,4 +1,4 @@
-//! This module defines some templates and types used in the jobs page.
+//! This module defines some templates and types used in the jobs pages.
 
 use anyhow::Result;
 use rinja::Template;
@@ -13,9 +13,9 @@ use crate::templates::{
 
 /// Jobs page template.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
-#[template(path = "jobboard/jobs/page.html")]
+#[template(path = "jobboard/jobs/jobs.html")]
 #[allow(clippy::struct_field_names)]
-pub(crate) struct Page {
+pub(crate) struct JobsPage {
     pub explore_section: ExploreSection,
     pub logged_in: bool,
     pub page_id: PageId,
@@ -26,7 +26,7 @@ pub(crate) struct Page {
 
 /// Explore section template.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
-#[template(path = "jobboard/jobs/explore.html")]
+#[template(path = "jobboard/jobs/sections/explore.html")]
 #[allow(clippy::struct_field_names)]
 pub(crate) struct ExploreSection {
     pub filters: Filters,
@@ -36,13 +36,26 @@ pub(crate) struct ExploreSection {
 
 /// Results section template.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
-#[template(path = "jobboard/jobs/results.html")]
+#[template(path = "jobboard/jobs/sections/results.html")]
 #[allow(clippy::struct_field_names)]
 pub(crate) struct ResultsSection {
     pub jobs: Vec<Job>,
     pub total: usize,
 
     pub offset: Option<usize>,
+}
+
+/// Job page template.
+#[derive(Debug, Clone, Template, Serialize, Deserialize)]
+#[template(path = "jobboard/jobs/job.html")]
+#[allow(clippy::struct_field_names)]
+pub(crate) struct JobPage {
+    pub job: Job,
+    pub logged_in: bool,
+    pub page_id: PageId,
+
+    pub name: Option<String>,
+    pub username: Option<String>,
 }
 
 /// Filters used in the jobs explore section.

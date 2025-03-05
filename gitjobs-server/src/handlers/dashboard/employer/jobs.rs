@@ -1,4 +1,4 @@
-//! This module defines the HTTP handlers for the jobs page.
+//! This module defines the HTTP handlers for the jobs pages.
 
 use anyhow::Result;
 use axum::{
@@ -79,7 +79,7 @@ pub(crate) async fn update_page(
     Path(job_id): Path<Uuid>,
     JobBoardId(job_board_id): JobBoardId,
 ) -> Result<impl IntoResponse, HandlerError> {
-    let (job_board, job) = tokio::try_join!(db.get_job_board(&job_board_id), db.get_job(&job_id))?;
+    let (job_board, job) = tokio::try_join!(db.get_job_board(&job_board_id), db.get_job_dashboard(&job_id))?;
     let template = jobs::UpdatePage {
         benefits: job_board.benefits,
         job,

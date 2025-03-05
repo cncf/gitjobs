@@ -61,6 +61,21 @@ begin
             j.upstream_commitment,
             (
                 select nullif(jsonb_strip_nulls(jsonb_build_object(
+                    'company', e.company,
+                    'employer_id', e.employer_id,
+                    'website_url', e.website_url,
+                    'member', (
+                        select nullif(jsonb_strip_nulls(jsonb_build_object(
+                            'member_id', m.member_id,
+                            'name', m.name,
+                            'level', m.level,
+                            'logo_url', m.logo_url
+                        )), '{}'::jsonb)
+                    )
+                )), '{}'::jsonb)
+            ) as employer,
+            (
+                select nullif(jsonb_strip_nulls(jsonb_build_object(
                     'location_id', l.location_id,
                     'city', l.city,
                     'country', l.country,
@@ -78,15 +93,7 @@ begin
                 left join job_project using (project_id)
                 left join job using (job_id)
                 where job_id = j.job_id
-            ) as projects,
-            (
-                select nullif(jsonb_strip_nulls(jsonb_build_object(
-                    'member_id', m.member_id,
-                    'name', m.name,
-                    'level', m.level,
-                    'logo_url', m.logo_url
-                )), '{}'::jsonb)
-            ) as member
+            ) as projects
         from job j
         join employer e on j.employer_id = e.employer_id
         left join location l on j.location_id = l.location_id
@@ -132,9 +139,9 @@ begin
                 'salary_period', salary_period,
                 'updated_at', updated_at,
                 'upstream_commitment', upstream_commitment,
+                'employer', employer,
                 'location', location,
-                'projects', projects,
-                'member', member
+                'projects', projects
             )), '[]')
             from (
                 select *

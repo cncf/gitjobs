@@ -6,10 +6,11 @@ use rinja::Template;
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use tracing::trace;
+use uuid::Uuid;
 
 use crate::templates::{
     PageId,
-    dashboard::employer::jobs::{Job, JobKind, Workplace},
+    dashboard::employer::jobs::{JobKind, Workplace},
     misc::{Location, Member, Project},
 };
 
@@ -98,15 +99,15 @@ pub(crate) struct ResultsSection {
 
 /// Job summary.
 #[skip_serializing_none]
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub(crate) struct JobSummary {
+    pub employer: Employer,
     pub job_id: uuid::Uuid,
     pub kind: JobKind,
     pub title: String,
     pub workplace: Workplace,
 
     pub location: Option<Location>,
-    pub member: Option<Member>,
     pub open_source: Option<i32>,
     pub projects: Option<Vec<Project>>,
     pub published_at: Option<DateTime<Utc>>,
@@ -117,6 +118,18 @@ pub(crate) struct JobSummary {
     pub salary_period: Option<String>,
     pub updated_at: Option<DateTime<Utc>>,
     pub upstream_commitment: Option<i32>,
+}
+
+/// Employer details.
+#[skip_serializing_none]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[allow(clippy::struct_field_names)]
+pub(crate) struct Employer {
+    pub company: String,
+    pub employer_id: Uuid,
+
+    pub member: Option<Member>,
+    pub website_url: Option<String>,
 }
 
 /// Results navigation links.
@@ -254,6 +267,37 @@ fn get_url_filters_separator(url: &str) -> &str {
     } else {
         "?"
     }
+}
+
+/// Job details.
+#[skip_serializing_none]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[allow(clippy::struct_field_names)]
+pub(crate) struct Job {
+    pub description: String,
+    pub employer: Employer,
+    pub title: String,
+    pub kind: JobKind,
+    pub workplace: Workplace,
+
+    pub apply_instructions: Option<String>,
+    pub apply_url: Option<String>,
+    pub benefits: Option<Vec<String>>,
+    pub job_id: Option<Uuid>,
+    pub location: Option<Location>,
+    pub open_source: Option<i32>,
+    pub projects: Option<Vec<Project>>,
+    pub published_at: Option<DateTime<Utc>>,
+    pub qualifications: Option<String>,
+    pub responsibilities: Option<String>,
+    pub salary: Option<i64>,
+    pub salary_currency: Option<String>,
+    pub salary_min: Option<i64>,
+    pub salary_max: Option<i64>,
+    pub salary_period: Option<String>,
+    pub skills: Option<Vec<String>>,
+    pub updated_at: Option<DateTime<Utc>>,
+    pub upstream_commitment: Option<i32>,
 }
 
 #[cfg(test)]

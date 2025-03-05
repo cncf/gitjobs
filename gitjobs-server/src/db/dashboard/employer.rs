@@ -265,7 +265,6 @@ impl DBDashBoardEmployer for PgDB {
                     e.company,
                     e.description,
                     e.public,
-                    e.location_id,
                     e.logo_id,
                     e.website_url,
                     (

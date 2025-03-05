@@ -9,10 +9,7 @@ use uuid::Uuid;
 
 use crate::{
     PgDB,
-    templates::{
-        dashboard::employer::jobs::Job,
-        jobboard::jobs::{Filters, FiltersOptions, JobSummary},
-    },
+    templates::jobboard::jobs::{Filters, FiltersOptions, Job, JobSummary},
 };
 
 /// Trait that defines some database operations used in the job board.
@@ -39,7 +36,6 @@ impl DBJobBoard for PgDB {
                 "
                 select
                     j.description,
-                    j.status,
                     j.title,
                     j.kind,
                     j.workplace,
@@ -62,6 +58,21 @@ impl DBJobBoard for PgDB {
                     j.upstream_commitment,
                     (
                         select nullif(jsonb_strip_nulls(jsonb_build_object(
+                            'company', e.company,
+                            'employer_id', e.employer_id,
+                            'website_url', e.website_url,
+                            'member', (
+                                select nullif(jsonb_strip_nulls(jsonb_build_object(
+                                    'member_id', m.member_id,
+                                    'name', m.name,
+                                    'level', m.level,
+                                    'logo_url', m.logo_url
+                                )), '{}'::jsonb)
+                            )
+                        )), '{}'::jsonb)
+                    ) as employer,
+                    (
+                        select nullif(jsonb_strip_nulls(jsonb_build_object(
                             'location_id', l.location_id,
                             'city', l.city,
                             'country', l.country,
@@ -81,7 +92,9 @@ impl DBJobBoard for PgDB {
                         where j.job_id = $1::uuid
                     ) as projects
                 from job j
-                left join location l using (location_id)
+                join employer e on j.employer_id = e.employer_id
+                left join location l on j.location_id = l.location_id
+                left join member m on e.member_id = m.member_id
                 where job_id = $1::uuid
                 and status = 'published';
                 ",
@@ -92,7 +105,8 @@ impl DBJobBoard for PgDB {
         if let Some(row) = row {
             let job = Job {
                 description: row.get("description"),
-                status: row.get::<_, String>("status").parse().expect("valid job status"),
+                employer: serde_json::from_value(row.get::<_, serde_json::Value>("employer"))
+                    .expect("employer should be valid json"),
                 title: row.get("title"),
                 kind: row.get::<_, String>("kind").parse().expect("valid job kind"),
                 workplace: row.get::<_, String>("workplace").parse().expect("valid workplace"),

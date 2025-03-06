@@ -25,25 +25,25 @@ export const highlightItem = (id, direction) => {
   }
 };
 
-export const addCard = (id, name, label, logo_url, elId, onRemove, extra = "") => {
+export const addCard = (id, name, label, logo_url, elId, onRemove, extra = "", mini = false) => {
   const card = `
-  <div id="card-${id}" class="relative border rounded-lg p-4 pe-10 bg-white mt-4 min-w-64">
-    <button id="remove-${id}" data-id="${id}" type="button" class="rounded-full bg-gray-100 hover:bg-gray-200 absolute top-1 end-1">
+  <div id="card-${id}" class="relative border rounded-lg p-${mini ? "2" : "4"} pe-10 bg-white mt-4 min-w-64">
+    <button id="remove-${id}" data-id="${id}" type="button" class="rounded-full bg-gray-100 hover:bg-gray-200 absolute ${mini ? "top-2 end-2" : "top-1 end-1"}">
       <div class="svg-icon size-5 bg-gray-400 hover:bg-gray-700 icon-close"></div>
     </button>
     <div class="flex items-center space-x-3">
-      <img class="size-10"
+      <img class="size-${mini ? "5" : "10"}"
           height="40"
           width="40"
           src="${logo_url}"
           alt="${name} logo">
       <div class="flex flex-col justify-start min-w-0">
-        <div class="truncate text-start text-gray-700 font-medium">${name}</div>
-        <div class="inline-flex">
+        <div class="truncate text-start text-gray-700 font-medium ${mini ? "text-sm" : ""}">${name}</div>
+        ${!mini ? `<div class="inline-flex">
           <div class="truncate text-nowrap uppercase max-w-[100%] text-xs/6 font-medium text-gray-400">
             ${label}
           </div>
-        </div>
+        </div>`: ""}
       </div>
     </div>
     ${extra}
@@ -51,7 +51,9 @@ export const addCard = (id, name, label, logo_url, elId, onRemove, extra = "") =
   `;
 
   const el = document.getElementById(elId);
-  el.insertAdjacentHTML("beforeend", card);
+  if (el) {
+    el.insertAdjacentHTML("beforeend", card);
+  }
 
   const removeButton = document.getElementById(`remove-${id}`);
   removeButton.addEventListener("click", () => {

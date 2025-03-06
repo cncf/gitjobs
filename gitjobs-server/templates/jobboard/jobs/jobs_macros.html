@@ -44,22 +44,6 @@
   </div>
   {# End workplace #}
 
-  {# Location #}
-  <div class="px-6 py-7 pt-5 border-b border-gray-100">
-    {% call filters_title(text = "Location") %}
-    <div class="mt-2 grid grid-cols-1">
-      <select id="{{ device }}-distance" name="distance" class="select-primary">
-        {% call macros::select_option(value = "", label = "Distance in miles", disabled = true) %}
-        {% call macros::select_option(value = "10", label = "10 miles") %}
-        {% call macros::select_option(value = "25", label = "25 miles") %}
-        {% call macros::select_option(value = "50", label = "50 miles") %}
-        {% call macros::select_option(value = "100", label = "100 miles") %}
-        {% call macros::select_option(value = "200", label = "200 miles") %}
-      </select>
-    </div>
-  </div>
-  {# End location #}
-
   {# Skills #}
   <div>
     <collapsible-filter title="Skills" name="skills" options="{{ filters_options.skills|json }}" form="{{ device }}-jobs-form" {%- if let Some(filters_skills) = filters.skills %}selected="{{ filters_skills|json }}"{%- endif -%}></collapsible-filter>
@@ -72,12 +56,29 @@
   </div>
   {# End benefits #}
 
-  {# Salary #}
-  <div class="px-6 py-7 pt-5 border-b border-gray-100">{% call filters_title(text = "Salary") %}</div>
-  {# End salary #}
-
   {# Projects #}
-  <div class="px-6 py-7 pt-5 border-b border-gray-100">{% call filters_title(text = "Projects") %}</div>
+  <div class="px-6 py-7 pt-5 border-b border-gray-100">
+    {% call filters_title(text = "Projects") %}
+    {% let projects_id = "{}-projects"|format(device) %}
+    <div class="relative">{% call macros::search_project(id = projects_id, mini = true) %}</div>
+    <div id="selected-{{ projects_id }}" class="flex flex-col space-y-2"></div>
+    <script type="module">
+      import {
+        addProjectCard
+      } from '/static/js/common/projects.js';
+
+      const selectedProjects = document.getElementById('selected-{{ projects_id }}');
+      if (selectedProjects) {
+        const projects = selectedProjects.dataset.projects;
+        if (projects) {
+          const parsedProjects = JSON.parse(projects);
+          parsedProjects.forEach((project) => {
+            addProjectCard(project.project_id, project.name, project.maturity, project.logo_url, 'selected-{{ projects_id }}', true);
+          });
+        }
+      }
+    </script>
+  </div>
   {# End projects #}
 
   {# Open source #}

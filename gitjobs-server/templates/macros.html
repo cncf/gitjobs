@@ -257,18 +257,18 @@
 {# End search member #}
 
 {# Search project #}
-{% macro search_project() %}
+{% macro search_project(id = "projects", mini = false) %}
   <div class="mt-2 relative">
     <div class="absolute top-2.5 start-0 flex items-center ps-3 pointer-events-none">
       <div class="svg-icon size-4 icon-search bg-gray-300"></div>
     </div>
-    <input id="project"
+    <input id="{{ id }}"
            name="name"
            hx-get="/projects/search"
-           hx-include="#project"
+           hx-include="#{{ id }}"
            hx-trigger="searchprojects"
-           hx-target="#search-project"
-           hx-indicator="#project-spinner"
+           hx-target="#search-{{ id }}"
+           hx-indicator="#{{ id }}-spinner"
            type="text"
            value=""
            class="input-primary peer ps-10"
@@ -278,13 +278,17 @@
            autocapitalize="off"
            spellcheck="false"
            autocomplete="off">
-    <div id="project-spinner" class="hx-spinner absolute end-10 top-1">{% call spinner(size = 5) %}</div>
+    <div id="{{ id }}-spinner" class="hx-spinner absolute end-10 top-1">{% call spinner(size = 5) %}</div>
     <div class="absolute end-1.5 top-1.5 peer-placeholder-shown:hidden">
-      <button id="clean-project" type="button" class="mt-[2px]">
+      <button id="clean-{{ id }}" type="button" class="mt-[2px]">
         <div class="svg-icon size-5 bg-gray-400 hover:bg-gray-700 icon-close"></div>
       </button>
     </div>
-    <div id="search-project" class="absolute z-10 start-0 end-0"></div>
+    <div id="search-{{ id }}"
+         data-projects-list="true"
+         {% if mini -%}data-mini-size="true"{%- endif %}
+         data-name="{{ id }}"
+         class="absolute z-10 start-0 end-0"></div>
   </div>
   <script type="module">
     import {
@@ -294,15 +298,15 @@
       debounce
     } from '/static/js/common/common.js';
 
-    const projectInput = document.getElementById('project');
-    const cleanprojectButton = document.getElementById('clean-project');
-    const contentData = "search-project";
+    const projectInput = document.getElementById('{{ id }}');
+    const cleanprojectButton = document.getElementById('clean-{{ id }}');
+    const contentData = "search-{{ id }}";
 
     projectInput.addEventListener('input', debounce(() => {
       if (projectInput.value.length > 2) {
-        htmx.trigger('#project', 'searchprojects');
+        htmx.trigger('#{{ id }}', 'searchprojects');
       } else {
-        document.getElementById('search-project').innerHTML = "";
+        document.getElementById('search-{{ id }}').innerHTML = "";
       }
     }));
 
@@ -311,7 +315,7 @@
     projectInput.addEventListener('focusout', () => {
       // Delay the execution to allow the user to click on the search results
       setTimeout(() => {
-        document.getElementById('search-project').innerHTML = "";
+        document.getElementById(contentData).innerHTML = "";
         projectInput.value = "";
       }, 200);
     });

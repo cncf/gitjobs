@@ -28,7 +28,7 @@
         hx-include="[name='ts_query']"
         hx-ext="no-empty-vals"
         hx-boost="true">
-    {% call jobs_macros::filters(device = "mobile") %}
+    {# {% call jobs_macros::filters(device = "mobile") %} #}
   </form>
   {# End filters content -#}
 
@@ -52,7 +52,7 @@
   <div class="flex items-start ">
 
     {# Filters #}
-    <div class="relative hidden w-[28%] xl:w-2/6 lg:block bg-white border rounded-3xl">
+    <div class="relative hidden w-[28%] max-w-[28%] xl:w-2/6 xl:max-w-2/6 lg:block bg-white border rounded-3xl">
 
       {# Header #}
       <div class="flex justify-between items-center border-solid border-0 border-b border-gray-100 p-5">

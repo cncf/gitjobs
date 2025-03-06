@@ -28,7 +28,11 @@
     addProjectCard
   } from '/static/js/common/projects.js';
 
-  const input = document.querySelector('input#project');
+  const projectsList = document.querySelector("[data-projects-list]");
+  const projectsListId = projectsList.dataset.name;
+  const miniCards = projectsList.dataset.miniSize;
+
+  const input = document.querySelector(`input#${projectsListId}`);
   const buttons = document.querySelectorAll('button.btn-project');
 
   if (buttons) {
@@ -44,16 +48,16 @@
           input.value = "";
           input.blur();
 
-          addProjectCard(projectId, name, maturity, logoUrl, 'selected-projects');
+          addProjectCard(projectId, name, maturity, logoUrl, `selected-${projectsListId}`, miniCards === "true");
         }
 
         // Clean the search results
-        document.getElementById('search-project').innerHTML = "";
+        document.getElementById(`search-${projectsListId}`).innerHTML = "";
       });
 
       // Highlight the item in the list when the user hovers over it
       btn.addEventListener('mouseover', () => {
-        const activeItem = document.querySelector('#search-project li.active');
+        const activeItem = document.querySelector(`#search-${projectsListId} li.active`);
         // Remove the class from the active item
         if (activeItem) {
           activeItem.classList.remove('active');

@@ -1,6 +1,6 @@
 import { addCard } from "/static/js/common/dropdown.js";
 
-export const addProjectCard = (id, name, maturity, logo_url, elId) => {
+export const addProjectCard = (id, name, maturity, logo_url, elId, mini = false) => {
   // Get the number of cards in the container
   // This will be used to set the index of the project in the form
   const cardsNumber = document.querySelectorAll(`#${elId} div[id^='card-']`).length;
@@ -17,7 +17,7 @@ export const addProjectCard = (id, name, maturity, logo_url, elId) => {
     <input type="hidden"
       name="projects[${cardsNumber}][logo_url]"
       value="${logo_url}">`;
-  addCard(id, name, `CNCF ${maturity}`, logo_url, elId, removeSelectedProject, inputs);
+  addCard(id, name, `CNCF ${maturity}`, logo_url, elId, removeSelectedProject, inputs, mini);
 };
 
 export const removeSelectedProject = (id) => {

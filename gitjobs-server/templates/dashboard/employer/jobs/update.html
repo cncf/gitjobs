@@ -336,8 +336,10 @@
           <p class="form-legend">
             If the job position involves contributing to any CNCF projects, please list them here.
           </p>
+        </div>
+        <div class="col-span-full">
           <div id="selected-projects"
-               class="flex space-x-5"
+               class="flex flex-wrap gap-x-5 w-full"
                {% if let Some(projects) = job.projects -%}data-projects="{{ projects|json }}"{%- endif %}></div>
         </div>
         <script type="module">

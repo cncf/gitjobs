@@ -62,13 +62,13 @@
 
   {# Skills #}
   <div>
-    <collapsible-filter title="Skills" name="skills" options='["kubernetes","docker","aws","gcp","azure","terraform","linux","helm","prometheus"]' form="{{ device }}-jobs-form" {%- if let Some(filters_skills) = filters.skills %}selected="{{ filters_skills|json }}"{%- endif -%}></collapsible-filter>
+    <collapsible-filter title="Skills" name="skills" options="{{ filters_options.skills|json }}" form="{{ device }}-jobs-form" {%- if let Some(filters_skills) = filters.skills %}selected="{{ filters_skills|json }}"{%- endif -%}></collapsible-filter>
   </div>
   {# End skills #}
 
   {# Benefits #}
   <div>
-    <collapsible-filter title="Benefits" name="benefits" options='["401k","flexible-hours","remote-friendly","health-insurance","paid-time-off","4-day-workweek","company-retreats","home-office-budget","learning-budget","mental-wellness-bugdet","equity-compensation","no-whiteboard-interview"]' form="{{ device }}-jobs-form" {%- if let Some(filters_benefits) = filters.benefits %}selected="{{ filters_benefits|json }}"{%- endif -%}></collapsible-filter>
+    <collapsible-filter title="Benefits" name="benefits" options="{{ filters_options.benefits|json }}" form="{{ device }}-jobs-form" {%- if let Some(filters_benefits) = filters.benefits %}selected="{{ filters_benefits|json }}"{%- endif -%}></collapsible-filter>
   </div>
   {# End benefits #}
 

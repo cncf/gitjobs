@@ -51,8 +51,7 @@
 
           {# Published date #}
           <div class="shrink-0 self-start text-xs/6 font-semibold text-gray-500 pt-2">
-            26 Feb
-            {# {{ job.published_at|display_some_date_or(DATE_FORMAT_2, "-") }} #}
+            {{ job.published_at.format(DATE_FORMAT_3) }}
           </div>
           {# End published date #}
         </div>

@@ -10,7 +10,7 @@ use crate::templates::{
     PageId,
     dashboard::employer::jobs::{JobKind, SalaryKind, Workplace},
     filters,
-    helpers::{DATE_FORMAT, option_is_none_or_default},
+    helpers::{DATE_FORMAT, DATE_FORMAT_3, option_is_none_or_default},
     misc::{Location, Member, Project},
     pagination::{NavigationLinks, Pagination},
 };
@@ -228,7 +228,6 @@ pub(crate) struct Job {
 
 impl Job {
     /// Get the salary kind of the job.
-    #[allow(dead_code)]
     pub(crate) fn salary_kind(&self) -> SalaryKind {
         if self.salary_min.is_some() && self.salary_max.is_some() {
             SalaryKind::Range

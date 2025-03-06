@@ -81,8 +81,22 @@
   {# End projects #}
 
   {# Open source #}
-  <div class="px-6 py-7 pt-5">{% call filters_title(text = "Open source") %}</div>
+  <div class="px-6 py-7 pt-5 border-b border-gray-100">
+    {% call filters_title(text = "Open source") %}
+    <div class="mt-3">
+      {% call macros::input_range(id = "{}_open_source"|format(device), name = "open_source", value = filters.open_source|display_some_or(0)) %}
+    </div>
+  </div>
   {# End open source #}
+
+  {# Upstream commitment #}
+  <div class="px-6 py-7 pt-5">
+    {% call filters_title(text = "Upstream commitment") %}
+    <div class="mt-3">
+      {% call macros::input_range(id = "{}_upstream_commitment"|format(device), name = "upstream_commitment", value = filters.upstream_commitment|display_some_or(0)) %}
+    </div>
+  </div>
+  {# End upstream commitment #}
 {% endmacro filters %}
 {# End filters #}
 

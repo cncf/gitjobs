@@ -408,9 +408,9 @@
 {# End badge #}
 
 {# Input range #}
-{% macro input_range(name, value = "0") %}
+{% macro input_range(id, name, value = "0") %}
   <div class="relative">
-    <input id="{{ name }}"
+    <input id="{{ id }}"
            name="{{ name }}"
            type="range"
            min="0"
@@ -418,7 +418,7 @@
            step="5"
            value="{{ value }}"
            class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary-900">
-    <div id="tooltip-{{ name }}"
+    <div id="tooltip-{{ id }}"
          role="tooltip"
          class="duration-100 transition-opacity opacity-0 absolute z-10 inline-block px-2 py-1 text-sm font-medium text-white text-center bg-primary-900 rounded-lg shadow-xs tooltip top-8 start-[8.5px] -ms-6 w-12">
       <span>0</span><small>%</small>
@@ -448,21 +448,20 @@
     import {
       debounce
     } from '/static/js/common/common.js';
+    const inputRange = document.getElementById('{{ id }}');
+    const tooltip = document.getElementById('tooltip-{{ id }}');
 
     // Update the styles of the tooltip and the input range background
     const refreshStyles = (newValue) => {
       const value = parseInt(newValue, 10);
       const thumbSize = 17;
       const offset = thumbSize * (0.5 - value / 100);
-      const tooltip = document.getElementById('tooltip-{{ name }}');
+      const tooltip = document.getElementById('tooltip-{{ id }}');
       tooltip.getElementsByTagName('span')[0].textContent = value;
       tooltip.style.left = `calc(${value}% + ${offset}px)`;
-      const inputRange = document.getElementById('{{ name }}');
       inputRange.style.backgroundImage = `linear-gradient(90deg, var(--primary-color) 0%, var(--primary-color) ${value}%, rgb(229 231 235 / var(--tw-bg-opacity, 1)) ${value}%, rgb(229 231 235 / var(--tw-bg-opacity, 1)) 100%)`;
     };
 
-    const inputRange = document.getElementById('{{ name }}');
-    const tooltip = document.getElementById('tooltip-{{ name }}');
     // Send the value to refresh the styles
     inputRange.addEventListener('input', debounce((e) => {
       refreshStyles(e.target.value);

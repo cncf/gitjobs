@@ -19,7 +19,7 @@ pub(crate) trait DBJobBoard {
     async fn get_job_jobboard(&self, job_id: &Uuid) -> Result<Option<Job>>;
 
     /// Get filters options used to search jobs.
-    async fn get_jobs_filters_options(&self) -> Result<FiltersOptions>;
+    async fn get_jobs_filters_options(&self, job_board_id: &Uuid) -> Result<FiltersOptions>;
 
     /// Search jobs.
     async fn search_jobs(&self, job_board_id: &Uuid, filters: &Filters) -> Result<JobsSearchOutput>;
@@ -59,6 +59,7 @@ impl DBJobBoard for PgDB {
                     (
                         select nullif(jsonb_strip_nulls(jsonb_build_object(
                             'company', e.company,
+                            'description', e.description,
                             'employer_id', e.employer_id,
                             'website_url', e.website_url,
                             'member', (
@@ -142,43 +143,21 @@ impl DBJobBoard for PgDB {
 
     /// [DBJobBoard::get_jobs_filters_options]
     #[instrument(skip(self))]
-    async fn get_jobs_filters_options(&self) -> Result<FiltersOptions> {
+    async fn get_jobs_filters_options(&self, job_board_id: &Uuid) -> Result<FiltersOptions> {
         // Query database
         let db = self.pool.get().await?;
         let row = db
             .query_one(
-                "
-                select json_build_object(
-                    'kind', (
-                        select coalesce(json_agg(json_build_object(
-                            'name', name,
-                            'value', name
-                        )), '[]')
-                        from (
-                            select name
-                            from job_kind
-                            order by name asc
-                        ) as kinds
-                    ),
-                    'workplace', (
-                        select coalesce(json_agg(json_build_object(
-                            'name', name,
-                            'value', name
-                        )), '[]')
-                        from (
-                            select name
-                            from workplace
-                            order by name asc
-                        ) as workplaces
-                    )
-                )::text as filters_options;
-                ",
-                &[],
+                "select benefits, skills from job_board where job_board_id = $1::uuid;",
+                &[&job_board_id],
             )
             .await?;
 
         // Prepare filters options
-        let filters_options = serde_json::from_str(&row.get::<_, String>("filters_options"))?;
+        let filters_options = FiltersOptions {
+            benefits: row.get("benefits"),
+            skills: row.get("skills"),
+        };
 
         Ok(filters_options)
     }

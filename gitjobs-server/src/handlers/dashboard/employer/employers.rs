@@ -54,7 +54,7 @@ pub(crate) async fn add(
     messages: Messages,
     session: Session,
     State(db): State<DynDB>,
-    State(form_de): State<serde_qs::Config>,
+    State(serde_qs_de): State<serde_qs::Config>,
     JobBoardId(job_board_id): JobBoardId,
     body: String,
 ) -> Result<impl IntoResponse, HandlerError> {
@@ -64,7 +64,7 @@ pub(crate) async fn add(
     };
 
     // Get employer information from body
-    let employer: Employer = match form_de.deserialize_str(&body).map_err(anyhow::Error::new) {
+    let employer: Employer = match serde_qs_de.deserialize_str(&body).map_err(anyhow::Error::new) {
         Ok(profile) => profile,
         Err(e) => return Ok((StatusCode::UNPROCESSABLE_ENTITY, e.to_string()).into_response()),
     };
@@ -110,12 +110,12 @@ pub(crate) async fn select(
 pub(crate) async fn update(
     messages: Messages,
     State(db): State<DynDB>,
-    State(form_de): State<serde_qs::Config>,
+    State(serde_qs_de): State<serde_qs::Config>,
     SelectedEmployerIdRequired(employer_id): SelectedEmployerIdRequired,
     body: String,
 ) -> Result<impl IntoResponse, HandlerError> {
     // Get employer information from body
-    let employer: Employer = match form_de.deserialize_str(&body).map_err(anyhow::Error::new) {
+    let employer: Employer = match serde_qs_de.deserialize_str(&body).map_err(anyhow::Error::new) {
         Ok(profile) => profile,
         Err(e) => return Ok((StatusCode::UNPROCESSABLE_ENTITY, e.to_string()).into_response()),
     };

@@ -53,12 +53,12 @@ pub(crate) async fn list_page(
 #[instrument(skip_all, err)]
 pub(crate) async fn preview_page(
     State(db): State<DynDB>,
-    State(form_de): State<serde_qs::Config>,
+    State(serde_qs_de): State<serde_qs::Config>,
     SelectedEmployerIdRequired(employer_id): SelectedEmployerIdRequired,
     body: String,
 ) -> Result<impl IntoResponse, HandlerError> {
     // Get job information from body
-    let mut job: Job = match form_de.deserialize_str(&body).map_err(anyhow::Error::new) {
+    let mut job: Job = match serde_qs_de.deserialize_str(&body).map_err(anyhow::Error::new) {
         Ok(profile) => profile,
         Err(e) => return Ok((StatusCode::UNPROCESSABLE_ENTITY, e.to_string()).into_response()),
     };
@@ -95,12 +95,12 @@ pub(crate) async fn update_page(
 #[instrument(skip_all, err)]
 pub(crate) async fn add(
     State(db): State<DynDB>,
-    State(form_de): State<serde_qs::Config>,
+    State(serde_qs_de): State<serde_qs::Config>,
     SelectedEmployerIdRequired(employer_id): SelectedEmployerIdRequired,
     body: String,
 ) -> Result<impl IntoResponse, HandlerError> {
     // Get job information from body
-    let mut job: Job = match form_de.deserialize_str(&body).map_err(anyhow::Error::new) {
+    let mut job: Job = match serde_qs_de.deserialize_str(&body).map_err(anyhow::Error::new) {
         Ok(profile) => profile,
         Err(e) => return Ok((StatusCode::UNPROCESSABLE_ENTITY, e.to_string()).into_response()),
     };
@@ -149,12 +149,12 @@ pub(crate) async fn publish(
 #[instrument(skip_all, err)]
 pub(crate) async fn update(
     State(db): State<DynDB>,
-    State(form_de): State<serde_qs::Config>,
+    State(serde_qs_de): State<serde_qs::Config>,
     Path(job_id): Path<Uuid>,
     body: String,
 ) -> Result<impl IntoResponse, HandlerError> {
     // Get job information from body
-    let mut job: Job = match form_de.deserialize_str(&body).map_err(anyhow::Error::new) {
+    let mut job: Job = match serde_qs_de.deserialize_str(&body).map_err(anyhow::Error::new) {
         Ok(profile) => profile,
         Err(e) => return Ok((StatusCode::UNPROCESSABLE_ENTITY, e.to_string()).into_response()),
     };

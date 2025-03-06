@@ -52,7 +52,7 @@ pub(crate) struct State {
     pub cfg: HttpServerConfig,
     pub db: DynDB,
     pub image_store: DynImageStore,
-    pub form_de: serde_qs::Config,
+    pub serde_qs_de: serde_qs::Config,
     pub notifications_manager: DynNotificationsManager,
 }
 
@@ -69,7 +69,7 @@ pub(crate) async fn setup(
         cfg: cfg.clone(),
         db: db.clone(),
         image_store,
-        form_de: serde_qs::Config::new(3, false),
+        serde_qs_de: serde_qs::Config::new(3, false),
         notifications_manager,
     };
 

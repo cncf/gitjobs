@@ -20,11 +20,11 @@ use crate::{
 /// Handler that returns the page to preview a profile.
 #[instrument(skip_all, err)]
 pub(crate) async fn preview_page(
-    State(form_de): State<serde_qs::Config>,
+    State(serde_qs_de): State<serde_qs::Config>,
     body: String,
 ) -> Result<impl IntoResponse, HandlerError> {
     // Get profile information from body
-    let mut profile: JobSeekerProfile = match form_de.deserialize_str(&body).map_err(anyhow::Error::new) {
+    let mut profile: JobSeekerProfile = match serde_qs_de.deserialize_str(&body).map_err(anyhow::Error::new) {
         Ok(profile) => profile,
         Err(e) => return Ok((StatusCode::UNPROCESSABLE_ENTITY, e.to_string()).into_response()),
     };
@@ -67,7 +67,7 @@ pub(crate) async fn update_page(
 #[instrument(skip_all, err)]
 pub(crate) async fn update(
     State(db): State<DynDB>,
-    State(form_de): State<serde_qs::Config>,
+    State(serde_qs_de): State<serde_qs::Config>,
     auth_session: AuthSession,
     body: String,
 ) -> Result<impl IntoResponse, HandlerError> {
@@ -77,7 +77,7 @@ pub(crate) async fn update(
     };
 
     // Get profile information from body
-    let mut profile: JobSeekerProfile = match form_de.deserialize_str(&body).map_err(anyhow::Error::new) {
+    let mut profile: JobSeekerProfile = match serde_qs_de.deserialize_str(&body).map_err(anyhow::Error::new) {
         Ok(profile) => profile,
         Err(e) => return Ok((StatusCode::UNPROCESSABLE_ENTITY, e.to_string()).into_response()),
     };

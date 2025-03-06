@@ -10,7 +10,7 @@ use uuid::Uuid;
 
 use crate::templates::{
     PageId,
-    dashboard::employer::jobs::{JobKind, Workplace},
+    dashboard::employer::jobs::{JobKind, SalaryKind, Workplace},
     misc::{Location, Member, Project},
 };
 
@@ -42,7 +42,7 @@ pub(crate) struct ExploreSection {
 
 /// Filters used in the jobs explore section.
 #[skip_serializing_none]
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 pub(crate) struct Filters {
     pub benefits: Option<Vec<String>>,
     pub kind: Option<Vec<JobKind>>,
@@ -50,7 +50,6 @@ pub(crate) struct Filters {
     pub offset: Option<usize>,
     pub open_source: Option<usize>,
     pub skills: Option<Vec<String>>,
-    pub sort_by: Option<String>,
     pub ts_query: Option<String>,
     pub upstream_commitment: Option<usize>,
     pub workplace: Option<Vec<Workplace>>,
@@ -58,11 +57,17 @@ pub(crate) struct Filters {
 
 impl Filters {
     /// Create a new `Filters` instance from the raw query string provided.
-    pub(crate) fn new(raw_query: &str) -> Result<Self> {
-        let filters: Filters = serde_qs::from_str(raw_query)?;
+    pub(crate) fn new(serde_qs_de: &serde_qs::Config, raw_query: &str) -> Result<Self> {
+        let filters: Filters = serde_qs_de.deserialize_str(raw_query)?;
 
         trace!("{:?}", filters);
         Ok(filters)
+    }
+
+    /// Check if the filters are empty.
+    #[allow(dead_code)]
+    pub(crate) fn is_empty(&self) -> bool {
+        self == &Filters::default()
     }
 
     /// Convert the filters to a raw query string.
@@ -74,8 +79,8 @@ impl Filters {
 /// Filters options used in the jobs explore section.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub(crate) struct FiltersOptions {
-    pub kind: Vec<FilterOption>,
-    pub workplace: Vec<FilterOption>,
+    pub benefits: Vec<String>,
+    pub skills: Vec<String>,
 }
 
 /// Filter option details.
@@ -104,13 +109,13 @@ pub(crate) struct JobSummary {
     pub employer: Employer,
     pub job_id: uuid::Uuid,
     pub kind: JobKind,
+    pub published_at: DateTime<Utc>,
     pub title: String,
     pub workplace: Workplace,
 
     pub location: Option<Location>,
     pub open_source: Option<i32>,
     pub projects: Option<Vec<Project>>,
-    pub published_at: Option<DateTime<Utc>>,
     pub salary: Option<i64>,
     pub salary_currency: Option<String>,
     pub salary_min: Option<i64>,
@@ -128,6 +133,7 @@ pub(crate) struct Employer {
     pub company: String,
     pub employer_id: Uuid,
 
+    pub description: Option<String>,
     pub member: Option<Member>,
     pub website_url: Option<String>,
 }
@@ -298,6 +304,18 @@ pub(crate) struct Job {
     pub skills: Option<Vec<String>>,
     pub updated_at: Option<DateTime<Utc>>,
     pub upstream_commitment: Option<i32>,
+}
+
+impl Job {
+    /// Get the salary kind of the job.
+    #[allow(dead_code)]
+    pub(crate) fn salary_kind(&self) -> SalaryKind {
+        if self.salary_min.is_some() && self.salary_max.is_some() {
+            SalaryKind::Range
+        } else {
+            SalaryKind::Fixed
+        }
+    }
 }
 
 #[cfg(test)]

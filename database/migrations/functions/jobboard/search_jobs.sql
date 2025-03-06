@@ -8,7 +8,6 @@ declare
     v_offset int := coalesce((p_filters->>'offset')::int, 0);
     v_open_source int := (p_filters->>'open_source')::int;
     v_skills text[];
-    v_sort_by text := coalesce(p_filters->>'sort_by', 'date');
     v_tsquery_with_prefix_matching tsquery;
     v_upstream_commitment int := (p_filters->>'upstream_commitment')::int;
     v_workplace text[];
@@ -46,12 +45,12 @@ begin
     return query
     with filtered_jobs as (
         select
-            j.title,
-            j.kind,
-            j.workplace,
             j.job_id,
-            j.open_source,
+            j.kind,
             j.published_at,
+            j.title,
+            j.workplace,
+            j.open_source,
             j.salary,
             j.salary_currency,
             j.salary_min,
@@ -126,12 +125,12 @@ begin
     select
         (
             select coalesce(json_agg(json_build_object(
-                'title', title,
-                'kind', kind,
-                'workplace', workplace,
                 'job_id', job_id,
-                'open_source', open_source,
+                'kind', kind,
                 'published_at', published_at,
+                'title', title,
+                'workplace', workplace,
+                'open_source', open_source,
                 'salary', salary,
                 'salary_currency', salary_currency,
                 'salary_min', salary_min,
@@ -146,8 +145,7 @@ begin
             from (
                 select *
                 from filtered_jobs
-                order by
-                    (case when v_sort_by = 'date' then published_at end) desc
+                order by published_at desc
                 limit v_limit
                 offset v_offset
             ) filtered_jobs_page

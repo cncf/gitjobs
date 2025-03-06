@@ -16,7 +16,9 @@ use crate::{
     handlers::{error::HandlerError, extractors::JobBoardId},
     templates::{
         PageId,
-        jobboard::jobs::{ExploreSection, Filters, JobPage, JobsPage, NavigationLinks, ResultsSection},
+        jobboard::jobs::{
+            ExploreSection, Filters, JobPage, JobsPage, NavigationLinks, ResultsSection, build_url,
+        },
     },
 };
 
@@ -27,13 +29,14 @@ use crate::{
 pub(crate) async fn jobs_page(
     auth_session: AuthSession,
     State(db): State<DynDB>,
+    State(serde_qs_de): State<serde_qs::Config>,
     RawQuery(raw_query): RawQuery,
     JobBoardId(job_board_id): JobBoardId,
 ) -> Result<impl IntoResponse, HandlerError> {
     // Get filter options and jobs that match the query
-    let filters = Filters::new(&raw_query.unwrap_or_default())?;
+    let filters = Filters::new(&serde_qs_de, &raw_query.unwrap_or_default())?;
     let (filters_options, JobsSearchOutput { jobs, total }) = tokio::try_join!(
-        db.get_jobs_filters_options(),
+        db.get_jobs_filters_options(&job_board_id),
         db.search_jobs(&job_board_id, &filters)
     )?;
 
@@ -62,13 +65,14 @@ pub(crate) async fn jobs_page(
 #[instrument(skip_all, err)]
 pub(crate) async fn explore_section(
     State(db): State<DynDB>,
+    State(serde_qs_de): State<serde_qs::Config>,
     RawQuery(raw_query): RawQuery,
     JobBoardId(job_board_id): JobBoardId,
 ) -> Result<impl IntoResponse, HandlerError> {
     // Get filter options and jobs that match the query
-    let filters = Filters::new(&raw_query.unwrap_or_default())?;
+    let filters = Filters::new(&serde_qs_de, &raw_query.unwrap_or_default())?;
     let (filters_options, JobsSearchOutput { jobs, total }) = tokio::try_join!(
-        db.get_jobs_filters_options(),
+        db.get_jobs_filters_options(&job_board_id),
         db.search_jobs(&job_board_id, &filters)
     )?;
 
@@ -91,11 +95,12 @@ pub(crate) async fn explore_section(
 #[instrument(skip_all, err)]
 pub(crate) async fn results_section(
     State(db): State<DynDB>,
+    State(serde_qs_de): State<serde_qs::Config>,
     RawQuery(raw_query): RawQuery,
     JobBoardId(job_board_id): JobBoardId,
 ) -> Result<impl IntoResponse, HandlerError> {
     // Get jobs that match the query
-    let filters = Filters::new(&raw_query.unwrap_or_default())?;
+    let filters = Filters::new(&serde_qs_de, &raw_query.unwrap_or_default())?;
     let JobsSearchOutput { jobs, total } = db.search_jobs(&job_board_id, &filters).await?;
 
     // Prepare template
@@ -106,7 +111,10 @@ pub(crate) async fn results_section(
         offset: filters.offset,
     };
 
-    Ok(Html(template.render()?))
+    // Prepare response headers
+    let headers = [("HX-Push-Url", build_url("/jobs", &filters)?)];
+
+    Ok((headers, Html(template.render()?)))
 }
 
 /// Handler that returns the job page.

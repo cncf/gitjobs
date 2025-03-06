@@ -1,5 +1,6 @@
 {% import "macros.html" as macros %}
 
+{# Filters #}
 {% macro filters(device = "desktop") %}
   {# Job type #}
   <div class="px-6 py-7 pt-5 border-b border-gray-100">
@@ -83,7 +84,21 @@
   <div class="px-6 py-7 pt-5">{% call filters_title(text = "Open source") %}</div>
   {# End open source #}
 {% endmacro filters %}
+{# End filters #}
 
+{# Filters title #}
 {% macro filters_title(text) %}
   <div class="font-semibold text-black text-sm/6">{{ text }}</div>
 {% endmacro filters_title %}
+{# End filters title #}
+
+{# Current page #}
+{% macro current_page(total, items_number, offset_value) -%}
+  {%- if let Some(offset) = offset_value -%}
+    {{ offset + 1 }} - {{ items_number + offset }}
+  {%- else -%}
+    1 - {{ items_number }}
+  {%- endif -%}
+  {{ "" }} of {{ total }} results
+{%- endmacro current_page %}
+{# End current page #}

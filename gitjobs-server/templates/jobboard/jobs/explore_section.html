@@ -1,4 +1,4 @@
-{% import "jobboard/jobs/filters.html" as filters_macros %}
+{% import "jobboard/jobs/jobs_macros.html" as jobs_macros %}
 
 {# Mobile filters -#}
 <div id="drawer-filters"
@@ -28,7 +28,7 @@
         hx-include="[name='ts_query']"
         hx-ext="no-empty-vals"
         hx-boost="true">
-    {% call filters_macros::filters(device = "mobile") %}
+    {% call jobs_macros::filters(device = "mobile") %}
   </form>
   {# End filters content -#}
 
@@ -77,7 +77,7 @@
             hx-include="[name='ts_query']"
             hx-ext="no-empty-vals"
             hx-boost="true">
-        {% call filters_macros::filters() %}
+        {% call jobs_macros::filters() %}
       </form>
     </div>
     {# End filters #}
@@ -121,7 +121,12 @@
         </div>
 
         {# Results #}
-        <div class="flex flex-row items-center justify-between px-5 md:px-7">1-10 from 256 jobs</div>
+        <div id="results"
+             class="flex flex-row items-center justify-between px-5 md:px-7">
+          {% if results_section.jobs.len() > 0 %}
+            {% call jobs_macros::current_page(total = results_section.total, items_number = results_section.jobs.len(), offset_value = results_section.offset) %}
+          {% endif %}
+        </div>
         {# End results #}
 
         <div id="jobs-results">

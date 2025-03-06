@@ -80,3 +80,9 @@ export const resetForm = (formId) => {
     triggerChangeOnForm(formId);
   }
 };
+
+// Update results on DOM with the given content.
+export const updateResults = (content) => {
+  const results = document.getElementById("results");
+  results.innerHTML = content;
+};

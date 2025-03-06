@@ -26,8 +26,32 @@ export const triggerChangeOnForm = (formId, fromSearch) => {
   }
 
   const form = document.getElementById(formId);
-  console.log("triggerChangeOnForm", formId);
   if (form) {
     htmx.trigger(form, "change");
+  }
+};
+
+// Search on enter key press.
+export const searchOnEnter = (e, formId) => {
+  if (e.key === "Enter") {
+    if (formId) {
+      triggerChangeOnForm(formId);
+    } else {
+      const value = e.currentTarget.value;
+      if (value !== "") {
+        document.location.href = `/jobs?ts_query=${value}`;
+      }
+    }
+    e.currentTarget.blur();
+  }
+};
+
+// Clean input field and trigger change on form.
+export const cleanInputField = (id, formId) => {
+  const input = document.getElementById(id);
+  input.value = "";
+
+  if (formId) {
+    triggerChangeOnForm(formId);
   }
 };

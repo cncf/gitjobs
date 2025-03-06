@@ -93,7 +93,7 @@
               <input id="ts_query"
                      name="ts_query"
                      type="text"
-                     value=""
+                     value='{{ filters.ts_query|display_some_or("") }}'
                      class="input-primary peer ps-10 w-96"
                      placeholder="Search jobs"
                      autocomplete="off"
@@ -106,6 +106,18 @@
                 </button>
               </div>
             </div>
+            <script type="module">
+              import {
+                searchOnEnter,
+                cleanInputField
+              } from '/static/js/jobboard/filters.js';
+
+              const searchInput = document.getElementById('ts_query');
+              searchInput.addEventListener('keydown', () => searchOnEnter(event, 'desktop-jobs-form'));
+
+              const cleanSearch = document.getElementById('clean-search-jobs');
+              cleanSearch.addEventListener('click', () => cleanInputField('ts_query', 'desktop-jobs-form'));
+            </script>
             {# End searchbar #}
           </div>
         </div>

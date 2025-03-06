@@ -27,6 +27,7 @@ mime_guess = { workspace = true }
 minify-html = { workspace = true }
 num-format = { workspace = true }
 oauth2 = { workspace = true }
+openidconnect = { workspace = true }
 openssl = { workspace = true }
 palette = { workspace = true }
 password-auth = { workspace = true }

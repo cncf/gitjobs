@@ -95,6 +95,24 @@ server:
       # Token URL
       tokenUrl: https://github.com/login/oauth/access_token
 
+  # OIDC configuration
+  oidc:
+    # Linux Foundation SSO provider configuration
+    linuxfoundation:
+      # Client ID
+      clientId: ""
+      # Client secret
+      clientSecret: ""
+      # Issuer URL
+      issuerUrl: https://{YOUR_OIDC_PROVIDER_ISSUER_URL}
+      # Redirect URI
+      redirectUri: "https://{YOUR_GITJOBS_HOSTNAME}/log-in/oidc/linuxfoundation/callback"
+      # Scopes
+      scopes:
+        - openid
+        - profile
+        - email
+
   # Ingress configuration
   ingress:
     enabled: true

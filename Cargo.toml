@@ -31,6 +31,7 @@ mime_guess = "2.0.5"
 minify-html = "0.15.0"
 num-format = "0.4.4"
 oauth2 = "5.0.0"
+openidconnect = { version = "4.0.0", features = ["accept-rfc3339-timestamps"] }
 openssl = { version = "0.10.71", features = ["vendored"] }
 palette = "0.7.6"
 password-auth = "1.0.0"

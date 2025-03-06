@@ -2,7 +2,7 @@
 
 use std::{collections::HashMap, sync::Arc};
 
-use anyhow::{Result, bail};
+use anyhow::{Result, anyhow, bail};
 use async_trait::async_trait;
 use axum::http::header::{AUTHORIZATION, USER_AGENT};
 use axum_login::{
@@ -10,6 +10,7 @@ use axum_login::{
     tower_sessions::{self, session, session_store},
 };
 use oauth2::{TokenResponse, reqwest};
+use openidconnect::{self as oidc, LocalizedClaim};
 use password_auth::verify_password;
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
@@ -18,7 +19,7 @@ use tower_sessions::{Expiry, SessionManagerLayer, cookie::SameSite};
 use uuid::Uuid;
 
 use crate::{
-    config::{HttpServerConfig, OAuth2Config},
+    config::{HttpServerConfig, OAuth2Config, OAuth2Provider, OidcConfig, OidcProvider},
     db::DynDB,
 };
 
@@ -26,7 +27,7 @@ use crate::{
 pub(crate) type AuthLayer = AuthManagerLayer<AuthnBackend, SessionStore>;
 
 /// Setup router authentication/authorization layer.
-pub(crate) fn setup_layer(cfg: &HttpServerConfig, db: DynDB) -> Result<AuthLayer> {
+pub(crate) async fn setup_layer(cfg: &HttpServerConfig, db: DynDB) -> Result<AuthLayer> {
     // Setup session layer
     let session_store = SessionStore::new(db.clone());
     let secure = if let Some(cookie) = &cfg.cookie {
@@ -41,7 +42,7 @@ pub(crate) fn setup_layer(cfg: &HttpServerConfig, db: DynDB) -> Result<AuthLayer
         .with_secure(secure);
 
     // Setup auth layer
-    let authn_backend = AuthnBackend::new(&cfg.oauth2, db)?;
+    let authn_backend = AuthnBackend::new(db, &cfg.oauth2, &cfg.oidc).await?;
     let auth_layer = AuthManagerLayerBuilder::new(authn_backend, session_layer).build();
 
     Ok(auth_layer)
@@ -113,20 +114,23 @@ pub(crate) struct AuthnBackend {
     db: DynDB,
     http_client: reqwest::Client,
     pub oauth2_providers: OAuth2Providers,
+    pub oidc_providers: OidcProviders,
 }
 
 impl AuthnBackend {
     /// Create a new `AuthnBackend` instance.
-    pub fn new(oauth2_cfg: &OAuth2Config, db: DynDB) -> Result<Self> {
+    pub async fn new(db: DynDB, oauth2_cfg: &OAuth2Config, oidc_cfg: &OidcConfig) -> Result<Self> {
         let http_client = reqwest::ClientBuilder::new()
             .redirect(reqwest::redirect::Policy::none())
             .build()?;
         let oauth2_providers = Self::setup_oauth2_providers(oauth2_cfg)?;
+        let oidc_providers = Self::setup_oidc_providers(oidc_cfg, http_client.clone()).await?;
 
         Ok(Self {
             db,
             http_client,
             oauth2_providers,
+            oidc_providers,
         })
     }
 
@@ -134,7 +138,7 @@ impl AuthnBackend {
     async fn authenticate_oauth2(&self, creds: OAuth2Credentials) -> Result<Option<User>> {
         // Exchange the authorization code for an access token
         let Some(oauth2_provider) = self.oauth2_providers.get(&creds.provider) else {
-            bail!("oauth2 client not found")
+            bail!("oauth2 provider not found")
         };
         let access_token = oauth2_provider
             .client
@@ -148,6 +152,43 @@ impl AuthnBackend {
         // Get the user if they exist, otherwise sign them up
         let user_summary = match creds.provider {
             OAuth2Provider::GitHub => UserSummary::from_github_profile(&access_token).await?,
+        };
+        let user = if let Some(user) = self
+            .db
+            .get_user_by_email(&creds.job_board_id, &user_summary.email)
+            .await?
+        {
+            user
+        } else {
+            let (user, _) = self.db.sign_up_user(&creds.job_board_id, &user_summary, true).await?;
+            user
+        };
+
+        Ok(Some(user))
+    }
+
+    /// Authenticate user using `Oidc` credentials.
+    async fn authenticate_oidc(&self, creds: OidcCredentials) -> Result<Option<User>> {
+        // Exchange the authorization code for an access and id token
+        let Some(oidc_provider) = self.oidc_providers.get(&creds.provider) else {
+            bail!("oidc provider not found")
+        };
+        let token_response = oidc_provider
+            .client
+            .exchange_code(oidc::AuthorizationCode::new(creds.code))?
+            .request_async(&self.http_client)
+            .await?;
+
+        // Extract and verify id token claims
+        let id_token_verifier = oidc_provider.client.id_token_verifier();
+        let Some(id_token) = token_response.extra_fields().id_token() else {
+            bail!("id token missing")
+        };
+        let claims = id_token.claims(&id_token_verifier, &creds.nonce)?;
+
+        // Get the user if they exist, otherwise sign them up
+        let user_summary = match creds.provider {
+            OidcProvider::LinuxFoundation => UserSummary::from_oidc_id_token_claims(claims)?,
         };
         let user = if let Some(user) = self
             .db
@@ -215,6 +256,34 @@ impl AuthnBackend {
 
         Ok(providers)
     }
+
+    /// Setup `Oidc` providers.
+    async fn setup_oidc_providers(
+        oidc_cfg: &OidcConfig,
+        http_client: reqwest::Client,
+    ) -> Result<OidcProviders> {
+        let mut providers: OidcProviders = HashMap::new();
+
+        for (provider, cfg) in oidc_cfg {
+            let issuer_url = oidc::IssuerUrl::new(cfg.issuer_url.clone())?;
+            let client = oidc::core::CoreClient::from_provider_metadata(
+                oidc::core::CoreProviderMetadata::discover_async(issuer_url, &http_client).await?,
+                oidc::ClientId::new(cfg.client_id.clone()),
+                Some(oidc::ClientSecret::new(cfg.client_secret.clone())),
+            )
+            .set_redirect_uri(oidc::RedirectUrl::new(cfg.redirect_uri.clone())?);
+
+            providers.insert(
+                provider.clone(),
+                Arc::new(OidcProviderDetails {
+                    client,
+                    scopes: cfg.scopes.clone(),
+                }),
+            );
+        }
+
+        Ok(providers)
+    }
 }
 
 #[async_trait]
@@ -226,6 +295,7 @@ impl axum_login::AuthnBackend for AuthnBackend {
     async fn authenticate(&self, creds: Self::Credentials) -> Result<Option<Self::User>, Self::Error> {
         match creds {
             Credentials::OAuth2(creds) => self.authenticate_oauth2(creds).await.map_err(AuthError),
+            Credentials::Oidc(creds) => self.authenticate_oidc(creds).await.map_err(AuthError),
             Credentials::Password(creds) => self.authenticate_password(creds).await.map_err(AuthError),
         }
     }
@@ -242,13 +312,6 @@ pub(crate) type AuthSession = axum_login::AuthSession<AuthnBackend>;
 /// Type alias for the structure that holds the `OAuth2` providers.
 pub(crate) type OAuth2Providers = HashMap<OAuth2Provider, Arc<OAuth2ProviderDetails>>;
 
-/// Supported `OAuth2` providers.
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "lowercase")]
-pub(crate) enum OAuth2Provider {
-    GitHub,
-}
-
 /// `OAuth2` provider client and scopes.
 #[derive(Clone)]
 pub(crate) struct OAuth2ProviderDetails {
@@ -262,6 +325,23 @@ pub(crate) struct OAuth2ProviderDetails {
     pub scopes: Vec<String>,
 }
 
+/// Type alias for the structure that holds the `Oidc` providers.
+pub(crate) type OidcProviders = HashMap<OidcProvider, Arc<OidcProviderDetails>>;
+
+/// `Oidc` provider client and scopes.
+#[derive(Clone)]
+pub(crate) struct OidcProviderDetails {
+    pub client: oidc::core::CoreClient<
+        oidc::EndpointSet,
+        oidc::EndpointNotSet,
+        oidc::EndpointNotSet,
+        oidc::EndpointNotSet,
+        oidc::EndpointMaybeSet,
+        oidc::EndpointMaybeSet,
+    >,
+    pub scopes: Vec<String>,
+}
+
 /// Wrapper around `anyhow::Error` to represent auth errors.
 #[derive(thiserror::Error, Debug)]
 #[error(transparent)]
@@ -271,6 +351,7 @@ pub(crate) struct AuthError(#[from] anyhow::Error);
 #[derive(Clone, Serialize, Deserialize)]
 pub enum Credentials {
     OAuth2(OAuth2Credentials),
+    Oidc(OidcCredentials),
     Password(PasswordCredentials),
 }
 
@@ -280,6 +361,15 @@ pub(crate) struct OAuth2Credentials {
     pub code: String,
     pub job_board_id: Uuid,
     pub provider: OAuth2Provider,
+}
+
+/// `Oidc` credentials.
+#[derive(Clone, Serialize, Deserialize)]
+pub(crate) struct OidcCredentials {
+    pub code: String,
+    pub job_board_id: Uuid,
+    pub nonce: oidc::Nonce,
+    pub provider: OidcProvider,
 }
 
 /// Password credentials.
@@ -346,6 +436,7 @@ impl UserSummary {
     /// Create a `UserSummary` instance from a GitHub profile.
     async fn from_github_profile(access_token: &str) -> Result<Self> {
         let profile = reqwest::Client::new()
+            // Get user profile from GitHub
             .get("https://api.github.com/user")
             .header(USER_AGENT.as_str(), "open-job-board")
             .header(AUTHORIZATION.as_str(), format!("Bearer {access_token}"))
@@ -358,6 +449,29 @@ impl UserSummary {
             email: profile.email,
             name: profile.name,
             username: profile.login,
+            has_password: Some(false),
+            password: None,
+        })
+    }
+
+    /// Create a `UserSummary` instance from an oidc id token claims.
+    fn from_oidc_id_token_claims(
+        claims: &oidc::IdTokenClaims<oidc::EmptyAdditionalClaims, oidc::core::CoreGenderClaim>,
+    ) -> Result<Self> {
+        // Check if the email is verified
+        if !claims.email_verified().unwrap_or(false) {
+            bail!("email not verified");
+        }
+
+        // Collect some information from the claims
+        let email = claims.email().ok_or_else(|| anyhow!("email missing"))?.to_string();
+        let name = get_localized_claim(claims.name()).ok_or_else(|| anyhow!("name missing"))?;
+        let username = get_localized_claim(claims.nickname()).ok_or_else(|| anyhow!("nickname missing"))?;
+
+        Ok(Self {
+            email,
+            name: name.to_string(),
+            username: username.to_string(),
             has_password: Some(false),
             password: None,
         })
@@ -384,6 +498,20 @@ impl std::fmt::Debug for UserSummary {
             .field("username", &self.username)
             .finish_non_exhaustive()
     }
+}
+
+/// Get the first localized claim value.
+fn get_localized_claim<T>(claim: Option<&LocalizedClaim<T>>) -> Option<T>
+where
+    T: Clone,
+{
+    claim.and_then(|v| {
+        if let Some((_, v)) = v.iter().next() {
+            Some((*v).clone())
+        } else {
+            None
+        }
+    })
 }
 
 /// GitHub profile information.

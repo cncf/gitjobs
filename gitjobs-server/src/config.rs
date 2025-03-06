@@ -11,8 +11,6 @@ use figment::{
 use serde::{Deserialize, Serialize};
 use tracing::instrument;
 
-use crate::auth::OAuth2Provider;
-
 /// Server configuration.
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub(crate) struct Config {
@@ -66,6 +64,7 @@ pub(crate) struct HttpServerConfig {
     pub basic_auth: Option<BasicAuth>,
     pub cookie: Option<CookieConfig>,
     pub oauth2: OAuth2Config,
+    pub oidc: OidcConfig,
 }
 
 /// Basic authentication configuration.
@@ -99,6 +98,13 @@ pub(crate) enum LogFormat {
 /// Type alias for the `OAuth2` configuration section.
 pub(crate) type OAuth2Config = HashMap<OAuth2Provider, OAuth2ProviderConfig>;
 
+/// Supported `OAuth2` providers.
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub(crate) enum OAuth2Provider {
+    GitHub,
+}
+
 /// `OAuth2` provider configuration.
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
 pub(crate) struct OAuth2ProviderConfig {
@@ -108,4 +114,24 @@ pub(crate) struct OAuth2ProviderConfig {
     pub redirect_uri: String,
     pub scopes: Vec<String>,
     pub token_url: String,
+}
+
+/// Type alias for the `Oidc` configuration section.
+pub(crate) type OidcConfig = HashMap<OidcProvider, OidcProviderConfig>;
+
+/// Supported `Oidc` providers.
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub(crate) enum OidcProvider {
+    LinuxFoundation,
+}
+
+/// `Oidc` provider configuration.
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
+pub(crate) struct OidcProviderConfig {
+    pub client_id: String,
+    pub client_secret: String,
+    pub issuer_url: String,
+    pub redirect_uri: String,
+    pub scopes: Vec<String>,
 }

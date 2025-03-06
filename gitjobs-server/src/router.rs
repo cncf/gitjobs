@@ -58,7 +58,7 @@ pub(crate) struct State {
 
 /// Setup router.
 #[instrument(skip_all)]
-pub(crate) fn setup(
+pub(crate) async fn setup(
     cfg: HttpServerConfig,
     db: DynDB,
     image_store: DynImageStore,
@@ -74,7 +74,7 @@ pub(crate) fn setup(
     };
 
     // Setup authentication / authorization layer
-    let auth_layer = crate::auth::setup_layer(&cfg, db)?;
+    let auth_layer = crate::auth::setup_layer(&cfg, db).await?;
 
     // Setup sub-routers
     let employer_dashboard_router = setup_employer_dashboard_router(state.clone());
@@ -106,6 +106,8 @@ pub(crate) fn setup(
         .route("/log-in", get(auth::log_in_page).post(auth::log_in))
         .route("/log-in/oauth2/{provider}", get(auth::oauth2_redirect))
         .route("/log-in/oauth2/{provider}/callback", get(auth::oauth2_callback))
+        .route("/log-in/oidc/{provider}", get(auth::oidc_redirect))
+        .route("/log-in/oidc/{provider}/callback", get(auth::oidc_callback))
         .route("/log-out", get(auth::log_out))
         .route("/sign-up", get(auth::sign_up_page).post(auth::sign_up))
         .route("/verify-email/{code}", get(auth::verify_email))

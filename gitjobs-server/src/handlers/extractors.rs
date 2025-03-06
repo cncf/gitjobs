@@ -13,7 +13,8 @@ use tracing::{error, instrument};
 use uuid::Uuid;
 
 use crate::{
-    auth::{AuthSession, OAuth2Provider, OAuth2ProviderDetails},
+    auth::{AuthSession, OAuth2ProviderDetails, OidcProviderDetails},
+    config::{OAuth2Provider, OidcProvider},
     db::DynDB,
     handlers::auth::SELECTED_EMPLOYER_ID_KEY,
     router,
@@ -85,6 +86,27 @@ impl FromRequestParts<router::State> for OAuth2 {
             return Err((StatusCode::BAD_REQUEST, "oauth2 provider not supported"));
         };
         Ok(OAuth2(provider_details.clone()))
+    }
+}
+
+/// Extractor to get the oidc provider from the auth session.
+pub(crate) struct Oidc(pub Arc<OidcProviderDetails>);
+
+impl FromRequestParts<router::State> for Oidc {
+    type Rejection = (StatusCode, &'static str);
+
+    #[instrument(skip_all, err(Debug))]
+    async fn from_request_parts(parts: &mut Parts, state: &router::State) -> Result<Self, Self::Rejection> {
+        let Ok(provider) = Path::<OidcProvider>::from_request_parts(parts, state).await else {
+            return Err((StatusCode::BAD_REQUEST, "missing oidc provider"));
+        };
+        let Ok(auth_session) = AuthSession::from_request_parts(parts, state).await else {
+            return Err((StatusCode::BAD_REQUEST, "missing auth session"));
+        };
+        let Some(provider_details) = auth_session.backend.oidc_providers.get(&provider) else {
+            return Err((StatusCode::BAD_REQUEST, "oidc provider not supported"));
+        };
+        Ok(Oidc(provider_details.clone()))
     }
 }
 

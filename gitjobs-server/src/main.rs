@@ -45,14 +45,16 @@ async fn main() -> Result<()> {
     let cfg = Config::new(args.config_file.as_ref()).context("error setting up configuration")?;
 
     // Setup logging
-    let ts =
-        tracing_subscriber::fmt().with_env_filter(EnvFilter::try_from_default_env().unwrap_or_else(|_| {
+    let ts = tracing_subscriber::fmt()
+        .with_env_filter(EnvFilter::try_from_default_env().unwrap_or_else(|_| {
             format!(
                 "{}=trace,axum_login=debug,tower_sessions=debug,tower_http=debug",
                 env!("CARGO_CRATE_NAME")
             )
             .into()
-        }));
+        }))
+        .with_file(true)
+        .with_line_number(true);
     match cfg.log.format {
         LogFormat::Json => ts.json().init(),
         LogFormat::Pretty => ts.init(),
@@ -88,7 +90,7 @@ async fn main() -> Result<()> {
     )?);
 
     // Setup and launch HTTP server
-    let router = router::setup(cfg.server.clone(), db, image_store, notifications_manager)?;
+    let router = router::setup(cfg.server.clone(), db, image_store, notifications_manager).await?;
     let listener = TcpListener::bind(&cfg.server.addr).await?;
     info!("server started");
     info!(%cfg.server.addr, "listening");

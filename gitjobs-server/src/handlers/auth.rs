@@ -10,6 +10,7 @@ use axum::{
 };
 use axum_extra::extract::Form;
 use axum_messages::Messages;
+use openidconnect as oidc;
 use password_auth::verify_password;
 use rinja::Template;
 use serde::Deserialize;
@@ -18,12 +19,12 @@ use tracing::instrument;
 use uuid::Uuid;
 
 use crate::{
-    auth::{self, AuthSession, Credentials, OAuth2Credentials, OAuth2Provider, PasswordCredentials},
-    config::HttpServerConfig,
+    auth::{self, AuthSession, Credentials, OAuth2Credentials, OidcCredentials, PasswordCredentials},
+    config::{HttpServerConfig, OAuth2Provider, OidcProvider},
     db::DynDB,
     handlers::{
         error::HandlerError,
-        extractors::{JobBoardId, OAuth2},
+        extractors::{JobBoardId, OAuth2, Oidc},
     },
     notifications::{DynNotificationsManager, NewNotification, NotificationKind},
     templates::{self, PageId, notifications::EmailVerification},
@@ -35,11 +36,14 @@ pub(crate) const LOG_IN_URL: &str = "/log-in";
 /// Log out URL.
 pub(crate) const LOG_OUT_URL: &str = "/log-out";
 
+/// Key to store the next url in the session.
+pub(crate) const NEXT_URL_KEY: &str = "next_url";
+
 /// Key to store the oauth2 csrf state in the session.
 pub(crate) const OAUTH2_CSRF_STATE_KEY: &str = "oauth2.csrf_state";
 
-/// Key to store the oauth2 next url in the session.
-pub(crate) const OAUTH2_NEXT_URL_KEY: &str = "oauth2.next_url";
+/// Key to store the oidc nonce in the session.
+pub(crate) const OIDC_NONCE_KEY: &str = "oidc.nonce";
 
 /// Key to store the selected employer id in the session.
 pub(crate) const SELECTED_EMPLOYER_ID_KEY: &str = "selected_employer_id";
@@ -156,9 +160,9 @@ pub(crate) async fn oauth2_callback(
     Path(provider): Path<OAuth2Provider>,
     Query(OAuth2AuthorizationResponse { code, state }): Query<OAuth2AuthorizationResponse>,
 ) -> Result<impl IntoResponse, HandlerError> {
-    const OAUTH2_AUTHORIZATION_FAILED: &str = "OAuth2 authorization failed.";
+    const OAUTH2_AUTHORIZATION_FAILED: &str = "OAuth2 authorization failed";
 
-    // Verify csrf state
+    // Verify oauth2 csrf state
     let Some(state_in_session) = session.remove::<oauth2::CsrfToken>(OAUTH2_CSRF_STATE_KEY).await? else {
         messages.error(OAUTH2_AUTHORIZATION_FAILED);
         return Ok(Redirect::to(LOG_IN_URL));
@@ -169,7 +173,8 @@ pub(crate) async fn oauth2_callback(
     }
 
     // Get next url from session (if any)
-    let next_url = session.remove::<Option<String>>(OAUTH2_NEXT_URL_KEY).await?.flatten();
+    let next_url = session.remove::<Option<String>>(NEXT_URL_KEY).await?.flatten();
+    let log_in_url = get_log_in_url(next_url.as_ref());
 
     // Authenticate user
     let creds = OAuth2Credentials {
@@ -177,14 +182,16 @@ pub(crate) async fn oauth2_callback(
         job_board_id,
         provider,
     };
-    let Some(user) = auth_session
-        .authenticate(Credentials::OAuth2(creds))
-        .await
-        .map_err(|e| HandlerError::Auth(e.to_string()))?
-    else {
-        messages.error(OAUTH2_AUTHORIZATION_FAILED);
-        let log_in_url = get_log_in_url(next_url.as_ref());
-        return Ok(Redirect::to(&log_in_url));
+    let user = match auth_session.authenticate(Credentials::OAuth2(creds)).await {
+        Ok(Some(user)) => user,
+        Ok(None) => {
+            messages.error(OAUTH2_AUTHORIZATION_FAILED);
+            return Ok(Redirect::to(&log_in_url));
+        }
+        Err(err) => {
+            messages.error(format!("{OAUTH2_AUTHORIZATION_FAILED}: {err}"));
+            return Ok(Redirect::to(&log_in_url));
+        }
     };
 
     // Log user in
@@ -223,7 +230,106 @@ pub(crate) async fn oauth2_redirect(
 
     // Save the csrf state and next url in the session
     session.insert(OAUTH2_CSRF_STATE_KEY, csrf_state.secret()).await?;
-    session.insert(OAUTH2_NEXT_URL_KEY, next_url).await?;
+    session.insert(NEXT_URL_KEY, next_url).await?;
+
+    // Redirect to the authorization url
+    Ok(Redirect::to(authorize_url.as_str()))
+}
+
+/// Handler that completes the oidc authorization process.
+#[instrument(skip_all)]
+pub(crate) async fn oidc_callback(
+    mut auth_session: AuthSession,
+    messages: Messages,
+    session: Session,
+    State(db): State<DynDB>,
+    JobBoardId(job_board_id): JobBoardId,
+    Path(provider): Path<OidcProvider>,
+    Query(OAuth2AuthorizationResponse { code, state }): Query<OAuth2AuthorizationResponse>,
+) -> Result<impl IntoResponse, HandlerError> {
+    const OIDC_AUTHORIZATION_FAILED: &str = "OpenID Connect authorization failed";
+
+    // Verify oauth2 csrf state
+    let Some(state_in_session) = session.remove::<oauth2::CsrfToken>(OAUTH2_CSRF_STATE_KEY).await? else {
+        messages.error(OIDC_AUTHORIZATION_FAILED);
+        return Ok(Redirect::to(LOG_IN_URL));
+    };
+    if state_in_session.secret() != state.secret() {
+        messages.error(OIDC_AUTHORIZATION_FAILED);
+        return Ok(Redirect::to(LOG_IN_URL));
+    }
+
+    // Get oidc nonce from session
+    let Some(nonce) = session.remove::<oidc::Nonce>(OIDC_NONCE_KEY).await? else {
+        messages.error(OIDC_AUTHORIZATION_FAILED);
+        return Ok(Redirect::to(LOG_IN_URL));
+    };
+
+    // Get next url from session (if any)
+    let next_url = session.remove::<Option<String>>(NEXT_URL_KEY).await?.flatten();
+    let log_in_url = get_log_in_url(next_url.as_ref());
+
+    // Authenticate user
+    let creds = OidcCredentials {
+        code,
+        job_board_id,
+        nonce,
+        provider,
+    };
+    let user = match auth_session.authenticate(Credentials::Oidc(creds)).await {
+        Ok(Some(user)) => user,
+        Ok(None) => {
+            messages.error(OIDC_AUTHORIZATION_FAILED);
+            return Ok(Redirect::to(&log_in_url));
+        }
+        Err(err) => {
+            messages.error(format!("{OIDC_AUTHORIZATION_FAILED}: {err}"));
+            return Ok(Redirect::to(&log_in_url));
+        }
+    };
+
+    // Log user in
+    auth_session
+        .login(&user)
+        .await
+        .map_err(|e| HandlerError::Auth(e.to_string()))?;
+
+    // Use the first employer as the selected employer in the session
+    let employers = db.list_employers(&user.user_id).await?;
+    if !employers.is_empty() {
+        session
+            .insert(SELECTED_EMPLOYER_ID_KEY, employers[0].employer_id)
+            .await?;
+    }
+
+    // Prepare next url
+    let next_url = next_url.unwrap_or("/".to_string());
+
+    Ok(Redirect::to(&next_url))
+}
+
+/// Handler that redirects the user to the oidc provider.
+#[instrument(skip_all)]
+pub(crate) async fn oidc_redirect(
+    session: Session,
+    Oidc(oidc_provider): Oidc,
+    Form(NextUrl { next_url }): Form<NextUrl>,
+) -> Result<impl IntoResponse, HandlerError> {
+    // Generate the authorization url
+    let mut builder = oidc_provider.client.authorize_url(
+        oidc::AuthenticationFlow::<oidc::core::CoreResponseType>::AuthorizationCode,
+        oidc::CsrfToken::new_random,
+        oidc::Nonce::new_random,
+    );
+    for scope in &oidc_provider.scopes {
+        builder = builder.add_scope(oidc::Scope::new(scope.clone()));
+    }
+    let (authorize_url, csrf_state, nonce) = builder.url();
+
+    // Save the csrf state, nonce and next url in the session
+    session.insert(OAUTH2_CSRF_STATE_KEY, csrf_state.secret()).await?;
+    session.insert(OIDC_NONCE_KEY, nonce.secret()).await?;
+    session.insert(NEXT_URL_KEY, next_url).await?;
 
     // Redirect to the authorization url
     Ok(Redirect::to(authorize_url.as_str()))

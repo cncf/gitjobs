@@ -21,11 +21,20 @@
   </div>
   {# End header filters -#}
 
-  {% call filters_macros::filters(device = "mobile") %}
+  <form id="mobile-jobs-form"
+        hx-get='/jobs/section/results'
+        hx-trigger="change"
+        hx-target="#jobs-results"
+        hx-include="[name='ts_query']"
+        hx-ext="no-empty-vals"
+        hx-boost="true">
+    {% call filters_macros::filters(device = "mobile") %}
+  </form>
   {# End filters content -#}
 
   <div class="text-end p-5">
-    <button class="btn-primary-outline btn-mini">
+    <button id="reset-mobile-jobs-form"
+            class="btn-primary-outline btn-mini group">
       <div class="flex items-center space-x-1">
         <div class="svg-icon size-3 icon-close group-hover:bg-white"></div>
         <div>Reset</div>
@@ -50,7 +59,8 @@
         <div class="font-semibold text-sm text-black">Filters</div>
 
         <div>
-          <button class="btn-primary-outline btn-mini">
+          <button id="reset-desktop-jobs-form"
+                  class="btn-primary-outline btn-mini group">
             <div class="flex items-center space-x-1">
               <div class="svg-icon size-3 icon-close group-hover:bg-white"></div>
               <div>Reset</div>
@@ -106,18 +116,6 @@
                 </button>
               </div>
             </div>
-            <script type="module">
-              import {
-                searchOnEnter,
-                cleanInputField
-              } from '/static/js/jobboard/filters.js';
-
-              const searchInput = document.getElementById('ts_query');
-              searchInput.addEventListener('keydown', () => searchOnEnter(event, 'desktop-jobs-form'));
-
-              const cleanSearch = document.getElementById('clean-search-jobs');
-              cleanSearch.addEventListener('click', () => cleanInputField('ts_query', 'desktop-jobs-form'));
-            </script>
             {# End searchbar #}
           </div>
         </div>
@@ -139,7 +137,10 @@
 <script type="module">
   import {
     open,
-    close
+    close,
+    searchOnEnter,
+    cleanInputField,
+    resetForm
   } from '/static/js/jobboard/filters.js';
 
   const openFiltersBtn = document.getElementById('open-filters');
@@ -150,4 +151,16 @@
 
   const backdropFilters = document.getElementById('drawer-backdrop');
   backdropFilters.addEventListener('click', close);
+
+  const searchInput = document.getElementById('ts_query');
+  searchInput.addEventListener('keydown', () => searchOnEnter(event, 'desktop-jobs-form'));
+
+  const cleanSearch = document.getElementById('clean-search-jobs');
+  cleanSearch.addEventListener('click', () => cleanInputField('ts_query', 'desktop-jobs-form'));
+
+  const resetDesktopJobsForm = document.getElementById('reset-desktop-jobs-form');
+  resetDesktopJobsForm.addEventListener('click', () => resetForm('desktop-jobs-form'));
+
+  const resetMobileJobsForm = document.getElementById('reset-mobile-jobs-form');
+  resetMobileJobsForm.addEventListener('click', () => resetForm('mobile-jobs-form'));
 </script>

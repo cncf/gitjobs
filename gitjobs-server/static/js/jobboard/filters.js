@@ -55,3 +55,28 @@ export const cleanInputField = (id, formId) => {
     triggerChangeOnForm(formId);
   }
 };
+
+// Reset form.
+export const resetForm = (formId) => {
+  const form = document.getElementById(formId);
+  if (form) {
+    // Clean radio/checkbox input fields
+    form.querySelectorAll('input[type=checkbox]').forEach((el) => (el.checked = false));
+    form.querySelectorAll('input[type=radio]').forEach((el) => (el.checked = false));
+
+    // Clean selected options in collapsible filters
+    const collapsibleFilters = form.getElementsByTagName("collapsible-filter");
+    for (let i = 0; i < collapsibleFilters.length; i++) {
+      collapsibleFilters[i].cleanSelected();
+    }
+
+    // Clean ts_query input field
+    const input = document.getElementById("ts_query");
+    if (input) {
+      input.value = "";
+    }
+
+    // Trigger change on form
+    triggerChangeOnForm(formId);
+  }
+};

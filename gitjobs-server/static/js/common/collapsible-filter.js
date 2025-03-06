@@ -32,6 +32,11 @@ export class CollapsibleFilter extends LitElement {
     this.form = "";
   }
 
+  cleanSelected() {
+    this.selected = [];
+    this._filterOptions();
+  }
+
   createRenderRoot() {
     // Disable shadow dom to use Tailwind CSS
     return this;

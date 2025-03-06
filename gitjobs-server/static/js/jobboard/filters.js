@@ -63,6 +63,16 @@ export const resetForm = (formId) => {
     // Clean radio/checkbox input fields
     form.querySelectorAll('input[type=checkbox]').forEach((el) => (el.checked = false));
     form.querySelectorAll('input[type=radio]').forEach((el) => (el.checked = false));
+    form.querySelectorAll('input[type=range]').forEach((el) => {
+      el.value = 0;
+      el.style = "";
+      // Reset tooltip style
+      const tooltip = el.nextElementSibling;
+      tooltip.style = "";
+      // Reset tooltip content
+      const contentTooltip = tooltip.getElementsByTagName("span")[0];
+      contentTooltip.textContent = 0;
+  });
 
     // Clean selected options in collapsible filters
     const collapsibleFilters = form.getElementsByTagName("collapsible-filter");

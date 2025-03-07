@@ -53,7 +53,7 @@ export class MultiSelect extends LitElement {
     if (!this.contains(e.target)) {
       this.visibleDropdown = false;
     }
-  }
+  };
 
   render() {
     return html`

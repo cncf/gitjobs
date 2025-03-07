@@ -510,25 +510,8 @@
 {% endmacro radio_box %}
 {# End radio box #}
 
-{# Checkbox box #}
-{% macro checkbox_box(name, value, label, icon, active_filters, required = false, device = "") %}
-  <div class="flex items-center px-3 py-2 border border-gray-200 rounded-md">
-    <div class="hidden lg:block svg-icon size-4 icon-{{ icon }} bg-gray-600 cursor-pointer"></div>
-    <label for="{%- if !device.is_empty() -%}{{ device }}-{%- endif -%}{{ name }}-{{ value }}"
-           class="ms-2 text-xs lg:text-sm text-gray-900 flex-grow cursor-pointer">{{ label }}</label>
-    <input id="{%- if !device.is_empty() -%}{{ device }}-{%- endif -%}{{ name }}-{{ value }}"
-           type="checkbox"
-           value="{{ value }}"
-           name="{{ name }}"
-           class="checkbox-primary"
-           {%- if let Some(active_filters) = active_filters -%} {%- if active_filters.contains(value) -%}checked{%- endif -%} {%- endif %}
-           {% if required %}required{% endif %}>
-  </div>
-{% endmacro checkbox_box %}
-{# End checkbox box #}
-
 {# Form image #}
-{% macro images_form(label, name, icon = "company", value = "") %}
+{% macro images_form(label, name, icon = "company", value = "", url_image = "") %}
   {% let empty_image = value.is_empty() %}
 
   {# Images form #}
@@ -546,20 +529,21 @@
           {% call spinner(size = 14, bg_color = "gray-300") %}
         </div>
 
-        {# Placeholder image #}
-        <div id="placeholder-image"
-             class="svg-icon size-20 icon-{{ icon }} bg-white m-auto {%- if !empty_image %} hidden {%- endif -%}">
-        </div>
-        {# End placeholder image #}
-
-        {# Image #}
-        <img id="image"
-             src="{%- if !empty_image -%}/dashboard/images/{{ value }}/small{%- endif -%}"
-             alt="Image"
-             height="auto"
-             width="auto"
-             class="size-[86px] object-contain rounded-lg m-auto {%- if empty_image %} hidden {%- endif -%}">
-        {# End image #}
+        {% if !empty_image %}
+          {# Image #}
+          <img id="image"
+               src="{{ url_image }}"
+               alt="Image"
+               height="auto"
+               width="auto"
+               class="size-[86px] object-contain rounded-lg m-auto">
+          {# End image #}
+        {% else %}
+          {# Placeholder image #}
+          <div id="placeholder-image"
+               class="svg-icon size-20 icon-{{ icon }} bg-white m-auto"></div>
+          {# End placeholder image #}
+        {% endif %}
       </div>
 
       <div class="flex flex-col justify-between self-stretch">

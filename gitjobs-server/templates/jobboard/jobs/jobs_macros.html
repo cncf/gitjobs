@@ -5,42 +5,42 @@
   {# Job type #}
   <div class="px-6 py-7 pt-5 border-b border-gray-100">
     {% call filters_title(text = "Kind") %}
-    <div class="mt-3 flex flex-col space-y-3">
+    <ul class="flex w-full gap-2 mt-3 flex-col">
       {# Full time #}
-      {% call macros::checkbox_box(name = "kind[]", value = JobKind::FullTime, label = "Full Time", icon = "signature", active_filters = filters.kind, required = false, device = device) %}
+      {% call checkbox(name = "kind[]", value = JobKind::FullTime, label = "Full Time", icon = "signature", active_filters = filters.kind, required = false, device = device) %}
       {# End Full time #}
 
       {# Part time #}
-      {% call macros::checkbox_box(name = "kind[]", value = JobKind::PartTime, label = "Part Time", icon = "hour_glass", active_filters = filters.kind, required = false, device = device) %}
+      {% call checkbox(name = "kind[]", value = JobKind::PartTime, label = "Part Time", icon = "hour_glass", active_filters = filters.kind, required = false, device = device) %}
       {# End Part time #}
 
       {# Contractor #}
-      {% call macros::checkbox_box(name = "kind[]", value = JobKind::Contractor, label = "Contractor", icon = "clipboard", active_filters = filters.kind, required = false, device = device) %}
+      {% call checkbox(name = "kind[]", value = JobKind::Contractor, label = "Contractor", icon = "clipboard", active_filters = filters.kind, required = false, device = device) %}
       {# End Contractor #}
 
       {# Internship #}
-      {% call macros::checkbox_box(name = "kind[]", value = JobKind::Internship, label = "Internship", icon = "graduation_cap", active_filters = filters.kind, required = false, device = device) %}
+      {% call checkbox(name = "kind[]", value = JobKind::Internship, label = "Internship", icon = "graduation_cap", active_filters = filters.kind, required = false, device = device) %}
       {# End Internship #}
-    </div>
+    </ul>
   </div>
   {# End job type #}
 
   {# Workplace #}
   <div class="px-6 py-7 pt-5 border-b border-gray-100">
     {% call filters_title(text = "Workplace") %}
-    <div class="mt-3 flex flex-col space-y-3">
+    <ul class="flex w-full gap-2 mt-3 flex-col">
       {# On site #}
-      {% call macros::checkbox_box(name = "workplace[]", value = Workplace::OnSite, label = "On Site", icon = "office_chair", active_filters = filters.workplace, required = false, device = device) %}
+      {% call checkbox(name = "workplace[]", value = Workplace::OnSite, label = "On Site", icon = "office_chair", active_filters = filters.workplace, required = false, device = device) %}
       {# End On site #}
 
       {# Remote #}
-      {% call macros::checkbox_box(name = "workplace[]", value = Workplace::Remote, label = "Remote", icon = "remote", active_filters = filters.workplace, required = false, device = device) %}
+      {% call checkbox(name = "workplace[]", value = Workplace::Remote, label = "Remote", icon = "remote", active_filters = filters.workplace, required = false, device = device) %}
       {# End Remote #}
 
       {# Hybrid #}
-      {% call macros::checkbox_box(name = "workplace[]", value = Workplace::Hybrid, label = "Hybrid", icon = "buildings", active_filters = filters.workplace, required = false, device = device) %}
+      {% call checkbox(name = "workplace[]", value = Workplace::Hybrid, label = "Hybrid", icon = "buildings", active_filters = filters.workplace, required = false, device = device) %}
       {# End Hybrid #}
-    </div>
+    </ul>
   </div>
   {# End workplace #}
 
@@ -61,11 +61,13 @@
     {% call filters_title(text = "Projects") %}
     {% let projects_id = "{}-projects"|format(device) %}
     <div class="relative">{% call macros::search_project(id = projects_id, mini = true) %}</div>
-    <div id="selected-{{ projects_id }}" class="flex flex-col space-y-2"></div>
+    <div id="selected-{{ projects_id }}"
+         projects="{{ filters.projects|json }}"
+         class="flex flex-col space-y-2 mt-2"></div>
     <script type="module">
       import {
         addProjectCard
-      } from '/static/js/common/projects.js';
+      } from '/static/js/misc/projects.js';
 
       const selectedProjects = document.getElementById('selected-{{ projects_id }}');
       if (selectedProjects) {
@@ -103,7 +105,7 @@
 
 {# Filters title #}
 {% macro filters_title(text) %}
-  <div class="font-semibold text-black text-sm/6">{{ text }}</div>
+  <div class="font-semibold text-black text-[0.8rem]/6">{{ text }}</div>
 {% endmacro filters_title %}
 {# End filters title #}
 
@@ -117,3 +119,23 @@
   {{ "" }} of {{ total }} results
 {%- endmacro current_page %}
 {# End current page #}
+
+{# Checkbox #}
+{% macro checkbox(name, value, label, icon, active_filters, required = false, device = "") %}
+  <li class="group">
+    <input id="{%- if !device.is_empty() -%}{{ device }}-{%- endif -%}{{ name }}-{{ value }}"
+           type="checkbox"
+           name="{{ name }}"
+           value="{{ value }}"
+           class="hidden peer"
+           {%- if let Some(active_filters) = active_filters -%} {%- if active_filters.contains(value) -%}checked{%- endif -%} {%- endif %}
+           {% if required %}required{% endif %}>
+    <label for="{%- if !device.is_empty() -%}{{ device }}-{%- endif -%}{{ name }}-{{ value }}"
+           class="inline-flex items-center w-full px-2 py-1 text-gray-500 space-x-3 bg-white border rounded-lg cursor-pointer select-none peer-checked:border-primary-500 hover:text-gray-600 peer-checked:text-primary-500 hover:bg-gray-50">
+      <div class="svg-icon size-3 icon-{{ icon }} bg-gray-500 cursor-pointer group-has-[input:checked]:bg-primary-500">
+      </div>
+      <div class="text-[0.8rem] text-center text-nowrap">{{ label }}</div>
+    </label>
+  </li>
+{% endmacro checkbox %}
+{# End checkbox #}

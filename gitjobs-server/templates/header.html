@@ -1,113 +1,104 @@
 {# Navbar #}
-<nav class="bg-white fixed w-full z-20 top-0 start-0 border-b border-gray-200 h-20 drop-shadow-sm">
-  <div class="flex items-center justify-center md:justify-between max-w-screen-xxl mx-auto px-5 h-full">
-    <div class="flex space-x-10">
-      <a hx-boost="true" href="/" class="flex items-center min-w-[210px]">
-        <img src="/static/images/logo.png"
-             height="33"
-             width="210"
-             alt="GitJobs Logo">
-      </a>
+<div class="flex space-x-20">
+  {# Logo #}
+  <div>
+    <a hx-boost="true" href="/">
+      <img src="/static/images/logo.png"
+           width="210"
+           height="33"
+           alt="GitJobs Logo">
+    </a>
+  </div>
+  {# End logo #}
 
-      <div class="items-center justify-between hidden md:w-full md:flex">
-        <ul class="flex flex-col p-0 font-medium md:space-x-5 md:flex-row">
+  {# Desktop links #}
+  <div class="hidden lg:flex lg:gap-x-8">
+    {% call header_link(text = "Employers") %}
+    {% call header_link(text = "Profiles") %}
+    {% call header_link(text = "About") %}
+  </div>
+  {# End desktop links #}
+</div>
+
+<div class="relative flex">
+  {# When user is logged in, we display a button to open a dropdown with options #}
+  {# and if page is jobboard we display 2 buttons to post a job and to create #}
+  {# an employer profile  #}
+  {% if logged_in %}
+    {% if page_id == PageId::JobBoard %}
+      <div class="hidden lg:flex items-center space-x-5">
+        <a hx-boost="true"
+           href="/dashboard/employer"
+           class="btn-primary-outline-anchor w-[140px]">Post a job</a>
+        <a hx-boost="true"
+           href="/dashboard/job-seeker"
+           class="btn-primary-outline-anchor w-[140px]">Create profile</a>
+      </div>
+    {% endif %}
+    <div class="ms-10">
+      <button id="dropdown-button"
+              class="cursor-pointer group rounded-full bg-white border text-xl border-primary-500 text-primary-600 hover:text-primary-800 hover:border-primary-800 size-[38px] p-0.5 overflow-hidden">
+        {% let name = name|display_some %}
+        {% let initial = name.chars().nth(0).unwrap_or('-') %}
+        <div class="font-semibold uppercase mt-px">{{ initial }}</div>
+      </button>
+
+      {# Dropdown user #}
+      <div id="dropdown-user"
+           class="dropdown absolute hidden z-10 end-0 top-10 w-[250px] bg-white divide-y divide-gray-100 rounded-lg shadow border">
+        <ul class="text-gray-700 my-2">
           <li>
-            <button class="block p-2 text-gray-900 hover:text-primary-500"
-                    disabled
-                    title="Coming soon!">Employers</button>
+            <div class="flex flex-col px-4 py-2">
+              <div class="font-medium text-sm/6 truncate text-gray-700 mb-3">{{ username|display_some }}</div>
+              <div class="text-xs/4 truncate">{{ name }}</div>
+            </div>
+          </li>
+          <li class="border-t mt-2 pt-2">
+            <a hx-boost="true"
+               href="/dashboard/employer"
+               class="inline-block w-full text-start px-4 py-2 hover:bg-gray-100">
+              <div class="flex items-center">
+                <div class="svg-icon size-4 icon-company bg-gray-600"></div>
+                <div class="ms-2 text-xs/6">Employer dashboard</div>
+              </div>
+            </a>
           </li>
           <li>
-            <button class="block p-2 text-gray-900 hover:text-primary-500"
-                    disabled
-                    title="Coming soon!">Profiles</button>
+            <a hx-boost="true"
+               href="/dashboard/job-seeker"
+               class="inline-block w-full text-start px-4 py-2 hover:bg-gray-100">
+              <div class="flex items-center">
+                <div class="svg-icon size-4 icon-search bg-gray-600"></div>
+                <div class="ms-2 text-xs/6">Job seeker dashboard</div>
+              </div>
+            </a>
           </li>
-          <li>
-            <button class="block p-2 text-gray-900 hover:text-primary-500"
-                    disabled
-                    title="Coming soon!">About</button>
+          <li class="border-t mt-2 pt-2">
+            <a href="/log-out"
+               class="inline-block w-full text-start px-4 py-2 hover:bg-gray-100">
+              <div class="flex items-center">
+                <div class="svg-icon size-4 icon-logout bg-gray-600"></div>
+                <div class="ms-2 text-xs/6">Log out</div>
+              </div>
+            </a>
           </li>
         </ul>
       </div>
+      {# End dropdown user #}
     </div>
-    <div class="relative hidden md:flex">
-      {# When user is logged in, we display a button to open a dropdown with options #}
-      {# and if page is jobboard we display 2 buttons to post a job and to create #}
-      {# an employer profile  #}
-      {% if logged_in %}
-        {% if page_id == PageId::JobBoard %}
-          <div class="flex items-center space-x-5">
-            <a hx-boost="true"
-               href="/dashboard/employer"
-               class="btn-primary-outline-anchor w-[140px]">Post a job</a>
-            <a hx-boost="true"
-               href="/dashboard/job-seeker"
-               class="btn-primary-outline-anchor w-[140px]">Create profile</a>
-          </div>
-        {% endif %}
-        <div class="ms-10">
-          <button id="dropdown-button"
-                  class="cursor-pointer group rounded-full bg-white border text-xl border-primary-500 text-primary-600 hover:text-primary-800 hover:border-primary-800 size-[38px] p-0.5 overflow-hidden">
-            {% let name = name|display_some %}
-            {% let initial = name.chars().nth(0).unwrap_or('-') %}
-            <div class="font-semibold uppercase mt-px">{{ initial }}</div>
-          </button>
 
-          {# Dropdown user #}
-          <div id="dropdown-user"
-               class="dropdown absolute hidden z-10 end-0 top-10 w-[250px] bg-white divide-y divide-gray-100 rounded-lg shadow border">
-            <ul class="text-gray-700 my-2">
-              <li>
-                <div class="flex flex-col px-4 py-2">
-                  <div class="font-medium text-sm/6 truncate text-gray-700 mb-3">{{ username|display_some }}</div>
-                  <div class="text-xs/4 truncate">{{ name }}</div>
-                </div>
-              </li>
-              <li class="border-t mt-2 pt-2">
-                <a hx-boost="true"
-                   href="/dashboard/employer"
-                   class="inline-block w-full text-start px-4 py-2 hover:bg-gray-100">
-                  <div class="flex items-center">
-                    <div class="svg-icon size-4 icon-company bg-gray-600"></div>
-                    <div class="ms-2 text-xs/6">Employer dashboard</div>
-                  </div>
-                </a>
-              </li>
-              <li>
-                <a hx-boost="true"
-                   href="/dashboard/job-seeker"
-                   class="inline-block w-full text-start px-4 py-2 hover:bg-gray-100">
-                  <div class="flex items-center">
-                    <div class="svg-icon size-4 icon-search bg-gray-600"></div>
-                    <div class="ms-2 text-xs/6">Job seeker dashboard</div>
-                  </div>
-                </a>
-              </li>
-              <li class="border-t mt-2 pt-2">
-                <a href="/log-out"
-                   class="inline-block w-full text-start px-4 py-2 hover:bg-gray-100">
-                  <div class="flex items-center">
-                    <div class="svg-icon size-4 icon-logout bg-gray-600"></div>
-                    <div class="ms-2 text-xs/6">Log out</div>
-                  </div>
-                </a>
-              </li>
-            </ul>
-          </div>
-          {# End dropdown user #}
-        </div>
-
-        {# When user is not logged in, we display a button to go to login page #}
-      {% else %}
-        <div class="flex items-center space-x-5">
-          <a hx-boost="true"
-             class="btn-primary-outline-anchor w-28"
-             href="/sign-up">Sign Up</a>
-          <a hx-boost="true" class="btn-primary-anchor w-28" href="/log-in">Log In</a>
-        </div>
-      {% endif %}
+    {# When user is not logged in, we display a button to go to login page #}
+  {% else %}
+    {# TODO - mobile version #}
+    <div class="hidden lg:flex items-center space-x-5">
+      <a hx-boost="true"
+         class="btn-primary-outline-anchor w-28"
+         href="/sign-up">Sign Up</a>
+      <a hx-boost="true" class="btn-primary-anchor w-28" href="/log-in">Log In</a>
     </div>
-  </div>
-</nav>
+  {% endif %}
+</div>
+
 <script type="module">
   const dropdownButton = document.getElementById('dropdown-button');
   const dropdown = document.getElementById('dropdown-user');
@@ -132,3 +123,9 @@
   }
 </script>
 {# End Navbar #}
+
+{% macro header_link(text) %}
+  <button class="mx-3 pb-1 border-0 border-primary-500 text-lg font-semibold tracking-widest text-primary-500 uppercase border-b-2 border-transparent hover:border-primary-300"
+          disabled
+          title="Coming soon!">{{ text }}</button>
+{% endmacro header_link %}

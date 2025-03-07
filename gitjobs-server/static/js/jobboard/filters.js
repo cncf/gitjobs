@@ -1,6 +1,7 @@
 // Open filters view (only for mobile).
 export const open = () => {
   const drawer = document.getElementById("drawer-filters");
+  drawer.classList.add("transition-transform");
   drawer.classList.remove("-translate-x-full");
   const backdrop = document.getElementById("drawer-backdrop");
   backdrop.classList.remove("hidden");
@@ -10,6 +11,7 @@ export const open = () => {
 export const close = () => {
   const drawer = document.getElementById("drawer-filters");
   drawer.classList.add("-translate-x-full");
+  drawer.classList.remove("transition-transform");
   const backdrop = document.getElementById("drawer-backdrop");
   backdrop.classList.add("hidden");
 };
@@ -61,9 +63,9 @@ export const resetForm = (formId) => {
   const form = document.getElementById(formId);
   if (form) {
     // Clean radio/checkbox input fields
-    form.querySelectorAll('input[type=checkbox]').forEach((el) => (el.checked = false));
-    form.querySelectorAll('input[type=radio]').forEach((el) => (el.checked = false));
-    form.querySelectorAll('input[type=range]').forEach((el) => {
+    form.querySelectorAll("input[type=checkbox]").forEach((el) => (el.checked = false));
+    form.querySelectorAll("input[type=radio]").forEach((el) => (el.checked = false));
+    form.querySelectorAll("input[type=range]").forEach((el) => {
       el.value = 0;
       el.style = "";
       // Reset tooltip style
@@ -72,7 +74,7 @@ export const resetForm = (formId) => {
       // Reset tooltip content
       const contentTooltip = tooltip.getElementsByTagName("span")[0];
       contentTooltip.textContent = 0;
-  });
+    });
 
     // Clean selected options in collapsible filters
     const collapsibleFilters = form.getElementsByTagName("collapsible-filter");

@@ -90,7 +90,7 @@
         }
 
         .btn-mini {
-          @apply text-xs/6 px-2 py-0;
+          @apply text-xs/6 py-0 px-3;
         }
 
         .input-primary {
@@ -129,14 +129,14 @@
           extend: {
             colors: {
               primary: {
-                '50': '#fdf2fa',
-                '100': '#fce7f7',
+                '50': '#FDF4FA',
+                '100': '#FBE9F4',
                 '200': '#fbcff0',
-                '300': '#faa7e3',
+                '300': '#EB90C9',
                 '400': '#f571ce',
-                '500': '#ed47b7',
+                '500': '#D62293',
                 '600': '#d62293',
-                '700': '#bf177c',
+                '700': '#AB1B76',
                 '800': '#9e1666',
                 '900': '#841757',
                 '950': '#510632',
@@ -175,24 +175,7 @@
     </script>
   </head>
   <body class="h-screen font-inter bg-base" hx-get hx-trigger="refresh-body">
-    {# Header #}
-    {% include "header.html" %}
-    {# End Header #}
-
-    {# View for small devices #}
-    <div class="flex md:hidden justify-center items-center w-full h-full">
-      <div class="fixed top-0 start-0 end-0 -z-10 block w-full h-full bg-jobboard"></div>
-      <div class="text-center bg-base border border-4 border-primary-600 border-dashed rounded-3xl text-2xl font-medium text-gray-800 p-10 m-10">
-        This site is not optimized yet for mobile devices
-      </div>
-    </div>
-    {# End view for small devices #}
-
-    {# Main Content #}
-    <div class="hidden md:flex min-h-screen">
-      {% block main %}
-      {% endblock main %}
-    </div>
-    {# End Main Content #}
+    {% block content %}
+    {% endblock content %}
   </body>
 </html>

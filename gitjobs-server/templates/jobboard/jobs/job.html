@@ -1,12 +1,12 @@
-{% extends "base.html" %}
+{% extends "common_base.html" %}
 {% import "macros.html" as macros %}
 {% import "dashboard/employer/jobs/preview.html" as macros_preview %}
 
 {% block main %}
-  <div class="container flex flex-col w-full h-full mx-auto max-w-7xl p-5 pt-[6.25rem]">
+  <div class="container flex flex-col w-full h-full mx-auto max-w-7xl p-5">
     {# Go back button #}
     <div>
-      <a class="inline-flex btn-tertiary-anchor px-0"
+      <a class="inline-flex btn-tertiary-anchor px-1"
          href="/jobs"
          hx-boost="true">
         <div class="flex items-center space-x-2">
@@ -23,14 +23,18 @@
           <div class="flex-grow flex items-stretch gap-x-5 min-w-0">
             {# Image #}
             <div class="min-w-[56px]">
-              {# {% if let Some(logo_id) = job.employer.logo_id %}
-              {% let logo = &self::build_image_url(logo_id, "small") %}
-              <img class="size-14 rounded-lg" height="56" width="56" src="{{ logo }}" alt="{{ job.employer.company }} logo">
-            {% else %} #}
-              <div class="rounded-full size-14 bg-gray-200 p-1 flex">
-                <div class="svg-icon size-8 icon-company bg-gray-600 m-auto"></div>
-              </div>
-              {# {% endif %} #}
+              {% if let Some(logo_id) = job.employer.logo_id %}
+                {% let logo = &self::build_jobboard_image_url(logo_id, "small") %}
+                <img class="size-14 rounded-lg"
+                     height="56"
+                     width="56"
+                     src="{{ logo }}"
+                     alt="{{ job.employer.company }} logo">
+              {% else %}
+                <div class="rounded-full size-14 bg-gray-200 p-1 flex">
+                  <div class="svg-icon size-8 icon-company bg-gray-600 m-auto"></div>
+                </div>
+              {% endif %}
             </div>
             {# End image #}
 

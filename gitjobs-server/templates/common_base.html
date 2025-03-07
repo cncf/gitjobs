@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+  {# Header #}
+  <nav class="flex items-center justify-between p-4 sm:p-6 lg:p-8">
+    {% include "header.html" %}
+  </nav>
+  {# End Header #}
+
+  <div class="grow z-[1]">
+    {% block main %}
+    {% endblock main %}
+  </div>
+{% endblock content %}

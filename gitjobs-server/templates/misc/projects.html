@@ -26,18 +26,20 @@
 <script type="module">
   import {
     addProjectCard
-  } from '/static/js/common/projects.js';
+  } from '/static/js/misc/projects.js';
 
-  const projectsList = document.querySelector("[data-projects-list]");
-  const projectsListId = projectsList.dataset.name;
-  const miniCards = projectsList.dataset.miniSize;
-
-  const input = document.querySelector(`input#${projectsListId}`);
   const buttons = document.querySelectorAll('button.btn-project');
 
   if (buttons) {
     buttons.forEach((btn) => {
+      const projectsList = btn.closest("[data-projects-list]");
+      const projectsListId = projectsList.dataset.name;
+      const miniCards = projectsList.dataset.miniSize;
+
+      const input = document.querySelector(`input#${projectsListId}`);
+
       btn.addEventListener('click', () => {
+
         // Add the project data to the inputs
         const projectId = btn.dataset.projectId;
         const name = btn.dataset.name;

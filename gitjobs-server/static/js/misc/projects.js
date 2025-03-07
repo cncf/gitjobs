@@ -5,7 +5,21 @@ export const addProjectCard = (id, name, maturity, logo_url, elId, mini = false)
   // This will be used to set the index of the project in the form
   const cardsNumber = document.querySelectorAll(`#${elId} div[id^='card-']`).length;
 
-  const inputs = `
+  // Check if the card is already added
+  const addedCard = document.getElementById(`card-${id}`);
+  if (addedCard) {
+    return;
+  }
+
+  let inputs = "";
+
+  if (mini) {
+    inputs = `
+    <input type="hidden"
+      name="projects[]"
+      value="${name}">`;
+  } else {
+    inputs = `
     <input type="hidden"
       data-index="${cardsNumber}"
       name="projects[${cardsNumber}][project_id]"
@@ -17,6 +31,7 @@ export const addProjectCard = (id, name, maturity, logo_url, elId, mini = false)
     <input type="hidden"
       name="projects[${cardsNumber}][logo_url]"
       value="${logo_url}">`;
+  }
   addCard(id, name, `CNCF ${maturity}`, logo_url, elId, removeSelectedProject, inputs, mini);
 };
 

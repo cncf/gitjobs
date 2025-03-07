@@ -337,15 +337,15 @@
             If the job position involves contributing to any CNCF projects, please list them here.
           </p>
         </div>
-        <div class="col-span-full">
+        <div class="col-span-full -mt-4">
           <div id="selected-projects"
-               class="flex flex-wrap gap-x-5 w-full"
+               class="flex flex-wrap gap-5 w-full"
                {% if let Some(projects) = job.projects -%}data-projects="{{ projects|json }}"{%- endif %}></div>
         </div>
         <script type="module">
           import {
             addProjectCard
-          } from '/static/js/common/projects.js';
+          } from '/static/js/misc/projects.js';
 
           const selectedProjects = document.getElementById('selected-projects');
           if (selectedProjects) {

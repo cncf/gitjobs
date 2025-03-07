@@ -17,9 +17,20 @@
         <div class="flex flex-1 flex-row items-center space-x-4 w-full">
           {# Company logo #}
           <div class="shrink-0">
-            <div class="rounded-full size-24 bg-gray-200 p-1 flex">
-              <div class="svg-icon size-14 icon-company bg-gray-600 m-auto"></div>
-            </div>
+            {% if let Some(logo_id) = job.employer.logo_id %}
+              {% let logo = &self::build_jobboard_image_url(logo_id, "medium") %}
+              {% let logo_small = &self::build_jobboard_image_url(logo_id, "small") %}
+              <img class="size-24 flex rounded-lg"
+                   height="96"
+                   width="96"
+                   srcset="{{ logo_small }}, {{ logo }} 2x"
+                   src="{{ logo }}"
+                   alt="{{ job.employer.company }} image">
+            {% else %}
+              <div class="rounded-full size-24 bg-gray-200 p-1 flex">
+                <div class="svg-icon size-14 icon-company bg-gray-600 m-auto"></div>
+              </div>
+            {% endif %}
           </div>
           {# End company logo #}
 

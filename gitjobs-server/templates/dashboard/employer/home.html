@@ -138,7 +138,7 @@
 {% macro employer_content_list(company, logo_id) %}
   {% if let Some(logo_id) = logo_id %}
     {% let logo = &self::build_dashboard_image_url(logo_id, "small") %}
-    <img class="size-6 me-3 rounded-full"
+    <img class="size-6 me-3 rounded-lg"
          height="24"
          width="24"
          src="{{ logo }}"

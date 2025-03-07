@@ -10,7 +10,7 @@ use crate::templates::{
     PageId,
     dashboard::employer::jobs::{JobKind, SalaryKind, Workplace},
     filters,
-    helpers::{DATE_FORMAT, DATE_FORMAT_3, option_is_none_or_default},
+    helpers::{DATE_FORMAT, DATE_FORMAT_3, build_jobboard_image_url, option_is_none_or_default},
     misc::{Location, Member, Project},
     pagination::{NavigationLinks, Pagination},
 };

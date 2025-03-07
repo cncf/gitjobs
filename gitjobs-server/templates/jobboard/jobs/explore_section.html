@@ -2,7 +2,7 @@
 
 {# Mobile filters -#}
 <div id="drawer-filters"
-     class="fixed top-0 left-0 z-[1100] h-screen overflow-y-auto transition-transform -translate-x-full bg-white w-80 border border-r shadow-lg"
+     class="fixed top-0 left-0 z-[1100] h-screen overflow-y-auto -translate-x-full bg-white w-80 border border-r shadow-lg"
      tabindex="-1"
      aria-labelledby="drawer-label">
   {# Close button -#}
@@ -28,7 +28,7 @@
         hx-include="[name='ts_query']"
         hx-ext="no-empty-vals"
         hx-boost="true">
-    {# {% call jobs_macros::filters(device = "mobile") %} #}
+    {% call jobs_macros::filters(device = "mobile") %}
   </form>
   {# End filters content -#}
 
@@ -48,24 +48,18 @@
 {# End overlay -#}
 {# End mobile filters -#}
 
-<div class="relative container mx-auto max-w-7xl px-4 mt-[6.25rem] pb-[3.5rem] sm:px-6 lg:px-8">
-  <div class="flex items-start ">
+<div class="relative container mx-auto max-w-7xl p-4 sm:p-6 lg:p-8">
+  <div class="flex items-start w-full">
 
     {# Filters #}
-    <div class="relative hidden w-[28%] max-w-[28%] xl:w-2/6 xl:max-w-2/6 lg:block bg-white border rounded-3xl">
+    <div class="relative hidden w-[28%] max-w-[28%] xl:w-1/4 xl:max-w-1/4 lg:block bg-white border rounded-3xl">
 
       {# Header #}
       <div class="flex justify-between items-center border-solid border-0 border-b border-gray-100 p-5">
         <div class="font-semibold text-sm text-black">Filters</div>
 
         <div>
-          <button id="reset-desktop-jobs-form"
-                  class="btn-primary-outline btn-mini group">
-            <div class="flex items-center space-x-1">
-              <div class="svg-icon size-3 icon-close group-hover:bg-white"></div>
-              <div>Reset</div>
-            </div>
-          </button>
+          <button id="reset-desktop-jobs-form" class="btn-primary-outline btn-mini">Reset</button>
         </div>
       </div>
       {# End header #}
@@ -84,36 +78,46 @@
 
     {# Content #}
     <div class="relative w-full lg:w-[72%] xl:w-3/4 lg:pl-6 xl:pl-10 self-stretch">
-      <div class="relative flex flex-col bg-white border rounded-3xl pt-5 md:pt-7 h-full">
-        <div class="flex items-center mb-6 md:mb-10 px-5 md:px-7">
-          <div class="flex">
+      <div class="relative flex flex-col bg-white border rounded-3xl pt-5 md:pt-7 h-full w-full">
+        <div class="flex lg:items-center mb-6 md:mb-10 px-5 md:px-7">
+          <div class="flex align-items w-full">
             {# Mobile filters button -#}
-            <div class="flex me-6 lg:hidden">
-              <button id="open-filters" class="btn-primary-outline group p-3">
-                <div class="svg-icon size-3 icon-filter group-hover:bg-white"></div>
+            <div class="flex shrink-0 me-6 lg:hidden">
+              <button id="open-filters"
+                      class="btn-primary-outline group size-[40px] items-center flex justify-center">
+                <div class="svg-icon size-4 icon-filter group-hover:bg-white shrink-0"></div>
               </button>
             </div>
             {# End mobile filters button -#}
 
             {# Searchbar #}
-            <div class="relative">
-              <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
-                <div class="svg-icon size-4 icon-search bg-gray-300"></div>
-              </div>
-              <input id="ts_query"
-                     name="ts_query"
-                     type="text"
-                     value='{{ filters.ts_query|display_some_or("") }}'
-                     class="input-primary peer ps-10 w-96"
-                     placeholder="Search jobs"
-                     autocomplete="off"
-                     autocorrect="off"
-                     autocapitalize="off"
-                     spellcheck="false">
-              <div class="absolute end-1.5 top-1.5 peer-placeholder-shown:hidden">
-                <button id="clean-search-jobs" type="button" class="mt-[2px]">
-                  <div class="svg-icon size-5 bg-gray-400 hover:bg-gray-700 icon-close"></div>
-                </button>
+            <div class="flex items-center justify-center w-full">
+              <div class="relative w-full md:w-3/4 md:-ml-[0.75rem]">
+                <input id="ts_query"
+                       name="ts_query"
+                       type="text"
+                       value='{{ filters.ts_query|display_some_or("") }}'
+                       class="peer w-[100%] rounded-full border border-gray-300 text-gray-900 placeholder-gray-400 focus:ring-transparent focus:border-primary-500 focus:ring block flex-1 min-w-0 w-60 text-md p-2.5 ps-4 pe-14"
+                       placeholder="Search jobs"
+                       autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       spellcheck="false">
+                <div class="absolute right-[40px] top-[10px] block peer-placeholder-shown:hidden">
+                  {# Clean searchbar #}
+                  <button id="clean-search-jobs"
+                          class="mr-2 mt-[2px] block peer-placeholder-shown:hidden">
+                    <div class="svg-icon h-5 w-5 bg-gray-400 hover:bg-gray-700 icon-close"></div>
+                  </button>
+                  {# End clean searchbar #}
+                </div>
+                <div class="absolute right-[6px] top-[6px]">
+                  {# Search button #}
+                  <button id="search-jobs-btn" class="btn-primary-outline group p-2">
+                    <div class="svg-icon size-4 mx-auto bg-primary-500 group-hover:bg-white icon-search"></div>
+                  </button>
+                  {# End search button #}
+                </div>
               </div>
             </div>
             {# End searchbar #}
@@ -145,6 +149,7 @@
     close,
     searchOnEnter,
     cleanInputField,
+    triggerChangeOnForm,
     resetForm
   } from '/static/js/jobboard/filters.js';
 
@@ -162,6 +167,9 @@
 
   const cleanSearch = document.getElementById('clean-search-jobs');
   cleanSearch.addEventListener('click', () => cleanInputField('ts_query', 'desktop-jobs-form'));
+
+  const searchJobsBtn = document.getElementById('search-jobs-btn');
+  searchJobsBtn.addEventListener('click', () => triggerChangeOnForm('desktop-jobs-form', true));
 
   const resetDesktopJobsForm = document.getElementById('reset-desktop-jobs-form');
   resetDesktopJobsForm.addEventListener('click', () => resetForm('desktop-jobs-form'));

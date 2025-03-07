@@ -12,6 +12,7 @@ use axum_login::{
 use oauth2::{TokenResponse, reqwest};
 use openidconnect::{self as oidc, LocalizedClaim};
 use password_auth::verify_password;
+use reqwest::header::HeaderMap;
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use time::Duration;
@@ -435,18 +436,37 @@ pub(crate) struct UserSummary {
 impl UserSummary {
     /// Create a `UserSummary` instance from a GitHub profile.
     async fn from_github_profile(access_token: &str) -> Result<Self> {
+        // Setup headers for GitHub API requests
+        let mut headers = HeaderMap::new();
+        headers.insert(USER_AGENT, "open-job-board".parse()?);
+        headers.insert(AUTHORIZATION, format!("Bearer {access_token}").as_str().parse()?);
+
+        // Get user profile from GitHub
         let profile = reqwest::Client::new()
-            // Get user profile from GitHub
             .get("https://api.github.com/user")
-            .header(USER_AGENT.as_str(), "open-job-board")
-            .header(AUTHORIZATION.as_str(), format!("Bearer {access_token}"))
+            .headers(headers.clone())
             .send()
             .await?
             .json::<GitHubProfile>()
             .await?;
 
+        // Get user emails from GitHub
+        let emails = reqwest::Client::new()
+            .get("https://api.github.com/user/emails")
+            .headers(headers.clone())
+            .send()
+            .await?
+            .json::<Vec<GitHubUserEmail>>()
+            .await?;
+
+        // Get primary email and check it is verified
+        let email = emails
+            .into_iter()
+            .find(|email| email.primary && email.verified)
+            .ok_or_else(|| anyhow!("no valid email found (primary email must be verified)"))?;
+
         Ok(Self {
-            email: profile.email,
+            email: email.email,
             name: profile.name,
             username: profile.login,
             has_password: Some(false),
@@ -519,7 +539,14 @@ where
 struct GitHubProfile {
     login: String,
     name: String,
+}
+
+/// GitHub user email.
+#[derive(Debug, Deserialize)]
+struct GitHubUserEmail {
     email: String,
+    primary: bool,
+    verified: bool,
 }
 
 /// User password update input.

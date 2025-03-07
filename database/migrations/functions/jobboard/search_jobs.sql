@@ -7,6 +7,7 @@ declare
     v_limit int := coalesce((p_filters->>'limit')::int, 10);
     v_offset int := coalesce((p_filters->>'offset')::int, 0);
     v_open_source int := (p_filters->>'open_source')::int;
+    v_projects text[];
     v_skills text[];
     v_tsquery_with_prefix_matching tsquery;
     v_upstream_commitment int := (p_filters->>'upstream_commitment')::int;
@@ -20,6 +21,10 @@ begin
     if p_filters ? 'kind' then
         select array_agg(e::text) into v_kind
         from jsonb_array_elements_text(p_filters->'kind') e;
+    end if;
+    if p_filters ? 'projects' then
+        select array_agg(e::text) into v_projects
+        from jsonb_array_elements_text(p_filters->'projects') e;
     end if;
     if p_filters ? 'skills' then
         select array_agg(e::text) into v_skills
@@ -105,6 +110,15 @@ begin
         and
             case when cardinality(v_kind) > 0 then
             j.kind = any(v_kind) else true end
+        and
+            case when cardinality(v_projects) > 0 then
+            j.job_id = any(
+                select job_id from job_project
+                where project_id = any(
+                    select project_id from project
+                    where name = any(v_projects)
+                )
+            ) else true end
         and
             case when cardinality(v_skills) > 0 then
             j.skills @> v_skills else true end

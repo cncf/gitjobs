@@ -49,6 +49,7 @@ pub(crate) struct Filters {
     pub limit: Option<usize>,
     pub offset: Option<usize>,
     pub open_source: Option<usize>,
+    pub projects: Option<Vec<String>>,
     pub skills: Option<Vec<String>>,
     pub ts_query: Option<String>,
     pub upstream_commitment: Option<usize>,

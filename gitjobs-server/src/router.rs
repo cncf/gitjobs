@@ -79,18 +79,18 @@ pub(crate) async fn setup(
     // Setup sub-routers
     let employer_dashboard_router = setup_employer_dashboard_router(state.clone());
     let job_seeker_dashboard_router = setup_job_seeker_dashboard_router();
-    let images_router = setup_images_router(state.clone());
+    let dashboard_images_router = setup_dashboard_images_router(state.clone());
+    let jobboard_images_router = setup_jobboard_images_router(state.clone());
 
     // Setup main router
     let mut router = Router::new()
         .nest("/dashboard/employer", employer_dashboard_router)
         .nest("/dashboard/job-seeker", job_seeker_dashboard_router)
-        .nest("/images", images_router)
+        .nest("/dashboard/images", dashboard_images_router)
         .route("/account/update/details", put(auth::update_user_details))
         .route("/account/update/password", put(auth::update_user_password))
         .route("/locations/search", get(search_locations))
         .route("/members/search", get(search_members))
-        .route("/projects/search", get(search_projects))
         .route_layer(login_required!(
             AuthnBackend,
             login_url = LOG_IN_URL,
@@ -99,6 +99,7 @@ pub(crate) async fn setup(
         .route("/", get(jobboard::home::page))
         .route("/about", get(jobboard::about::page))
         .route("/health-check", get(health_check))
+        .nest("/jobboard/images", jobboard_images_router)
         .route("/jobs", get(jobboard::jobs::jobs_page))
         .route("/jobs/{job_id}", get(jobboard::jobs::job_page))
         .route("/jobs/section/explore", get(jobboard::jobs::explore_section))
@@ -109,6 +110,7 @@ pub(crate) async fn setup(
         .route("/log-in/oidc/{provider}", get(auth::oidc_redirect))
         .route("/log-in/oidc/{provider}/callback", get(auth::oidc_callback))
         .route("/log-out", get(auth::log_out))
+        .route("/projects/search", get(search_projects))
         .route("/sign-up", get(auth::sign_up_page).post(auth::sign_up))
         .route("/verify-email/{code}", get(auth::verify_email))
         .route_layer(MessagesManagerLayer)
@@ -198,9 +200,9 @@ fn setup_job_seeker_dashboard_router() -> Router<State> {
         )
 }
 
-/// Setup images router.
+/// Setup dashboard images router.
 #[instrument(skip_all)]
-fn setup_images_router(state: State) -> Router<State> {
+fn setup_dashboard_images_router(state: State) -> Router<State> {
     // Setup middleware
     let check_user_has_image_access =
         middleware::from_fn_with_state(state.clone(), auth::user_has_image_access);
@@ -209,6 +211,19 @@ fn setup_images_router(state: State) -> Router<State> {
     Router::new().route("/", post(img::upload)).route(
         "/{image_id}/{version}",
         get(img::get).layer(check_user_has_image_access),
+    )
+}
+
+/// Setup job board images router.
+#[instrument(skip_all)]
+fn setup_jobboard_images_router(state: State) -> Router<State> {
+    // Setup middleware
+    let check_image_is_public = middleware::from_fn_with_state(state.clone(), auth::image_is_public);
+
+    // Setup router
+    Router::new().route(
+        "/{image_id}/{version}",
+        get(img::get).layer(check_image_is_public),
     )
 }
 

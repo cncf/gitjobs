@@ -455,6 +455,24 @@ pub(crate) async fn verify_email(
 
 // Authorization middleware.
 
+/// Check if the image provided is public.
+#[instrument(skip_all)]
+pub(crate) async fn image_is_public(
+    State(db): State<DynDB>,
+    Path((image_id, _)): Path<(Uuid, String)>,
+    request: Request,
+    next: Next,
+) -> impl IntoResponse {
+    let Ok(is_public) = db.is_image_public(&image_id).await else {
+        return StatusCode::INTERNAL_SERVER_ERROR.into_response();
+    };
+    if !is_public {
+        return StatusCode::FORBIDDEN.into_response();
+    }
+
+    next.run(request).await.into_response()
+}
+
 /// Check if the user has access to the image provided.
 #[instrument(skip_all)]
 pub(crate) async fn user_has_image_access(

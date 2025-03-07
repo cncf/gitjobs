@@ -10,7 +10,7 @@ use crate::templates::{
     PageId, auth,
     dashboard::employer,
     filters,
-    helpers::{build_image_url, find_employer},
+    helpers::{build_dashboard_image_url, find_employer},
 };
 
 /// Home page template.

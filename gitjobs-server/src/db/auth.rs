@@ -40,6 +40,9 @@ pub(crate) trait DBAuth {
     /// Get user password.
     async fn get_user_password(&self, user_id: &Uuid) -> Result<Option<String>>;
 
+    /// Check if the image is public.
+    async fn is_image_public(&self, image_id: &Uuid) -> Result<bool>;
+
     /// Sign up a new user.
     async fn sign_up_user(
         &self,
@@ -274,6 +277,30 @@ impl DBAuth for PgDB {
             .map(|row| row.get("password"));
 
         Ok(password)
+    }
+
+    /// [DBAuth::is_image_public]
+    #[instrument(skip(self), err)]
+    async fn is_image_public(&self, image_id: &Uuid) -> Result<bool> {
+        trace!("checking in database if image is public");
+
+        let db = self.pool.get().await?;
+        let row = db
+            .query_one(
+                "
+                select exists (
+                    select 1
+                    from employer e
+                    join job j using (employer_id)
+                    where e.logo_id = $1::uuid
+                    and j.status = 'published'
+                ) as is_public;
+                ",
+                &[&image_id],
+            )
+            .await?;
+
+        Ok(row.get("is_public"))
     }
 
     /// [DBAuth::sign_up_user]

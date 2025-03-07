@@ -1,7 +1,7 @@
 <div class="flex space-x-5 items-center mb-10 pb-10 border-b">
   {# Photo #}
   {% if let Some(photo_id) = profile.photo_id %}
-    {% let photo = &self::build_image_url(photo_id, "small") %}
+    {% let photo = &self::build_dashboard_image_url(photo_id, "small") %}
     <div>
       <img src="{{ photo }}"
            alt="{{ profile.name }} photo"

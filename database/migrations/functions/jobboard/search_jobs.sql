@@ -67,6 +67,7 @@ begin
                 select nullif(jsonb_strip_nulls(jsonb_build_object(
                     'company', e.company,
                     'employer_id', e.employer_id,
+                    'logo_id', e.logo_id,
                     'website_url', e.website_url,
                     'member', (
                         select nullif(jsonb_strip_nulls(jsonb_build_object(

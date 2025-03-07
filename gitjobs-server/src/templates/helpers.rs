@@ -13,9 +13,15 @@ pub(crate) const DATE_FORMAT: &str = "%Y-%m-%d";
 /// The date format used in the jobseeker preview.
 pub(crate) const DATE_FORMAT_2: &str = "%B %Y";
 
-/// Build url for an image version.
-pub(crate) fn build_image_url(image_id: &Uuid, version: &str) -> String {
-    format!("/images/{image_id}/{version}")
+/// Build dashboard url for an image version.
+pub(crate) fn build_dashboard_image_url(image_id: &Uuid, version: &str) -> String {
+    format!("/dashboard/images/{image_id}/{version}")
+}
+
+/// Build job board url for an image version.
+#[allow(dead_code)]
+pub(crate) fn build_jobboard_image_url(image_id: &Uuid, version: &str) -> String {
+    format!("/jobboard/images/{image_id}/{version}")
 }
 
 /// Format location string from the location information provided.

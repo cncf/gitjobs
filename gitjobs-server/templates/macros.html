@@ -511,7 +511,7 @@
 
   {# Images form #}
   <form id="images-form"
-        hx-post="/images"
+        hx-post="/dashboard/images"
         hx-encoding="multipart/form-data"
         hx-trigger="change from:#logo"
         hx-swap="none"
@@ -532,7 +532,7 @@
 
         {# Image #}
         <img id="image"
-             src="{%- if !empty_image -%}/images/{{ value }}/small{%- endif -%}"
+             src="{%- if !empty_image -%}/dashboard/images/{{ value }}/small{%- endif -%}"
              alt="Image"
              height="auto"
              width="auto"
@@ -618,7 +618,7 @@
         inputHidden.value = imageId;
         cleanImage.disabled = false;
         placeholderImage.classList.add('hidden');
-        image.setAttribute('src', `/images/${imageId}/small`);
+        image.setAttribute('src', `/dashboard/images/${imageId}/small`);
         image.classList.remove('hidden');
       } else {
         showErrorAlert('Something went wrong adding the image, please try again later.');

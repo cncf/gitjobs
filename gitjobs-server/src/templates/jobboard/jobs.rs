@@ -135,6 +135,7 @@ pub(crate) struct Employer {
     pub employer_id: Uuid,
 
     pub description: Option<String>,
+    pub logo_id: Option<Uuid>,
     pub member: Option<Member>,
     pub website_url: Option<String>,
 }

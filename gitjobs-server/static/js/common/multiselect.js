@@ -27,12 +27,25 @@ export class MultiSelect extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
+    window.addEventListener("mousedown", this.handleClickOutside);
     this.filterOptions();
   }
 
+  disconnectedCallback() {
+    window.addEventListener("mousedown", this.handleClickOutside);
+    super.disconnectedCallback();
+  }
+
   createRenderRoot() {
-    // Disable shadow dom to use Tailwind CSS
-    return this;
+    if (this.children.length === 0) {
+      // Disable shadow dom to use Tailwind CSS
+      return this;
+    } else {
+      // Remove previous content when re-rendering full component
+      this.innerHTML = "";
+      // Disable shadow dom to use Tailwind CSS
+      return this;
+    }
   }
 
   filterOptions() {
@@ -43,10 +56,6 @@ export class MultiSelect extends LitElement {
     } else {
       this.visibleOptions = this.options;
     }
-  }
-
-  firstUpdated() {
-    window.addEventListener("mousedown", this.handleClickOutside);
   }
 
   handleClickOutside = (e) => {

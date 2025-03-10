@@ -59,7 +59,7 @@ export const cleanInputField = (id, formId) => {
 };
 
 // Reset form.
-export const resetForm = (formId) => {
+export const resetForm = async (formId) => {
   const form = document.getElementById(formId);
   if (form) {
     // Clean radio/checkbox input fields
@@ -77,9 +77,9 @@ export const resetForm = (formId) => {
     });
 
     // Clean selected options in collapsible filters
-    const collapsibleFilters = form.getElementsByTagName("collapsible-filter");
-    for (let i = 0; i < collapsibleFilters.length; i++) {
-      collapsibleFilters[i].cleanSelected();
+    const searchableFilters = form.getElementsByTagName("searchable-filter");
+    for (let i = 0; i < searchableFilters.length; i++) {
+      await searchableFilters[i].cleanSelected();
     }
 
     // Clean ts_query input field

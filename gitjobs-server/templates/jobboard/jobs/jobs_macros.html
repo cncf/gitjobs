@@ -45,14 +45,16 @@
   {# End workplace #}
 
   {# Skills #}
-  <div>
-    <collapsible-filter title="Skills" name="skills" options="{{ filters_options.skills|json }}" form="{{ device }}-jobs-form" {%- if let Some(filters_skills) = filters.skills %}selected="{{ filters_skills|json }}"{%- endif -%}></collapsible-filter>
+  <div class="px-6 py-7 pt-5 border-b border-gray-100">
+    {% call filters_title(text = "Skills") %}
+    <searchable-filter title="Skills" name="skills" options="{{ filters_options.skills|json }}" form="{{ device }}-jobs-form" {%- if let Some(filters_skills) = filters.skills %}selected="{{ filters_skills|json }}"{%- endif -%}></searchable-filter>
   </div>
   {# End skills #}
 
   {# Benefits #}
-  <div>
-    <collapsible-filter title="Benefits" name="benefits" options="{{ filters_options.benefits|json }}" form="{{ device }}-jobs-form" {%- if let Some(filters_benefits) = filters.benefits %}selected="{{ filters_benefits|json }}"{%- endif -%}></collapsible-filter>
+  <div class="px-6 py-7 pt-5 border-b border-gray-100">
+    {% call filters_title(text = "Benefits") %}
+    <searchable-filter title="Benefits" name="benefits" viewType="rows" options="{{ filters_options.benefits|json }}" form="{{ device }}-jobs-form" {%- if let Some(filters_benefits) = filters.benefits %}selected="{{ filters_benefits|json }}"{%- endif -%}></searchable-filter>
   </div>
   {# End benefits #}
 

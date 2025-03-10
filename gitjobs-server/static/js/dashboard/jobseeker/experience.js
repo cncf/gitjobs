@@ -17,8 +17,15 @@ export class ExperienceSection extends LitElement {
   }
 
   createRenderRoot() {
-    // Disable shadow dom to use Tailwind CSS
-    return this;
+    if (this.children.length === 0) {
+      // Disable shadow dom to use Tailwind CSS
+      return this;
+    } else {
+      // Remove previous content when re-rendering full component
+      this.innerHTML = "";
+      // Disable shadow dom to use Tailwind CSS
+      return this;
+    }
   }
 
   _addId() {

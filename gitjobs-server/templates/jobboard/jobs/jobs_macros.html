@@ -47,43 +47,22 @@
   {# Skills #}
   <div class="px-6 py-7 pt-5 border-b border-gray-100">
     {% call filters_title(text = "Skills") %}
-    <searchable-filter title="Skills" name="skills" options="{{ filters_options.skills|json }}" form="{{ device }}-jobs-form" {%- if let Some(filters_skills) = filters.skills %}selected="{{ filters_skills|json }}"{%- endif -%}></searchable-filter>
+    <searchable-filter name="skills" options="{{ filters_options.skills|json }}" form="{{ device }}-jobs-form" {%- if let Some(filters_skills) = filters.skills %}selected="{{ filters_skills|json }}"{%- endif -%}></searchable-filter>
   </div>
   {# End skills #}
 
   {# Benefits #}
   <div class="px-6 py-7 pt-5 border-b border-gray-100">
     {% call filters_title(text = "Benefits") %}
-    <searchable-filter title="Benefits" name="benefits" viewType="rows" options="{{ filters_options.benefits|json }}" form="{{ device }}-jobs-form" {%- if let Some(filters_benefits) = filters.benefits %}selected="{{ filters_benefits|json }}"{%- endif -%}></searchable-filter>
+    <searchable-filter name="benefits" viewType="rows" options="{{ filters_options.benefits|json }}" form="{{ device }}-jobs-form" {%- if let Some(filters_benefits) = filters.benefits %}selected="{{ filters_benefits|json }}"{%- endif -%}></searchable-filter>
   </div>
   {# End benefits #}
 
   {# Projects #}
   <div class="px-6 py-7 pt-5 border-b border-gray-100">
     {% call filters_title(text = "Projects") %}
-    {% let projects_id = "{}-projects"|format(device) %}
-    <div class="relative">{% call macros::search_project(id = projects_id, mini = true) %}</div>
-    <div id="selected-{{ projects_id }}"
-         projects="{{ filters.projects|json }}"
-         class="flex flex-col space-y-2 mt-2"></div>
-    <script type="module">
-      import {
-        addProjectCard
-      } from '/static/js/misc/projects.js';
-
-      const selectedProjects = document.getElementById('selected-{{ projects_id }}');
-      if (selectedProjects) {
-        const projects = selectedProjects.dataset.projects;
-        if (projects) {
-          const parsedProjects = JSON.parse(projects);
-          parsedProjects.forEach((project) => {
-            addProjectCard(project.project_id, project.name, project.maturity, project.logo_url, 'selected-{{ projects_id }}', true);
-          });
-        }
-      }
-    </script>
+    <searchable-filter name="projects" options="{{ filters_options.projects|json }}" form="{{ device }}-jobs-form" {%- if let Some(filters_projects) = filters.projects %}selected="{{ filters_projects|json }}"{%- endif -%}></searchable-filter>
   </div>
-  {# End projects #}
 
   {# Open source #}
   <div class="px-6 py-7 pt-5 border-b border-gray-100">

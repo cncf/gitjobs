@@ -2,7 +2,7 @@
 
 {% block content %}
   {# Header #}
-  <nav class="bg-white fixed w-full z-20 top-0 start-0 border-b border-gray-200 h-20 drop-shadow-sm flex items-center justify-between px-4 sm:px-6 lg:px-8">
+  <nav class="bg-base fixed w-full z-20 top-0 start-0 border-b border-gray-200 h-20 drop-shadow-sm flex items-center justify-between px-4 sm:px-6 lg:px-8">
     {% include "header.html" %}
   </nav>
   {# End Header #}
@@ -17,7 +17,7 @@
   {# End view for small devices #}
 
   {# Main Content #}
-  <div class="hidden md:flex min-h-screen">
+  <div class="hidden md:flex">
     {# Sticky menu #}
     <aside class="h-screen sticky top-0 w-[225px] lg:w-[300px]">
       <div class="flex flex-col justify-between py-5 pt-24 h-full">

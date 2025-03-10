@@ -101,7 +101,7 @@
             {% let image = &self::build_dashboard_image_url(photo_id, "small") %}
             {% call macros::images_form(label = "Photo", name = "photo_id", icon = "user", value = photo_id.to_string(), url_image = image) %}
           {% else %}
-            {% call macros::images_form(label = "photo_id", name = "photo_id", icon = "user") %}
+            {% call macros::images_form(label = "Photo", name = "photo_id", icon = "user") %}
           {% endif %}
         </div>
         {# End form image #}

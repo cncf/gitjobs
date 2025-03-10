@@ -9,6 +9,7 @@ use uuid::Uuid;
 
 use crate::{
     PgDB,
+    db::Total,
     templates::jobboard::jobs::{Filters, FiltersOptions, Job, JobSummary},
 };
 
@@ -192,6 +193,3 @@ pub(crate) struct JobsSearchOutput {
     pub jobs: Vec<JobSummary>,
     pub total: Total,
 }
-
-/// Type alias to represent the total count.
-pub(crate) type Total = usize;

@@ -183,6 +183,10 @@ fn setup_employer_dashboard_router(state: State) -> Router<State> {
                 .put(dashboard::employer::jobs::update)
                 .layer(check_user_owns_job.clone()),
         )
+        .route(
+            "/applicants/list",
+            get(dashboard::employer::applicants::list_page),
+        )
 }
 
 /// Setup job seeker dashboard router.

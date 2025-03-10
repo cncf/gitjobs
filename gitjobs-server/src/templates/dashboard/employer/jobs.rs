@@ -49,7 +49,7 @@ pub(crate) struct UpdatePage {
 
 /// Job summary.
 #[skip_serializing_none]
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 pub(crate) struct JobSummary {
     pub job_id: uuid::Uuid,
     pub created_at: DateTime<Utc>,
@@ -122,10 +122,11 @@ impl Job {
 }
 
 /// Job status.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub(crate) enum JobStatus {
     Archived,
+    #[default]
     Draft,
     Published,
 }

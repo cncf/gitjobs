@@ -20,11 +20,11 @@ use uuid::Uuid;
 
 use crate::templates::misc::{Location, Member, Project};
 
-mod auth;
-mod dashboard;
+pub(crate) mod auth;
+pub(crate) mod dashboard;
 pub(crate) mod img;
 pub(crate) mod jobboard;
-mod notifications;
+pub(crate) mod notifications;
 
 /// Error message when a transaction client is not found.
 const TX_CLIENT_NOT_FOUND: &str = "transaction client not found, it probably timed out";
@@ -269,3 +269,6 @@ impl DB for PgDB {
         Ok(())
     }
 }
+
+/// Type alias to represent the total count.
+pub(crate) type Total = usize;

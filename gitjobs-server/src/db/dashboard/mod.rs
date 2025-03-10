@@ -6,8 +6,8 @@ use job_seeker::DBDashBoardJobSeeker;
 
 use crate::PgDB;
 
-mod employer;
-mod job_seeker;
+pub(crate) mod employer;
+pub(crate) mod job_seeker;
 
 /// Trait that defines some database operations used in the employer dashboard.
 #[async_trait]

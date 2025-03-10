@@ -2,12 +2,16 @@
 
 use anyhow::Result;
 use async_trait::async_trait;
+use serde::{Deserialize, Serialize};
+use tokio_postgres::types::Json;
 use tracing::instrument;
 use uuid::Uuid;
 
 use crate::{
     PgDB,
+    db::Total,
     templates::dashboard::employer::{
+        applicants::{self, Applicant},
         employers::{Employer, EmployerSummary},
         jobs::{Job, JobBoard, JobSummary},
     },
@@ -28,6 +32,9 @@ pub(crate) trait DBDashBoardEmployer {
     /// Delete job.
     async fn delete_job(&self, job_id: &Uuid) -> Result<()>;
 
+    /// Get applicants filters options.
+    async fn get_applicants_filters_options(&self, employer_id: &Uuid) -> Result<applicants::FiltersOptions>;
+
     /// Get employer.
     async fn get_employer(&self, employer_id: &Uuid) -> Result<Employer>;
 
@@ -45,6 +52,13 @@ pub(crate) trait DBDashBoardEmployer {
 
     /// Publish job.
     async fn publish_job(&self, job_id: &Uuid) -> Result<()>;
+
+    /// Search applicants.
+    async fn search_applicants(
+        &self,
+        employer_id: &Uuid,
+        filters: &applicants::Filters,
+    ) -> Result<ApplicantsSearchOutput>;
 
     /// Update employer.
     async fn update_employer(&self, employer_id: &Uuid, employer: &Employer) -> Result<()>;
@@ -252,6 +266,44 @@ impl DBDashBoardEmployer for PgDB {
             .await?;
 
         Ok(())
+    }
+
+    /// [DBDashBoardEmployer::get_applicants_filters_options]
+    #[instrument(skip(self), err)]
+    async fn get_applicants_filters_options(&self, employer_id: &Uuid) -> Result<applicants::FiltersOptions> {
+        // Query database
+        let db = self.pool.get().await?;
+        let rows = db
+            .query(
+                "
+                select
+                    j.job_id,
+                    j.created_at,
+                    j.title,
+                    j.status
+                from job j
+                where employer_id = $1::uuid
+                order by created_at desc;
+                ",
+                &[&employer_id],
+            )
+            .await?;
+
+        // Prepare filters options
+        let mut jobs = Vec::new();
+        for row in rows {
+            let job = JobSummary {
+                job_id: row.get("job_id"),
+                created_at: row.get("created_at"),
+                title: row.get("title"),
+                status: row.get::<_, String>("status").parse().expect("valid job status"),
+                ..Default::default()
+            };
+            jobs.push(job);
+        }
+        let filters_options = applicants::FiltersOptions { jobs };
+
+        Ok(filters_options)
     }
 
     /// [DBDashBoardEmployer::get_employer]
@@ -512,6 +564,32 @@ impl DBDashBoardEmployer for PgDB {
         Ok(())
     }
 
+    /// [DBJobBoard::search_applicants]
+    #[instrument(skip(self))]
+    async fn search_applicants(
+        &self,
+        employer_id: &Uuid,
+        filters: &applicants::Filters,
+    ) -> Result<ApplicantsSearchOutput> {
+        // Query database
+        let db = self.pool.get().await?;
+        let row = db
+            .query_one(
+                "select applicants::text, total from search_applicants($1::uuid, $2::jsonb)",
+                &[&employer_id, &Json(filters)],
+            )
+            .await?;
+
+        // Prepare search output
+        #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+        let output = ApplicantsSearchOutput {
+            applicants: serde_json::from_str(&row.get::<_, String>("applicants"))?,
+            total: row.get::<_, i64>("total") as usize,
+        };
+
+        Ok(output)
+    }
+
     /// [DBDashBoardEmployer::update_employer]
     #[instrument(skip(self), err)]
     async fn update_employer(&self, employer_id: &Uuid, employer: &Employer) -> Result<()> {
@@ -626,4 +704,11 @@ impl DBDashBoardEmployer for PgDB {
 
         Ok(())
     }
+}
+
+/// Applicants search results.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub(crate) struct ApplicantsSearchOutput {
+    pub applicants: Vec<Applicant>,
+    pub total: Total,
 }

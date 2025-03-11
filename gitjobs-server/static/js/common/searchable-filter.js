@@ -1,8 +1,9 @@
-import { LitElement, html } from "https://cdn.jsdelivr.net/gh/lit/dist@3/all/lit-all.min.js";
+import { html } from "https://cdn.jsdelivr.net/gh/lit/dist@3/all/lit-all.min.js";
 import { unnormalize } from "/static/js/common/common.js";
 import { triggerChangeOnForm } from "/static/js/jobboard/filters.js";
+import { LitWrapper } from "/static/js/common/litWrapper.js";
 
-export class SearchableFilter extends LitElement {
+export class SearchableFilter extends LitWrapper {
   static properties = {
     name: { type: String },
     options: { type: Array },
@@ -24,18 +25,6 @@ export class SearchableFilter extends LitElement {
     this.visibleOptions = [];
     this.visibleDropdown = false;
     this.form = "";
-  }
-
-  createRenderRoot() {
-    if (this.children.length === 0) {
-      // Disable shadow dom to use Tailwind CSS
-      return this;
-    } else {
-      // Remove previous content when re-rendering full component
-      this.innerHTML = "";
-      // Disable shadow dom to use Tailwind CSS
-      return this;
-    }
   }
 
   connectedCallback() {

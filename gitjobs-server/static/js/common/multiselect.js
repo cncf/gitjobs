@@ -1,7 +1,8 @@
-import { LitElement, html } from "https://cdn.jsdelivr.net/gh/lit/dist@3/core/lit-core.min.js";
+import { html } from "https://cdn.jsdelivr.net/gh/lit/dist@3/core/lit-core.min.js";
 import { unnormalize } from "/static/js/common/common.js";
+import { LitWrapper } from "/static/js/common/litWrapper.js";
 
-export class MultiSelect extends LitElement {
+export class MultiSelect extends LitWrapper {
   static properties = {
     id: { type: String },
     name: { type: String },
@@ -34,18 +35,6 @@ export class MultiSelect extends LitElement {
   disconnectedCallback() {
     window.addEventListener("mousedown", this.handleClickOutside);
     super.disconnectedCallback();
-  }
-
-  createRenderRoot() {
-    if (this.children.length === 0) {
-      // Disable shadow dom to use Tailwind CSS
-      return this;
-    } else {
-      // Remove previous content when re-rendering full component
-      this.innerHTML = "";
-      // Disable shadow dom to use Tailwind CSS
-      return this;
-    }
   }
 
   filterOptions() {

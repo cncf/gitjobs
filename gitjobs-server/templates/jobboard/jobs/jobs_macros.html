@@ -5,7 +5,7 @@
   {# Job type #}
   <div class="px-6 py-7 pt-5 border-b border-gray-100">
     {% call filters_title(text = "Kind") %}
-    <ul class="flex w-full gap-2 mt-3 flex-col">
+    <div class="grid grid-cols-2 w-full gap-2 mt-3">
       {# Full time #}
       {% call checkbox(name = "kind[]", value = JobKind::FullTime, label = "Full Time", icon = "signature", active_filters = filters.kind, required = false, device = device) %}
       {# End Full time #}
@@ -21,14 +21,14 @@
       {# Internship #}
       {% call checkbox(name = "kind[]", value = JobKind::Internship, label = "Internship", icon = "graduation_cap", active_filters = filters.kind, required = false, device = device) %}
       {# End Internship #}
-    </ul>
+    </div>
   </div>
   {# End job type #}
 
   {# Workplace #}
   <div class="px-6 py-7 pt-5 border-b border-gray-100">
     {% call filters_title(text = "Workplace") %}
-    <ul class="flex w-full gap-2 mt-3 flex-col">
+    <div class="grid grid-cols-2 w-full gap-2 mt-3">
       {# On site #}
       {% call checkbox(name = "workplace[]", value = Workplace::OnSite, label = "On Site", icon = "office_chair", active_filters = filters.workplace, required = false, device = device) %}
       {# End On site #}
@@ -40,7 +40,7 @@
       {# Hybrid #}
       {% call checkbox(name = "workplace[]", value = Workplace::Hybrid, label = "Hybrid", icon = "buildings", active_filters = filters.workplace, required = false, device = device) %}
       {# End Hybrid #}
-    </ul>
+    </div>
   </div>
   {# End workplace #}
 
@@ -103,7 +103,7 @@
 
 {# Checkbox #}
 {% macro checkbox(name, value, label, icon, active_filters, required = false, device = "") %}
-  <li class="group">
+  <div class="group">
     <input id="{%- if !device.is_empty() -%}{{ device }}-{%- endif -%}{{ name }}-{{ value }}"
            type="checkbox"
            name="{{ name }}"
@@ -112,11 +112,11 @@
            {%- if let Some(active_filters) = active_filters -%} {%- if active_filters.contains(value) -%}checked{%- endif -%} {%- endif %}
            {% if required %}required{% endif %}>
     <label for="{%- if !device.is_empty() -%}{{ device }}-{%- endif -%}{{ name }}-{{ value }}"
-           class="inline-flex items-center w-full px-2 py-1 text-gray-500 space-x-3 bg-white border rounded-lg cursor-pointer select-none peer-checked:border-primary-500 hover:text-gray-600 peer-checked:text-primary-500 hover:bg-gray-50">
+           class="inline-flex items-center justify-center w-full px-2 py-1 text-gray-500 space-x-2 bg-white border rounded-lg cursor-pointer select-none peer-checked:border-primary-500 hover:text-gray-600 peer-checked:text-primary-500 hover:bg-gray-50">
       <div class="svg-icon size-3 icon-{{ icon }} bg-gray-500 cursor-pointer group-has-[input:checked]:bg-primary-500">
       </div>
       <div class="text-[0.8rem] text-center text-nowrap">{{ label }}</div>
     </label>
-  </li>
+  </div>
 {% endmacro checkbox %}
 {# End checkbox #}

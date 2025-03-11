@@ -1,7 +1,8 @@
-import { LitElement, html, repeat } from "https://cdn.jsdelivr.net/gh/lit/dist@3/all/lit-all.min.js";
+import { html, repeat } from "https://cdn.jsdelivr.net/gh/lit/dist@3/all/lit-all.min.js";
 import { isObjectEmpty } from "/static/js/common/common.js";
+import { LitWrapper } from "/static/js/common/litWrapper.js";
 
-export class ProjectsSection extends LitElement {
+export class ProjectsSection extends LitWrapper {
   static properties = {
     projects: { type: Array },
   };
@@ -14,18 +15,6 @@ export class ProjectsSection extends LitElement {
   connectedCallback() {
     super.connectedCallback();
     this.addId();
-  }
-
-  createRenderRoot() {
-    if (this.children.length === 0) {
-      // Disable shadow dom to use Tailwind CSS
-      return this;
-    } else {
-      // Remove previous content when re-rendering full component
-      this.innerHTML = "";
-      // Disable shadow dom to use Tailwind CSS
-      return this;
-    }
   }
 
   addId() {
@@ -136,7 +125,7 @@ export class ProjectsSection extends LitElement {
 }
 customElements.define("projects-section", ProjectsSection);
 
-class Project extends LitElement {
+class Project extends LitWrapper {
   static properties = {
     data: { type: Object },
     index: { type: Number },
@@ -156,11 +145,6 @@ class Project extends LitElement {
     this.index = 0;
     this.isObjectEmpty = true;
     this.onDataChange = () => {};
-  }
-
-  createRenderRoot() {
-    // Disable shadow dom to use Tailwind CSS
-    return this;
   }
 
   connectedCallback() {

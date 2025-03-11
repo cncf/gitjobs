@@ -140,12 +140,23 @@ pub(crate) async fn setup(
 #[instrument(skip_all)]
 fn setup_employer_dashboard_router(state: State) -> Router<State> {
     // Setup middleware
+    let check_user_has_profile_access =
+        middleware::from_fn_with_state(state.clone(), auth::user_has_profile_access);
     let check_user_owns_employer = middleware::from_fn_with_state(state.clone(), auth::user_owns_employer);
     let check_user_owns_job = middleware::from_fn_with_state(state.clone(), auth::user_owns_job);
 
     // Setup router
     Router::new()
         .route("/", get(dashboard::employer::home::page))
+        .route(
+            "/applications/list",
+            get(dashboard::employer::applications::list_page),
+        )
+        .route(
+            "/applications/profile/{profile_id}/preview",
+            post(dashboard::employer::applications::profile_preview_page)
+                .layer(check_user_has_profile_access.clone()),
+        )
         .route(
             "/employers/add",
             get(dashboard::employer::employers::add_page).post(dashboard::employer::employers::add),
@@ -168,16 +179,16 @@ fn setup_employer_dashboard_router(state: State) -> Router<State> {
             post(dashboard::employer::jobs::preview_page_w_job),
         )
         .route(
-            "/jobs/preview/{job_id}",
-            post(dashboard::employer::jobs::preview_page_wo_job).layer(check_user_owns_job.clone()),
-        )
-        .route(
             "/jobs/{job_id}/archive",
             put(dashboard::employer::jobs::archive).layer(check_user_owns_job.clone()),
         )
         .route(
             "/jobs/{job_id}/delete",
             delete(dashboard::employer::jobs::delete).layer(check_user_owns_job.clone()),
+        )
+        .route(
+            "/jobs/{job_id}/preview",
+            post(dashboard::employer::jobs::preview_page_wo_job).layer(check_user_owns_job.clone()),
         )
         .route(
             "/jobs/{job_id}/publish",
@@ -189,10 +200,6 @@ fn setup_employer_dashboard_router(state: State) -> Router<State> {
                 .layer(check_user_owns_job.clone())
                 .put(dashboard::employer::jobs::update)
                 .layer(check_user_owns_job.clone()),
-        )
-        .route(
-            "/applications/list",
-            get(dashboard::employer::applications::list_page),
         )
 }
 

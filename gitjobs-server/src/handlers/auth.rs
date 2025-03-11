@@ -498,6 +498,31 @@ pub(crate) async fn user_has_image_access(
     next.run(request).await.into_response()
 }
 
+/// Check if the user has access to the profile provided.
+#[instrument(skip_all)]
+pub(crate) async fn user_has_profile_access(
+    State(db): State<DynDB>,
+    Path(profile_id): Path<Uuid>,
+    auth_session: AuthSession,
+    request: Request,
+    next: Next,
+) -> impl IntoResponse {
+    // Check if user is logged in
+    let Some(user) = auth_session.user else {
+        return StatusCode::FORBIDDEN.into_response();
+    };
+
+    // Check if the user has access to the profile
+    let Ok(has_access) = db.user_has_profile_access(&user.user_id, &profile_id).await else {
+        return StatusCode::INTERNAL_SERVER_ERROR.into_response();
+    };
+    if !has_access {
+        return StatusCode::FORBIDDEN.into_response();
+    }
+
+    next.run(request).await.into_response()
+}
+
 /// Check if the user owns the employer provided.
 #[instrument(skip_all)]
 pub(crate) async fn user_owns_employer(

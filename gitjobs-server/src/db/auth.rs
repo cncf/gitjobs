@@ -63,6 +63,9 @@ pub(crate) trait DBAuth {
     /// Check if the user has access to the image.
     async fn user_has_image_access(&self, user_id: &Uuid, image_id: &Uuid) -> Result<bool>;
 
+    /// Check if the user has access to the profile.
+    async fn user_has_profile_access(&self, user_id: &Uuid, job_seeker_profile_id: &Uuid) -> Result<bool>;
+
     /// Check if the user owns the employer.
     async fn user_owns_employer(&self, user_id: &Uuid, employer_id: &Uuid) -> Result<bool>;
 
@@ -468,6 +471,32 @@ impl DBAuth for PgDB {
             .query_one(
                 "select user_has_image_access($1::uuid, $2::uuid);",
                 &[&user_id, &image_id],
+            )
+            .await?;
+
+        Ok(row.get(0))
+    }
+
+    /// [DBAuth::user_has_profile_access]
+    #[instrument(skip(self), err)]
+    async fn user_has_profile_access(&self, user_id: &Uuid, job_seeker_profile_id: &Uuid) -> Result<bool> {
+        trace!("checking in database if user has access to profile");
+
+        let db = self.pool.get().await?;
+        let row = db
+            .query_one(
+                "
+                select exists (
+                    select 1
+                    from job_seeker_profile p
+                    join application a on p.job_seeker_profile_id = a.job_seeker_profile_id
+                    join job j on a.job_id = j.job_id
+                    join employer_team et on j.employer_id = et.employer_id
+                    where et.user_id = $1::uuid
+                    and p.job_seeker_profile_id = $2::uuid
+                ) as has_access;
+                ",
+                &[&user_id, &job_seeker_profile_id],
             )
             .await?;
 

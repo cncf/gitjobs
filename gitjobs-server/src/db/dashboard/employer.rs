@@ -47,6 +47,9 @@ pub(crate) trait DBDashBoardEmployer {
     /// Get job.
     async fn get_job_dashboard(&self, job_id: &Uuid) -> Result<Job>;
 
+    /// Get job seeker user id.
+    async fn get_job_seeker_user_id(&self, job_seeker_profile_id: &Uuid) -> Result<Option<Uuid>>;
+
     /// List employer jobs.
     async fn list_employer_jobs(&self, employer_id: &Uuid) -> Result<Vec<JobSummary>>;
 
@@ -479,6 +482,25 @@ impl DBDashBoardEmployer for PgDB {
         };
 
         Ok(job)
+    }
+
+    /// [DBDashBoardEmployer::get_job_seeker_user_id]
+    #[instrument(skip(self), err)]
+    async fn get_job_seeker_user_id(&self, job_seeker_profile_id: &Uuid) -> Result<Option<Uuid>> {
+        let db = self.pool.get().await?;
+        let user_id = db
+            .query_opt(
+                "
+                select user_id
+                from job_seeker_profile
+                where job_seeker_profile_id = $1::uuid;
+                ",
+                &[&job_seeker_profile_id],
+            )
+            .await?
+            .map(|row| row.get("user_id"));
+
+        Ok(user_id)
     }
 
     /// [DBDashBoardEmployer::list_employer_jobs]

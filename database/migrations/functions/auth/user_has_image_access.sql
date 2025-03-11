@@ -15,6 +15,7 @@ begin
     join employer_team et on j.employer_id = et.employer_id
     where p.photo_id = p_image_id
     and et.user_id = p_user_id;
+    if found then return true; end if;
 
     -- Employer logo: user belongs to the employer team
     perform from employer e

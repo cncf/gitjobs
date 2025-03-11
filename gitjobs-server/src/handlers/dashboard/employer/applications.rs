@@ -2,17 +2,22 @@
 
 use anyhow::Result;
 use axum::{
-    extract::{RawQuery, State},
+    extract::{Path, RawQuery, State},
     response::{Html, IntoResponse},
 };
+use reqwest::StatusCode;
 use rinja::Template;
 use tracing::instrument;
+use uuid::Uuid;
 
 use crate::{
     db::{DynDB, dashboard::employer::ApplicationsSearchOutput},
     handlers::{error::HandlerError, extractors::SelectedEmployerIdRequired},
     templates::{
-        dashboard::employer::applications::{ApplicationsPage, Filters},
+        dashboard::{
+            employer::applications::{ApplicationsPage, Filters},
+            job_seeker,
+        },
         pagination::NavigationLinks,
     },
 };
@@ -44,4 +49,21 @@ pub(crate) async fn list_page(
     };
 
     Ok(Html(template.render()?))
+}
+
+/// Handler that returns the page to preview a profile.
+#[instrument(skip_all, err)]
+pub(crate) async fn profile_preview_page(
+    State(db): State<DynDB>,
+    Path(profile_id): Path<Uuid>,
+) -> Result<impl IntoResponse, HandlerError> {
+    let Some(user_id) = db.get_job_seeker_user_id(&profile_id).await? else {
+        return Ok(StatusCode::NOT_FOUND.into_response());
+    };
+    let Some(profile) = db.get_job_seeker_profile(&user_id).await? else {
+        return Ok(StatusCode::NOT_FOUND.into_response());
+    };
+    let template = job_seeker::profile::PreviewPage { profile };
+
+    Ok(Html(template.render()?).into_response())
 }

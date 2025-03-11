@@ -150,7 +150,23 @@ impl DBJobBoard for PgDB {
         let db = self.pool.get().await?;
         let row = db
             .query_one(
-                "select benefits, skills from job_board where job_board_id = $1::uuid;",
+                "
+                select
+                    benefits,
+                    skills,
+                    (
+                        select json_agg(json_build_object(
+                            'project_id', project_id,
+                            'name', name,
+                            'maturity', maturity,
+                            'logo_url', logo_url
+                        ))
+                        from project
+                        where job_board_id = $1::uuid
+                    )::text as projects
+                from job_board
+                where job_board_id = $1::uuid;
+                ",
                 &[&job_board_id],
             )
             .await?;
@@ -158,6 +174,7 @@ impl DBJobBoard for PgDB {
         // Prepare filters options
         let filters_options = FiltersOptions {
             benefits: row.get("benefits"),
+            projects: serde_json::from_str(&row.get::<_, String>("projects"))?,
             skills: row.get("skills"),
         };
 

@@ -91,6 +91,7 @@ pub(crate) async fn setup(
         .route("/account/update/password", put(auth::update_user_password))
         .route("/locations/search", get(search_locations))
         .route("/members/search", get(search_members))
+        .route("/projects/search", get(search_projects))
         .route_layer(login_required!(
             AuthnBackend,
             login_url = LOG_IN_URL,
@@ -110,7 +111,6 @@ pub(crate) async fn setup(
         .route("/log-in/oidc/{provider}", get(auth::oidc_redirect))
         .route("/log-in/oidc/{provider}/callback", get(auth::oidc_callback))
         .route("/log-out", get(auth::log_out))
-        .route("/projects/search", get(search_projects))
         .route("/sign-up", get(auth::sign_up_page).post(auth::sign_up))
         .route("/verify-email/{code}", get(auth::verify_email))
         .route_layer(MessagesManagerLayer)

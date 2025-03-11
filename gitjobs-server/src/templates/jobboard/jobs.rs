@@ -81,6 +81,7 @@ impl Filters {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub(crate) struct FiltersOptions {
     pub benefits: Vec<String>,
+    pub projects: Vec<Project>,
     pub skills: Vec<String>,
 }
 

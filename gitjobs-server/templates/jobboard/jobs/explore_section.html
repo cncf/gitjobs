@@ -1,4 +1,5 @@
 {% import "jobboard/jobs/jobs_macros.html" as jobs_macros %}
+{% import "macros.html" as macros %}
 
 {# Mobile filters -#}
 <div id="drawer-filters"
@@ -17,19 +18,24 @@
   {# End close button -#}
 
   {# Filters content -#}
-  {# Header Filters -#}
-  <div class="flex justify-between items-center border-solid border-0 border-b border-gray-100 p-5">
-    <div class="font-semibold text-sm text-black">Filters</div>
-  </div>
-  {# End header filters -#}
-
   <form id="mobile-jobs-form"
         hx-get='/jobs/section/results'
         hx-trigger="change"
         hx-target="#items-list"
         hx-include="[name='ts_query']"
         hx-ext="no-empty-vals"
+        hx-indicator="#mobile-jobs-spinner"
         hx-boost="true">
+    {# Header Filters -#}
+    <div class="flex justify-between items-center border-solid border-0 border-b border-gray-100 p-5">
+      <div class="flex space-x-3 relative">
+        <div class="font-semibold text-sm text-black">Filters</div>
+        <div id="mobile-jobs-spinner" class="hx-spinner absolute start-10 -top-1">
+          {% call macros::spinner(size = 5) %}
+        </div>
+      </div>
+    </div>
+    {# End header filters -#}
     {% call jobs_macros::filters(device = "mobile") %}
   </form>
   {# End filters content -#}
@@ -55,24 +61,29 @@
 
     {# Filters #}
     <div class="relative hidden w-[28%] max-w-[28%] xl:w-1/4 xl:max-w-1/4 lg:block bg-white border rounded-3xl">
-
-      {# Header #}
-      <div class="flex justify-between items-center border-solid border-0 border-b border-gray-100 p-5">
-        <div class="font-semibold text-sm text-black">Filters</div>
-
-        <div>
-          <button id="reset-desktop-jobs-form" class="btn-primary-outline btn-mini">Reset</button>
-        </div>
-      </div>
-      {# End header #}
-
       <form id="desktop-jobs-form"
             hx-get='/jobs/section/results'
             hx-trigger="change"
             hx-target="#items-list"
             hx-include="[name='ts_query']"
             hx-ext="no-empty-vals"
+            hx-indicator="#desktop-jobs-spinner"
             hx-boost="true">
+        {# Header #}
+        <div class="flex justify-between items-center border-solid border-0 border-b border-gray-100 p-5">
+          <div class="flex space-x-3 relative">
+            <div class="font-semibold text-sm text-black">Filters</div>
+            <div id="desktop-jobs-spinner" class="hx-spinner absolute start-10 -top-1">
+              {% call macros::spinner(size = 5) %}
+            </div>
+          </div>
+
+          <div>
+            <button id="reset-desktop-jobs-form" class="btn-primary-outline btn-mini">Reset</button>
+          </div>
+        </div>
+        {# End header #}
+
         {% call jobs_macros::filters() %}
       </form>
     </div>

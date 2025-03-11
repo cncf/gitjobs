@@ -26,7 +26,7 @@
   <form id="mobile-jobs-form"
         hx-get='/jobs/section/results'
         hx-trigger="change"
-        hx-target="#jobs-results"
+        hx-target="#items-list"
         hx-include="[name='ts_query']"
         hx-ext="no-empty-vals"
         hx-boost="true">
@@ -69,7 +69,7 @@
       <form id="desktop-jobs-form"
             hx-get='/jobs/section/results'
             hx-trigger="change"
-            hx-target="#jobs-results"
+            hx-target="#items-list"
             hx-include="[name='ts_query']"
             hx-ext="no-empty-vals"
             hx-boost="true">
@@ -135,7 +135,7 @@
         </div>
         {# End results #}
 
-        <div id="jobs-results" class="flex flex-col justify-between h-full">
+        <div id="items-list" class="flex flex-col justify-between h-full">
           {# Results #}
           {{ results_section|safe }}
           {# End results #}

@@ -5,7 +5,7 @@
     {% if let Some(first) = first %}
       <a href="{{ first.url }}"
          hx-get="{{ first.hx_url }}"
-         hx-target="#jobs-results"
+         hx-target="#items-list"
          hx-swap="innerHTML show:body:top"
          class="group cursor-pointer inline-flex items-center pr-4 pl-3 py-2 text-sm text-primary-500 bg-transparent border border-primary-500 rounded-s-full hover:bg-primary-500 hover:text-white focus:z-10 focus:ring-2 focus:ring-primary-300 focus:bg-primary-500 focus:text-white">
         <div class="svg-icon me-2 size-5 bg-primary-500 group-hover:bg-white icon-arrow_left_double"></div>
@@ -25,7 +25,7 @@
     {% if let Some(prev) = prev %}
       <a href="{{ prev.url }}"
          hx-get="{{ prev.hx_url }}"
-         hx-target="#jobs-results"
+         hx-target="#items-list"
          hx-swap="innerHTML show:body:top"
          class="group cursor-pointer inline-flex items-center pr-4 pl-[0.6rem] py-2 text-sm text-primary-500 bg-transparent border-t border-b border-e border-primary-500 hover:bg-primary-500 hover:text-white focus:z-10 focus:ring-2 focus:ring-primary-300 focus:bg-primary-500 focus:text-white">
         <div class="svg-icon me-2 size-5 bg-primary-500 group-hover:bg-white icon-arrow_left"></div>
@@ -45,7 +45,7 @@
     {% if let Some(next) = next %}
       <a href="{{ next.url }}"
          hx-get="{{ next.hx_url }}"
-         hx-target="#jobs-results"
+         hx-target="#items-list"
          hx-swap="innerHTML show:body:top"
          class="group cursor-pointer inline-flex items-center pl-4 pr-[0.6rem] py-2 text-sm text-primary-500 bg-transparent border-t border-b border-s -ml-[1px] border-primary-500 hover:bg-primary-500 hover:text-white focus:z-10 focus:ring-2 focus:ring-primary-300 focus:bg-primary-500 focus:text-white">
         Next
@@ -65,7 +65,7 @@
     {% if let Some(last) = last %}
       <a href="{{ last.url }}"
          hx-get="{{ last.hx_url }}"
-         hx-target="#jobs-results"
+         hx-target="#items-list"
          hx-swap="innerHTML show:body:top"
          class="group cursor-pointer inline-flex items-center pl-4 pr-3 py-2 text-sm text-primary-500 bg-transparent border border-primary-500 rounded-e-full hover:bg-primary-500 hover:text-white focus:z-10 focus:ring-2 focus:ring-primary-300 focus:bg-primary-500 focus:text-white">
         Last

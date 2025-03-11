@@ -23,6 +23,7 @@ use crate::{
             home::{self, Content, Tab},
             jobs,
         },
+        pagination::NavigationLinks,
     },
 };
 
@@ -57,20 +58,16 @@ pub(crate) async fn page(
         Tab::Applications => {
             let employer_id = employer_id.expect("to be some");
             let filters = applications::Filters::new(&serde_qs_de, &raw_query.unwrap_or_default())?;
-            let (
-                filters_options,
-                ApplicationsSearchOutput {
-                    applications,
-                    total: _,
-                },
-            ) = tokio::try_join!(
+            let (filters_options, ApplicationsSearchOutput { applications, total }) = tokio::try_join!(
                 db.get_applications_filters_options(&employer_id),
                 db.search_applications(&employer_id, &filters)
             )?;
+            let navigation_links = NavigationLinks::from_filters(&filters, total)?;
             Content::Applications(applications::ApplicationsPage {
                 applications,
                 filters,
                 filters_options,
+                navigation_links,
             })
         }
         Tab::EmployerInitialSetup => Content::EmployerInitialSetup(employers::InitialSetupPage {}),

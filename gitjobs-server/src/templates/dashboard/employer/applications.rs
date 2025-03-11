@@ -8,9 +8,11 @@ use serde_with::skip_serializing_none;
 use tracing::trace;
 use uuid::Uuid;
 
-use crate::templates::misc::Location;
-
-use super::jobs::JobSummary;
+use crate::templates::{
+    dashboard::employer::jobs::JobSummary,
+    misc::Location,
+    pagination::{NavigationLinks, Pagination},
+};
 
 /// Applications page template.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
@@ -19,6 +21,7 @@ pub(crate) struct ApplicationsPage {
     pub applications: Vec<Application>,
     pub filters: Filters,
     pub filters_options: FiltersOptions,
+    pub navigation_links: NavigationLinks,
 }
 
 /// Application information.
@@ -59,6 +62,28 @@ impl Filters {
     #[allow(dead_code)]
     fn to_raw_query(&self) -> Result<String> {
         serde_qs::to_string(self).map_err(Into::into)
+    }
+}
+
+impl Pagination for Filters {
+    fn get_base_hx_url(&self) -> String {
+        "/dashboard/employer/applications/list".to_string()
+    }
+
+    fn get_base_url(&self) -> String {
+        "/dashboard/employer?tab=applications".to_string()
+    }
+
+    fn limit(&self) -> Option<usize> {
+        self.limit
+    }
+
+    fn offset(&self) -> Option<usize> {
+        self.offset
+    }
+
+    fn set_offset(&mut self, offset: Option<usize>) {
+        self.offset = offset;
     }
 }
 

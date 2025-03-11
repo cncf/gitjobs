@@ -11,7 +11,10 @@ use tracing::instrument;
 use crate::{
     db::{DynDB, dashboard::employer::ApplicationsSearchOutput},
     handlers::{error::HandlerError, extractors::SelectedEmployerIdRequired},
-    templates::dashboard::employer::applications::{ApplicationsPage, Filters},
+    templates::{
+        dashboard::employer::applications::{ApplicationsPage, Filters},
+        pagination::NavigationLinks,
+    },
 };
 
 // Pages handlers.
@@ -26,22 +29,18 @@ pub(crate) async fn list_page(
 ) -> Result<impl IntoResponse, HandlerError> {
     // Get filter options and applications that match the query
     let filters = Filters::new(&serde_qs_de, &raw_query.unwrap_or_default())?;
-    let (
-        filters_options,
-        ApplicationsSearchOutput {
-            applications,
-            total: _,
-        },
-    ) = tokio::try_join!(
+    let (filters_options, ApplicationsSearchOutput { applications, total }) = tokio::try_join!(
         db.get_applications_filters_options(&employer_id),
         db.search_applications(&employer_id, &filters)
     )?;
 
     // Prepare template
+    let navigation_links = NavigationLinks::from_filters(&filters, total)?;
     let template = ApplicationsPage {
         applications,
         filters,
         filters_options,
+        navigation_links,
     };
 
     Ok(Html(template.render()?))

@@ -45,8 +45,8 @@ pub(crate) async fn jobs_page(
             filters: filters.clone(),
             filters_options,
             results_section: ResultsSection {
-                navigation_links: NavigationLinks::from_filters(&filters, total)?,
                 jobs,
+                navigation_links: NavigationLinks::from_filters(&filters, total)?,
                 total,
                 offset: filters.offset,
             },

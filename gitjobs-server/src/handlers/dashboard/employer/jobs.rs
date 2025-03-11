@@ -49,9 +49,9 @@ pub(crate) async fn list_page(
     Ok(Html(template.render()?))
 }
 
-/// Handler that returns the job preview page.
+/// Handler that returns the job preview page (job provided in body).
 #[instrument(skip_all, err)]
-pub(crate) async fn preview_page(
+pub(crate) async fn preview_page_w_job(
     State(db): State<DynDB>,
     State(serde_qs_de): State<serde_qs::Config>,
     SelectedEmployerIdRequired(employer_id): SelectedEmployerIdRequired,
@@ -66,7 +66,21 @@ pub(crate) async fn preview_page(
     job.published_at = Some(Utc::now());
     job.updated_at = Some(Utc::now());
 
+    // Prepare template
     let employer = db.get_employer(&employer_id).await?;
+    let template = jobs::PreviewPage { employer, job };
+
+    Ok(Html(template.render()?).into_response())
+}
+
+/// Handler that returns the job preview page (job not provided in body).
+#[instrument(skip_all, err)]
+pub(crate) async fn preview_page_wo_job(
+    State(db): State<DynDB>,
+    Path(job_id): Path<Uuid>,
+    SelectedEmployerIdRequired(employer_id): SelectedEmployerIdRequired,
+) -> Result<impl IntoResponse, HandlerError> {
+    let (job, employer) = tokio::try_join!(db.get_job_dashboard(&job_id), db.get_employer(&employer_id))?;
     let template = jobs::PreviewPage { employer, job };
 
     Ok(Html(template.render()?).into_response())

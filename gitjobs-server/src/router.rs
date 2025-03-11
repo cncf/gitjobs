@@ -163,7 +163,14 @@ fn setup_employer_dashboard_router(state: State) -> Router<State> {
             "/jobs/add",
             get(dashboard::employer::jobs::add_page).post(dashboard::employer::jobs::add),
         )
-        .route("/jobs/preview", post(dashboard::employer::jobs::preview_page))
+        .route(
+            "/jobs/preview",
+            post(dashboard::employer::jobs::preview_page_w_job),
+        )
+        .route(
+            "/jobs/preview/{job_id}",
+            post(dashboard::employer::jobs::preview_page_wo_job).layer(check_user_owns_job.clone()),
+        )
         .route(
             "/jobs/{job_id}/archive",
             put(dashboard::employer::jobs::archive).layer(check_user_owns_job.clone()),

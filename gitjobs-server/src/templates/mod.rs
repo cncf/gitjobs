@@ -10,6 +10,7 @@ mod helpers;
 pub(crate) mod jobboard;
 pub(crate) mod misc;
 pub(crate) mod notifications;
+pub(crate) mod pagination;
 
 /// Identifier for a page.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]

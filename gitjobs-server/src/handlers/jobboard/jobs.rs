@@ -16,9 +16,8 @@ use crate::{
     handlers::{error::HandlerError, extractors::JobBoardId},
     templates::{
         PageId,
-        jobboard::jobs::{
-            ExploreSection, Filters, JobPage, JobsPage, NavigationLinks, ResultsSection, build_url,
-        },
+        jobboard::jobs::{ExploreSection, Filters, JobPage, JobsPage, ResultsSection},
+        pagination::{NavigationLinks, build_url},
     },
 };
 

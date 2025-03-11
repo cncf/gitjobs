@@ -11,7 +11,7 @@ use crate::{
     PgDB,
     db::Total,
     templates::dashboard::employer::{
-        applicants::{self, Applicant},
+        applications::{self, Application},
         employers::{Employer, EmployerSummary},
         jobs::{Job, JobBoard, JobSummary},
     },
@@ -32,8 +32,11 @@ pub(crate) trait DBDashBoardEmployer {
     /// Delete job.
     async fn delete_job(&self, job_id: &Uuid) -> Result<()>;
 
-    /// Get applicants filters options.
-    async fn get_applicants_filters_options(&self, employer_id: &Uuid) -> Result<applicants::FiltersOptions>;
+    /// Get applications filters options.
+    async fn get_applications_filters_options(
+        &self,
+        employer_id: &Uuid,
+    ) -> Result<applications::FiltersOptions>;
 
     /// Get employer.
     async fn get_employer(&self, employer_id: &Uuid) -> Result<Employer>;
@@ -53,12 +56,12 @@ pub(crate) trait DBDashBoardEmployer {
     /// Publish job.
     async fn publish_job(&self, job_id: &Uuid) -> Result<()>;
 
-    /// Search applicants.
-    async fn search_applicants(
+    /// Search applications.
+    async fn search_applications(
         &self,
         employer_id: &Uuid,
-        filters: &applicants::Filters,
-    ) -> Result<ApplicantsSearchOutput>;
+        filters: &applications::Filters,
+    ) -> Result<ApplicationsSearchOutput>;
 
     /// Update employer.
     async fn update_employer(&self, employer_id: &Uuid, employer: &Employer) -> Result<()>;
@@ -268,9 +271,12 @@ impl DBDashBoardEmployer for PgDB {
         Ok(())
     }
 
-    /// [DBDashBoardEmployer::get_applicants_filters_options]
+    /// [DBDashBoardEmployer::get_applications_filters_options]
     #[instrument(skip(self), err)]
-    async fn get_applicants_filters_options(&self, employer_id: &Uuid) -> Result<applicants::FiltersOptions> {
+    async fn get_applications_filters_options(
+        &self,
+        employer_id: &Uuid,
+    ) -> Result<applications::FiltersOptions> {
         // Query database
         let db = self.pool.get().await?;
         let rows = db
@@ -301,7 +307,7 @@ impl DBDashBoardEmployer for PgDB {
             };
             jobs.push(job);
         }
-        let filters_options = applicants::FiltersOptions { jobs };
+        let filters_options = applications::FiltersOptions { jobs };
 
         Ok(filters_options)
     }
@@ -564,26 +570,26 @@ impl DBDashBoardEmployer for PgDB {
         Ok(())
     }
 
-    /// [DBJobBoard::search_applicants]
+    /// [DBJobBoard::search_applications]
     #[instrument(skip(self))]
-    async fn search_applicants(
+    async fn search_applications(
         &self,
         employer_id: &Uuid,
-        filters: &applicants::Filters,
-    ) -> Result<ApplicantsSearchOutput> {
+        filters: &applications::Filters,
+    ) -> Result<ApplicationsSearchOutput> {
         // Query database
         let db = self.pool.get().await?;
         let row = db
             .query_one(
-                "select applicants::text, total from search_applicants($1::uuid, $2::jsonb)",
+                "select applications::text, total from search_applications($1::uuid, $2::jsonb)",
                 &[&employer_id, &Json(filters)],
             )
             .await?;
 
         // Prepare search output
         #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
-        let output = ApplicantsSearchOutput {
-            applicants: serde_json::from_str(&row.get::<_, String>("applicants"))?,
+        let output = ApplicationsSearchOutput {
+            applications: serde_json::from_str(&row.get::<_, String>("applications"))?,
             total: row.get::<_, i64>("total") as usize,
         };
 
@@ -706,9 +712,9 @@ impl DBDashBoardEmployer for PgDB {
     }
 }
 
-/// Applicants search results.
+/// Applications search results.
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub(crate) struct ApplicantsSearchOutput {
-    pub applicants: Vec<Applicant>,
+pub(crate) struct ApplicationsSearchOutput {
+    pub applications: Vec<Application>,
     pub total: Total,
 }

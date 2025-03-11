@@ -14,12 +14,12 @@ use tracing::instrument;
 
 use crate::{
     auth::AuthSession,
-    db::{DynDB, dashboard::employer::ApplicantsSearchOutput},
+    db::{DynDB, dashboard::employer::ApplicationsSearchOutput},
     handlers::{error::HandlerError, extractors::SelectedEmployerIdOptional},
     templates::{
         PageId, auth,
         dashboard::employer::{
-            applicants, employers,
+            applications, employers,
             home::{self, Content, Tab},
             jobs,
         },
@@ -54,15 +54,21 @@ pub(crate) async fn page(
             let user_summary = user.clone().into();
             Content::Account(auth::UpdateUserPage { user_summary })
         }
-        Tab::Applicants => {
+        Tab::Applications => {
             let employer_id = employer_id.expect("to be some");
-            let filters = applicants::Filters::new(&serde_qs_de, &raw_query.unwrap_or_default())?;
-            let (filters_options, ApplicantsSearchOutput { applicants, total: _ }) = tokio::try_join!(
-                db.get_applicants_filters_options(&employer_id),
-                db.search_applicants(&employer_id, &filters)
+            let filters = applications::Filters::new(&serde_qs_de, &raw_query.unwrap_or_default())?;
+            let (
+                filters_options,
+                ApplicationsSearchOutput {
+                    applications,
+                    total: _,
+                },
+            ) = tokio::try_join!(
+                db.get_applications_filters_options(&employer_id),
+                db.search_applications(&employer_id, &filters)
             )?;
-            Content::Applicants(applicants::ApplicantsPage {
-                applicants,
+            Content::Applications(applications::ApplicationsPage {
+                applications,
                 filters,
                 filters_options,
             })

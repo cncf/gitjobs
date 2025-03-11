@@ -33,7 +33,7 @@ pub(crate) struct Page {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub(crate) enum Content {
     Account(auth::UpdateUserPage),
-    Applicants(employer::applicants::ApplicantsPage),
+    Applications(employer::applications::ApplicationsPage),
     EmployerInitialSetup(employer::employers::InitialSetupPage),
     Jobs(employer::jobs::ListPage),
     Profile(employer::employers::UpdatePage),
@@ -45,10 +45,10 @@ impl Content {
         matches!(self, Content::Account(_))
     }
 
-    /// Check if the content is the applicants page.
+    /// Check if the content is the applications page.
     #[allow(dead_code)]
-    fn is_applicants(&self) -> bool {
-        matches!(self, Content::Applicants(_))
+    fn is_applications(&self) -> bool {
+        matches!(self, Content::Applications(_))
     }
 
     /// Check if the content is the jobs page.
@@ -66,7 +66,7 @@ impl std::fmt::Display for Content {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Content::Account(template) => write!(f, "{}", template.render()?),
-            Content::Applicants(template) => write!(f, "{}", template.render()?),
+            Content::Applications(template) => write!(f, "{}", template.render()?),
             Content::EmployerInitialSetup(template) => write!(f, "{}", template.render()?),
             Content::Jobs(template) => write!(f, "{}", template.render()?),
             Content::Profile(template) => write!(f, "{}", template.render()?),
@@ -78,7 +78,7 @@ impl std::fmt::Display for Content {
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 pub(crate) enum Tab {
     Account,
-    Applicants,
+    Applications,
     EmployerInitialSetup,
     #[default]
     Jobs,
@@ -89,7 +89,7 @@ impl From<Option<&String>> for Tab {
     fn from(tab: Option<&String>) -> Self {
         match tab.map(String::as_str) {
             Some("account") => Tab::Account,
-            Some("applicants") => Tab::Applicants,
+            Some("applications") => Tab::Applications,
             Some("employer-initial-setup") => Tab::EmployerInitialSetup,
             Some("profile") => Tab::Profile,
             _ => Tab::Jobs,

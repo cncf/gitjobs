@@ -1,4 +1,4 @@
-//! This module defines the HTTP handlers for the applicants page.
+//! This module defines the HTTP handlers for the applications page.
 
 use anyhow::Result;
 use axum::{
@@ -9,14 +9,14 @@ use rinja::Template;
 use tracing::instrument;
 
 use crate::{
-    db::{DynDB, dashboard::employer::ApplicantsSearchOutput},
+    db::{DynDB, dashboard::employer::ApplicationsSearchOutput},
     handlers::{error::HandlerError, extractors::SelectedEmployerIdRequired},
-    templates::dashboard::employer::applicants::{ApplicantsPage, Filters},
+    templates::dashboard::employer::applications::{ApplicationsPage, Filters},
 };
 
 // Pages handlers.
 
-/// Handler that returns the applicants list page.
+/// Handler that returns the applications list page.
 #[instrument(skip_all, err)]
 pub(crate) async fn list_page(
     State(db): State<DynDB>,
@@ -24,16 +24,22 @@ pub(crate) async fn list_page(
     State(serde_qs_de): State<serde_qs::Config>,
     RawQuery(raw_query): RawQuery,
 ) -> Result<impl IntoResponse, HandlerError> {
-    // Get filter options and applicants that match the query
+    // Get filter options and applications that match the query
     let filters = Filters::new(&serde_qs_de, &raw_query.unwrap_or_default())?;
-    let (filters_options, ApplicantsSearchOutput { applicants, total: _ }) = tokio::try_join!(
-        db.get_applicants_filters_options(&employer_id),
-        db.search_applicants(&employer_id, &filters)
+    let (
+        filters_options,
+        ApplicationsSearchOutput {
+            applications,
+            total: _,
+        },
+    ) = tokio::try_join!(
+        db.get_applications_filters_options(&employer_id),
+        db.search_applications(&employer_id, &filters)
     )?;
 
     // Prepare template
-    let template = ApplicantsPage {
-        applicants,
+    let template = ApplicationsPage {
+        applications,
         filters,
         filters_options,
     };

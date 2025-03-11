@@ -1,4 +1,4 @@
-//! This module defines some templates and types used in the applicants page.
+//! This module defines some templates and types used in the applications page.
 
 use anyhow::Result;
 use chrono::{DateTime, Utc};
@@ -12,20 +12,20 @@ use crate::templates::misc::Location;
 
 use super::jobs::JobSummary;
 
-/// Applicants page template.
+/// Applications page template.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
-#[template(path = "dashboard/employer/applicants/list.html")]
-pub(crate) struct ApplicantsPage {
-    pub applicants: Vec<Applicant>,
+#[template(path = "dashboard/employer/applications/list.html")]
+pub(crate) struct ApplicationsPage {
+    pub applications: Vec<Application>,
     pub filters: Filters,
     pub filters_options: FiltersOptions,
 }
 
-/// Applicant information.
+/// Application information.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[allow(clippy::struct_field_names)]
-pub(crate) struct Applicant {
-    applicant_id: Uuid,
+pub(crate) struct Application {
+    application_id: Uuid,
     name: String,
     applied_at: DateTime<Utc>,
     job_id: Uuid,
@@ -37,7 +37,7 @@ pub(crate) struct Applicant {
     photo_id: Option<Uuid>,
 }
 
-/// Filters used to search for applicants.
+/// Filters used to search for applications.
 #[skip_serializing_none]
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 pub(crate) struct Filters {
@@ -62,7 +62,7 @@ impl Filters {
     }
 }
 
-/// Filters options used in the applicants page.
+/// Filters options used in the applications page.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub(crate) struct FiltersOptions {
     pub jobs: Vec<JobSummary>,

@@ -1,18 +1,18 @@
--- Returns the applicants that match the filters provided.
-create or replace function search_applicants(
+-- Returns the applications that match the filters provided.
+create or replace function search_applications(
     p_employer_id uuid,
     p_filters jsonb
 )
-returns table(applicants json, total bigint) as $$
+returns table(applications json, total bigint) as $$
 declare
     v_job_id uuid := (p_filters->>'job_id')::uuid;
     v_limit int := coalesce((p_filters->>'limit')::int, 10);
     v_offset int := coalesce((p_filters->>'offset')::int, 0);
 begin
     return query
-    with filtered_applicants as (
+    with filtered_applications as (
         select
-            a.applicant_id,
+            a.application_id,
             a.created_at as applied_at,
             j.job_id,
             j.title as job_title,
@@ -37,7 +37,7 @@ begin
                 order by (experience->>'end_date')::date desc nulls first
                 limit 1
             ) as last_position
-        from applicant a
+        from application a
         join job j on a.job_id = j.job_id
         join job_seeker_profile p on a.job_seeker_profile_id = p.job_seeker_profile_id
         left join location l on j.location_id = l.location_id
@@ -49,7 +49,7 @@ begin
     select
         (
             select coalesce(json_agg(json_build_object(
-                'applicant_id', applicant_id,
+                'application_id', application_id,
                 'applied_at', applied_at,
                 'job_id', job_id,
                 'job_title', job_title,
@@ -61,14 +61,14 @@ begin
             )), '[]')
             from (
                 select *
-                from filtered_applicants
+                from filtered_applications
                 order by applied_at desc
                 limit v_limit
                 offset v_offset
-            ) filtered_applicants_page
+            ) filtered_applications_page
         ),
         (
-            select count(*) from filtered_applicants
+            select count(*) from filtered_applications
         );
 end
 $$ language plpgsql;

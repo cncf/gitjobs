@@ -74,7 +74,7 @@
       <div class="leading-10 pt-6 border-t grid gap-y-0.5">
         {% call dashboard_macros::menu_title(text = "Jobs", extra_styles = "py-1.5") %}
         {% call dashboard_macros::menu_item(name = "Jobs", icon = "list", is_active = content.is_jobs(), href = "/dashboard/employer?tab=jobs") %}
-        {% call dashboard_macros::menu_item(name = "Applicants", icon = "outline_clipboard", is_active = false, href = "", disabled = true) %}
+        {% call dashboard_macros::menu_item(name = "Applications", icon = "outline_clipboard", is_active = false, href = "", disabled = true) %}
       </div>
     {% endif %}
 

@@ -10,7 +10,7 @@ begin
 
     -- Profile photo: applied to a employer's job
     perform from job_seeker_profile p
-    join applicant a on p.job_seeker_profile_id = a.job_seeker_profile_id
+    join application a on p.job_seeker_profile_id = a.job_seeker_profile_id
     join job j on a.job_id = j.job_id
     join employer_team et on j.employer_id = et.employer_id
     where p.photo_id = p_image_id

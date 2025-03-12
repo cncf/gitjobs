@@ -40,6 +40,7 @@
     <script type="module" src="/static/js/dashboard/jobseeker/certifications.js"></script>
     <script type="module" src="/static/js/dashboard/jobseeker/projects.js"></script>
     <script type="module" src="/static/js/common/searchable-filter.js"></script>
+    <script type="module" src="/static/js/common/input-range.js"></script>
     <script src="https://unpkg.com/easymde/dist/easymde.min.js"></script>
     <script src=" https://cdn.jsdelivr.net/npm/sweetalert2@11.17.2/dist/sweetalert2.all.min.js "></script>
 
@@ -141,7 +142,6 @@
                 '900': '#841757',
                 '950': '#510632',
               },
-              base: '#fcfbfc',
             },
             fontSize: {
               filterTitle: '0.8rem',
@@ -159,11 +159,15 @@
         },
       };
 
+      // htmx extension to remove empty values from the parameters
       htmx.defineExtension("no-empty-vals", {
         encodeParameters: (xhr, parameters, elt) => {
-          // Remove empty values from the parameters
-          for (const key of [...parameters.keys()]) {
-            if (parameters.get(key).trim() === "") {
+          const currentParameters = new URLSearchParams(parameters);
+
+          for (const key of [...currentParameters.keys()]) {
+            const value = currentParameters.get(key).trim();
+            // Remove empty values or "0"
+            if (value === "" || value === "0") {
               parameters.delete(key);
             }
           }
@@ -174,7 +178,7 @@
       });
     </script>
   </head>
-  <body class="flex flex-col h-screen font-inter bg-base"
+  <body class="flex flex-col h-screen font-inter bg-gray-100"
         hx-get
         hx-trigger="refresh-body">
     {% block content %}

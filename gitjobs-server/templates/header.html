@@ -13,9 +13,8 @@
 
   {# Desktop links #}
   <div class="hidden xl:flex xl:gap-x-8">
-    {% call header_link(text = "Employers") %}
-    {% call header_link(text = "Profiles") %}
-    {% call header_link(text = "About") %}
+    {% call header_link(text = "Jobs", href = "/jobs", active = page_id == PageId::JobBoard) %}
+    {% call disabled_header_link(text = "About") %}
   </div>
   {# End desktop links #}
 </div>
@@ -124,8 +123,16 @@
 </script>
 {# End Navbar #}
 
-{% macro header_link(text) %}
+{% macro header_link(text, href, active = false) %}
+  <a href="{{ href }}"
+     hx-boost="true"
+     class="mx-3 pb-1 border-0 border-primary-500 text-lg font-semibold tracking-widest text-primary-500 uppercase border-b-2
+            {% if active -%}
+              border-primary-500{%- else -%}border-transparent hover:border-primary-300{%- endif -%}">{{ text }}</a>
+{% endmacro header_link %}
+
+{% macro disabled_header_link(text) %}
   <button class="mx-3 pb-1 border-0 border-primary-500 text-lg font-semibold tracking-widest text-primary-500 uppercase border-b-2 border-transparent hover:border-primary-300"
           disabled
           title="Coming soon!">{{ text }}</button>
-{% endmacro header_link %}
+{% endmacro disabled_header_link %}

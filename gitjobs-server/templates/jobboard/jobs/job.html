@@ -17,10 +17,10 @@
     </div>
     {# End go back button #}
 
-    <div class="relative flex flex-col bg-white border rounded-3xl p-4 mt-0 sm:p-6 lg:p-8">
-      <div class="flex items-center border-b pb-10">
+    <div class="relative flex flex-col bg-white border rounded-lg p-4 mt-0 sm:p-6 lg:p-8">
+      <div class="flex flex-col w-full gap-3 md:flex-row md:items-center border-b pb-10">
         <div class="flex-grow">
-          <div class="flex-grow flex items-stretch gap-x-5 min-w-0">
+          <div class="flex-grow flex items-stretch gap-x-3 md:gap-x-5 min-w-0">
             {# Image #}
             <div class="min-w-[56px]">
               {% if let Some(logo_id) = job.employer.logo_id %}
@@ -51,8 +51,8 @@
         </div>
 
         {% if let Some(member) = job.employer.member %}
-          <div class="w-1/4 ps-3">
-            <div class="flex gap-x-2 items-center bg-gray-50 border rounded-lg p-2 max-w-full min-w-full">
+          <div class="flex xl:w-1/4">
+            <div class="flex gap-x-2 items-center bg-gray-50 border rounded-lg p-2 max-w-full xl:min-w-full">
               <div>
                 <img src="/static/images/cncf_icon.svg"
                      alt="CNCF icon"
@@ -71,8 +71,8 @@
         {% endif %}
       </div>
 
-      <div class="flex flex-grow items-stretch">
-        <div class="w-3/4 border-e me-10 pe-10 pt-10">
+      <div class="flex flex-col md:flex-row flex-grow md:items-stretch">
+        <div class="md:w-3/4 md:border-e md:me-10 md:pe-10 pt-10">
 
           {# Content #}
           <div class="flex flex-col space-y-6">
@@ -149,7 +149,7 @@
         </div>
 
         {# Right column #}
-        <div class="w-1/4 pt-6">
+        <div class="border-t md:border-0 mt-10 md:mt-0 md:border md:w-1/4 pt-6">
           {# Published date #}
           {% call macros_preview::job_details_subheading(content = "Published") %}
           {% call macros_preview::job_details_content(text = job.published_at|display_some_datetime_or(DATE_FORMAT, "-")) %}
@@ -182,7 +182,7 @@
                 -
               {% endif %}
               {% if let Some(salary_period) = job.salary_period %}
-                <div class="text-gray-900 text-xs ms-2">({{ salary_period }})</div>
+                <div class="text-gray-900 text-xs ms-1">({{ salary_period }})</div>
               {% endif %}
             </div>
             {# End fixed salary #}
@@ -207,7 +207,7 @@
               {% endif %}
 
               {% if let Some(salary_period) = job.salary_period %}
-                <div class="text-gray-900 text-xs ms-2">({{ salary_period }})</div>
+                <div class="text-gray-900 text-xs ms-1">({{ salary_period }})</div>
               {% endif %}
             </div>
             {# End range salary #}
@@ -241,9 +241,9 @@
         {# Projects #}
         {% if let Some(projects) = job.projects %}
           {% call macros_preview::job_details_subheading(content = "CNCF projects you'd work on") %}
-          <div class="flex flex-col space-y-3">
+          <div class="flex md:flex-col gap-3">
             {% for p in projects %}
-              <div class="border rounded-lg p-2 text-sm/5 bg-white w-full">
+              <div class="border rounded-lg p-2 text-sm/5 bg-white md:w-full">
                 {% let label = &format!("CNCF {}", p.maturity) %}
                 {% call macros::dropdown_card(name = p.name, label = label, logo_url = p.logo_url, line_height = 5) %}
               </div>

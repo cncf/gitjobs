@@ -411,81 +411,6 @@
 {% endmacro badge %}
 {# End badge #}
 
-{# Input range #}
-{% macro input_range(id, name, value = "0") %}
-  <div class="relative">
-    <input id="{{ id }}"
-           name="{{ name }}"
-           type="range"
-           min="0"
-           max="100"
-           step="5"
-           value="{{ value }}"
-           class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary-900">
-    <div id="tooltip-{{ id }}"
-         role="tooltip"
-         class="duration-100 transition-opacity opacity-0 absolute z-10 inline-block px-2 py-1 text-sm font-medium text-white text-center bg-primary-900 rounded-lg shadow-xs tooltip top-8 start-[8.5px] -ms-6 w-12">
-      <span>0</span><small>%</small>
-      <div class="h-0 w-0 border-x-[6px] border-x-transparent border-b-[6px] border-b-primary-900 absolute -top-1.5 start-[18px]">
-      </div>
-    </div>
-    <ul class="flex justify-between w-full px-[10px] h-5">
-      <li class="flex justify-center relative text-xs text-gray-500">
-        <span class="absolute">0</span>
-      </li>
-      <li class="flex justify-center relative text-xs text-gray-500">
-        <span class="absolute">25</span>
-      </li>
-      <li class="flex justify-center relative text-xs text-gray-500">
-        <span class="absolute">50</span>
-      </li>
-      <li class="flex justify-center relative text-xs text-gray-500">
-        <span class="absolute">75</span>
-      </li>
-      <li class="flex justify-center relative text-xs text-gray-500">
-        <span class="absolute">100</span>
-      </li>
-    </ul>
-  </div>
-  {# djlint:off #}
-  <script type="module">
-    import {
-      debounce
-    } from '/static/js/common/common.js';
-    const inputRange = document.getElementById('{{ id }}');
-    const tooltip = document.getElementById('tooltip-{{ id }}');
-
-    // Update the styles of the tooltip and the input range background
-    const refreshStyles = (newValue) => {
-      const value = parseInt(newValue, 10);
-      const thumbSize = 17;
-      const offset = thumbSize * (0.5 - value / 100);
-      const tooltip = document.getElementById('tooltip-{{ id }}');
-      tooltip.getElementsByTagName('span')[0].textContent = value;
-      tooltip.style.left = `calc(${value}% + ${offset}px)`;
-      inputRange.style.backgroundImage = `linear-gradient(90deg, var(--primary-color) 0%, var(--primary-color) ${value}%, rgb(229 231 235 / var(--tw-bg-opacity, 1)) ${value}%, rgb(229 231 235 / var(--tw-bg-opacity, 1)) 100%)`;
-    };
-
-    // Send the value to refresh the styles
-    inputRange.addEventListener('input', debounce((e) => {
-      refreshStyles(e.target.value);
-    }, 20));
-
-    inputRange.addEventListener('mousedown', (e) => {
-      tooltip.classList.remove('opacity-0');
-    });
-
-    inputRange.addEventListener('mouseup', (e) => {
-      tooltip.classList.add('opacity-0');
-    });
-
-    // Set the initial value
-    refreshStyles({{ value }});
-</script>
-  {# djlint:on #}
-{% endmacro input_range %}
-{# End input range #}
-
 {# Form title #}
 {% macro form_title(title, description = "") %}
   <div class="text-xl lg:text-2xl font-medium text-gray-900">{{ title }}</div>
@@ -655,7 +580,7 @@
 {# End dropdown card #}
 
 {# Alert box #}
-{% macro alert_box(title, content) %}
+{% macro alert_box(content, title = "") %}
   <div class="p-10 md:p-14">
     <div class="border border-primary-300 p-10 text-sm text-gray-800 rounded-lg bg-primary-50 text-center"
          role="alert">

@@ -61,6 +61,12 @@ export class SearchableFilter extends LitWrapper {
     this.filterOptions();
   }
 
+  _cleanEnteredValue() {
+    this.enteredValue = "";
+    this.visibleDropdown = false;
+    this.filterOptions();
+  }
+
   handleClickOutside = (e) => {
     if (!this.contains(e.target)) {
       this.visibleDropdown = false;
@@ -92,15 +98,15 @@ export class SearchableFilter extends LitWrapper {
 
   render() {
     return html`<div class="mt-2 relative">
-      <div class="absolute top-2.5 start-0 flex items-center ps-3 pointer-events-none">
-        <div class="svg-icon size-4 icon-search bg-gray-300"></div>
+      <div class="absolute top-2 start-0 flex items-center ps-3 pointer-events-none">
+        <div class="svg-icon size-3.5 icon-search bg-gray-300"></div>
       </div>
       <input
         type="text"
         @input=${this._onInputChange}
         @focus=${() => (this.visibleDropdown = true)}
         .value="${this.enteredValue}"
-        class="input-primary peer ps-9 rounded-lg"
+        class="input-primary py-0.5 peer ps-9 rounded-lg"
         placeholder="Search ${this.name}"
         autocomplete="off"
         autocorrect="off"
@@ -108,8 +114,8 @@ export class SearchableFilter extends LitWrapper {
         spellcheck="false"
         autocomplete="off"
       />
-      <div class="absolute end-1.5 top-1.5 peer-placeholder-shown:hidden">
-        <button type="button" class="mt-[2px]">
+      <div class="absolute end-1.5 top-0.5 peer-placeholder-shown:hidden">
+        <button @click=${this._cleanEnteredValue} type="button" class="mt-[2px]">
           <div class="svg-icon size-5 bg-gray-400 hover:bg-gray-700 icon-close"></div>
         </button>
       </div>
@@ -120,7 +126,7 @@ export class SearchableFilter extends LitWrapper {
             : ""} bg-white divide-y divide-gray-100 rounded-lg shadow w-full border mt-1"
         >
           ${this.visibleOptions.length > 0
-            ? html`<ul class="py-2 text-sm text-gray-700 overflow-auto max-h-[180px]">
+            ? html`<ul class="text-sm text-gray-700 overflow-auto max-h-[180px]">
                 ${this.visibleOptions.map((option) => {
                   const isProjectsType = this.name === "projects";
                   const name = isProjectsType ? option.name : option;
@@ -131,7 +137,7 @@ export class SearchableFilter extends LitWrapper {
                       @click=${() => this._onSelect(name)}
                       class=${`${
                         isSelected ? "bg-gray-100 opacity-50" : "cursor-pointer hover:bg-gray-100"
-                      } capitalize block w-full text-left px-${isProjectsType ? "3" : "4"} py-2`}
+                      } capitalize block w-full text-left px-${isProjectsType ? "3" : "4"} py-1`}
                       ?disabled="${isSelected}"
                     >
                       ${isProjectsType
@@ -170,19 +176,19 @@ export class SearchableFilter extends LitWrapper {
         </div>
       </div>
       ${this.selected.length > 0
-        ? html`<div class="flex gap-2 mt-2 ${this.viewType === "rows" ? "flex-col" : "flex-wrap"}">
+        ? html`<div class="flex gap-2 mt-4 ${this.viewType === "rows" ? "flex-col" : "flex-wrap"}">
             ${this.selected.map(
               (opt) => html` <button
                   type="button"
                   @click=${() => this._onRemove(opt)}
-                  class="inline-flex items-center justify-between px-2 py-1 bg-white border rounded-lg cursor-pointer select-none border-primary-500 text-primary-500 max-w-full group"
+                  class="inline-flex items-center justify-between ps-2 pe-1 py-1 bg-white border rounded-lg cursor-pointer select-none border-primary-500 text-primary-500 max-w-full group"
                 >
                   <div class="flex items-center justify-between space-x-3 w-full">
                     <div class="text-[0.8rem] text-center text-nowrap capitalize truncate">
                       ${unnormalize(opt)}
                     </div>
                     <div
-                      class="svg-icon size-3 icon-close bg-gray-500 group-hover:bg-gray-800 shrink-0"
+                      class="svg-icon size-4 icon-close bg-gray-500 group-hover:bg-gray-800 shrink-0"
                     ></div>
                   </div>
                 </button>

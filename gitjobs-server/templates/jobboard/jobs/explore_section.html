@@ -60,7 +60,7 @@
   <div class="flex items-start w-full h-full">
 
     {# Filters #}
-    <div class="relative hidden w-[28%] max-w-[28%] xl:w-1/4 xl:max-w-1/4 lg:block bg-white border rounded-3xl">
+    <div class="relative hidden w-[28%] max-w-[28%] xl:w-1/4 xl:max-w-1/4 lg:block bg-white border rounded-lg">
       <form id="desktop-jobs-form"
             hx-get='/jobs/section/results'
             hx-trigger="change"
@@ -91,7 +91,7 @@
 
     {# Content #}
     <div class="relative w-full h-full lg:w-[72%] xl:w-3/4 lg:pl-6 xl:pl-10 self-stretch">
-      <div class="relative flex flex-col bg-white border rounded-3xl pt-5 md:pt-7 h-full w-full">
+      <div class="relative flex flex-col bg-white border rounded-lg pt-5 md:pt-7 h-full w-full">
         <div class="flex lg:items-center mb-6 md:mb-10 px-5 md:px-7">
           <div class="flex align-items w-full">
             {# Mobile filters button -#}
@@ -124,10 +124,10 @@
                   </button>
                   {# End clean searchbar #}
                 </div>
-                <div class="absolute right-[6px] top-[6px]">
+                <div class="absolute right-[9px] top-[9px]">
                   {# Search button #}
-                  <button id="search-jobs-btn" class="btn-primary-outline group p-2">
-                    <div class="svg-icon size-4 mx-auto bg-primary-500 group-hover:bg-white icon-search"></div>
+                  <button id="search-jobs-btn" class="btn-primary-outline group p-1.5">
+                    <div class="svg-icon size-3.5 mx-auto bg-primary-500 group-hover:bg-white icon-search"></div>
                   </button>
                   {# End search button #}
                 </div>
@@ -137,14 +137,30 @@
           </div>
         </div>
 
-        {# Results #}
-        <div id="results"
-             class="flex flex-row items-center justify-between px-5 md:px-7">
-          {% if results_section.jobs.len() > 0 %}
-            {% call jobs_macros::current_page(total = results_section.total, items_number = results_section.jobs.len(), offset_value = results_section.offset) %}
-          {% endif %}
+        <div class="flex justify-between items-center px-5 md:px-7">
+          {# Results #}
+          <div id="results"
+               class="flex flex-row items-center justify-between text-xs md:text-sm font-semibold">
+            {% if results_section.jobs.len() > 0 %}
+              {% call jobs_macros::current_page(total = results_section.total, items_number = results_section.jobs.len(), offset_value = results_section.offset) %}
+            {% endif %}
+          </div>
+          {# End results #}
+
+          {# Sort by #}
+          <div class="flex flex-1 flex-row items-center justify-end mb-3 mt-3 sm:mb-0 sm:mt-0">
+            <label for="sort_by"
+                   class="font-semibold text-filterTitle text-nowrap font-semibold leading-6 me-2 xl:me-3">
+              Sort by
+            </label>
+            <select id="sort_by"
+                    name="sort_by"
+                    class="block w-24 py-1 px-3 text-[0.8rem] leading-none h-[30px] text-gray-900 bg-white border border-gray-300 rounded-full focus:outline-none focus:ring-0 focus:border-gray-300 hover:border-primary-500 focus:hover:border-primary-500">
+              <option value="date" selected="">Date</option>
+            </select>
+          </div>
+          {# End sort by #}
         </div>
-        {# End results #}
 
         <div id="items-list" class="flex flex-col justify-between h-full">
           {# Results #}

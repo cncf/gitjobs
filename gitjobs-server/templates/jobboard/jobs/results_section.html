@@ -5,7 +5,27 @@
 <div class="flex flex-col divide-y divide-gray-100 border-b border-t border-gray-100 mt-5 md:mt-7">
   {% if jobs.len() == 0 %}
     {# Placeholder cards -#}
-    {% call macros::alert_box(title = "We're sorry!", content = "We can't seem to find any jobs that match your search criteria. You can reset your filters or try a different search.") %}
+    <div class="p-10 md:p-14">
+      <div class="border border-primary-300 p-10 text-sm text-gray-800 rounded-lg bg-primary-50 text-center"
+           role="alert">
+        <div class="text-xl lg:text-2xl mb-6">
+          <p class="mb-10">We can't seem to find any jobs that match your search criteria.</p>
+          <p>
+            You can
+            <button id="placeholder-reset-btn" class="p-0">reset</button>
+            your filters or try a different search.
+          </p>
+        </div>
+      </div>
+    </div>
+    <script type="module">
+      import {
+        resetForm
+      } from '/static/js/jobboard/filters.js';
+
+      const resetBtn = document.getElementById('placeholder-reset-btn');
+      resetBtn.addEventListener('click', resetForm('desktop-jobs-form'));
+    </script>
     {# End placeholder cards -#}
   {% else %}
     {# Cards -#}
@@ -76,11 +96,17 @@
 {% if jobs.len() > 0 %}{{ navigation_links|safe }}{% endif %}
 {# End pagination -#}
 
+{# djlint:off #}
 <script type="module">
   import {
     updateResults
   } from '/static/js/jobboard/filters.js';
 
-  updateResults('{% call jobs_macros::current_page(total, jobs.len(), offset) %}');
+  {% if jobs.len() > 0 %}
+    updateResults('{% call jobs_macros::current_page(total, jobs.len(), offset) %}');
+  {% else %}
+    updateResults('');
+  {% endif %}
 </script>
+{# djlint:on #}
 {# End list view -#}

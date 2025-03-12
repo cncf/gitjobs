@@ -109,6 +109,25 @@
         </div>
         {# End Job Description #}
 
+        {# Seniority #}
+        <div class="col-span-full lg:col-span-2">
+          <label for="seniority" class="form-label">Seniority</label>
+          <div class="mt-2 grid grid-cols-1">
+            <select id="seniority" name="seniority" class="select-primary">
+              {% call macros::select_option(value = "", label = "", selected = job.seniority|display_some) %}
+              {% call macros::select_option(value = "junior", label = "Junior", selected = job.seniority|display_some) %}
+              {% call macros::select_option(value = "associate", label = "Associate", selected = job.seniority|display_some) %}
+              {% call macros::select_option(value = "mid-level", label = "Mid-level", selected = job.seniority|display_some) %}
+              {% call macros::select_option(value = "senior", label = "Senior", selected = job.seniority|display_some) %}
+              {% call macros::select_option(value = "lead", label = "Lead", selected = job.seniority|display_some) %}
+            </select>
+          </div>
+          <p class="form-legend">Lorem ipsum</p>
+        </div>
+
+        <div class="hidden lg:flex lg:col-span-4"></div>
+        {# End Seniority #}
+
         {# Job responsibilities #}
         <div class="col-span-full">
           <label for="responsibilities" class="form-label">Responsibilities</label>
@@ -264,10 +283,6 @@
             <select id="salary_currency" name="salary_currency" class="select-primary">
               {% call macros::select_option(value = "", label = "", selected = job.salary_currency|display_some) %}
               {% call macros::select_option(value = "USD", label = "USD - United States Dollar", selected = job.salary_currency|display_some) %}
-              {% call macros::select_option(value = "EUR", label = "EUR - Euro", selected = job.salary_currency|display_some) %}
-              {% call macros::select_option(value = "GBP", label = "GBP - British Pound Sterling", selected = job.salary_currency|display_some) %}
-              {% call macros::select_option(value = "CAD", label = "CAD - Canadian Dollar", selected = job.salary_currency|display_some) %}
-              {% call macros::select_option(value = "JPY", label = "JPY - Japanese Yen", selected = job.salary_currency|display_some) %}
             </select>
           </div>
         </div>
@@ -279,13 +294,7 @@
           <div class="mt-2 grid grid-cols-1">
             <select id="salary_period" name="salary_period" class="select-primary">
               {% call macros::select_option(value = "", label = "", selected = job.salary_period|display_some) %}
-              {% call macros::select_option(value = "hourly", label = "Hourly") %}
-              {% call macros::select_option(value = "daily", label = "Daily", selected = job.salary_period|display_some) %}
-              {% call macros::select_option(value = "weekly", label = "Weekly", selected = job.salary_period|display_some) %}
-              {% call macros::select_option(value = "fortnightly", label = "Fortnightly", selected = job.salary_period|display_some) %}
-              {% call macros::select_option(value = "monthly", label = "Monthly", selected = job.salary_period|display_some) %}
-              {% call macros::select_option(value = "quarterly", label = "Quarterly", selected = job.salary_period|display_some) %}
-              {% call macros::select_option(value = "yearly", label = "Yearly", selected = job.salary_period|display_some) %}
+              {% call macros::select_option(value = "annual", label = "Annual", selected = job.salary_period|display_some) %}
             </select>
           </div>
         </div>
@@ -311,7 +320,7 @@
         <div class="col-span-full lg:col-span-3">
           <label for="open_source" class="form-label">Open source</label>
           <div class="mt-2 me-8">
-            {% call macros::input_range(id = "open_source", name = "open_source", value = job.open_source|display_some_or(0)) %}
+            <input-range name="open_source" value="{{ job.open_source|display_some_or(0) }}">
           </div>
           <p class="form-legend">Percentage of time working on open source projects.</p>
         </div>
@@ -321,7 +330,7 @@
         <div class="col-span-full lg:col-span-3">
           <label for="upstream_commitment" class="form-label">Upstream commitment</label>
           <div class="mt-2 me-8">
-            {% call macros::input_range(id = "upstream_commitment", name = "upstream_commitment", value = job.upstream_commitment|display_some_or(0)) %}
+            <input-range name="upstream_commitment" value="{{ job.upstream_commitment|display_some_or(0) }}">
           </div>
           <p class="form-legend">
             Percentage of time working on upstream open source projects the company depends on.

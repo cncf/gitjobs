@@ -97,7 +97,7 @@ pub(crate) async fn setup(
             login_url = LOG_IN_URL,
             redirect_field = "next_url"
         ))
-        .route("/", get(jobboard::home::page))
+        .route("/", get(jobboard::jobs::jobs_page))
         .route("/about", get(jobboard::about::page))
         .route("/health-check", get(health_check))
         .nest("/jobboard/images", jobboard_images_router)

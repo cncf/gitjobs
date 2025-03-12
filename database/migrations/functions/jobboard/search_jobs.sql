@@ -3,11 +3,17 @@ create or replace function search_jobs(p_board_id uuid, p_filters jsonb)
 returns table(jobs json, total bigint) as $$
 declare
     v_benefits text[];
+    v_date_from date := (p_filters->>'date_from');
+    v_date_to date := (p_filters->>'date_to');
+    v_max_distance real := (p_filters->>'max_distance')::real;
     v_kind text[];
     v_limit int := coalesce((p_filters->>'limit')::int, 10);
+    v_location_id uuid := (p_filters->>'location_id')::uuid;
     v_offset int := coalesce((p_filters->>'offset')::int, 0);
     v_open_source int := (p_filters->>'open_source')::int;
     v_projects text[];
+    v_salary_min bigint := (p_filters->>'salary_min')::bigint;
+    v_seniority text := (p_filters->>'seniority');
     v_skills text[];
     v_tsquery_with_prefix_matching tsquery;
     v_upstream_commitment int := (p_filters->>'upstream_commitment')::int;
@@ -61,6 +67,7 @@ begin
             j.salary_min,
             j.salary_max,
             j.salary_period,
+            j.seniority,
             j.updated_at,
             j.upstream_commitment,
             (
@@ -107,34 +114,68 @@ begin
         and j.status = 'published'
         and
             case when cardinality(v_benefits) > 0 then
-            j.benefits @> v_benefits else true end
+                j.benefits @> v_benefits
+            else true end
+        and
+            case when v_date_from is not null then
+                j.published_at >= v_date_from
+            else true end
+        and
+            case when v_date_to is not null then
+                j.published_at <= v_date_to
+            else true end
         and
             case when cardinality(v_kind) > 0 then
-            j.kind = any(v_kind) else true end
+                j.kind = any(v_kind)
+            else true end
         and
-            case when cardinality(v_projects) > 0 then
-            j.job_id = any(
-                select job_id from job_project
-                where project_id = any(
-                    select project_id from project
-                    where name = any(v_projects)
+            case when v_location_id is not null and v_max_distance is not null then
+                st_dwithin(
+                    (select coordinates from location where location_id = v_location_id),
+                    (select coordinates from location where location_id = j.location_id),
+                    v_max_distance
                 )
-            ) else true end
-        and
-            case when cardinality(v_skills) > 0 then
-            j.skills @> v_skills else true end
-        and
-            case when cardinality(v_workplace) > 0 then
-            j.workplace = any(v_workplace) else true end
+            else true end
         and
             case when v_open_source is not null then
-            j.open_source >= v_open_source else true end
+                j.open_source >= v_open_source
+            else true end
         and
-            case when v_upstream_commitment is not null then
-            j.upstream_commitment >= v_upstream_commitment else true end
+            case when cardinality(v_projects) > 0 then
+                j.job_id = any(
+                    select job_id from job_project
+                    where project_id = any(
+                        select project_id from project
+                        where name = any(v_projects)
+                    )
+            ) else true end
+        and
+            case when v_salary_min is not null then
+                case
+                    when j.salary is not null then j.salary >= v_salary_min
+                    when j.salary_min is not null then j.salary_min >= v_salary_min
+                    else false
+                end
+            else true end
+        and
+            case when v_seniority is not null then
+                j.seniority = v_seniority
+            else true end
+        and
+            case when cardinality(v_skills) > 0 then
+                j.skills @> v_skills
+            else true end
         and
             case when v_tsquery_with_prefix_matching is not null then
                 v_tsquery_with_prefix_matching @@ j.tsdoc
+            else true end
+        and
+            case when v_upstream_commitment is not null then
+                j.upstream_commitment >= v_upstream_commitment
+            else true end
+        and
+            case when cardinality(v_workplace) > 0 then
+                j.workplace = any(v_workplace)
             else true end
     )
     select
@@ -151,6 +192,7 @@ begin
                 'salary_min', salary_min,
                 'salary_max', salary_max,
                 'salary_period', salary_period,
+                'seniority', seniority,
                 'updated_at', updated_at,
                 'upstream_commitment', upstream_commitment,
                 'employer', employer,

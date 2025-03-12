@@ -43,11 +43,17 @@ pub(crate) struct ExploreSection {
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 pub(crate) struct Filters {
     pub benefits: Option<Vec<String>>,
+    pub date_from: Option<String>,
+    pub date_to: Option<String>,
     pub kind: Option<Vec<JobKind>>,
     pub limit: Option<usize>,
+    pub location_id: Option<Uuid>,
+    pub max_distance: Option<u64>,
     pub offset: Option<usize>,
     pub open_source: Option<usize>,
     pub projects: Option<Vec<String>>,
+    pub salary_min: Option<u64>,
+    pub seniority: Option<String>,
     pub skills: Option<Vec<String>>,
     pub ts_query: Option<String>,
     pub upstream_commitment: Option<usize>,

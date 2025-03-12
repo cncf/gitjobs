@@ -88,6 +88,7 @@ pub(crate) struct Job {
     pub salary_min: Option<i64>,
     pub salary_max: Option<i64>,
     pub salary_period: Option<String>,
+    pub seniority: Option<String>,
     pub skills: Option<Vec<String>>,
     pub updated_at: Option<DateTime<Utc>>,
     pub upstream_commitment: Option<i32>,

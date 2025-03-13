@@ -22,10 +22,10 @@
         hx-get='/jobs/section/results'
         hx-trigger="change"
         hx-target="#items-list"
-        hx-include="[name='ts_query']"
-        hx-ext="no-empty-vals"
+        hx-include="#searchbar"
         hx-indicator="#mobile-jobs-spinner"
         hx-boost="true">
+
     {# Header Filters -#}
     <div class="flex justify-between items-center border-solid border-0 border-b border-gray-100 p-5">
       <div class="flex space-x-3 relative">
@@ -36,9 +36,9 @@
       </div>
     </div>
     {# End header filters -#}
-    {% call jobs_macros::filters(device = "mobile") %}
+    {% call jobs_macros::filters(form = "mobile-jobs-form", device = "mobile") %}
+    {# End filters content -#}
   </form>
-  {# End filters content -#}
 
   <div class="text-end p-5">
     <button id="reset-mobile-jobs-form"
@@ -65,7 +65,8 @@
             hx-get='/jobs/section/results'
             hx-trigger="change"
             hx-target="#items-list"
-            hx-include="[name='ts_query']"
+            hx-include="#searchbar"
+            hx-params="not #ts_query"
             hx-ext="no-empty-vals"
             hx-indicator="#desktop-jobs-spinner"
             hx-boost="true">
@@ -84,7 +85,7 @@
         </div>
         {# End header #}
 
-        {% call jobs_macros::filters() %}
+        {% call jobs_macros::filters(form = "desktop-jobs-form") %}
       </form>
     </div>
     {# End filters #}
@@ -106,7 +107,7 @@
             {# Searchbar #}
             <div class="flex items-center justify-center w-full">
               <div class="relative w-full md:w-3/4 md:-ml-[0.75rem]">
-                <input id="ts_query"
+                <input id="searchbar"
                        name="ts_query"
                        type="text"
                        value='{{ filters.ts_query|display_some_or("") }}'
@@ -191,11 +192,11 @@
   const backdropFilters = document.getElementById('drawer-backdrop');
   backdropFilters.addEventListener('click', close);
 
-  const searchInput = document.getElementById('ts_query');
+  const searchInput = document.getElementById('searchbar');
   searchInput.addEventListener('keydown', () => searchOnEnter(event, 'desktop-jobs-form'));
 
   const cleanSearch = document.getElementById('clean-search-jobs');
-  cleanSearch.addEventListener('click', () => cleanInputField('ts_query', 'desktop-jobs-form'));
+  cleanSearch.addEventListener('click', () => cleanInputField('searchbar', 'desktop-jobs-form'));
 
   const searchJobsBtn = document.getElementById('search-jobs-btn');
   searchJobsBtn.addEventListener('click', () => triggerChangeOnForm('desktop-jobs-form', true));

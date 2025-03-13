@@ -102,6 +102,14 @@ pub(crate) struct Filters {
     pub workplace: Option<Vec<Workplace>>,
 }
 
+impl Filters {
+    /// Check if the filters are empty.
+    #[allow(dead_code)]
+    pub(crate) fn is_empty(&self) -> bool {
+        self == &Filters::default()
+    }
+}
+
 impl Pagination for Filters {
     fn get_base_hx_url(&self) -> String {
         "/jobs/section/results".to_string()
@@ -228,6 +236,7 @@ pub(crate) struct Job {
 
 impl Job {
     /// Get the salary kind of the job.
+    #[allow(dead_code)]
     pub(crate) fn salary_kind(&self) -> SalaryKind {
         if self.salary_min.is_some() && self.salary_max.is_some() {
             SalaryKind::Range

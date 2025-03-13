@@ -26,7 +26,7 @@ pub(crate) trait Pagination {
 }
 
 /// Pagination navigation links.
-#[derive(Debug, Clone, Default, Template, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Template, PartialEq, Serialize, Deserialize)]
 #[template(path = "navigation_links.html")]
 pub(crate) struct NavigationLinks {
     pub first: Option<NavigationLink>,
@@ -68,7 +68,7 @@ impl NavigationLinks {
 }
 
 /// Navigation link.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, PartialEq, Deserialize)]
 pub(crate) struct NavigationLink {
     pub hx_url: String,
     pub url: String,

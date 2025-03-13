@@ -159,6 +159,8 @@
         },
       };
 
+      htmx.logAll();
+
       // htmx extension to remove empty values from the parameters
       htmx.defineExtension("no-empty-vals", {
         encodeParameters: (xhr, parameters, elt) => {

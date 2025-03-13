@@ -8,11 +8,11 @@
     <div class="p-10 md:p-14">
       <div class="border border-primary-300 p-10 text-sm text-gray-800 rounded-lg bg-primary-50 text-center"
            role="alert">
-        <div class="text-xl lg:text-2xl mb-6">
+        <div class="text-md lg:text-lg">
           <p class="mb-10">We can't seem to find any jobs that match your search criteria.</p>
           <p>
             You can
-            <button id="placeholder-reset-btn" class="p-0">reset</button>
+            <button id="placeholder-reset-btn" class="p-0 underline">reset</button>
             your filters or try a different search.
           </p>
         </div>
@@ -24,7 +24,7 @@
       } from '/static/js/jobboard/filters.js';
 
       const resetBtn = document.getElementById('placeholder-reset-btn');
-      resetBtn.addEventListener('click', resetForm('desktop-jobs-form'));
+      resetBtn.addEventListener('click', () => resetForm('desktop-jobs-form'));
     </script>
     {# End placeholder cards -#}
   {% else %}
@@ -93,11 +93,11 @@
 </div>
 
 {# Pagination -#}
-{% if jobs.len() > 0 %}{{ navigation_links|safe }}{% endif %}
+{# {% if jobs.len() > 0 %}{{ navigation_links|safe }}{% endif %} #}
 {# End pagination -#}
 
 {# djlint:off #}
-<script type="module">
+{# <script type="module">
   import {
     updateResults
   } from '/static/js/jobboard/filters.js';
@@ -107,6 +107,6 @@
   {% else %}
     updateResults('');
   {% endif %}
-</script>
+</script> #}
 {# djlint:on #}
 {# End list view -#}

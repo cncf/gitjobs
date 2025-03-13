@@ -33,10 +33,10 @@
     <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
       <div class="svg-icon size-4 icon-search bg-gray-300"></div>
     </div>
-    <input id="ts_query"
+    <input id="location"
            name="ts_query"
            hx-get="/locations/search"
-           hx-include="#ts_query"
+           hx-include="#location"
            hx-trigger="searchLocations"
            hx-target="#search-location"
            hx-indicator="#location-spinner"
@@ -77,7 +77,7 @@
       debounce
     } from '/static/js/common/common.js';
 
-    const tsQueryInput = document.getElementById('ts_query');
+    const tsQueryInput = document.getElementById('location');
     const locationIdInput = document.getElementById('location_id');
     const locationCityInput = document.getElementById('city');
     const locationStateInput = document.getElementById('state');
@@ -87,7 +87,7 @@
 
     tsQueryInput.addEventListener('input', debounce(() => {
       if (tsQueryInput.value.length > 2) {
-        htmx.trigger('#ts_query', 'searchLocations');
+        htmx.trigger('#location', 'searchLocations');
       } else {
         document.getElementById('search-location').innerHTML = "";
       }

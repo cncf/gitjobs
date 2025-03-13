@@ -20,6 +20,8 @@ export const close = () => {
 
 // Trigger change on the form provided.
 export const triggerChangeOnForm = (formId, fromSearch) => {
+  console.log("triggerChangeOnForm", formId, fromSearch);
+
   // Prevent form submission if the search input is empty, and it is triggered
   // from the search input
   if (fromSearch) {
@@ -62,8 +64,12 @@ export const cleanInputField = (id, formId) => {
 
 // Reset form.
 export const resetForm = async (formId) => {
+  console.log("resetForm", formId);
   const form = document.getElementById(formId);
   if (form) {
+    // Clean selects
+    form.querySelectorAll("select").forEach((el) => (el.value = ""));
+
     // Clean radio/checkbox input fields
     form.querySelectorAll("input[type=checkbox]").forEach((el) => (el.checked = false));
     form.querySelectorAll("input[type=radio]").forEach((el) => (el.checked = false));

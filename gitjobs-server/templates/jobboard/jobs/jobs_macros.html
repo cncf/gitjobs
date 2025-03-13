@@ -1,7 +1,7 @@
 {% import "macros.html" as macros %}
 
 {# Filters #}
-{% macro filters(device = "desktop") %}
+{% macro filters(form, device = "desktop") %}
   <div class="p-6 flex flex-col space-y-5">
     {# Job type #}
     <div>
@@ -46,7 +46,6 @@
     {# End workplace #}
 
     {# Seniority #}
-    seniority: {{ filters.seniority|display_some }}
     <div>
       {% call filters_subtitle(text = "Seniority") %}
       <div class="mt-2">
@@ -54,15 +53,22 @@
                 name="seniority"
                 class="select-primary py-0.5 text-sm/6">
           {% call macros::select_option(value = "", label = "", selected = filters.seniority|display_some) %}
+          {% call macros::select_option(value = "entry", label = "Entry", selected = filters.seniority|display_some) %}
           {% call macros::select_option(value = "junior", label = "Junior", selected = filters.seniority|display_some) %}
-          {% call macros::select_option(value = "associate", label = "Associate", selected = filters.seniority|display_some) %}
-          {% call macros::select_option(value = "mid-level", label = "Mid-level", selected = filters.seniority|display_some) %}
+          {% call macros::select_option(value = "mid", label = "Mid-level", selected = filters.seniority|display_some) %}
           {% call macros::select_option(value = "senior", label = "Senior", selected = filters.seniority|display_some) %}
           {% call macros::select_option(value = "lead", label = "Lead", selected = filters.seniority|display_some) %}
         </select>
       </div>
     </div>
     {# End seniority #}
+
+    {# Location #}
+    <div>
+      {% call filters_subtitle(text = "Location") %}
+      <div class="mt-2">{% call macros::location() %}</div>
+    </div>
+    {# End location #}
 
     {# Published date #}
     <div>
@@ -71,13 +77,12 @@
         <div class="absolute top-2 start-0 flex items-center ps-3 pointer-events-none">
           <div class="svg-icon size-3.5 icon-calendar bg-gray-300"></div>
         </div>
-        <select name="published_at" class="select-primary py-0.5 ps-9 text-sm/6">
-          {# TODO - get correct selected #}
-          {% call macros::select_option(value = "", label = "") %}
-          {% call macros::select_option(value = "last_day", label = "Last day", selected = filters.seniority|display_some) %}
-          {% call macros::select_option(value = "last_3_days", label = "Last 3 days", selected = filters.seniority|display_some) %}
-          {% call macros::select_option(value = "last_week", label = "Last week", selected = filters.seniority|display_some) %}
-          {% call macros::select_option(value = "last_month", label = "Last month", selected = filters.seniority|display_some) %}
+        <select name="date_range" class="select-primary py-0.5 ps-9 text-sm/6">
+          {% call macros::select_option(value = "", label = "", selected = filters.date_range|display_some) %}
+          {% call macros::select_option(value = "last-day", label = "Last day", selected = filters.date_range|display_some) %}
+          {% call macros::select_option(value = "last3-days", label = "Last 3 days", selected = filters.date_range|display_some) %}
+          {% call macros::select_option(value = "last7-days", label = "Last week", selected = filters.date_range|display_some) %}
+          {% call macros::select_option(value = "last30-days", label = "Last month", selected = filters.date_range|display_some) %}
         </select>
       </div>
     </div>
@@ -92,7 +97,7 @@
     <div>
       {% call filters_subtitle(text = "Minimum salary (annual)") %}
       <div class="mt-1">
-        <input-range name="salary" value="{{ filters.salary_min|display_some_or(0) }}" max="250" step="5" unit="K" prefix="$" legendsNumber="6">
+        <input-range form="{{ form }}" name="salary_min" value="{{ filters.salary_min|display_some_or(0) }}" max="250" step="5" unit="K" prefix="$" legendsNumber="6">
       </div>
     </div>
     {# End salary #}
@@ -110,11 +115,18 @@
   <div class="p-6 flex flex-col space-y-5 border-t border-gray-100">
     <div>{% call filters_title(text = "Open source") %}</div>
 
+    {# Projects #}
+    <div>
+      {% call filters_subtitle(text = "CNCF projects you'd work on") %}
+      <searchable-filter name="projects" options="{{ filters_options.projects|json }}" form="{{ device }}-jobs-form" {%- if let Some(filters_projects) = filters.projects %}selected="{{ filters_projects|json }}"{%- endif -%}></searchable-filter>
+    </div>
+    {# End projects #}
+
     {# Open source #}
     <div>
       {% call filters_subtitle(text = "Time working on open source") %}
       <div class="mt-1">
-        <input-range name="open_source" value="{{ filters.open_source|display_some_or(0) }}">
+        <input-range form="{{ form }}" name="open_source" value="{{ filters.open_source|display_some_or(0) }}">
       </input-range>
     </div>
   </div>
@@ -124,17 +136,10 @@
   <div>
     {% call filters_subtitle(text = "Time working on upstream projects") %}
     <div class="mt-1">
-      <input-range name="upstream_commitment" value="{{ filters.upstream_commitment|display_some_or(0) }}">
+      <input-range form="{{ form }}" name="upstream_commitment" value="{{ filters.upstream_commitment|display_some_or(0) }}">
     </div>
   </div>
   {# End upstream commitment #}
-
-  {# Projects #}
-  <div>
-    {% call filters_subtitle(text = "CNCF projects you'd work on") %}
-    <searchable-filter name="projects" options="{{ filters_options.projects|json }}" form="{{ device }}-jobs-form" {%- if let Some(filters_projects) = filters.projects %}selected="{{ filters_projects|json }}"{%- endif -%}></searchable-filter>
-  </div>
-  {# End projects #}
 </div>
 {# End open source section #}
 {% endmacro filters %}

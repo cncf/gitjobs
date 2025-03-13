@@ -3,6 +3,7 @@ import { LitWrapper } from "/static/js/common/litWrapper.js";
 
 export class InputRange extends LitWrapper {
   static properties = {
+    form: { type: String },
     name: { type: String },
     min: { type: Number },
     max: { type: Number },
@@ -16,6 +17,7 @@ export class InputRange extends LitWrapper {
 
   constructor() {
     super();
+    this.form = "";
     this.name = undefined;
     this.min = 0;
     this.max = 100;

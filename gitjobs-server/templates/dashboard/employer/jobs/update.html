@@ -115,9 +115,9 @@
           <div class="mt-2 grid grid-cols-1">
             <select id="seniority" name="seniority" class="select-primary">
               {% call macros::select_option(value = "", label = "", selected = job.seniority|display_some) %}
+              {% call macros::select_option(value = "entry", label = "Entry", selected = job.seniority|display_some) %}
               {% call macros::select_option(value = "junior", label = "Junior", selected = job.seniority|display_some) %}
-              {% call macros::select_option(value = "associate", label = "Associate", selected = job.seniority|display_some) %}
-              {% call macros::select_option(value = "mid-level", label = "Mid-level", selected = job.seniority|display_some) %}
+              {% call macros::select_option(value = "mid", label = "Mid-level", selected = job.seniority|display_some) %}
               {% call macros::select_option(value = "senior", label = "Senior", selected = job.seniority|display_some) %}
               {% call macros::select_option(value = "lead", label = "Lead", selected = job.seniority|display_some) %}
             </select>

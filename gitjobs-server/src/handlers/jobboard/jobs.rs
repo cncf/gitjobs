@@ -106,7 +106,7 @@ pub(crate) async fn results_section(
     };
 
     // Prepare response headers
-    let headers = [("HX-Push-Url", build_url("/jobs", &filters)?)];
+    let headers = [("HX-Replace-Url", build_url("/jobs", &filters)?)];
 
     Ok((headers, Html(template.render()?)))
 }

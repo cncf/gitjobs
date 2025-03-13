@@ -49,9 +49,7 @@
     <div>
       {% call filters_subtitle(text = "Seniority") %}
       <div class="mt-2">
-        <select id="seniority"
-                name="seniority"
-                class="select-primary py-0.5 text-sm/6">
+        <select name="seniority" class="select-primary py-0.5 text-sm/6">
           {% call macros::select_option(value = "", label = "", selected = filters.seniority|display_some) %}
           {% call macros::select_option(value = "entry", label = "Entry", selected = filters.seniority|display_some) %}
           {% call macros::select_option(value = "junior", label = "Junior", selected = filters.seniority|display_some) %}
@@ -66,9 +64,28 @@
     {# Location #}
     <div>
       {% call filters_subtitle(text = "Location") %}
-      <div class="mt-2">{% call macros::location() %}</div>
+      <div class="mt-2 relative">
+        <div class="absolute top-2 start-0 flex items-center ps-3 pointer-events-none">
+          <div class="svg-icon size-3.5 icon-location bg-gray-300"></div>
+        </div>
+        <input class="input-primary py-0.5 ps-9 text-sm/6">
+      </div>
     </div>
     {# End location #}
+
+    {# Max distance #}
+    <div>
+      {% call filters_subtitle(text = "Max. distance") %}
+      <div class="mt-2">
+        <select name="max_distance" class="select-primary py-0.5 text-sm/6" disabled>
+          {% call macros::select_option(value = "", label = "", selected = filters.max_distance|display_some) %}
+          {% call macros::select_option(value = "10", label = "10km", selected = filters.max_distance|display_some) %}
+          {% call macros::select_option(value = "50", label = "50km", selected = filters.max_distance|display_some) %}
+          {% call macros::select_option(value = "100", label = "100km", selected = filters.max_distance|display_some) %}
+        </select>
+      </div>
+    </div>
+    {# End max distance #}
 
     {# Published date #}
     <div>

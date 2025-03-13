@@ -29,10 +29,11 @@
   {% else %}
     {# Cards -#}
     {% for job in jobs %}
-      <a hx-get="/jobs/{{ job.job_id }}"
-         hx-target="body"
-         hx-push-url="true"
-         class="p-5 md:p-7 cursor-pointer hover:bg-gray-50">
+      <button data-preview-job="true"
+              hx-get="/jobs/{{ job.job_id }}"
+              hx-target="#preview-content"
+              class="p-5 md:p-7 text-start cursor-pointer hover:bg-gray-50"
+              hx-boost="true">
         <div class="flex flex-1 flex-row items-center space-x-4 w-full">
           {# Company logo #}
           <div class="shrink-0">
@@ -62,19 +63,23 @@
                   <span class="text-xs font-semibold tracking-wide uppercase">{{ job.employer.company }}</span>
                 </div>
                 {# End company #}
+
+              </div>
+
+              <div class="shrink-0 flex space-x-3 items-center">
                 {# Member #}
                 {% if let Some(member) = job.employer.member %}
-                  <div class="flex items-center space-x-2 text-[10px] border rounded-md uppercase px-2 ms-3 text-gray-500">
-                    <div class="svg-icon size-2.5 icon-lfx bg-gray-500"></div>
+                  <div class="flex items-center space-x-2 text-[10px] border border-blue-700 rounded-md uppercase px-2 ms-3 text-blue-700">
+                    <div class="svg-icon size-2.5 icon-lfx bg-blue-700"></div>
                     <div>CNCF {{ member.level }} member</div>
                   </div>
                 {% endif %}
                 {# End member #}
-              </div>
 
-              {# Published date #}
-              <div class="shrink-0 text-xs font-semibold text-gray-500">{{ job.published_at.format(DATE_FORMAT_3) }}</div>
-              {# End published date #}
+                {# Published date #}
+                <div class=" text-xs font-semibold text-gray-500">{{ job.published_at.format(DATE_FORMAT_3) }}</div>
+                {# End published date #}
+              </div>
             </div>
 
             {# Title #}
@@ -94,13 +99,13 @@
           {# End info #}
         </div>
 
-        <div class="my-5 flex items-center justify-center w-full bg-gray-50 border border-bg-gray-500 text-gray-500 text-xs font-medium uppercase px-10 py-1.5 rounded-full">
+        <div class="my-5 flex items-center justify-center text-center w-full bg-gray-50 border border-bg-gray-500 text-gray-500 text-xs font-medium uppercase px-10 py-1.5 rounded-full">
           {% let kind = job.kind.to_string() %}
           {% let workplace = job.workplace.to_string() %}
           <div class="basis-1/4">{{ kind|unnormalize }}</div>
           <div class="basis-1/4">{{ workplace|unnormalize }}</div>
           <div class="basis-1/4">Junior</div>
-          <div class="basis-1/4 flex space-x-3 items-center">
+          <div class="basis-1/4 flex space-x-3 items-center justify-center">
             {% if let Some(open_source) = job.open_source %}
               {% if open_source + 0 > 0 %}
                 <div class="svg-icon size-2.5 icon-check bg-green-500"></div>
@@ -114,27 +119,43 @@
           </div>
         </div>
 
-      </a>
+      </button>
     {% endfor %}
     {# End cards -#}
   {% endif %}
 </div>
 
 {# Pagination -#}
-{# {% if jobs.len() > 0 %}{{ navigation_links|safe }}{% endif %} #}
+{% if jobs.len() > 0 %}{{ navigation_links|safe }}{% endif %}
 {# End pagination -#}
 
 {# djlint:off #}
-{# <script type="module">
+<script type="module">
   import {
     updateResults
   } from '/static/js/jobboard/filters.js';
+  import {
+    toggleModalVisibility,
+    isSuccessfulXHRStatus
+  } from '/static/js/common/common.js';
+
+  const previewBtns = document.querySelectorAll('[data-preview-job]');
+  previewBtns.forEach((btn) => {
+    btn.addEventListener('htmx:afterRequest', (e) => {
+      if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
+        toggleModalVisibility('preview-modal');
+      } else {
+        // When the preview is not available, show an error message
+        showErrorAlert('Something went wrong previewing the job, please try again later.');
+      }
+    });
+  });
 
   {% if jobs.len() > 0 %}
     updateResults('{% call jobs_macros::current_page(total, jobs.len(), offset) %}');
   {% else %}
     updateResults('');
   {% endif %}
-</script> #}
+</script>
 {# djlint:on #}
 {# End list view -#}

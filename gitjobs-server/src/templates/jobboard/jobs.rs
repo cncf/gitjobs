@@ -52,7 +52,7 @@ pub(crate) struct Filters {
     pub open_source: Option<usize>,
     pub projects: Option<Vec<String>>,
     pub salary_min: Option<u64>,
-    pub seniority: Option<String>,
+    pub seniority: Option<Seniority>,
     pub skills: Option<Vec<String>>,
     pub ts_query: Option<String>,
     pub upstream_commitment: Option<usize>,
@@ -97,7 +97,7 @@ impl Pagination for Filters {
     }
 }
 
-/// Date range filter options.
+/// Date range filter option.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub(crate) enum DateRange {
@@ -105,6 +105,68 @@ pub(crate) enum DateRange {
     Last3Days,
     Last7Days,
     Last30Days,
+}
+
+impl std::fmt::Display for DateRange {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            DateRange::LastDay => write!(f, "last-day"),
+            DateRange::Last3Days => write!(f, "last3-days"),
+            DateRange::Last7Days => write!(f, "last7-days"),
+            DateRange::Last30Days => write!(f, "last30-days"),
+        }
+    }
+}
+
+impl std::str::FromStr for DateRange {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "last-day" => Ok(DateRange::LastDay),
+            "last3-days" => Ok(DateRange::Last3Days),
+            "last7-days" => Ok(DateRange::Last7Days),
+            "last30-days" => Ok(DateRange::Last30Days),
+            _ => Err("invalid date range".to_string()),
+        }
+    }
+}
+
+/// Seniority level filter option.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub(crate) enum Seniority {
+    Entry,
+    Junior,
+    Mid,
+    Senior,
+    Lead,
+}
+
+impl std::fmt::Display for Seniority {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Seniority::Entry => write!(f, "entry"),
+            Seniority::Junior => write!(f, "junior"),
+            Seniority::Mid => write!(f, "mid"),
+            Seniority::Senior => write!(f, "senior"),
+            Seniority::Lead => write!(f, "lead"),
+        }
+    }
+}
+impl std::str::FromStr for Seniority {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "entry" => Ok(Seniority::Entry),
+            "junior" => Ok(Seniority::Junior),
+            "mid" => Ok(Seniority::Mid),
+            "senior" => Ok(Seniority::Senior),
+            "lead" => Ok(Seniority::Lead),
+            _ => Err("invalid seniority level".to_string()),
+        }
+    }
 }
 
 /// Filters options used in the jobs explore section.

@@ -84,12 +84,11 @@ pub(crate) async fn setup(
 
     // Setup main router
     let mut router = Router::new()
+        .route("/account/update/details", put(auth::update_user_details))
+        .route("/account/update/password", put(auth::update_user_password))
         .nest("/dashboard/employer", employer_dashboard_router)
         .nest("/dashboard/job-seeker", job_seeker_dashboard_router)
         .nest("/dashboard/images", dashboard_images_router)
-        .route("/account/update/details", put(auth::update_user_details))
-        .route("/account/update/password", put(auth::update_user_password))
-        .route("/locations/search", get(search_locations))
         .route("/members/search", get(search_members))
         .route("/projects/search", get(search_projects))
         .route_layer(login_required!(
@@ -105,6 +104,7 @@ pub(crate) async fn setup(
         .route("/jobs/{job_id}", get(jobboard::jobs::job_page))
         .route("/jobs/section/explore", get(jobboard::jobs::explore_section))
         .route("/jobs/section/results", get(jobboard::jobs::results_section))
+        .route("/locations/search", get(search_locations))
         .route("/log-in", get(auth::log_in_page).post(auth::log_in))
         .route("/log-in/oauth2/{provider}", get(auth::oauth2_redirect))
         .route("/log-in/oauth2/{provider}/callback", get(auth::oauth2_callback))

@@ -64,11 +64,17 @@ export const cleanInputField = (id, formId) => {
 
 // Reset form.
 export const resetForm = async (formId) => {
-  console.log("resetForm", formId);
   const form = document.getElementById(formId);
   if (form) {
     // Clean selects
-    form.querySelectorAll("select").forEach((el) => (el.value = ""));
+    form.querySelectorAll("select").forEach((el) => {
+      console.log(el);
+      if (el.name === "date_range") {
+        el.value = "last30-days";
+      } else {
+        el.value = "";
+      }
+    });
 
     // Clean radio/checkbox input fields
     form.querySelectorAll("input[type=checkbox]").forEach((el) => (el.checked = false));

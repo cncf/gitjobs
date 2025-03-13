@@ -14,7 +14,7 @@ pub(crate) const DATE_FORMAT: &str = "%Y-%m-%d";
 pub(crate) const DATE_FORMAT_2: &str = "%B %Y";
 
 /// The date format used in the jobboard jobs page.
-pub(crate) const DATE_FORMAT_3: &str = "%e %b";
+pub(crate) const DATE_FORMAT_3: &str = "%b %e";
 
 /// Build dashboard url for an image version.
 pub(crate) fn build_dashboard_image_url(image_id: &Uuid, version: &str) -> String {

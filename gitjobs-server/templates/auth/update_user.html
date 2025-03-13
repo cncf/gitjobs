@@ -135,8 +135,6 @@
                      id="password_confirmation"
                      name="password_confirmation"
                      class="input-primary"
-                     oninvalid="this.setCustomValidity('Passwords do not match')"
-                     pattern=""
                      required>
             </div>
           </div>
@@ -154,12 +152,19 @@
   {# End update user password form #}
 
   <script type="module">
-    const password = document.getElementById('new_password');
+    const passwordsInputs = document.querySelectorAll('input[type="password"]');
+    const password = document.getElementById('password');
     const passwordConfirmation = document.getElementById('password_confirmation');
 
-    // Set the pattern attribute of the password confirmation input to match the password input
-    password.addEventListener('input', (e) => {
-      passwordConfirmation.setAttribute('pattern', e.target.value);
+    passwordsInputs.forEach((input) => {
+      input.addEventListener('blur', () => {
+        // Check if passwords match
+        if (password.value !== passwordConfirmation.value) {
+          passwordConfirmation.setCustomValidity('Passwords do not match');
+        } else {
+          passwordConfirmation.setCustomValidity('');
+        }
+      });
     });
   </script>
 {% endif %}

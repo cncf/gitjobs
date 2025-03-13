@@ -3,16 +3,16 @@
   {# Logo #}
   <div>
     <a hx-boost="true" href="/">
-      <img src="/static/images/logo.png"
-           width="210"
-           height="33"
+      <img src="/static/images/gitjobs.png"
+           height="33px"
+           width="193px"
            alt="GitJobs Logo">
     </a>
   </div>
   {# End logo #}
 
   {# Desktop links #}
-  <div class="hidden xl:flex xl:gap-x-8">
+  <div class="hidden xl:flex xl:gap-x-6">
     {% call header_link(text = "Jobs", href = "/jobs", active = page_id == PageId::JobBoard) %}
     {% call disabled_header_link(text = "About") %}
   </div>
@@ -126,13 +126,13 @@
 {% macro header_link(text, href, active = false) %}
   <a href="{{ href }}"
      hx-boost="true"
-     class="mx-3 pb-1 border-0 border-primary-500 text-lg font-semibold tracking-widest text-primary-500 uppercase border-b-2
+     class="mx-3 pb-1 border-0 border-primary-500 text-base font-semibold tracking-widest text-primary-500 uppercase border-b-2
             {% if active -%}
               border-primary-500{%- else -%}border-transparent hover:border-primary-300{%- endif -%}">{{ text }}</a>
 {% endmacro header_link %}
 
 {% macro disabled_header_link(text) %}
-  <button class="mx-3 pb-1 border-0 border-primary-500 text-lg font-semibold tracking-widest text-primary-500 uppercase border-b-2 border-transparent hover:border-primary-300"
+  <button class="mx-3 pb-1 border-0 border-primary-500 text-base font-semibold tracking-widest text-primary-500 uppercase border-b-2 border-transparent hover:border-primary-300"
           disabled
           title="Coming soon!">{{ text }}</button>
 {% endmacro disabled_header_link %}

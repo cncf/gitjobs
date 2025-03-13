@@ -33,7 +33,8 @@
         <div class="absolute px-4 -translate-x-1/2 bg-white left-1/2 text-xs text-gray-400">OR</div>
       </div>
 
-      <form action="/sign-up{%- if let Some(next_url) = next_url -%}?next_url={{ next_url }}{%- endif -%}"
+      <form id="sign-up-form"
+            action="/sign-up{%- if let Some(next_url) = next_url -%}?next_url={{ next_url }}{%- endif -%}"
             method="post">
         <div class="grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-6">
           {# Name #}
@@ -110,8 +111,6 @@
                      id="password_confirmation"
                      name="password_confirmation"
                      class="input-primary"
-                     oninvalid="this.setCustomValidity('Passwords do not match')"
-                     pattern=""
                      required>
             </div>
           </div>
@@ -138,12 +137,19 @@
     </div>
   </div>
   <script type="module">
+    const passwordsInputs = document.querySelectorAll('input[type="password"]');
     const password = document.getElementById('password');
     const passwordConfirmation = document.getElementById('password_confirmation');
 
-    // Set the pattern attribute of the password confirmation input to match the password input
-    password.addEventListener('input', (e) => {
-      passwordConfirmation.setAttribute('pattern', e.target.value);
+    passwordsInputs.forEach((input) => {
+      input.addEventListener('blur', () => {
+        // Check if passwords match
+        if (password.value !== passwordConfirmation.value) {
+          passwordConfirmation.setCustomValidity('Passwords do not match');
+        } else {
+          passwordConfirmation.setCustomValidity('');
+        }
+      });
     });
   </script>
 {% endblock main %}

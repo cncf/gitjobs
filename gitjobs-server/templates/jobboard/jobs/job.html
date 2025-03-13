@@ -157,10 +157,9 @@
     {% call macros_preview::job_kind(kind = job.kind) %}
     {# End type #}
 
-    {# Seniority #}
+    {# Seniority level #}
     {% call macros_preview::job_details_subheading(content = "Seniority level") %}
-    {% call macros_preview::job_details_content(text = "-") %}
-    {# {% call macros_preview::job_details_content(text = job.seniority|display_some_or("-")) %} #}
+    {% call macros_preview::job_details_content(text = job.seniority|display_some_or("-"), extra_styles = "capitalize") %}
     {# End seniority level #}
 
     {# Salary #}

@@ -145,6 +145,10 @@
     {% call job_kind(kind = job.kind) %}
     {# End type #}
 
+    {# Seniority #}
+    {% call job_details_subheading(content = "Seniority level") %}
+    {% call job_details_content(text = job.seniority|display_some_or("-"), extra_styles = "capitalize") %}
+
     {# Salary #}
     {% call job_details_subheading(content = "Salary") %}
     <div class="flex items-baseline text-xs/6">

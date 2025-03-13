@@ -26,7 +26,6 @@ export class InputRange extends LitWrapper {
     this.prefix = "";
     this.unit = "%";
     this.percentValue = 0;
-    this.tooltipValue = 0;
     this.offset = 0;
     this.legendsNumber = 5;
     this.visibleTooltip = false;
@@ -50,7 +49,7 @@ export class InputRange extends LitWrapper {
   }
 
   _refreshStyles(value) {
-    this.tooltipValue = parseInt((value * this.max) / 100);
+    console.log(value);
     this.percentValue = parseInt((value * 100) / this.max, 10);
     const thumbSize = 17;
     this.offset = thumbSize * (0.5 - this.percentValue / 100);
@@ -64,6 +63,13 @@ export class InputRange extends LitWrapper {
     return Array(Math.ceil((stop - start) / step))
       .fill(start)
       .map((x, y) => x + y * step);
+  }
+
+  _prettyNumber(value) {
+    if (value > 1000) {
+      return parseInt(value / 1000);
+    }
+    return value;
   }
 
   render() {
@@ -91,21 +97,23 @@ export class InputRange extends LitWrapper {
             : "opacity-0"} absolute z-10 inline-block px-2 py-1 text-sm font-medium text-white text-center bg-primary-900 rounded-lg shadow-xs tooltip top-8 start-[8.5px] -ms-8 w-16"
           style="left: calc(${this.percentValue}% + ${this.offset}px);"
         >
-          <small>${this.prefix}</small><span>${this.tooltipValue}</span><small>${this.unit}</small>
+          <small>${this.prefix}</small><span>${this._prettyNumber(this.value)}</span><small>${this.unit}</small>
           <div
             class="h-0 w-0 border-x-[6px] border-x-transparent border-b-[6px] border-b-primary-900 absolute -top-1.5 start-[25px]"
           ></div>
         </div>
-        <ul class="flex justify-between w-full px-[10px] h-5">
-          ${this.steps.map(
-            (i) => html`<li class="flex justify-center relative text-xs text-gray-500">
-              <span class="absolute">${i}</span>
-            </li>`,
-          )}
-          <li class="flex justify-center relative text-xs text-gray-500">
-            <span class="absolute">${this.max}${this.unit}</span>
-          </li>
-        </ul>
+        <div class="mx-[15px]">
+          <ul class="flex justify-between w-full h-5">
+            ${this.steps.map(
+              (i) => html`<li class="flex justify-center relative text-xs text-gray-500">
+                <span class="absolute -start-[10px]">${this._prettyNumber(i)}</span>
+              </li>`,
+            )}
+            <li class="flex justify-center relative text-xs text-gray-500">
+              <span class="absolute -start-[15px]">${this._prettyNumber(this.max)}${this.unit}</span>
+            </li>
+          </ul>
+        </div>
       </div>
     `;
   }

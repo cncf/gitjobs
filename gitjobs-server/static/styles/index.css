@@ -258,6 +258,11 @@
   -webkit-mask-image: url('/static/images/icons/office.svg')
 }
 
+.icon-organigram {
+  mask-image: url('/static/images/icons/organigram.svg');
+  -webkit-mask-image: url('/static/images/icons/organigram.svg')
+}
+
 .icon-outline_clipboard {
   mask-image: url('/static/images/icons/outline_clipboard.svg');
   -webkit-mask-image: url('/static/images/icons/outline_clipboard.svg')

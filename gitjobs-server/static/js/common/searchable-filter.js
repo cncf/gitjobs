@@ -106,7 +106,7 @@ export class SearchableFilter extends LitWrapper {
         @input=${this._onInputChange}
         @focus=${() => (this.visibleDropdown = true)}
         .value="${this.enteredValue}"
-        class="input-primary py-0.5 peer ps-9 rounded-lg"
+        class="input-primary py-0.5 peer ps-9 rounded-lg text-[0.8rem]/6"
         placeholder="Search ${this.name}"
         autocomplete="off"
         autocorrect="off"
@@ -150,10 +150,10 @@ export class SearchableFilter extends LitWrapper {
                               alt="${name} logo"
                             />
                             <div class="flex flex-col justify-start min-w-0">
-                              <div class="truncate text-start text-gray-700 font-medium">${name}</div>
+                              <div class="truncate text-start text-xs/5 text-gray-700 font-medium">${name}</div>
                               <div class="inline-flex">
                                 <div
-                                  class="truncate text-nowrap uppercase max-w-[100%] text-xs/6 font-medium text-gray-400"
+                                  class="truncate text-nowrap uppercase max-w-[100%] text-[0.65rem] font-medium text-gray-400"
                                 >
                                   CNCF ${option.maturity}
                                 </div>
@@ -166,7 +166,7 @@ export class SearchableFilter extends LitWrapper {
                                 ? html`<div class="svg-icon size-3 icon-check bg-gray-400"></div>`
                                 : ""}
                             </div>
-                            <div class="truncate">${unnormalize(name)}</div>
+                            <div class="truncate text-[0.8rem]/6">${unnormalize(name)}</div>
                           </div>`}
                     </button>
                   </li>`;

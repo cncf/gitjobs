@@ -3,8 +3,8 @@ create or replace function search_jobs(p_board_id uuid, p_filters jsonb)
 returns table(jobs json, total bigint) as $$
 declare
     v_benefits text[];
-    v_date_from date := (p_filters->>'date_from');
-    v_date_to date := (p_filters->>'date_to');
+    v_date_from date;
+    v_date_to date;
     v_max_distance real := (p_filters->>'max_distance')::real;
     v_kind text[];
     v_limit int := coalesce((p_filters->>'limit')::int, 10);
@@ -23,6 +23,19 @@ begin
     if p_filters ? 'benefits' then
         select array_agg(e::text) into v_benefits
         from jsonb_array_elements_text(p_filters->'benefits') e;
+    end if;
+    if p_filters ? 'date_range' then
+        v_date_to := current_date;
+        case
+            when (p_filters->>'date_range') == 'last-day' then
+                v_date_from := current_date - interval '1 day';
+            when (p_filters->>'date_range') == 'last3-days' then
+                v_date_from := current_date - interval '3 days';
+            when (p_filters->>'date_range') == 'last7-days' then
+                v_date_from := current_date - interval '7 days';
+            when (p_filters->>'date_range') == 'last30-days' then
+                v_date_from := current_date - interval '30 days';
+        end case;
     end if;
     if p_filters ? 'kind' then
         select array_agg(e::text) into v_kind
@@ -117,12 +130,8 @@ begin
                 j.benefits @> v_benefits
             else true end
         and
-            case when v_date_from is not null then
-                j.published_at >= v_date_from
-            else true end
-        and
-            case when v_date_to is not null then
-                j.published_at <= v_date_to
+            case when v_date_from is not null and v_date_to is not null then
+                j.published_at >= v_date_from and j.published_at <= v_date_to
             else true end
         and
             case when cardinality(v_kind) > 0 then

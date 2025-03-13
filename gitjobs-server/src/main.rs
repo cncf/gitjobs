@@ -9,7 +9,6 @@ use img::db::DbImageStore;
 use notifications::PgNotificationsManager;
 use openssl::ssl::{SslConnector, SslMethod, SslVerifyMode};
 use postgres_openssl::MakeTlsConnector;
-use std::env;
 use tokio::{net::TcpListener, signal};
 use tokio_util::sync::CancellationToken;
 use tokio_util::task::TaskTracker;

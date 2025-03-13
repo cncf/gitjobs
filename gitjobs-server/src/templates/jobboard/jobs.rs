@@ -43,8 +43,7 @@ pub(crate) struct ExploreSection {
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 pub(crate) struct Filters {
     pub benefits: Option<Vec<String>>,
-    pub date_from: Option<String>,
-    pub date_to: Option<String>,
+    pub date_range: Option<DateRange>,
     pub kind: Option<Vec<JobKind>>,
     pub limit: Option<usize>,
     pub location_id: Option<Uuid>,
@@ -96,6 +95,16 @@ impl Pagination for Filters {
     fn set_offset(&mut self, offset: Option<usize>) {
         self.offset = offset;
     }
+}
+
+/// Date range filter options.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub(crate) enum DateRange {
+    LastDay,
+    Last3Days,
+    Last7Days,
+    Last30Days,
 }
 
 /// Filters options used in the jobs explore section.

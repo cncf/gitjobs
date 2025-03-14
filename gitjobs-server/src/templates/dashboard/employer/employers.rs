@@ -1,6 +1,6 @@
 //! This module defines some templates and types used to manage employers.
 
-use rinja::Template;
+use askama::Template;
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use uuid::Uuid;
@@ -10,6 +10,8 @@ use crate::templates::{
     helpers::format_location,
     misc::{Location, Member},
 };
+
+// Pages templates.
 
 /// Add employer page template.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
@@ -27,6 +29,8 @@ pub(crate) struct InitialSetupPage {}
 pub(crate) struct UpdatePage {
     pub employer: Employer,
 }
+
+// Types.
 
 /// Employer summary.
 #[skip_serializing_none]

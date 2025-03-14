@@ -1,13 +1,15 @@
 //! This module defines some templates used for authentication.
 
+use askama::Template;
 use axum_messages::{Level, Message};
-use rinja::Template;
 use serde::{Deserialize, Serialize};
 
 use crate::{
     auth::UserSummary,
     templates::{PageId, filters},
 };
+
+// Pages templates.
 
 /// Log in page.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]

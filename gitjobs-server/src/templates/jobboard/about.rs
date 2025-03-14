@@ -1,7 +1,9 @@
 //! This module defines some templates and types used in the about page.
 
-use rinja::Template;
+use askama::Template;
 use serde::{Deserialize, Serialize};
+
+// Pages templates.
 
 /// About page template.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]

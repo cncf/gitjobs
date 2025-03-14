@@ -1,11 +1,11 @@
 //! This module defines the HTTP handlers for the profile page.
 
+use askama::Template;
 use axum::{
     extract::State,
     response::{Html, IntoResponse},
 };
 use reqwest::StatusCode;
-use rinja::Template;
 use tracing::instrument;
 
 use crate::{

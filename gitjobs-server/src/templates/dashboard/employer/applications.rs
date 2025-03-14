@@ -1,11 +1,10 @@
 //! This module defines some templates and types used in the applications page.
 
 use anyhow::Result;
+use askama::Template;
 use chrono::{DateTime, Utc};
-use rinja::Template;
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
-use tracing::trace;
 use uuid::Uuid;
 
 use crate::templates::{
@@ -13,6 +12,8 @@ use crate::templates::{
     misc::Location,
     pagination::{NavigationLinks, Pagination},
 };
+
+// Pages templates.
 
 /// Applications page template.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
@@ -23,6 +24,8 @@ pub(crate) struct ApplicationsPage {
     pub filters_options: FiltersOptions,
     pub navigation_links: NavigationLinks,
 }
+
+// Types.
 
 /// Application information.
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -50,14 +53,6 @@ pub(crate) struct Filters {
 }
 
 impl Filters {
-    /// Create a new `Filters` instance from the raw query string provided.
-    pub(crate) fn new(serde_qs_de: &serde_qs::Config, raw_query: &str) -> Result<Self> {
-        let filters: Filters = serde_qs_de.deserialize_str(raw_query)?;
-
-        trace!("{:?}", filters);
-        Ok(filters)
-    }
-
     /// Convert the filters to a raw query string.
     #[allow(dead_code)]
     fn to_raw_query(&self) -> Result<String> {

@@ -4,13 +4,13 @@
 use std::{sync::Arc, time::Duration};
 
 use anyhow::Result;
+use askama::Template;
 use async_trait::async_trait;
 use lettre::{
     AsyncSmtpTransport, AsyncTransport, Tokio1Executor,
     message::{Mailbox, MessageBuilder, header::ContentType},
     transport::smtp::authentication::Credentials,
 };
-use rinja::Template;
 use serde::{Deserialize, Serialize};
 use tokio::time::sleep;
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
@@ -97,8 +97,6 @@ impl PgNotificationsManager {
 
 #[async_trait]
 impl NotificationsManager for PgNotificationsManager {
-    /// [NotificationsManager::enqueue_notification]
-    #[instrument(skip(self), err)]
     async fn enqueue(&self, notification: &NewNotification) -> Result<()> {
         self.db.enqueue_notification(notification).await
     }
@@ -233,27 +231,9 @@ pub(crate) struct Notification {
 }
 
 /// Notification kind.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, strum::Display, strum::EnumString)]
 #[serde(rename_all = "kebab-case")]
+#[strum(serialize_all = "kebab-case")]
 pub(crate) enum NotificationKind {
     EmailVerification,
-}
-
-impl std::fmt::Display for NotificationKind {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            NotificationKind::EmailVerification => write!(f, "email-verification"),
-        }
-    }
-}
-
-impl TryFrom<&str> for NotificationKind {
-    type Error = anyhow::Error;
-
-    fn try_from(value: &str) -> Result<Self, Self::Error> {
-        match value {
-            "email-verification" => Ok(Self::EmailVerification),
-            _ => Err(anyhow::Error::msg("invalid notification kind")),
-        }
-    }
 }

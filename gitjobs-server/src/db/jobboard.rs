@@ -9,7 +9,7 @@ use uuid::Uuid;
 
 use crate::{
     PgDB,
-    db::Total,
+    db::misc::Total,
     templates::jobboard::jobs::{Filters, FiltersOptions, Job, JobSummary},
 };
 
@@ -28,7 +28,6 @@ pub(crate) trait DBJobBoard {
 
 #[async_trait]
 impl DBJobBoard for PgDB {
-    /// [DBJobBoard::get_job_jobboard]
     #[instrument(skip(self), err)]
     async fn get_job_jobboard(&self, job_id: &Uuid) -> Result<Option<Job>> {
         let db = self.pool.get().await?;
@@ -54,6 +53,7 @@ impl DBJobBoard for PgDB {
                     j.salary_min,
                     j.salary_max,
                     j.salary_period,
+                    j.seniority,
                     j.skills,
                     j.updated_at,
                     j.upstream_commitment,
@@ -132,6 +132,9 @@ impl DBJobBoard for PgDB {
                 salary_min: row.get("salary_min"),
                 salary_max: row.get("salary_max"),
                 salary_period: row.get("salary_period"),
+                seniority: row
+                    .get::<_, Option<String>>("seniority")
+                    .map(|s| s.parse().expect("valid seniority")),
                 skills: row.get("skills"),
                 updated_at: row.get("updated_at"),
                 upstream_commitment: row.get("upstream_commitment"),
@@ -143,7 +146,6 @@ impl DBJobBoard for PgDB {
         }
     }
 
-    /// [DBJobBoard::get_jobs_filters_options]
     #[instrument(skip(self))]
     async fn get_jobs_filters_options(&self, job_board_id: &Uuid) -> Result<FiltersOptions> {
         // Query database
@@ -181,7 +183,6 @@ impl DBJobBoard for PgDB {
         Ok(filters_options)
     }
 
-    /// [DBJobBoard::search_jobs]
     #[instrument(skip(self))]
     async fn search_jobs(&self, job_board_id: &Uuid, filters: &Filters) -> Result<JobsSearchOutput> {
         // Query database

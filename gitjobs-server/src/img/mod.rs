@@ -6,8 +6,6 @@ use anyhow::Result;
 use async_trait::async_trait;
 use uuid::Uuid;
 
-use crate::db::img::ImageFormat;
-
 pub(crate) mod db;
 
 /// Trait that defines the operations an image store must support.
@@ -49,11 +47,19 @@ pub(crate) fn generate_versions(data: &[u8]) -> Result<Vec<ImageVersion>> {
     Ok(versions)
 }
 
-/// Version of an image of a specific size.
+/// Version of an image of a specific size (or format).
 #[derive(Debug, Clone)]
 pub(crate) struct ImageVersion {
     pub data: Vec<u8>,
     pub version: String,
+}
+
+/// Format of the image.
+#[derive(Debug, Clone, strum::Display, strum::EnumString)]
+#[strum(serialize_all = "lowercase")]
+pub(crate) enum ImageFormat {
+    Png,
+    Svg,
 }
 
 /// Check if the image is in SVG format.

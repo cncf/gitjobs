@@ -4,13 +4,13 @@
 use std::collections::HashMap;
 
 use anyhow::Result;
+use askama::Template;
 use axum::{
     extract::{Query, State},
     http::StatusCode,
     response::{Html, IntoResponse},
 };
 use axum_messages::Messages;
-use rinja::Template;
 use tracing::instrument;
 
 use crate::{
@@ -25,6 +25,8 @@ use crate::{
         },
     },
 };
+
+// Pages handlers.
 
 /// Handler that returns the job seeker dashboard home page.
 #[instrument(skip_all, err)]
@@ -41,7 +43,7 @@ pub(crate) async fn page(
     };
 
     // Prepare content for the selected tab
-    let tab: Tab = query.get("tab").into();
+    let tab: Tab = query.get("tab").unwrap_or(&String::new()).parse().unwrap_or_default();
     let content = match tab {
         Tab::Account => {
             let user_summary = user.clone().into();

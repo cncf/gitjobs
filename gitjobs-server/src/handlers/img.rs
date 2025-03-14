@@ -14,9 +14,8 @@ use uuid::Uuid;
 
 use crate::{
     auth::AuthSession,
-    db::img::ImageFormat,
     handlers::{error::HandlerError, extractors::JobBoardId},
-    img::DynImageStore,
+    img::{DynImageStore, ImageFormat},
 };
 
 /// Handler that returns an image.

@@ -3,7 +3,7 @@
 
 use anyhow::Result;
 use axum::{
-    Router,
+    Extension, Router,
     extract::FromRef,
     http::{
         HeaderValue, StatusCode, Uri,
@@ -16,6 +16,7 @@ use axum::{
 use axum_login::login_required;
 use axum_messages::MessagesManagerLayer;
 use rust_embed::Embed;
+use serde_qs::axum::{QsQueryConfig, QsQueryRejection};
 use tower::ServiceBuilder;
 use tower_http::{
     set_header::SetResponseHeaderLayer, trace::TraceLayer, validate_request::ValidateRequestHeaderLayer,
@@ -57,7 +58,7 @@ pub(crate) struct State {
 }
 
 /// Setup router.
-#[instrument(skip_all)]
+#[instrument(skip_all, err)]
 pub(crate) async fn setup(
     cfg: HttpServerConfig,
     db: DynDB,
@@ -77,10 +78,10 @@ pub(crate) async fn setup(
     let auth_layer = crate::auth::setup_layer(&cfg, db).await?;
 
     // Setup sub-routers
-    let employer_dashboard_router = setup_employer_dashboard_router(state.clone());
+    let employer_dashboard_router = setup_employer_dashboard_router(&state);
     let job_seeker_dashboard_router = setup_job_seeker_dashboard_router();
-    let dashboard_images_router = setup_dashboard_images_router(state.clone());
-    let jobboard_images_router = setup_jobboard_images_router(state.clone());
+    let dashboard_images_router = setup_dashboard_images_router(&state);
+    let jobboard_images_router = setup_jobboard_images_router(&state);
 
     // Setup main router
     let mut router = Router::new()
@@ -117,6 +118,9 @@ pub(crate) async fn setup(
         .route_layer(auth_layer)
         .route_layer(ServiceBuilder::new().layer(TraceLayer::new_for_http()))
         .route("/static/{*file}", get(static_handler))
+        .layer(Extension(QsQueryConfig::new(3, false).error_handler(|err| {
+            QsQueryRejection::new(err, StatusCode::UNPROCESSABLE_ENTITY)
+        })))
         .layer(SetResponseHeaderLayer::if_not_present(
             CACHE_CONTROL,
             HeaderValue::try_from(format!("max-age={DEFAULT_CACHE_DURATION}")).expect("valid header value"),
@@ -137,8 +141,7 @@ pub(crate) async fn setup(
 }
 
 /// Setup employer dashboard router.
-#[instrument(skip_all)]
-fn setup_employer_dashboard_router(state: State) -> Router<State> {
+fn setup_employer_dashboard_router(state: &State) -> Router<State> {
     // Setup middleware
     let check_user_has_profile_access =
         middleware::from_fn_with_state(state.clone(), auth::user_has_profile_access);
@@ -204,7 +207,6 @@ fn setup_employer_dashboard_router(state: State) -> Router<State> {
 }
 
 /// Setup job seeker dashboard router.
-#[instrument(skip_all)]
 fn setup_job_seeker_dashboard_router() -> Router<State> {
     Router::new()
         .route("/", get(dashboard::job_seeker::home::page))
@@ -219,8 +221,7 @@ fn setup_job_seeker_dashboard_router() -> Router<State> {
 }
 
 /// Setup dashboard images router.
-#[instrument(skip_all)]
-fn setup_dashboard_images_router(state: State) -> Router<State> {
+fn setup_dashboard_images_router(state: &State) -> Router<State> {
     // Setup middleware
     let check_user_has_image_access =
         middleware::from_fn_with_state(state.clone(), auth::user_has_image_access);
@@ -233,8 +234,7 @@ fn setup_dashboard_images_router(state: State) -> Router<State> {
 }
 
 /// Setup job board images router.
-#[instrument(skip_all)]
-fn setup_jobboard_images_router(state: State) -> Router<State> {
+fn setup_jobboard_images_router(state: &State) -> Router<State> {
     // Setup middleware
     let check_image_is_public = middleware::from_fn_with_state(state.clone(), auth::image_is_public);
 
@@ -246,13 +246,11 @@ fn setup_jobboard_images_router(state: State) -> Router<State> {
 }
 
 /// Handler that takes care of health check requests.
-#[instrument(skip_all)]
 async fn health_check() -> impl IntoResponse {
     StatusCode::OK
 }
 
 /// Handler that serves static files.
-#[instrument]
 async fn static_handler(uri: Uri) -> impl IntoResponse {
     // Extract file path from URI
     let mut path = uri.path().trim_start_matches('/').to_string();

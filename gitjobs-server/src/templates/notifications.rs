@@ -1,7 +1,9 @@
 //! This module defines some templates used in notifications.
 
-use rinja::Template;
+use askama::Template;
 use serde::{Deserialize, Serialize};
+
+// Emails templates.
 
 /// Email verification.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]

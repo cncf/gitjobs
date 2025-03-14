@@ -3,13 +3,14 @@
 use std::collections::HashMap;
 
 use anyhow::Result;
+use askama::Template;
 use axum::{
-    extract::{Query, RawQuery, State},
+    extract::{Query, State},
     http::StatusCode,
     response::{Html, IntoResponse},
 };
 use axum_messages::Messages;
-use rinja::Template;
+use serde_qs::axum::QsQuery;
 use tracing::instrument;
 
 use crate::{
@@ -27,16 +28,17 @@ use crate::{
     },
 };
 
+// Pages handlers.
+
 /// Handler that returns the employer dashboard home page.
 #[instrument(skip_all, err)]
 pub(crate) async fn page(
     auth_session: AuthSession,
     messages: Messages,
     State(db): State<DynDB>,
-    State(serde_qs_de): State<serde_qs::Config>,
     Query(query): Query<HashMap<String, String>>,
+    QsQuery(filters): QsQuery<applications::Filters>,
     SelectedEmployerIdOptional(employer_id): SelectedEmployerIdOptional,
-    RawQuery(raw_query): RawQuery,
 ) -> Result<impl IntoResponse, HandlerError> {
     // Get user from session
     let Some(user) = auth_session.user else {
@@ -44,7 +46,7 @@ pub(crate) async fn page(
     };
 
     // Get selected tab from query
-    let mut tab: Tab = query.get("tab").into();
+    let mut tab: Tab = query.get("tab").unwrap_or(&String::new()).parse().unwrap_or_default();
     if tab != Tab::Account && employer_id.is_none() {
         tab = Tab::EmployerInitialSetup;
     }
@@ -57,7 +59,6 @@ pub(crate) async fn page(
         }
         Tab::Applications => {
             let employer_id = employer_id.expect("to be some");
-            let filters = applications::Filters::new(&serde_qs_de, &raw_query.unwrap_or_default())?;
             let (filters_options, ApplicationsSearchOutput { applications, total }) = tokio::try_join!(
                 db.get_applications_filters_options(&employer_id),
                 db.search_applications(&employer_id, &filters)

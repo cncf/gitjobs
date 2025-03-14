@@ -1,11 +1,11 @@
 //! This module defines the HTTP handlers for the about page.
 
 use anyhow::Result;
+use askama::Template;
 use axum::{
     extract::State,
     response::{Html, IntoResponse},
 };
-use rinja::Template;
 use tracing::instrument;
 
 use crate::{

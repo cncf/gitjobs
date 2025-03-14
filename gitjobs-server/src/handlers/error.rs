@@ -19,7 +19,7 @@ pub(crate) enum HandlerError {
     Session(#[from] tower_sessions::session::Error),
 
     #[error("template error: {0}")]
-    Template(#[from] rinja::Error),
+    Template(#[from] askama::Error),
 
     #[error(transparent)]
     Other(#[from] anyhow::Error),

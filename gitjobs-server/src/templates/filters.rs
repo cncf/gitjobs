@@ -5,7 +5,7 @@ use tracing::error;
 
 /// Return the value if it is some, otherwise return an empty string.
 #[allow(clippy::unnecessary_wraps, clippy::ref_option)]
-pub(crate) fn display_some<T>(value: &Option<T>) -> rinja::Result<String>
+pub(crate) fn display_some<T>(value: &Option<T>) -> askama::Result<String>
 where
     T: std::fmt::Display,
 {
@@ -17,40 +17,13 @@ where
 
 /// Return the value if it is some, otherwise return the alternative value.
 #[allow(clippy::unnecessary_wraps, clippy::ref_option)]
-pub(crate) fn display_some_or<T, U>(value: &Option<T>, alternative: U) -> rinja::Result<String>
+pub(crate) fn display_some_or<T, U>(value: &Option<T>, alternative: U) -> askama::Result<String>
 where
     T: std::fmt::Display,
     U: std::fmt::Display,
 {
     match value {
         Some(value) => Ok(value.to_string()),
-        None => Ok(alternative.to_string()),
-    }
-}
-
-/// Return the formatted datetime if it is some, otherwise return an empty
-/// string.
-#[allow(clippy::unnecessary_wraps, clippy::ref_option, dead_code)]
-pub(crate) fn display_some_datetime(value: &Option<DateTime<Utc>>, format: &str) -> rinja::Result<String> {
-    match value {
-        Some(value) => Ok(value.format(format).to_string()),
-        None => Ok(String::new()),
-    }
-}
-
-/// Return the formatted datetime if it is some, otherwise return the
-/// alternative value.
-#[allow(clippy::unnecessary_wraps, clippy::ref_option)]
-pub(crate) fn display_some_datetime_or<T>(
-    value: &Option<DateTime<Utc>>,
-    format: &str,
-    alternative: T,
-) -> rinja::Result<String>
-where
-    T: std::fmt::Display,
-{
-    match value {
-        Some(value) => Ok(value.format(format).to_string()),
         None => Ok(alternative.to_string()),
     }
 }
@@ -66,7 +39,34 @@ pub(crate) fn display_some_date_or<T>(
     value: &Option<NaiveDate>,
     format: &str,
     alternative: T,
-) -> rinja::Result<String>
+) -> askama::Result<String>
+where
+    T: std::fmt::Display,
+{
+    match value {
+        Some(value) => Ok(value.format(format).to_string()),
+        None => Ok(alternative.to_string()),
+    }
+}
+
+/// Return the formatted datetime if it is some, otherwise return an empty
+/// string.
+#[allow(clippy::unnecessary_wraps, clippy::ref_option, dead_code)]
+pub(crate) fn display_some_datetime(value: &Option<DateTime<Utc>>, format: &str) -> askama::Result<String> {
+    match value {
+        Some(value) => Ok(value.format(format).to_string()),
+        None => Ok(String::new()),
+    }
+}
+
+/// Return the formatted datetime if it is some, otherwise return the
+/// alternative value.
+#[allow(clippy::unnecessary_wraps, clippy::ref_option)]
+pub(crate) fn display_some_datetime_or<T>(
+    value: &Option<DateTime<Utc>>,
+    format: &str,
+    alternative: T,
+) -> askama::Result<String>
 where
     T: std::fmt::Display,
 {
@@ -78,7 +78,7 @@ where
 
 /// Filter to convert markdown to html.
 #[allow(clippy::unnecessary_wraps, clippy::ref_option)]
-pub(crate) fn md_to_html(s: &str) -> rinja::Result<String> {
+pub(crate) fn md_to_html(s: &str) -> askama::Result<String> {
     let options = markdown::Options::gfm();
     match markdown::to_html_with_options(s, &options) {
         Ok(html) => Ok(html),
@@ -91,6 +91,6 @@ pub(crate) fn md_to_html(s: &str) -> rinja::Result<String> {
 
 /// Return the unnormalized version of the string provided.
 #[allow(clippy::unnecessary_wraps, clippy::ref_option)]
-pub(crate) fn unnormalize(s: &str) -> rinja::Result<String> {
+pub(crate) fn unnormalize(s: &str) -> askama::Result<String> {
     Ok(s.replace('-', " "))
 }

@@ -12,9 +12,6 @@ use crate::{
     db::PgDB,
 };
 
-/// Type alias for the email verification code.
-pub(crate) type VerificationCode = Uuid;
-
 /// Trait that defines some database operations used for authentication and
 /// authorization.
 #[async_trait]
@@ -78,7 +75,6 @@ pub(crate) trait DBAuth {
 
 #[async_trait]
 impl DBAuth for PgDB {
-    /// [DBAuth::create_session]
     #[instrument(skip(self, record), err)]
     async fn create_session(&self, record: &session::Record) -> Result<()> {
         trace!("creating session in database");
@@ -107,7 +103,6 @@ impl DBAuth for PgDB {
         Ok(())
     }
 
-    /// [DBAuth::delete_session]
     #[instrument(skip(self), err)]
     async fn delete_session(&self, session_id: &session::Id) -> Result<()> {
         trace!("deleting session from database");
@@ -122,7 +117,6 @@ impl DBAuth for PgDB {
         Ok(())
     }
 
-    /// [DBAuth::get_session]
     #[instrument(skip(self), err)]
     async fn get_session(&self, session_id: &session::Id) -> Result<Option<session::Record>> {
         trace!("getting session from database");
@@ -147,7 +141,6 @@ impl DBAuth for PgDB {
         Ok(None)
     }
 
-    /// [DBAuth::get_user_by_email]
     #[instrument(skip(self), err)]
     async fn get_user_by_email(&self, job_board_id: &Uuid, email: &str) -> Result<Option<User>> {
         trace!("getting user (by email) from database");
@@ -186,7 +179,6 @@ impl DBAuth for PgDB {
         Ok(user)
     }
 
-    /// [DBAuth::get_user_by_id]
     #[instrument(skip(self), err)]
     async fn get_user_by_id(&self, user_id: &Uuid) -> Result<Option<User>> {
         trace!("getting user (by id) from database");
@@ -224,7 +216,6 @@ impl DBAuth for PgDB {
         Ok(user)
     }
 
-    /// [DBAuth::get_user_by_username]
     #[instrument(skip(self), err)]
     async fn get_user_by_username(&self, job_board_id: &Uuid, username: &str) -> Result<Option<User>> {
         trace!("getting user (by username) from database");
@@ -265,7 +256,6 @@ impl DBAuth for PgDB {
         Ok(user)
     }
 
-    /// [DBAuth::get_user_password]
     #[instrument(skip(self), err)]
     async fn get_user_password(&self, user_id: &Uuid) -> Result<Option<String>> {
         trace!("getting user password from database");
@@ -282,7 +272,6 @@ impl DBAuth for PgDB {
         Ok(password)
     }
 
-    /// [DBAuth::is_image_public]
     #[instrument(skip(self), err)]
     async fn is_image_public(&self, image_id: &Uuid) -> Result<bool> {
         trace!("checking in database if image is public");
@@ -306,7 +295,6 @@ impl DBAuth for PgDB {
         Ok(row.get("is_public"))
     }
 
-    /// [DBAuth::sign_up_user]
     #[instrument(skip(self), err)]
     async fn sign_up_user(
         &self,
@@ -391,7 +379,6 @@ impl DBAuth for PgDB {
         Ok((user, email_verification_code))
     }
 
-    /// [DBAuth::update_session]
     #[instrument(skip(self, record), err)]
     async fn update_session(&self, record: &session::Record) -> Result<()> {
         trace!("updating session in database");
@@ -415,7 +402,6 @@ impl DBAuth for PgDB {
         Ok(())
     }
 
-    /// [DBAuth::update_user_details]
     #[instrument(skip(self), err)]
     async fn update_user_details(&self, user_id: &Uuid, user_summary: &UserSummary) -> Result<()> {
         trace!("updating user details in database");
@@ -441,7 +427,6 @@ impl DBAuth for PgDB {
         Ok(())
     }
 
-    /// [DBAuth::update_user_password]
     #[instrument(skip(self), err)]
     async fn update_user_password(&self, user_id: &Uuid, new_password: &str) -> Result<()> {
         trace!("updating user password in database");
@@ -461,7 +446,6 @@ impl DBAuth for PgDB {
         Ok(())
     }
 
-    /// [DBAuth::user_has_image_access]
     #[instrument(skip(self), err)]
     async fn user_has_image_access(&self, user_id: &Uuid, image_id: &Uuid) -> Result<bool> {
         trace!("checking in database if user has access to image");
@@ -477,7 +461,6 @@ impl DBAuth for PgDB {
         Ok(row.get(0))
     }
 
-    /// [DBAuth::user_has_profile_access]
     #[instrument(skip(self), err)]
     async fn user_has_profile_access(&self, user_id: &Uuid, job_seeker_profile_id: &Uuid) -> Result<bool> {
         trace!("checking in database if user has access to profile");
@@ -503,7 +486,6 @@ impl DBAuth for PgDB {
         Ok(row.get(0))
     }
 
-    /// [DBAuth::user_owns_employer]
     #[instrument(skip(self), err)]
     async fn user_owns_employer(&self, user_id: &Uuid, employer_id: &Uuid) -> Result<bool> {
         trace!("checking in database if user owns employer");
@@ -526,7 +508,6 @@ impl DBAuth for PgDB {
         Ok(row.get("owns_employer"))
     }
 
-    /// [DBAuth::user_owns_job]
     #[instrument(skip(self), err)]
     async fn user_owns_job(&self, user_id: &Uuid, job_id: &Uuid) -> Result<bool> {
         trace!("checking in database if user owns job");
@@ -550,7 +531,6 @@ impl DBAuth for PgDB {
         Ok(row.get("owns_job"))
     }
 
-    /// [DBAuth::verify_email]
     #[instrument(skip(self), err)]
     async fn verify_email(&self, code: &Uuid) -> Result<()> {
         trace!("verifying email in database");
@@ -587,3 +567,6 @@ impl DBAuth for PgDB {
         Ok(())
     }
 }
+
+/// Type alias for the email verification code.
+pub(crate) type VerificationCode = Uuid;

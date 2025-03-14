@@ -27,13 +27,13 @@ begin
     if p_filters ? 'date_range' then
         v_date_to := current_date;
         case
-            when (p_filters->>'date_range') == 'last-day' then
+            when (p_filters->>'date_range') = 'last-day' then
                 v_date_from := current_date - interval '1 day';
-            when (p_filters->>'date_range') == 'last3-days' then
+            when (p_filters->>'date_range') = 'last3-days' then
                 v_date_from := current_date - interval '3 days';
-            when (p_filters->>'date_range') == 'last7-days' then
+            when (p_filters->>'date_range') = 'last7-days' then
                 v_date_from := current_date - interval '7 days';
-            when (p_filters->>'date_range') == 'last30-days' then
+            when (p_filters->>'date_range') = 'last30-days' then
                 v_date_from := current_date - interval '30 days';
         end case;
     end if;

@@ -1,13 +1,13 @@
 //! This module defines the HTTP handlers for the jobs pages.
 
 use anyhow::Result;
+use askama::Template;
 use axum::{
     extract::{Path, State},
     http::StatusCode,
     response::{Html, IntoResponse},
 };
 use chrono::Utc;
-use rinja::Template;
 use tracing::instrument;
 use uuid::Uuid;
 

@@ -1,7 +1,7 @@
 //! This module defines some types and functionality used to paginate.
 
 use anyhow::Result;
-use rinja::Template;
+use askama::Template;
 use serde::{Deserialize, Serialize};
 
 /// Default pagination limit.

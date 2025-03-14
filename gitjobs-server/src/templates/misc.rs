@@ -1,19 +1,37 @@
-//! This module defines some templates used across the site.
+//! This module defines some types and templates used across the site.
 
-use rinja::Template;
+use askama::Template;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::templates::{filters, helpers::format_location};
 
-/// Locations.
+// Templates.
+
+/// Locations selector template.
 #[derive(Debug, Clone, Template, PartialEq, Serialize, Deserialize)]
 #[template(path = "misc/locations.html")]
 pub(crate) struct Locations {
     pub locations: Vec<Location>,
 }
 
-/// Location.
+/// Members selector template.
+#[derive(Debug, Clone, Template, PartialEq, Serialize, Deserialize)]
+#[template(path = "misc/members.html")]
+pub(crate) struct Members {
+    pub members: Vec<Member>,
+}
+
+/// Projects selector template.
+#[derive(Debug, Clone, Template, PartialEq, Serialize, Deserialize)]
+#[template(path = "misc/projects.html")]
+pub(crate) struct Projects {
+    pub projects: Vec<Project>,
+}
+
+// Types.
+
+/// Location information.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[allow(clippy::struct_field_names)]
 pub(crate) struct Location {
@@ -35,14 +53,7 @@ impl std::fmt::Display for Location {
     }
 }
 
-/// Members.
-#[derive(Debug, Clone, Template, PartialEq, Serialize, Deserialize)]
-#[template(path = "misc/members.html")]
-pub(crate) struct Members {
-    pub members: Vec<Member>,
-}
-
-/// Member.
+/// Member information.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[allow(clippy::struct_field_names)]
 pub(crate) struct Member {
@@ -52,14 +63,7 @@ pub(crate) struct Member {
     pub logo_url: String,
 }
 
-/// Projects.
-#[derive(Debug, Clone, Template, PartialEq, Serialize, Deserialize)]
-#[template(path = "misc/projects.html")]
-pub(crate) struct Projects {
-    pub projects: Vec<Project>,
-}
-
-/// Project.
+/// Project information.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[allow(clippy::struct_field_names)]
 pub(crate) struct Project {

@@ -47,7 +47,7 @@ async fn main() -> Result<()> {
     let ts = tracing_subscriber::fmt()
         .with_env_filter(EnvFilter::try_from_default_env().unwrap_or_else(|_| {
             format!(
-                "{}=trace,axum_login=debug,tower_sessions=debug,tower_http=debug",
+                "{}=trace,axum_login=debug,tower_sessions=debug",
                 env!("CARGO_CRATE_NAME")
             )
             .into()

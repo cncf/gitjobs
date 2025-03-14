@@ -1,12 +1,13 @@
 //! This module defines the HTTP handlers for the jobs pages.
 
 use anyhow::Result;
+use askama::Template;
 use axum::{
-    extract::{Path, RawQuery, State},
+    extract::{Path, State},
     response::{Html, IntoResponse},
 };
 use reqwest::StatusCode;
-use rinja::Template;
+use serde_qs::axum::QsQuery;
 use tracing::instrument;
 use uuid::Uuid;
 
@@ -28,12 +29,10 @@ use crate::{
 pub(crate) async fn jobs_page(
     auth_session: AuthSession,
     State(db): State<DynDB>,
-    State(serde_qs_de): State<serde_qs::Config>,
-    RawQuery(raw_query): RawQuery,
+    QsQuery(filters): QsQuery<Filters>,
     JobBoardId(job_board_id): JobBoardId,
 ) -> Result<impl IntoResponse, HandlerError> {
     // Get filter options and jobs that match the query
-    let filters = Filters::new(&serde_qs_de, &raw_query.unwrap_or_default())?;
     let (filters_options, JobsSearchOutput { jobs, total }) = tokio::try_join!(
         db.get_jobs_filters_options(&job_board_id),
         db.search_jobs(&job_board_id, &filters)
@@ -64,12 +63,10 @@ pub(crate) async fn jobs_page(
 #[instrument(skip_all, err)]
 pub(crate) async fn explore_section(
     State(db): State<DynDB>,
-    State(serde_qs_de): State<serde_qs::Config>,
-    RawQuery(raw_query): RawQuery,
+    QsQuery(filters): QsQuery<Filters>,
     JobBoardId(job_board_id): JobBoardId,
 ) -> Result<impl IntoResponse, HandlerError> {
     // Get filter options and jobs that match the query
-    let filters = Filters::new(&serde_qs_de, &raw_query.unwrap_or_default())?;
     let (filters_options, JobsSearchOutput { jobs, total }) = tokio::try_join!(
         db.get_jobs_filters_options(&job_board_id),
         db.search_jobs(&job_board_id, &filters)
@@ -94,12 +91,10 @@ pub(crate) async fn explore_section(
 #[instrument(skip_all, err)]
 pub(crate) async fn results_section(
     State(db): State<DynDB>,
-    State(serde_qs_de): State<serde_qs::Config>,
-    RawQuery(raw_query): RawQuery,
+    QsQuery(filters): QsQuery<Filters>,
     JobBoardId(job_board_id): JobBoardId,
 ) -> Result<impl IntoResponse, HandlerError> {
     // Get jobs that match the query
-    let filters = Filters::new(&serde_qs_de, &raw_query.unwrap_or_default())?;
     let JobsSearchOutput { jobs, total } = db.search_jobs(&job_board_id, &filters).await?;
 
     // Prepare template

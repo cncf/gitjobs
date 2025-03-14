@@ -1,8 +1,8 @@
 //! This module defines some templates and types used in the job seeker
 //! dashboard profile page.
 
+use askama::Template;
 use chrono::NaiveDate;
-use rinja::Template;
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use uuid::Uuid;
@@ -12,6 +12,8 @@ use crate::templates::{
     helpers::{DATE_FORMAT_2, build_dashboard_image_url, format_location, normalize},
     misc::Location,
 };
+
+// Pages templates.
 
 /// Profile preview page template.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
@@ -27,6 +29,8 @@ pub(crate) struct UpdatePage {
     pub profile: Option<JobSeekerProfile>,
     pub skills: Vec<String>,
 }
+
+// Types.
 
 /// Job seeker profile.
 #[skip_serializing_none]
@@ -66,7 +70,7 @@ impl JobSeekerProfile {
     }
 }
 
-/// Certification.
+/// Certification information.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub(crate) struct Certification {
     pub description: String,
@@ -76,7 +80,7 @@ pub(crate) struct Certification {
     pub title: String,
 }
 
-/// Education.
+/// Education information.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub(crate) struct Education {
     pub description: String,
@@ -86,7 +90,7 @@ pub(crate) struct Education {
     pub title: String,
 }
 
-/// Experience.
+/// Experience information.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub(crate) struct Experience {
     pub company: String,
@@ -97,7 +101,7 @@ pub(crate) struct Experience {
     pub end_date: Option<NaiveDate>,
 }
 
-/// Project.
+/// Project information.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub(crate) struct Project {
     pub description: String,

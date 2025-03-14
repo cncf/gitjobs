@@ -1,8 +1,8 @@
 //! This module defines some templates and types used in the employer dashboard
 //! home page.
 
+use askama::Template;
 use axum_messages::{Level, Message};
-use rinja::Template;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
@@ -12,6 +12,8 @@ use crate::templates::{
     filters,
     helpers::{build_dashboard_image_url, find_employer},
 };
+
+// Pages templates.
 
 /// Home page template.
 #[derive(Debug, Clone, Template)]
@@ -28,6 +30,8 @@ pub(crate) struct Page {
     pub selected_employer_id: Option<Uuid>,
     pub username: Option<String>,
 }
+
+// Types.
 
 /// Content section.
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -75,7 +79,8 @@ impl std::fmt::Display for Content {
 }
 
 /// Tab selected.
-#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize, strum::Display, strum::EnumString)]
+#[strum(serialize_all = "kebab-case")]
 pub(crate) enum Tab {
     Account,
     Applications,
@@ -83,16 +88,4 @@ pub(crate) enum Tab {
     #[default]
     Jobs,
     Profile,
-}
-
-impl From<Option<&String>> for Tab {
-    fn from(tab: Option<&String>) -> Self {
-        match tab.map(String::as_str) {
-            Some("account") => Tab::Account,
-            Some("applications") => Tab::Applications,
-            Some("employer-initial-setup") => Tab::EmployerInitialSetup,
-            Some("profile") => Tab::Profile,
-            _ => Tab::Jobs,
-        }
-    }
 }

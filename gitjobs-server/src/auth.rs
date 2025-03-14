@@ -453,7 +453,7 @@ impl UserSummary {
         // Get user emails from GitHub
         let emails = reqwest::Client::new()
             .get("https://api.github.com/user/emails")
-            .headers(headers.clone())
+            .headers(headers)
             .send()
             .await?
             .json::<Vec<GitHubUserEmail>>()

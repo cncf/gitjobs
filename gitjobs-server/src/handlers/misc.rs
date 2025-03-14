@@ -3,12 +3,12 @@
 use std::collections::HashMap;
 
 use anyhow::Result;
+use askama::Template;
 use axum::{
     extract::{Query, State},
     http::StatusCode,
     response::{Html, IntoResponse},
 };
-use rinja::Template;
 use tracing::instrument;
 
 use crate::{

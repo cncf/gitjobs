@@ -2,6 +2,7 @@
 
 use std::collections::HashMap;
 
+use askama::Template;
 use axum::{
     extract::{Path, Query, Request, State},
     http::StatusCode,
@@ -12,7 +13,6 @@ use axum_extra::extract::Form;
 use axum_messages::Messages;
 use openidconnect as oidc;
 use password_auth::verify_password;
-use rinja::Template;
 use serde::Deserialize;
 use tower_sessions::Session;
 use tracing::instrument;
@@ -453,6 +453,30 @@ pub(crate) async fn verify_email(
     Ok(Redirect::to(LOG_IN_URL).into_response())
 }
 
+/// Get the log in url including the next url if provided.
+fn get_log_in_url(next_url: Option<&String>) -> String {
+    let mut log_in_url = LOG_IN_URL.to_string();
+    if let Some(next_url) = next_url {
+        log_in_url = format!("{log_in_url}?next_url={next_url}");
+    };
+    log_in_url
+}
+
+// Deserialization helpers.
+
+/// `OAuth2` authorization response.
+#[derive(Debug, Clone, Deserialize)]
+pub struct OAuth2AuthorizationResponse {
+    code: String,
+    state: oauth2::CsrfToken,
+}
+
+/// Next url to redirect to.
+#[derive(Debug, Deserialize)]
+pub(crate) struct NextUrl {
+    pub next_url: Option<String>,
+}
+
 // Authorization middleware.
 
 /// Check if the image provided is public.
@@ -571,28 +595,4 @@ pub(crate) async fn user_owns_job(
     }
 
     next.run(request).await.into_response()
-}
-
-/// Get the log in url including the next url if provided.
-fn get_log_in_url(next_url: Option<&String>) -> String {
-    let mut log_in_url = LOG_IN_URL.to_string();
-    if let Some(next_url) = next_url {
-        log_in_url = format!("{log_in_url}?next_url={next_url}");
-    };
-    log_in_url
-}
-
-// Deserialization helpers.
-
-/// `OAuth2` authorization response.
-#[derive(Debug, Clone, Deserialize)]
-pub struct OAuth2AuthorizationResponse {
-    code: String,
-    state: oauth2::CsrfToken,
-}
-
-/// Next url to redirect to.
-#[derive(Debug, Deserialize)]
-pub(crate) struct NextUrl {
-    pub next_url: Option<String>,
 }

@@ -1,11 +1,13 @@
 //! This module defines some templates and types used in the job seeker
 //! dashboard home page.
 
+use askama::Template;
 use axum_messages::{Level, Message};
-use rinja::Template;
 use serde::{Deserialize, Serialize};
 
 use crate::templates::{PageId, auth, dashboard::job_seeker, filters};
+
+// Pages templates.
 
 /// Home page template.
 #[derive(Debug, Clone, Template)]
@@ -20,6 +22,8 @@ pub(crate) struct Page {
     pub name: Option<String>,
     pub username: Option<String>,
 }
+
+// Types.
 
 /// Content section.
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -51,18 +55,10 @@ impl std::fmt::Display for Content {
 }
 
 /// Tab selected.
-#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize, strum::Display, strum::EnumString)]
+#[strum(serialize_all = "kebab-case")]
 pub(crate) enum Tab {
     Account,
     #[default]
     Profile,
-}
-
-impl From<Option<&String>> for Tab {
-    fn from(tab: Option<&String>) -> Self {
-        match tab.map(String::as_str) {
-            Some("account") => Tab::Account,
-            _ => Tab::Profile,
-        }
-    }
 }

@@ -9,7 +9,7 @@ use uuid::Uuid;
 
 use crate::{
     PgDB,
-    db::Total,
+    db::misc::Total,
     templates::dashboard::employer::{
         applications::{self, Application},
         employers::{Employer, EmployerSummary},
@@ -75,7 +75,6 @@ pub(crate) trait DBDashBoardEmployer {
 
 #[async_trait]
 impl DBDashBoardEmployer for PgDB {
-    /// [DBDashBoardEmployer::add_employer]
     #[instrument(skip(self), err)]
     async fn add_employer(&self, job_board_id: &Uuid, user_id: &Uuid, employer: &Employer) -> Result<Uuid> {
         let mut db = self.pool.get().await?;
@@ -134,12 +133,12 @@ impl DBDashBoardEmployer for PgDB {
         )
         .await?;
 
+        // Commit transaction
         tx.commit().await?;
 
         Ok(employer_id)
     }
 
-    /// [DBDashBoardEmployer::add_job]
     #[instrument(skip(self), err)]
     async fn add_job(&self, employer_id: &Uuid, job: &Job) -> Result<()> {
         // Begin transaction
@@ -218,7 +217,7 @@ impl DBDashBoardEmployer for PgDB {
                     &job.salary_min,
                     &job.salary_max,
                     &job.salary_period,
-                    &job.seniority,
+                    &job.seniority.as_ref().map(ToString::to_string),
                     &job.skills,
                     &job.upstream_commitment,
                 ],
@@ -246,7 +245,6 @@ impl DBDashBoardEmployer for PgDB {
         Ok(())
     }
 
-    /// [DBDashBoardEmployer::archive_job]
     #[instrument(skip(self), err)]
     async fn archive_job(&self, job_id: &Uuid) -> Result<()> {
         let db = self.pool.get().await?;
@@ -267,7 +265,6 @@ impl DBDashBoardEmployer for PgDB {
         Ok(())
     }
 
-    /// [DBDashBoardEmployer::delete_job]
     #[instrument(skip(self), err)]
     async fn delete_job(&self, job_id: &Uuid) -> Result<()> {
         let db = self.pool.get().await?;
@@ -277,7 +274,6 @@ impl DBDashBoardEmployer for PgDB {
         Ok(())
     }
 
-    /// [DBDashBoardEmployer::get_applications_filters_options]
     #[instrument(skip(self), err)]
     async fn get_applications_filters_options(
         &self,
@@ -318,7 +314,6 @@ impl DBDashBoardEmployer for PgDB {
         Ok(filters_options)
     }
 
-    /// [DBDashBoardEmployer::get_employer]
     #[instrument(skip(self), err)]
     async fn get_employer(&self, employer_id: &Uuid) -> Result<Employer> {
         let db = self.pool.get().await?;
@@ -372,7 +367,6 @@ impl DBDashBoardEmployer for PgDB {
         Ok(employer)
     }
 
-    /// [DBDashBoardEmployer::get_job_board]
     #[instrument(skip(self), err)]
     async fn get_job_board(&self, job_board_id: &Uuid) -> Result<JobBoard> {
         let db = self.pool.get().await?;
@@ -396,7 +390,6 @@ impl DBDashBoardEmployer for PgDB {
         Ok(job_board)
     }
 
-    /// [DBDashBoardEmployer::get_job_dashboard]
     #[instrument(skip(self), err)]
     async fn get_job_dashboard(&self, job_id: &Uuid) -> Result<Job> {
         let db = self.pool.get().await?;
@@ -480,7 +473,9 @@ impl DBDashBoardEmployer for PgDB {
             salary_min: row.get("salary_min"),
             salary_max: row.get("salary_max"),
             salary_period: row.get("salary_period"),
-            seniority: row.get("seniority"),
+            seniority: row
+                .get::<_, Option<String>>("seniority")
+                .map(|s| s.parse().expect("valid seniority")),
             skills: row.get("skills"),
             updated_at: row.get("updated_at"),
             upstream_commitment: row.get("upstream_commitment"),
@@ -489,7 +484,6 @@ impl DBDashBoardEmployer for PgDB {
         Ok(job)
     }
 
-    /// [DBDashBoardEmployer::get_job_seeker_user_id]
     #[instrument(skip(self), err)]
     async fn get_job_seeker_user_id(&self, job_seeker_profile_id: &Uuid) -> Result<Option<Uuid>> {
         let db = self.pool.get().await?;
@@ -508,7 +502,6 @@ impl DBDashBoardEmployer for PgDB {
         Ok(user_id)
     }
 
-    /// [DBDashBoardEmployer::list_employer_jobs]
     #[instrument(skip(self), err)]
     async fn list_employer_jobs(&self, employer_id: &Uuid) -> Result<Vec<JobSummary>> {
         let db = self.pool.get().await?;
@@ -548,7 +541,6 @@ impl DBDashBoardEmployer for PgDB {
         Ok(jobs)
     }
 
-    /// [DBAuth::list_employers]
     #[instrument(skip(self), err)]
     async fn list_employers(&self, user_id: &Uuid) -> Result<Vec<EmployerSummary>> {
         let db = self.pool.get().await?;
@@ -575,7 +567,6 @@ impl DBDashBoardEmployer for PgDB {
         Ok(employers)
     }
 
-    /// [DBDashBoardEmployer::publish_job]
     #[instrument(skip(self), err)]
     async fn publish_job(&self, job_id: &Uuid) -> Result<()> {
         let db = self.pool.get().await?;
@@ -597,7 +588,6 @@ impl DBDashBoardEmployer for PgDB {
         Ok(())
     }
 
-    /// [DBJobBoard::search_applications]
     #[instrument(skip(self))]
     async fn search_applications(
         &self,
@@ -623,7 +613,6 @@ impl DBDashBoardEmployer for PgDB {
         Ok(output)
     }
 
-    /// [DBDashBoardEmployer::update_employer]
     #[instrument(skip(self), err)]
     async fn update_employer(&self, employer_id: &Uuid, employer: &Employer) -> Result<()> {
         let db = self.pool.get().await?;
@@ -657,7 +646,6 @@ impl DBDashBoardEmployer for PgDB {
         Ok(())
     }
 
-    /// [DBDashBoardEmployer::update_job]
     #[instrument(skip(self), err)]
     async fn update_job(&self, job_id: &Uuid, job: &Job) -> Result<()> {
         // Begin transaction
@@ -711,7 +699,7 @@ impl DBDashBoardEmployer for PgDB {
                 &job.salary_min,
                 &job.salary_max,
                 &job.salary_period,
-                &job.seniority,
+                &job.seniority.as_ref().map(ToString::to_string),
                 &job.skills,
                 &job.upstream_commitment,
             ],

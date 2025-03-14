@@ -18,7 +18,7 @@ pub(crate) trait DBNotifications {
     /// Enqueue a notification to be sent.
     async fn enqueue_notification(&self, notification: &NewNotification) -> Result<()>;
 
-    /// Get pending notification.
+    /// Get a pending notification.
     async fn get_pending_notification(&self, client_id: Uuid) -> Result<Option<Notification>>;
 
     /// Update notification.
@@ -32,7 +32,6 @@ pub(crate) trait DBNotifications {
 
 #[async_trait]
 impl DBNotifications for PgDB {
-    /// [DBNotifications::enqueue_notification]
     #[instrument(skip(self), err)]
     async fn enqueue_notification(&self, notification: &NewNotification) -> Result<()> {
         let db = self.pool.get().await?;
@@ -52,10 +51,9 @@ impl DBNotifications for PgDB {
         Ok(())
     }
 
-    /// [DBNotifications::get_pending_notification]
     #[instrument(skip(self), err)]
     async fn get_pending_notification(&self, client_id: Uuid) -> Result<Option<Notification>> {
-        // Get client used for the transaction
+        // Get transaction client
         let clients = self.txs_clients.read().await;
         let Some((tx, _)) = clients.get(&client_id) else {
             bail!(TX_CLIENT_NOT_FOUND);
@@ -94,7 +92,6 @@ impl DBNotifications for PgDB {
         Ok(notification)
     }
 
-    /// [DBNotifications::update_notification]
     #[instrument(skip(self), err)]
     async fn update_notification(
         &self,
@@ -102,7 +99,7 @@ impl DBNotifications for PgDB {
         notification: &Notification,
         error: Option<String>,
     ) -> Result<()> {
-        // Get client used for the transaction
+        // Get transaction client
         let clients = self.txs_clients.read().await;
         let Some((tx, _)) = clients.get(&client_id) else {
             bail!(TX_CLIENT_NOT_FOUND);

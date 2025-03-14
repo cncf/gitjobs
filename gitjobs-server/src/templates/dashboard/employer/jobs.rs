@@ -1,19 +1,21 @@
 //! This module defines some templates and types used in the employer dashboard
 //! jobs page.
 
+use askama::Template;
 use chrono::{DateTime, Utc};
-use rinja::Template;
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use uuid::Uuid;
 
 use crate::templates::{
+    dashboard::employer::employers::Employer,
     filters,
     helpers::{DATE_FORMAT, build_dashboard_image_url, format_location, normalize},
+    jobboard::jobs::Seniority,
     misc::{Location, Project},
 };
 
-use super::employers::Employer;
+// Pages templates.
 
 /// Add job page template.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
@@ -46,6 +48,8 @@ pub(crate) struct UpdatePage {
     pub job: Job,
     pub skills: Vec<String>,
 }
+
+// Types.
 
 /// Job summary.
 #[skip_serializing_none]
@@ -88,7 +92,7 @@ pub(crate) struct Job {
     pub salary_min: Option<i64>,
     pub salary_max: Option<i64>,
     pub salary_period: Option<String>,
-    pub seniority: Option<String>,
+    pub seniority: Option<Seniority>,
     pub skills: Option<Vec<String>>,
     pub updated_at: Option<DateTime<Utc>>,
     pub upstream_commitment: Option<i32>,
@@ -123,8 +127,9 @@ impl Job {
 }
 
 /// Job status.
-#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize, strum::Display, strum::EnumString)]
 #[serde(rename_all = "kebab-case")]
+#[strum(serialize_all = "kebab-case")]
 pub(crate) enum JobStatus {
     Archived,
     #[default]
@@ -132,32 +137,10 @@ pub(crate) enum JobStatus {
     Published,
 }
 
-impl std::fmt::Display for JobStatus {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            JobStatus::Archived => write!(f, "archived"),
-            JobStatus::Draft => write!(f, "draft"),
-            JobStatus::Published => write!(f, "published"),
-        }
-    }
-}
-
-impl std::str::FromStr for JobStatus {
-    type Err = String;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "archived" => Ok(JobStatus::Archived),
-            "draft" => Ok(JobStatus::Draft),
-            "published" => Ok(JobStatus::Published),
-            _ => Err("invalid job status".to_string()),
-        }
-    }
-}
-
 /// Job kind.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, strum::Display, strum::EnumString)]
 #[serde(rename_all = "kebab-case")]
+#[strum(serialize_all = "kebab-case")]
 pub(crate) enum JobKind {
     Contractor,
     Internship,
@@ -165,78 +148,23 @@ pub(crate) enum JobKind {
     PartTime,
 }
 
-impl std::fmt::Display for JobKind {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            JobKind::Contractor => write!(f, "contractor"),
-            JobKind::Internship => write!(f, "internship"),
-            JobKind::FullTime => write!(f, "full-time"),
-            JobKind::PartTime => write!(f, "part-time"),
-        }
-    }
-}
-
-impl std::str::FromStr for JobKind {
-    type Err = String;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "contractor" => Ok(JobKind::Contractor),
-            "internship" => Ok(JobKind::Internship),
-            "full-time" => Ok(JobKind::FullTime),
-            "part-time" => Ok(JobKind::PartTime),
-            _ => Err("invalid job type".to_string()),
-        }
-    }
-}
-
 /// Salary kind.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, strum::Display, strum::EnumString)]
 #[serde(rename_all = "kebab-case")]
+#[strum(serialize_all = "kebab-case")]
 pub(crate) enum SalaryKind {
     Fixed,
     Range,
 }
 
-impl std::fmt::Display for SalaryKind {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            SalaryKind::Fixed => write!(f, "fixed"),
-            SalaryKind::Range => write!(f, "range"),
-        }
-    }
-}
-
 /// Job workplace.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, strum::Display, strum::EnumString)]
 #[serde(rename_all = "kebab-case")]
+#[strum(serialize_all = "kebab-case")]
 pub(crate) enum Workplace {
     Hybrid,
     OnSite,
     Remote,
-}
-
-impl std::fmt::Display for Workplace {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Workplace::Hybrid => write!(f, "hybrid"),
-            Workplace::OnSite => write!(f, "on-site"),
-            Workplace::Remote => write!(f, "remote"),
-        }
-    }
-}
-
-impl std::str::FromStr for Workplace {
-    type Err = String;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "hybrid" => Ok(Workplace::Hybrid),
-            "on-site" => Ok(Workplace::OnSite),
-            "remote" => Ok(Workplace::Remote),
-            _ => Err("invalid workplace".to_string()),
-        }
-    }
 }
 
 /// Job board.

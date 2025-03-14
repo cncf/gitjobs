@@ -1,11 +1,9 @@
 //! This module defines some templates and types used in the jobs pages.
 
-use anyhow::Result;
+use askama::Template;
 use chrono::{DateTime, Utc};
-use rinja::Template;
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
-use tracing::trace;
 use uuid::Uuid;
 
 use crate::templates::{
@@ -14,6 +12,8 @@ use crate::templates::{
     misc::{Location, Member, Project},
     pagination::{NavigationLinks, Pagination},
 };
+
+// Pages and sections templates.
 
 /// Jobs page template.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
@@ -38,6 +38,33 @@ pub(crate) struct ExploreSection {
     pub results_section: ResultsSection,
 }
 
+/// Results section template.
+#[derive(Debug, Clone, Template, Serialize, Deserialize)]
+#[template(path = "jobboard/jobs/results_section.html")]
+#[allow(clippy::struct_field_names)]
+pub(crate) struct ResultsSection {
+    pub jobs: Vec<JobSummary>,
+    pub navigation_links: NavigationLinks,
+    pub total: usize,
+
+    pub offset: Option<usize>,
+}
+
+/// Job page template.
+#[derive(Debug, Clone, Template, Serialize, Deserialize)]
+#[template(path = "jobboard/jobs/job.html")]
+#[allow(clippy::struct_field_names)]
+pub(crate) struct JobPage {
+    pub job: Job,
+    pub logged_in: bool,
+    pub page_id: PageId,
+
+    pub name: Option<String>,
+    pub username: Option<String>,
+}
+
+// Types.
+
 /// Filters used in the jobs explore section.
 #[skip_serializing_none]
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
@@ -60,14 +87,6 @@ pub(crate) struct Filters {
 }
 
 impl Filters {
-    /// Create a new `Filters` instance from the raw query string provided.
-    pub(crate) fn new(serde_qs_de: &serde_qs::Config, raw_query: &str) -> Result<Self> {
-        let filters: Filters = serde_qs_de.deserialize_str(raw_query)?;
-
-        trace!("{:?}", filters);
-        Ok(filters)
-    }
-
     /// Check if the filters are empty.
     #[allow(dead_code)]
     pub(crate) fn is_empty(&self) -> bool {
@@ -98,8 +117,9 @@ impl Pagination for Filters {
 }
 
 /// Date range filter option.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, strum::Display, strum::EnumString)]
 #[serde(rename_all = "kebab-case")]
+#[strum(serialize_all = "kebab-case")]
 pub(crate) enum DateRange {
     LastDay,
     Last3Days,
@@ -107,34 +127,10 @@ pub(crate) enum DateRange {
     Last30Days,
 }
 
-impl std::fmt::Display for DateRange {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            DateRange::LastDay => write!(f, "last-day"),
-            DateRange::Last3Days => write!(f, "last3-days"),
-            DateRange::Last7Days => write!(f, "last7-days"),
-            DateRange::Last30Days => write!(f, "last30-days"),
-        }
-    }
-}
-
-impl std::str::FromStr for DateRange {
-    type Err = String;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "last-day" => Ok(DateRange::LastDay),
-            "last3-days" => Ok(DateRange::Last3Days),
-            "last7-days" => Ok(DateRange::Last7Days),
-            "last30-days" => Ok(DateRange::Last30Days),
-            _ => Err("invalid date range".to_string()),
-        }
-    }
-}
-
 /// Seniority level filter option.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, strum::Display, strum::EnumString)]
 #[serde(rename_all = "kebab-case")]
+#[strum(serialize_all = "kebab-case")]
 pub(crate) enum Seniority {
     Entry,
     Junior,
@@ -143,57 +139,12 @@ pub(crate) enum Seniority {
     Lead,
 }
 
-impl std::fmt::Display for Seniority {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Seniority::Entry => write!(f, "entry"),
-            Seniority::Junior => write!(f, "junior"),
-            Seniority::Mid => write!(f, "mid"),
-            Seniority::Senior => write!(f, "senior"),
-            Seniority::Lead => write!(f, "lead"),
-        }
-    }
-}
-impl std::str::FromStr for Seniority {
-    type Err = String;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "entry" => Ok(Seniority::Entry),
-            "junior" => Ok(Seniority::Junior),
-            "mid" => Ok(Seniority::Mid),
-            "senior" => Ok(Seniority::Senior),
-            "lead" => Ok(Seniority::Lead),
-            _ => Err("invalid seniority level".to_string()),
-        }
-    }
-}
-
 /// Filters options used in the jobs explore section.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub(crate) struct FiltersOptions {
     pub benefits: Vec<String>,
     pub projects: Vec<Project>,
     pub skills: Vec<String>,
-}
-
-/// Filter option details.
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub(crate) struct FilterOption {
-    pub name: String,
-    pub value: String,
-}
-
-/// Results section template.
-#[derive(Debug, Clone, Template, Serialize, Deserialize)]
-#[template(path = "jobboard/jobs/results_section.html")]
-#[allow(clippy::struct_field_names)]
-pub(crate) struct ResultsSection {
-    pub jobs: Vec<JobSummary>,
-    pub navigation_links: NavigationLinks,
-    pub total: usize,
-
-    pub offset: Option<usize>,
 }
 
 /// Job summary.
@@ -215,6 +166,7 @@ pub(crate) struct JobSummary {
     pub salary_min: Option<i64>,
     pub salary_max: Option<i64>,
     pub salary_period: Option<String>,
+    pub seniority: Option<Seniority>,
     pub updated_at: Option<DateTime<Utc>>,
     pub upstream_commitment: Option<i32>,
 }
@@ -231,19 +183,6 @@ pub(crate) struct Employer {
     pub logo_id: Option<Uuid>,
     pub member: Option<Member>,
     pub website_url: Option<String>,
-}
-
-/// Job page template.
-#[derive(Debug, Clone, Template, Serialize, Deserialize)]
-#[template(path = "jobboard/jobs/job.html")]
-#[allow(clippy::struct_field_names)]
-pub(crate) struct JobPage {
-    pub job: Job,
-    pub logged_in: bool,
-    pub page_id: PageId,
-
-    pub name: Option<String>,
-    pub username: Option<String>,
 }
 
 /// Job details.
@@ -272,6 +211,7 @@ pub(crate) struct Job {
     pub salary_min: Option<i64>,
     pub salary_max: Option<i64>,
     pub salary_period: Option<String>,
+    pub seniority: Option<Seniority>,
     pub skills: Option<Vec<String>>,
     pub updated_at: Option<DateTime<Utc>>,
     pub upstream_commitment: Option<i32>,

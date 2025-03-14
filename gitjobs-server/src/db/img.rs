@@ -5,7 +5,10 @@ use async_trait::async_trait;
 use tracing::instrument;
 use uuid::Uuid;
 
-use crate::{PgDB, img::ImageVersion};
+use crate::{
+    PgDB,
+    img::{ImageFormat, ImageVersion},
+};
 
 /// Trait that defines some database operations used to manage images.
 #[async_trait]
@@ -28,7 +31,6 @@ pub(crate) trait DBImage {
 
 #[async_trait]
 impl DBImage for PgDB {
-    /// [DBImage::get_image_version]
     #[instrument(skip(self), err)]
     async fn get_image_version(
         &self,
@@ -51,7 +53,6 @@ impl DBImage for PgDB {
         Ok(Some((data, format)))
     }
 
-    /// [DBImage::save_image_versions]
     #[instrument(skip(self), err)]
     async fn save_image_versions(
         &self,
@@ -96,24 +97,5 @@ impl DBImage for PgDB {
         tx.commit().await?;
 
         Ok(image_id)
-    }
-}
-
-/// Image format.
-#[derive(Debug, Clone)]
-pub(crate) enum ImageFormat {
-    Png,
-    Svg,
-}
-
-impl TryFrom<&str> for ImageFormat {
-    type Error = anyhow::Error;
-
-    fn try_from(value: &str) -> Result<Self, Self::Error> {
-        match value {
-            "png" => Ok(Self::Png),
-            "svg" => Ok(Self::Svg),
-            _ => Err(anyhow::Error::msg("invalid image format")),
-        }
     }
 }

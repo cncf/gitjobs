@@ -1,13 +1,13 @@
 //! This module defines the HTTP handlers to manage employers.
 
 use anyhow::Result;
+use askama::Template;
 use axum::{
     extract::{Path, State},
     http::StatusCode,
     response::{Html, IntoResponse},
 };
 use axum_messages::Messages;
-use rinja::Template;
 use tower_sessions::Session;
 use tracing::instrument;
 use uuid::Uuid;

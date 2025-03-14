@@ -21,7 +21,6 @@ pub(crate) trait DBDashBoardJobSeeker {
 
 #[async_trait]
 impl DBDashBoardJobSeeker for PgDB {
-    /// [DBDashBoardJobSeeker::get_job_seeker_profile]
     #[instrument(skip(self), err)]
     async fn get_job_seeker_profile(&self, user_id: &Uuid) -> Result<Option<JobSeekerProfile>> {
         let db = self.pool.get().await?;
@@ -98,7 +97,6 @@ impl DBDashBoardJobSeeker for PgDB {
         Ok(profile)
     }
 
-    /// [DBDashBoardJobSeeker::update_job_seeker_profile]
     #[instrument(skip(self), err)]
     async fn update_job_seeker_profile(&self, user_id: &Uuid, profile: &JobSeekerProfile) -> Result<()> {
         let db = self.pool.get().await?;

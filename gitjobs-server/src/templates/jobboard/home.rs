@@ -1,9 +1,11 @@
 //! This module defines some templates and types used in the home page.
 
-use rinja::Template;
+use askama::Template;
 use serde::{Deserialize, Serialize};
 
 use crate::templates::{PageId, filters};
+
+// Pages templates.
 
 /// Home page template.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]

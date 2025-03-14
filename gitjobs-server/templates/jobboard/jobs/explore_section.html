@@ -75,14 +75,13 @@
             hx-boost="true">
         {# Header #}
         <div class="flex justify-between items-center border-solid border-0 border-b border-gray-100 p-5">
+          <div class="font-semibold text-sm text-black">Filters</div>
+
           <div class="flex space-x-3 relative">
-            <div class="font-semibold text-sm text-black">Filters</div>
-            <div id="desktop-jobs-spinner" class="hx-spinner absolute start-10 -top-1">
+            <div id="desktop-jobs-spinner" class="hx-spinner absolute -start-6 top-0">
               {% call macros::spinner(size = 5) %}
             </div>
-          </div>
 
-          <div>
             <button hx-get="/jobs"
                     hx-target="body"
                     hx-boost="true"

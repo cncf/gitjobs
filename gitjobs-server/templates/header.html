@@ -1,5 +1,5 @@
 {# Navbar #}
-<div class="flex space-x-20 items-center">
+<div class="flex items-center space-x-6">
   {# Logo #}
   <div>
     <a hx-boost="true" href="/">
@@ -12,7 +12,7 @@
   {# End logo #}
 
   {# Desktop links #}
-  <div class="hidden xl:flex xl:gap-x-20 -mb-2">
+  <div class="hidden xl:flex xl:gap-x-6 -mb-2">
     {% call header_link(text = "Jobs", href = "/jobs", active = page_id == PageId::JobBoard) %}
     {% call disabled_header_link(text = "About") %}
   </div>

@@ -76,6 +76,21 @@ where
     }
 }
 
+/// Return the number in humanized format.
+#[allow(
+    clippy::unnecessary_wraps,
+    clippy::ref_option,
+    clippy::trivially_copy_pass_by_ref,
+    clippy::cast_precision_loss
+)]
+#[allow(dead_code)]
+pub(crate) fn humanize_number(value: &u64) -> askama::Result<String> {
+    Ok(human_format::Formatter::new()
+        .with_decimals(0)
+        .with_separator("")
+        .format(*value as f64))
+}
+
 /// Filter to convert markdown to html.
 #[allow(clippy::unnecessary_wraps, clippy::ref_option)]
 pub(crate) fn md_to_html(s: &str) -> askama::Result<String> {

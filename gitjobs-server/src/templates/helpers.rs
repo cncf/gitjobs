@@ -62,6 +62,16 @@ pub(crate) fn format_location(
     None
 }
 
+/// Check if the value provided is none or some and default.
+#[allow(clippy::ref_option)]
+#[allow(dead_code)]
+pub(crate) fn option_is_none_or_default<T: Default + PartialEq>(v: &Option<T>) -> bool {
+    if let Some(value) = v {
+        return *value == T::default();
+    }
+    true
+}
+
 /// Regular expression to match multiple hyphens.
 static MULTIPLE_HYPHENS: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"-{2,}").expect("exprs in MULTIPLE_HYPHENS should be valid"));

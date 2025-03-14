@@ -25,6 +25,7 @@ chrono-tz = { version = "0.10.1", features = ["serde"] }
 deadpool-postgres = { version = "0.14.1", features = ["serde"] }
 emojis = "0.6.4"
 figment = { version = "0.10.19", features = ["yaml", "env"] }
+human_format = "1.1.0"
 image = "0.25.5"
 lettre = { version = "0.11.15", default-features = false, features = ["builder", "hostname", "pool", "smtp-transport", "tokio1-rustls-tls"] }
 markdown = "1.0.0-alpha.23"

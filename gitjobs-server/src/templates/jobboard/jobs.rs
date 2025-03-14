@@ -9,6 +9,7 @@ use uuid::Uuid;
 use crate::templates::{
     PageId,
     dashboard::employer::jobs::{JobKind, SalaryKind, Workplace},
+    helpers::option_is_none_or_default,
     misc::{Location, Member, Project},
     pagination::{NavigationLinks, Pagination},
 };
@@ -66,32 +67,38 @@ pub(crate) struct JobPage {
 // Types.
 
 /// Filters used in the jobs explore section.
-#[skip_serializing_none]
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 pub(crate) struct Filters {
+    #[serde(skip_serializing_if = "option_is_none_or_default")]
     pub benefits: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "option_is_none_or_default")]
     pub date_range: Option<DateRange>,
+    #[serde(skip_serializing_if = "option_is_none_or_default")]
     pub kind: Option<Vec<JobKind>>,
+    #[serde(skip_serializing_if = "option_is_none_or_default")]
     pub limit: Option<usize>,
+    #[serde(skip_serializing_if = "option_is_none_or_default")]
     pub location_id: Option<Uuid>,
+    #[serde(skip_serializing_if = "option_is_none_or_default")]
     pub max_distance: Option<u64>,
+    #[serde(skip_serializing_if = "option_is_none_or_default")]
     pub offset: Option<usize>,
+    #[serde(skip_serializing_if = "option_is_none_or_default")]
     pub open_source: Option<usize>,
+    #[serde(skip_serializing_if = "option_is_none_or_default")]
     pub projects: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "option_is_none_or_default")]
     pub salary_min: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub seniority: Option<Seniority>,
+    #[serde(skip_serializing_if = "option_is_none_or_default")]
     pub skills: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "option_is_none_or_default")]
     pub ts_query: Option<String>,
+    #[serde(skip_serializing_if = "option_is_none_or_default")]
     pub upstream_commitment: Option<usize>,
+    #[serde(skip_serializing_if = "option_is_none_or_default")]
     pub workplace: Option<Vec<Workplace>>,
-}
-
-impl Filters {
-    /// Check if the filters are empty.
-    #[allow(dead_code)]
-    pub(crate) fn is_empty(&self) -> bool {
-        self == &Filters::default()
-    }
 }
 
 impl Pagination for Filters {
@@ -117,13 +124,14 @@ impl Pagination for Filters {
 }
 
 /// Date range filter option.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, strum::Display, strum::EnumString)]
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize, strum::Display, strum::EnumString)]
 #[serde(rename_all = "kebab-case")]
 #[strum(serialize_all = "kebab-case")]
 pub(crate) enum DateRange {
     LastDay,
     Last3Days,
     Last7Days,
+    #[default]
     Last30Days,
 }
 

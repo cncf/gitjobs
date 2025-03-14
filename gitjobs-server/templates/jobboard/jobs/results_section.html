@@ -11,20 +11,16 @@
           <p class="mb-10">We can't seem to find any jobs that match your search criteria.</p>
           <p>
             You can
-            <button id="placeholder-reset-btn" class="p-0 underline">reset</button>
+            <button hx-get="/jobs"
+                    hx-target="body"
+                    hx-boost="true"
+                    hx-push-url="/jobs"
+                    class="p-0 underline">reset</button>
             your filters or try a different search.
           </p>
         </div>
       </div>
     </div>
-    <script type="module">
-      import {
-        resetForm
-      } from '/static/js/jobboard/filters.js';
-
-      const resetBtn = document.getElementById('placeholder-reset-btn');
-      resetBtn.addEventListener('click', () => resetForm('desktop-jobs-form'));
-    </script>
     {# End placeholder cards -#}
   {% else %}
     {# Cards -#}
@@ -32,13 +28,13 @@
       <button data-preview-job="true"
               hx-get="/jobs/{{ job.job_id }}"
               hx-target="#preview-content"
-              class="mx-4 text-start cursor-pointer border rounded-lg hover:border-primary-500
+              class="mx-5 md:mx-7 text-start cursor-pointer border rounded-lg hover:outline hover:-outline-offset-1 p-5 md:p-7
                      {% if let Some(member) = job.employer.member -%}
-                       p-[calc(1.25rem-1px)] md:p-[calc(1.75rem-1px)] border-2{%- else -%}p-5 md:p-7{%- endif -%}"
+                       border-primary-400 bg-primary-50/20 hover:outline-primary-500{%- else -%}hover:outline-gray-300{%- endif -%}"
               hx-boost="true">
         <div class="flex flex-1 flex-row items-stretch space-x-4 w-full">
           {# Company logo #}
-          <div class="shrink-0">
+          <div class="shrink-0 rounded-lg bg-white border">
             {% if let Some(logo_id) = job.employer.logo_id %}
               {% let logo = &self::build_jobboard_image_url(logo_id, "medium") %}
               {% let logo_small = &self::build_jobboard_image_url(logo_id, "small") %}
@@ -60,13 +56,13 @@
           <div class="flex-grow min-w-0 flex flex-col content-between">
             {# Company and member #}
             <div class="flex justify-between items-center space-x-5">
-              <div class="flex items-center space-x-4 truncate">
-                {# Company #}
-                <div class="truncate leading-3 text-gray-400 text-xs font-semibold tracking-wide uppercase">
-                  {{ job.employer.company }}
-                </div>
-                {# End company #}
+              {# Company #}
+              <div class="truncate leading-3 text-gray-400 text-xs font-semibold tracking-wide uppercase">
+                {{ job.employer.company }}
+              </div>
+              {# End company #}
 
+              <div class="shrink-0 flex items-center space-x-8">
                 <div>
                   {# Member #}
                   {% if let Some(member) = job.employer.member %}
@@ -86,9 +82,7 @@
                   {% endif %}
                   {# End member #}
                 </div>
-              </div>
 
-              <div class="shrink-0">
                 {# Published date #}
                 <div class="truncate leading-3 text-gray-400 text-xs font-semibold tracking-wide uppercase">
                   {{ job.published_at.format(DATE_FORMAT_3) }}
@@ -98,14 +92,14 @@
             </div>
 
             <div class="flex space-x-3 items-center mt-auto">
-              <div class="flex items-center space-x-3">
+              <div class="flex items-center space-x-4">
                 {# Title #}
                 <div class="text-base font-stretch-condensed font-medium text-gray-900 truncate">{{ job.title }}</div>
                 {# End title #}
 
                 {# Location #}
                 {% if let Some(location) = job.location %}
-                  <div class="hidden lg:inline-flex border rounded-md px-2 py-0.5 text-xs text-gray-500 font-normal items-center">
+                  <div class="hidden lg:inline-flex border bg-white rounded-md px-2 py-0.5 text-xs text-gray-500 font-normal items-center">
                     <div class="svg-icon size-2.5 icon-location bg-gray-500 me-1"></div>
                     <div>{{ location.city }}, {{ location.country }}</div>
                   </div>
@@ -117,21 +111,21 @@
           {# End info #}
         </div>
 
-        <div class="flex justify-between items-center space-x-6 w-full mt-5 ps-16">
+        <div class="flex justify-between items-end space-x-6 w-full mt-5 ps-16">
           {# Tags #}
-          <div class="flex items-center space-x-6 w-full text-sm/6 text-gray-600">
+          <div class="flex items-center space-x-6 w-full text-[0.8rem] text-gray-600">
             {% let kind = job.kind.to_string() %}
             {% let workplace = job.workplace.to_string() %}
 
             {# Job type #}
-            <div class="flex items-center space-x-2">
+            <div class="flex items-baseline space-x-1">
               <div class="svg-icon size-3 icon-briefcase bg-gray-500"></div>
               <div class="capitalize">{{ kind|unnormalize }}</div>
             </div>
             {# End job type #}
 
             {# Workplace #}
-            <div class="flex items-center space-x-2">
+            <div class="flex items-center space-x-1">
               <div class="svg-icon size-3 icon-company bg-gray-500"></div>
               <div class="capitalize">{{ workplace|unnormalize }}</div>
             </div>
@@ -140,15 +134,15 @@
             {# Seniority #}
             {% if let Some(seniority) = job.seniority %}
               {% let seniority = seniority.to_string() %}
-              <div class="flex items-center space-x-2">
+              <div class="flex items-center space-x-1">
                 <div class="svg-icon size-3 icon-organigram bg-gray-500"></div>
-                <div class="capitalize">{{ seniority|unnormalize }}</div>
+                <div class="capitalize">{{ seniority|unnormalize }} level</div>
               </div>
             {% endif %}
             {# End seniority #}
 
             {# Open source #}
-            <div class="flex space-x-2 items-center justify-center">
+            <div class="flex space-x-1 items-center justify-center">
               {% if let Some(open_source) = job.open_source %}
                 {% if open_source + 0 > 0 %}
                   <div class="svg-icon size-3 icon-check bg-green-500"></div>
@@ -165,35 +159,38 @@
           {# End tags #}
 
           <div class="text-sm/6 text-gray-600">
-            {% let salary = job.salary|display_some %}
-            {% let salary_min = job.salary_min|display_some %}
-            {# Salary #}
-            {% if !salary.is_empty() %}
-              <div class="flex items-baseline space-x-1 border rounded-md px-2 py-0.5 text-xs text-gray-500 font-normal">
+            {% if let Some(salary) = job.salary %}
+              {# Salary #}
+              <div class="flex items-baseline space-x-1 border bg-white rounded-md px-2 py-0.5 text-xs text-gray-500 font-normal">
                 {% if let Some(salary_currency) = job.salary_currency %}
                   <div class="text-[0.7rem] text-gray-500">{{ salary_currency }}</div>
                 {% endif %}
-                <div class="capitalize">{{ salary }}</div>
-                {% if let Some(salary_period) = job.salary_period %}
-                  <div class="text-gray-900 text-[0.7rem]">({{ salary_period }})</div>
-                {% endif %}
+                <div class="capitalize">{{ salary|humanize_number }}</div>
+                {%- if let Some(salary_period) = job.salary_period -%}
+                  {# djlint:off #}
+                  <div class="text-[0.7rem] text-nowrap">/ {{ salary_period.replace("ly", "") -}}</div>
+                  {# djlint:on #}
+                {%- endif -%}
               </div>
-            {% else if !salary_min.is_empty() %}
-              {% let salary_max = job.salary_max|display_some %}
-              <div class="flex items-baseline space-x-1 border rounded-md px-2 py-0.5 text-xs text-gray-500 font-normal">
+              {# End salary #}
+            {% else if let Some(salary_min) = job.salary_min %}
+              {# Salary range #}
+              <div class="flex items-baseline space-x-1 border bg-white rounded-md px-2 py-0.5 text-xs text-gray-500 font-normal">
                 {% if let Some(salary_currency) = job.salary_currency %}
                   <div class="text-[0.7rem] text-gray-500">{{ salary_currency }}</div>
                 {% endif %}
                 <div class="capitalize text-nowrap">
-                  {{ salary_min }}
-                  {% if !salary_max.is_empty() %}- {{ salary_max }}{% endif %}
+                  {{ salary_min|humanize_number }}
+                  {%- if let Some(salary_max) = job.salary_max -%}-{{ salary_max|humanize_number }}{% endif %}
                 </div>
-                {% if let Some(salary_period) = job.salary_period %}
-                  <div class="text-gray-900 text-[0.7rem]">({{ salary_period }})</div>
-                {% endif %}
+                {%- if let Some(salary_period) = job.salary_period -%}
+                  {# djlint:off #}
+                  <div class="text-[0.7rem] text-nowrap">/ {{ salary_period.replace("ly", "") -}}</div>
+                  {# djlint:on #}
+                {%- endif -%}
               </div>
+              {# End salary range #}
             {% endif %}
-            {# End salary #}
           </div>
         </div>
       </button>

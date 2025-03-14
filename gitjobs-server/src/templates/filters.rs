@@ -83,8 +83,7 @@ where
     clippy::trivially_copy_pass_by_ref,
     clippy::cast_precision_loss
 )]
-#[allow(dead_code)]
-pub(crate) fn humanize_number(value: &u64) -> askama::Result<String> {
+pub(crate) fn humanize_number(value: &i64) -> askama::Result<String> {
     Ok(human_format::Formatter::new()
         .with_decimals(0)
         .with_separator("")

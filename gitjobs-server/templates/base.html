@@ -14,7 +14,7 @@
     {# TODO - primary color #}
     <style>
       :root {
-        --primary-color: #d62293;
+        --primary-color: #fd4d12;
       }
     </style>
 
@@ -181,21 +181,8 @@
   <body class="flex flex-col h-screen font-inter bg-gray-100"
         hx-get
         hx-trigger="refresh-body">
-    <div id="gitjobs-alert"
-         class="hidden alert text-orange-800 bg-orange-50 border-b border-orange-700 text-sm/6 py-1 px-10 text-center"
-         role="alert">
-      This is a demo site. The jobs displayed are not real.
-      <button id="close-alert" type="button" class="absolute top-1 end-1 p-1 group">
-        <div class="svg-icon size-4 icon-close bg-gray-500 group-hover:bg-gray-800"></div>
-      </button>
-    </div>
+    {# <div class="alert text-primary-800 bg-primary-50 border-b border-primary-500 text-sm/6 py-1 px-10 text-center" role="alert">This is a demo site. The jobs displayed are not real.</div> #}
     {% block content %}
     {% endblock content %}
-    <script type="module">
-      const closeAlert = document.getElementById('close-alert');
-      closeAlert.addEventListener('click', () => {
-        document.getElementById('gitjobs-alert').remove();
-      });
-    </script>
   </body>
 </html>

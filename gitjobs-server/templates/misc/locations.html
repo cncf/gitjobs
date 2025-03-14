@@ -2,7 +2,7 @@
   {% if locations.is_empty() %}
     <div class="px-8 py-4 text-sm/6 text-gray-600 italic">No locations found</div>
   {% else %}
-    <ul class="py-2 text-sm text-gray-700 overflow-auto max-h-[180px]">
+    <ul class="py-2 text-gray-700 overflow-auto max-h-[180px]">
       {% for l in locations %}
         <li class="group" data-index="{{ loop.index }}">
           <button type="button"

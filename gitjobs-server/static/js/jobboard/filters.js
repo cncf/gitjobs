@@ -20,8 +20,6 @@ export const close = () => {
 
 // Trigger change on the form provided.
 export const triggerChangeOnForm = (formId, fromSearch) => {
-  console.log("triggerChangeOnForm", formId, fromSearch);
-
   // Prevent form submission if the search input is empty, and it is triggered
   // from the search input
   if (fromSearch) {
@@ -68,7 +66,6 @@ export const resetForm = async (formId) => {
   if (form) {
     // Clean selects
     form.querySelectorAll("select").forEach((el) => {
-      console.log(el);
       if (el.name === "date_range") {
         el.value = "last30-days";
       } else {
@@ -89,6 +86,10 @@ export const resetForm = async (formId) => {
       const contentTooltip = tooltip.getElementsByTagName("span")[0];
       contentTooltip.textContent = 0;
     });
+
+    // Clean text input fields
+    form.querySelectorAll("input[type=text]").forEach((el) => (el.value = ""));
+    form.querySelectorAll("input[type=hidden]").forEach((el) => (el.value = ""));
 
     // Clean selected options in collapsible filters
     const searchableFilters = form.getElementsByTagName("searchable-filter");

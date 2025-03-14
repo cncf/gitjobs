@@ -1,18 +1,18 @@
 {# Navbar #}
-<div class="flex space-x-20">
+<div class="flex space-x-20 items-center">
   {# Logo #}
   <div>
     <a hx-boost="true" href="/">
       <img src="/static/images/gitjobs.png"
            height="33px"
-           width="193px"
+           width="162px"
            alt="GitJobs Logo">
     </a>
   </div>
   {# End logo #}
 
   {# Desktop links #}
-  <div class="hidden xl:flex xl:gap-x-6">
+  <div class="hidden xl:flex xl:gap-x-20 -mb-2">
     {% call header_link(text = "Jobs", href = "/jobs", active = page_id == PageId::JobBoard) %}
     {% call disabled_header_link(text = "About") %}
   </div>

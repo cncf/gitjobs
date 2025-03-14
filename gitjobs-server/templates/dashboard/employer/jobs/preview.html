@@ -145,9 +145,10 @@
     {% call job_kind(kind = job.kind) %}
     {# End type #}
 
-    {# Seniority #}
+    {# Seniority level #}
     {% call job_details_subheading(content = "Seniority level") %}
     {% call job_details_content(text = job.seniority|display_some_or("-"), extra_styles = "capitalize") %}
+    {# End seniority level #}
 
     {# Salary #}
     {% call job_details_subheading(content = "Salary") %}

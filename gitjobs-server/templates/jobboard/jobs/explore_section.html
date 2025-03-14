@@ -41,7 +41,10 @@
   </form>
 
   <div class="text-end p-5">
-    <button id="reset-mobile-jobs-form"
+    <button hx-get="/jobs"
+            hx-target="body"
+            hx-boost="true"
+            hx-push-url="/jobs"
             class="btn-primary-outline btn-mini group">
       <div class="flex items-center space-x-1">
         <div class="svg-icon size-3 icon-close group-hover:bg-white"></div>
@@ -60,12 +63,13 @@
   <div class="flex items-start w-full h-full">
 
     {# Filters #}
-    <div class="relative hidden w-[28%] max-w-[28%] xl:w-1/4 xl:max-w-1/4 lg:block bg-white border rounded-lg">
+    <div class="relative hidden w-[28%] max-w-[28%] xl:w-1/4 xl:max-w-1/4 lg:block bg-white border rounded-lg pb-5">
       <form id="desktop-jobs-form"
             hx-get='/jobs/section/results'
             hx-trigger="change"
             hx-target="#items-list"
             hx-include="#searchbar"
+            hx-params="not location[state],location[country],location[city],ts_query_location"
             hx-ext="no-empty-vals"
             hx-indicator="#desktop-jobs-spinner"
             hx-boost="true">
@@ -79,7 +83,11 @@
           </div>
 
           <div>
-            <button id="reset-desktop-jobs-form" class="btn-primary-outline btn-mini">Reset</button>
+            <button hx-get="/jobs"
+                    hx-target="body"
+                    hx-boost="true"
+                    hx-push-url="/jobs"
+                    class="btn-primary-outline btn-mini">Reset</button>
           </div>
         </div>
         {# End header #}
@@ -199,10 +207,4 @@
 
   const searchJobsBtn = document.getElementById('search-jobs-btn');
   searchJobsBtn.addEventListener('click', () => triggerChangeOnForm('desktop-jobs-form', true));
-
-  const resetDesktopJobsForm = document.getElementById('reset-desktop-jobs-form');
-  resetDesktopJobsForm.addEventListener('click', () => resetForm('desktop-jobs-form'));
-
-  const resetMobileJobsForm = document.getElementById('reset-mobile-jobs-form');
-  resetMobileJobsForm.addEventListener('click', () => resetForm('mobile-jobs-form'));
 </script>

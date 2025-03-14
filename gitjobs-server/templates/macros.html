@@ -27,22 +27,23 @@
 {# End button spinner #}
 
 {# Location -#}
-{% macro location(location_id = "", city = "", state = "", country = "", required = false) %}
+{% macro location(location_id = "", city = "", state = "", country = "", required = false, input_styles = "", clean_styles = "", icon = "", location_id_name = "location[location_id]", font_size_list = "sm") %}
   {% let value = &self::format_location(Some(city), Some(state), Some(country))|display_some %}
   <div class="mt-2 relative">
     <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
-      <div class="svg-icon size-4 icon-search bg-gray-300"></div>
+      <div class="{%- if !icon.is_empty() -%}{{ icon }}{%- else -%}svg-icon size-4 icon-search bg-gray-300{%- endif -%}">
+      </div>
     </div>
     <input id="location"
-           name="ts_query"
+           name="ts_query_location"
            hx-get="/locations/search"
-           hx-include="#location"
+           hx-params="ts_query_location"
            hx-trigger="searchLocations"
            hx-target="#search-location"
            hx-indicator="#location-spinner"
            type="text"
            value="{{ value }}"
-           class="input-primary peer ps-10"
+           class="input-primary peer px-10 {{ input_styles }}"
            placeholder="Search location"
            autocomplete="off"
            autocorrect="off"
@@ -50,7 +51,7 @@
            spellcheck="false"
            {% if required %}required{% endif %}>
     <input type="hidden"
-           name="location[location_id]"
+           name="{{ location_id_name }}"
            id="location_id"
            value="{{ location_id }}"
            data-location="{{ value }}"
@@ -62,12 +63,13 @@
            id="country"
            value="{{ country }}">
     <div id="location-spinner" class="hx-spinner absolute end-10 top-1">{% call spinner(size = 5) %}</div>
-    <div class="absolute end-1.5 top-1.5 peer-placeholder-shown:hidden">
+    <div class="absolute end-1.5 top-1.5 peer-placeholder-shown:hidden {{ clean_styles }}">
       <button id="clean-location" type="button" class="mt-[2px]">
         <div class="svg-icon size-5 bg-gray-400 hover:bg-gray-700 icon-close"></div>
       </button>
     </div>
-    <div id="search-location" class="absolute z-10 start-0 end-0"></div>
+    <div id="search-location"
+         class="absolute z-10 start-0 end-0 text-{{ font_size_list }}"></div>
   </div>
   <script type="module">
     import {

@@ -49,7 +49,6 @@ export class InputRange extends LitWrapper {
   }
 
   _refreshStyles(value) {
-    console.log(value);
     this.percentValue = parseInt((value * 100) / this.max, 10);
     const thumbSize = 17;
     this.offset = thumbSize * (0.5 - this.percentValue / 100);
@@ -97,7 +96,8 @@ export class InputRange extends LitWrapper {
             : "opacity-0"} absolute z-10 inline-block px-2 py-1 text-sm font-medium text-white text-center bg-primary-900 rounded-lg shadow-xs tooltip top-8 start-[8.5px] -ms-8 w-16"
           style="left: calc(${this.percentValue}% + ${this.offset}px);"
         >
-          <small>${this.prefix}</small><span>${this._prettyNumber(this.value)}</span><small>${this.unit}</small>
+          <small>${this.prefix}</small><span>${this._prettyNumber(this.value)}</span
+          ><small>${this.unit}</small>
           <div
             class="h-0 w-0 border-x-[6px] border-x-transparent border-b-[6px] border-b-primary-900 absolute -top-1.5 start-[25px]"
           ></div>

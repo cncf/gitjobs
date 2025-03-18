@@ -34,18 +34,18 @@
               hx-boost="true">
         <div class="flex flex-1 flex-row items-stretch space-x-4 w-full">
           {# Company logo #}
-          <div class="shrink-0 rounded-lg bg-white border">
+          <div class="shrink-0 bg-white">
             {% if let Some(logo_id) = job.employer.logo_id %}
               {% let logo = &self::build_jobboard_image_url(logo_id, "medium") %}
               {% let logo_small = &self::build_jobboard_image_url(logo_id, "small") %}
-              <img class="size-12 flex rounded-lg"
+              <img class="size-12 flex"
                    height="48"
                    width="48"
                    srcset="{{ logo_small }}, {{ logo }} 2x"
                    src="{{ logo }}"
                    alt="{{ job.employer.company }} image">
             {% else %}
-              <div class="rounded-lg size-12 bg-gray-200 p-1 flex">
+              <div class="size-12 bg-gray-200 p-1 flex">
                 <div class="svg-icon size-8 icon-company bg-gray-600 m-auto"></div>
               </div>
             {% endif %}
@@ -167,9 +167,7 @@
                 {% endif %}
                 <div class="capitalize">{{ salary|humanize_number }}</div>
                 {%- if let Some(salary_period) = job.salary_period -%}
-                  {# djlint:off #}
-                  <div class="text-[0.7rem] text-nowrap">/ {{ salary_period.replace("ly", "") -}}</div>
-                  {# djlint:on #}
+                  <div class="text-[0.7rem] text-nowrap">/ year</div>
                 {%- endif -%}
               </div>
               {# End salary #}
@@ -184,9 +182,7 @@
                   {%- if let Some(salary_max) = job.salary_max -%}-{{ salary_max|humanize_number }}{% endif %}
                 </div>
                 {%- if let Some(salary_period) = job.salary_period -%}
-                  {# djlint:off #}
-                  <div class="text-[0.7rem] text-nowrap">/ {{ salary_period.replace("ly", "") -}}</div>
-                  {# djlint:on #}
+                  <div class="text-[0.7rem] text-nowrap">/ year</div>
                 {%- endif -%}
               </div>
               {# End salary range #}

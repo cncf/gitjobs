@@ -130,6 +130,15 @@
 
   {# Right column #}
   <div class="w-1/4 pt-6">
+    {# Apply url #}
+    {% if let Some(apply_url) = job.apply_url %}
+      <a href="{{ apply_url }}"
+         class="btn-primary-outline w-full block mt-4"
+         target="_blank"
+         rel="noopener noreferrer">Apply</a>
+    {% endif %}
+    {# End apply url #}
+
     {# Published date #}
     {% call job_details_subheading(content = "Published") %}
     {% call job_details_content(text = job.published_at|display_some_datetime_or(DATE_FORMAT, "-")) %}
@@ -161,14 +170,14 @@
         {% if let Some(salary) = job.salary %}
           <div class="flex items-baseline font-medium text-gray-900 text-sm">
             {% call currency(value = job.salary_currency) %}
-            {{ salary }}
+            {{ salary|humanize_number }}
           </div>
         {% else %}
           -
         {% endif %}
-        {% if let Some(salary_period) = job.salary_period %}
-          <div class="text-gray-900 text-xs ms-1">({{ salary_period }})</div>
-        {% endif %}
+        {%- if let Some(salary_period) = job.salary_period -%}
+          <div class="text-gray-900 text-xs ms-1">/ year</div>
+        {%- endif -%}
       </div>
       {# End fixed salary #}
       {% when SalaryKind::Range %}
@@ -177,7 +186,7 @@
         {% if let Some(salary_min) = job.salary_min %}
           <div class="flex items-baseline font-medium text-gray-900 text-sm">
             {% call currency(value = job.salary_currency) %}
-            {{ salary_min }}
+            {{ salary_min|humanize_number }}
           </div>
         {% else %}
           -
@@ -186,14 +195,13 @@
         {% if let Some(salary_max) = job.salary_max %}
           <div class="flex items-baseline text-gray-900 text-sm">
             <span class="mx-1">-</span>
-            {% call currency(value = job.salary_currency) %}
-            {{ salary_max }}
+            {{ salary_max|humanize_number }}
           </div>
         {% endif %}
 
-        {% if let Some(salary_period) = job.salary_period %}
-          <div class="text-gray-900 text-xs ms-1">({{ salary_period }})</div>
-        {% endif %}
+        {%- if let Some(salary_period) = job.salary_period -%}
+          <div class="text-gray-900 text-xs ms-1">/ year</div>
+        {%- endif -%}
       </div>
       {# End range salary #}
     {% endmatch %}
@@ -225,8 +233,8 @@
 
   {# Projects #}
   {% if let Some(projects) = job.projects %}
-    {% call job_details_subheading(content = "CNCF projects you'd work on") %}
-    <div class="flex flex-col space-y-3">
+    {% call job_details_subheading(content = "Projects you'd like to work on") %}
+    <div class="flex flex-col space-y-3 mt-2">
       {% for p in projects %}
         <div class="border rounded-lg p-2 text-sm/5 bg-white w-full">
           {% let label = &format!("CNCF {}", p.maturity) %}
@@ -282,7 +290,9 @@
 {# Job details content #}
 {% macro job_details_content(text, icon = "", extra_styles = "") %}
   <div class="flex items-center text-xs">
-    {% if !icon.is_empty() %}<div class="svg-icon size-3 icon-{{ icon }} bg-gray-500 me-2"></div>{% endif %}
+    {% if !icon.is_empty() %}
+      <div class="svg-icon size-3 icon-{{ icon }} bg-gray-500 me-2 shrink-0"></div>
+    {% endif %}
     <div class="truncate {{ extra_styles }}">{{ text }}</div>
   </div>
 {% endmacro job_details_content %}

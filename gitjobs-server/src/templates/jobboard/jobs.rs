@@ -79,7 +79,7 @@ pub(crate) struct Filters {
     #[serde(skip_serializing_if = "option_is_none_or_default")]
     pub limit: Option<usize>,
     #[serde(skip_serializing_if = "option_is_none_or_default")]
-    pub location_id: Option<Uuid>,
+    pub location: Option<Location>,
     #[serde(skip_serializing_if = "option_is_none_or_default")]
     pub max_distance: Option<u64>,
     #[serde(skip_serializing_if = "option_is_none_or_default")]

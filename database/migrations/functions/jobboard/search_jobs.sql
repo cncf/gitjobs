@@ -8,7 +8,7 @@ declare
     v_max_distance real := (p_filters->>'max_distance')::real;
     v_kind text[];
     v_limit int := coalesce((p_filters->>'limit')::int, 10);
-    v_location_id uuid := (p_filters->>'location_id')::uuid;
+    v_location_id uuid := ((p_filters->'location')->>'location_id')::uuid;
     v_offset int := coalesce((p_filters->>'offset')::int, 0);
     v_open_source int := (p_filters->>'open_source')::int;
     v_projects text[];

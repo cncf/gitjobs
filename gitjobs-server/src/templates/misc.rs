@@ -32,7 +32,7 @@ pub(crate) struct Projects {
 // Types.
 
 /// Location information.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 #[allow(clippy::struct_field_names)]
 pub(crate) struct Location {
     pub location_id: Uuid,

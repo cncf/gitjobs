@@ -1,6 +1,7 @@
 import { html } from "https://cdn.jsdelivr.net/gh/lit/dist@3/core/lit-core.min.js";
 import { unnormalize } from "/static/js/common/common.js";
 import { LitWrapper } from "/static/js/common/litWrapper.js";
+import { getBenefits, getSkills } from "/static/js/common/data.js";
 
 export class MultiSelect extends LitWrapper {
   static properties = {
@@ -29,7 +30,7 @@ export class MultiSelect extends LitWrapper {
   connectedCallback() {
     super.connectedCallback();
     window.addEventListener("mousedown", this.handleClickOutside);
-    this.filterOptions();
+    this._getOptions();
   }
 
   disconnectedCallback() {
@@ -37,7 +38,7 @@ export class MultiSelect extends LitWrapper {
     super.disconnectedCallback();
   }
 
-  filterOptions() {
+  _filterOptions() {
     if (this.enteredValue.length > 0) {
       this.visibleOptions = this.options.filter((option) =>
         option.toLowerCase().includes(this.enteredValue.toLowerCase()),
@@ -45,6 +46,21 @@ export class MultiSelect extends LitWrapper {
     } else {
       this.visibleOptions = this.options;
     }
+  }
+
+  _getOptions() {
+    switch (this.name) {
+      case "benefits":
+        this.options = getBenefits();
+        break;
+      case "skills":
+        this.options = getSkills();
+        break;
+      default:
+        this.options = this.options;
+    }
+
+    this._filterOptions();
   }
 
   handleClickOutside = (e) => {
@@ -140,7 +156,7 @@ export class MultiSelect extends LitWrapper {
 
   _onInputChange(event) {
     this.enteredValue = event.target.value;
-    this.filterOptions();
+    this._filterOptions();
   }
 
   _onRemoveBadge(option) {
@@ -151,7 +167,7 @@ export class MultiSelect extends LitWrapper {
     this.selected.push(option || this.enteredValue);
     this.enteredValue = "";
     this.visibleDropdown = false;
-    this.filterOptions();
+    this._filterOptions();
   }
 }
 customElements.define("multi-select", MultiSelect);

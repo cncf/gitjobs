@@ -2,6 +2,7 @@ import { html } from "https://cdn.jsdelivr.net/gh/lit/dist@3/all/lit-all.min.js"
 import { unnormalize } from "/static/js/common/common.js";
 import { triggerChangeOnForm } from "/static/js/jobboard/filters.js";
 import { LitWrapper } from "/static/js/common/litWrapper.js";
+import { getBenefits } from "/static/js/common/data.js";
 
 export class SearchableFilter extends LitWrapper {
   static properties = {
@@ -30,7 +31,7 @@ export class SearchableFilter extends LitWrapper {
   connectedCallback() {
     super.connectedCallback();
     window.addEventListener("mousedown", this.handleClickOutside);
-    this.filterOptions();
+    this._getOptions();
   }
 
   disconnectedCallback() {
@@ -45,7 +46,19 @@ export class SearchableFilter extends LitWrapper {
     await this.updateComplete;
   }
 
-  filterOptions() {
+  _getOptions() {
+    switch (this.name) {
+      case "benefits":
+        this.options = getBenefits();
+        break;
+      default:
+        this.options = this.options;
+    }
+
+    this._filterOptions();
+  }
+
+  _filterOptions() {
     if (this.enteredValue.length > 0) {
       this.visibleOptions = this.options.filter((option) => {
         const name = this.name === "projects" ? option.name : option;
@@ -58,13 +71,13 @@ export class SearchableFilter extends LitWrapper {
 
   _onInputChange(event) {
     this.enteredValue = event.target.value;
-    this.filterOptions();
+    this._filterOptions();
   }
 
   _cleanEnteredValue() {
     this.enteredValue = "";
     this.visibleDropdown = false;
-    this.filterOptions();
+    this._filterOptions();
   }
 
   handleClickOutside = (e) => {
@@ -77,7 +90,7 @@ export class SearchableFilter extends LitWrapper {
     this.selected.push(value);
     this.enteredValue = "";
     this.visibleDropdown = false;
-    this.filterOptions();
+    this._filterOptions();
 
     // Wait for the update to complete
     await this.updateComplete;

@@ -180,21 +180,22 @@ export class SearchableFilter extends LitWrapper {
       ${this.selected.length > 0
         ? html`<div class="flex gap-2 mt-4 ${this.viewType === "rows" ? "flex-col" : "flex-wrap"}">
             ${this.selected.map(
-              (opt) => html` <button
-                  type="button"
-                  @click=${() => this._onRemove(opt)}
-                  class="inline-flex items-center justify-between ps-2 pe-1 py-1 bg-white border rounded-lg cursor-pointer select-none border-primary-500 text-primary-500 max-w-full group"
-                >
-                  <div class="flex items-center justify-between space-x-3 w-full">
-                    <div class="text-[0.8rem] text-center text-nowrap capitalize truncate">
-                      ${unnormalize(opt)}
+              (opt) =>
+                html` <button
+                    type="button"
+                    @click=${() => this._onRemove(opt)}
+                    class="inline-flex items-center justify-between ps-2 pe-1 py-1 bg-white border rounded-lg cursor-pointer select-none border-primary-500 text-primary-500 max-w-full group"
+                  >
+                    <div class="flex items-center justify-between space-x-3 w-full">
+                      <div class="text-[0.8rem] text-center text-nowrap capitalize truncate">
+                        ${unnormalize(opt)}
+                      </div>
+                      <div
+                        class="svg-icon size-4 icon-close bg-gray-500 group-hover:bg-gray-800 shrink-0"
+                      ></div>
                     </div>
-                    <div
-                      class="svg-icon size-4 icon-close bg-gray-500 group-hover:bg-gray-800 shrink-0"
-                    ></div>
-                  </div>
-                </button>
-                <input type="hidden" name="${this.name}[]" value="${opt}" />`,
+                  </button>
+                  <input type="hidden" name="${this.name}[]" value="${opt}" />`,
             )}
           </div>`
         : ""}

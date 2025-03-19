@@ -105,9 +105,10 @@ export class InputRange extends LitWrapper {
         <div class="mx-[15px]">
           <ul class="flex justify-between w-full h-5">
             ${this.steps.map(
-              (i) => html`<li class="flex justify-center relative text-xs text-gray-500">
-                <span class="absolute -start-[10px]">${this._prettyNumber(i)}</span>
-              </li>`,
+              (i) =>
+                html`<li class="flex justify-center relative text-xs text-gray-500">
+                  <span class="absolute -start-[10px]">${this._prettyNumber(i)}</span>
+                </li>`,
             )}
             <li class="flex justify-center relative text-xs text-gray-500">
               <span class="absolute -start-[15px]">${this._prettyNumber(this.max)}${this.unit}</span>

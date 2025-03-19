@@ -39,7 +39,7 @@ palette = "0.7.6"
 password-auth = "1.0.0"
 postgres-openssl = "0.5.1"
 regex = "1.11.1"
-reqwest = { version = "0.12.14", features = ["json"] }
+reqwest = { version = "0.12.15", features = ["json"] }
 rust-embed = "8.6.0"
 serde = { version = "1.0.219", features = ["derive"] }
 serde_html_form = "0.2.7"

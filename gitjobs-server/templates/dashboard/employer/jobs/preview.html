@@ -133,7 +133,7 @@
     {# Apply url #}
     {% if let Some(apply_url) = job.apply_url %}
       <a href="{{ apply_url }}"
-         class="btn-primary-outline w-full block mt-4"
+         class="btn-primary-outline w-full block mt-4 mb-6"
          target="_blank"
          rel="noopener noreferrer">Apply</a>
     {% endif %}
@@ -233,7 +233,7 @@
 
   {# Projects #}
   {% if let Some(projects) = job.projects %}
-    {% call job_details_subheading(content = "Projects you'd like to work on") %}
+    {% call job_details_subheading(content = "Projects you'd work on") %}
     <div class="flex flex-col space-y-3 mt-2">
       {% for p in projects %}
         <div class="border rounded-lg p-2 text-sm/5 bg-white w-full">

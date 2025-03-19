@@ -137,12 +137,12 @@
     {% if let Some(apply_url) = job.apply_url %}
       {% if logged_in %}
         <a href="{{ apply_url }}"
-           class="btn-primary-outline w-full block mt-4"
+           class="btn-primary-outline w-full block mt-4 mb-6"
            target="_blank"
            rel="noopener noreferrer">Apply</a>
       {% else %}
         <button type="button"
-                class="btn-primary-outline w-full cursor-not-allowed mt-4"
+                class="btn-primary-outline w-full cursor-not-allowed mt-4 mb-6"
                 title="You need to be logged in to apply"
                 disabled>Apply</button>
       {% endif %}
@@ -244,7 +244,7 @@
 
   {# Projects #}
   {% if let Some(projects) = job.projects %}
-    {% call macros_preview::job_details_subheading(content = "Projects you'd like to work on") %}
+    {% call macros_preview::job_details_subheading(content = "Projects you'd work on") %}
     <div class="flex md:flex-col gap-3 mt-2">
       {% for p in projects %}
         <div class="border rounded-lg p-2 text-sm/5 bg-white md:w-full">

@@ -455,22 +455,23 @@
         <div id="images-spinner" class="hx-spinner absolute z-10 start-5 top-5">
           {% call spinner(size = 14, bg_color = "gray-300") %}
         </div>
-
-        {% if !empty_image %}
-          {# Image #}
-          <img id="image"
-               src="{{ url_image }}"
-               alt="Image"
-               height="auto"
-               width="auto"
-               class="size-[86px] object-contain rounded-lg m-auto">
-          {# End image #}
-        {% else %}
-          {# Placeholder image #}
-          <div id="placeholder-image"
-               class="svg-icon size-20 icon-{{ icon }} bg-white m-auto"></div>
-          {# End placeholder image #}
-        {% endif %}
+        <div id="image-container" class="relative w-100 h-100 flex mx-auto">
+          {% if !empty_image %}
+            {# Image #}
+            <img id="image"
+                 src="{{ url_image }}"
+                 alt="Image"
+                 height="auto"
+                 width="auto"
+                 class="size-[86px] object-contain rounded-lg m-auto">
+            {# End image #}
+          {% else %}
+            {# Placeholder image #}
+            <div id="placeholder-image"
+                 class="svg-icon size-20 icon-{{ icon }} bg-white m-auto"></div>
+            {# End placeholder image #}
+          {% endif %}
+        </div>
       </div>
 
       <div class="flex flex-col justify-between self-stretch">
@@ -493,7 +494,6 @@
                   {% if empty_image -%}
                   disabled
                   {%- endif -%}>Remove image</button>
-
         </div>
       </div>
     </div>
@@ -511,6 +511,16 @@
     imagesForm.addEventListener('htmx:afterRequest', (e) => {
       if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
         showSuccessAlert('Image added successfully.');
+        const imageId = e.detail.xhr.response;
+        const imgContainer = document.getElementById('image-container');
+        const image = document.createElement('img');
+        image.setAttribute('src', `/dashboard/images/${imageId}/small`);
+        image.setAttribute('alt', 'Image');
+        image.setAttribute('height', 'auto');
+        image.setAttribute('width', 'auto');
+        image.setAttribute('class', 'size-[86px] object-contain rounded-lg m-auto');
+        imgContainer.innerHTML = '';
+        imgContainer.appendChild(image);
       } else {
         showErrorAlert('Something went wrong adding the image, please try again later.');
       }

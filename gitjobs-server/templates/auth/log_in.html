@@ -6,7 +6,7 @@
     <div class="bg-white p-10 border rounded-lg">
       <div class="mb-8">{% call macros::form_title(title = "Log In") %}</div>
 
-      <div class="flex flex-col items-center space-y-5">
+      <div class="flex flex-col items-center space-y-5 mb-2">
         {# Linux Foundation SSO login #}
         <div class="w-full">
           <a href="/log-in/oidc/linuxfoundation{%- if let Some(next_url) = next_url -%}?next_url={{ next_url }}{%- endif -%}"

@@ -3,7 +3,6 @@
 use anyhow::Result;
 use async_trait::async_trait;
 use tracing::instrument;
-use uuid::Uuid;
 
 use crate::{
     PgDB,
@@ -13,40 +12,18 @@ use crate::{
 /// Trait that defines some common database operations used across the site.
 #[async_trait]
 pub(crate) trait DBMisc {
-    /// Get the job board id from the host provided.
-    async fn get_job_board_id(&self, host: &str) -> Result<Option<Uuid>>;
-
     /// Search locations.
     async fn search_locations(&self, ts_query: &str) -> Result<Vec<Location>>;
 
     /// Search members.
-    async fn search_members(&self, job_board_id: &Uuid, name: &str) -> Result<Vec<Member>>;
+    async fn search_members(&self, name: &str) -> Result<Vec<Member>>;
 
     /// Search projects.
-    async fn search_projects(&self, job_board_id: &Uuid, name: &str) -> Result<Vec<Project>>;
+    async fn search_projects(&self, name: &str) -> Result<Vec<Project>>;
 }
 
 #[async_trait]
 impl DBMisc for PgDB {
-    #[instrument(skip(self), err)]
-    async fn get_job_board_id(&self, host: &str) -> Result<Option<Uuid>> {
-        let db = self.pool.get().await?;
-        let job_board_id = db
-            .query_opt(
-                "
-                select job_board_id
-                from job_board
-                where host = $1::text
-                and active = true;
-                ",
-                &[&host],
-            )
-            .await?
-            .map(|row| row.get("job_board_id"));
-
-        Ok(job_board_id)
-    }
-
     #[instrument(skip(self), err)]
     async fn search_locations(&self, ts_query: &str) -> Result<Vec<Location>> {
         let db = self.pool.get().await?;
@@ -76,30 +53,31 @@ impl DBMisc for PgDB {
     }
 
     #[instrument(skip(self), err)]
-    async fn search_members(&self, job_board_id: &Uuid, name: &str) -> Result<Vec<Member>> {
+    async fn search_members(&self, name: &str) -> Result<Vec<Member>> {
         let db = self.pool.get().await?;
         let members = db
             .query(
                 "
                 select
                     member_id,
-                    name,
+                    foundation,
                     level,
-                    logo_url
+                    logo_url,
+                    name
                 from member
-                where job_board_id = $1::uuid
-                and name ilike '%' || $2::text || '%'
+                where name ilike '%' || $1::text || '%'
                 limit 20;
                 ",
-                &[&job_board_id, &name],
+                &[&name],
             )
             .await?
             .into_iter()
             .map(|row| Member {
                 member_id: row.get("member_id"),
-                name: row.get("name"),
+                foundation: row.get("foundation"),
                 level: row.get("level"),
                 logo_url: row.get("logo_url"),
+                name: row.get("name"),
             })
             .collect();
 
@@ -107,30 +85,31 @@ impl DBMisc for PgDB {
     }
 
     #[instrument(skip(self), err)]
-    async fn search_projects(&self, job_board_id: &Uuid, name: &str) -> Result<Vec<Project>> {
+    async fn search_projects(&self, name: &str) -> Result<Vec<Project>> {
         let db = self.pool.get().await?;
         let projects = db
             .query(
                 "
                 select
                     project_id,
-                    name,
+                    foundation,
+                    logo_url,
                     maturity,
-                    logo_url
+                    name
                 from project
-                where job_board_id = $1::uuid
-                and name ilike '%' || $2::text || '%'
+                where name ilike '%' || $1::text || '%'
                 limit 20;
                 ",
-                &[&job_board_id, &name],
+                &[&name],
             )
             .await?
             .into_iter()
             .map(|row| Project {
                 project_id: row.get("project_id"),
-                name: row.get("name"),
-                maturity: row.get("maturity"),
+                foundation: row.get("foundation"),
                 logo_url: row.get("logo_url"),
+                maturity: row.get("maturity"),
+                name: row.get("name"),
             })
             .collect();
 

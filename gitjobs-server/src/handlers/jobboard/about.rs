@@ -8,17 +8,10 @@ use axum::{
 };
 use tracing::instrument;
 
-use crate::{
-    db::DynDB,
-    handlers::{error::HandlerError, extractors::JobBoardId},
-    templates::jobboard::about::Page,
-};
+use crate::{db::DynDB, handlers::error::HandlerError, templates::jobboard::about::Page};
 
 /// Handler that returns the about page.
 #[instrument(skip_all, err)]
-pub(crate) async fn page(
-    State(_db): State<DynDB>,
-    JobBoardId(_job_board_id): JobBoardId,
-) -> Result<impl IntoResponse, HandlerError> {
+pub(crate) async fn page(State(_db): State<DynDB>) -> Result<impl IntoResponse, HandlerError> {
     Ok(Html(Page {}.render()?))
 }

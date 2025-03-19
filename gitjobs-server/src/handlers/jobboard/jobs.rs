@@ -14,7 +14,7 @@ use uuid::Uuid;
 use crate::{
     auth::AuthSession,
     db::{DynDB, jobboard::JobsSearchOutput},
-    handlers::{error::HandlerError, extractors::JobBoardId},
+    handlers::error::HandlerError,
     templates::{
         PageId,
         jobboard::jobs::{ExploreSection, Filters, JobPage, JobsPage, ResultsSection},
@@ -30,13 +30,10 @@ pub(crate) async fn jobs_page(
     auth_session: AuthSession,
     State(db): State<DynDB>,
     QsQuery(filters): QsQuery<Filters>,
-    JobBoardId(job_board_id): JobBoardId,
 ) -> Result<impl IntoResponse, HandlerError> {
     // Get filter options and jobs that match the query
-    let (filters_options, JobsSearchOutput { jobs, total }) = tokio::try_join!(
-        db.get_jobs_filters_options(&job_board_id),
-        db.search_jobs(&job_board_id, &filters)
-    )?;
+    let (filters_options, JobsSearchOutput { jobs, total }) =
+        tokio::try_join!(db.get_jobs_filters_options(), db.search_jobs(&filters))?;
 
     // Prepare template
     let template = JobsPage {
@@ -64,13 +61,10 @@ pub(crate) async fn jobs_page(
 pub(crate) async fn explore_section(
     State(db): State<DynDB>,
     QsQuery(filters): QsQuery<Filters>,
-    JobBoardId(job_board_id): JobBoardId,
 ) -> Result<impl IntoResponse, HandlerError> {
     // Get filter options and jobs that match the query
-    let (filters_options, JobsSearchOutput { jobs, total }) = tokio::try_join!(
-        db.get_jobs_filters_options(&job_board_id),
-        db.search_jobs(&job_board_id, &filters)
-    )?;
+    let (filters_options, JobsSearchOutput { jobs, total }) =
+        tokio::try_join!(db.get_jobs_filters_options(), db.search_jobs(&filters))?;
 
     // Prepare template
     let template = ExploreSection {
@@ -92,10 +86,9 @@ pub(crate) async fn explore_section(
 pub(crate) async fn results_section(
     State(db): State<DynDB>,
     QsQuery(filters): QsQuery<Filters>,
-    JobBoardId(job_board_id): JobBoardId,
 ) -> Result<impl IntoResponse, HandlerError> {
     // Get jobs that match the query
-    let JobsSearchOutput { jobs, total } = db.search_jobs(&job_board_id, &filters).await?;
+    let JobsSearchOutput { jobs, total } = db.search_jobs(&filters).await?;
 
     // Prepare template
     let template = ResultsSection {

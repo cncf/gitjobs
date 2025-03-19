@@ -13,10 +13,7 @@ use uuid::Uuid;
 
 use crate::{
     db::DynDB,
-    handlers::{
-        error::HandlerError,
-        extractors::{JobBoardId, SelectedEmployerIdRequired},
-    },
+    handlers::{error::HandlerError, extractors::SelectedEmployerIdRequired},
     templates::dashboard::employer::jobs::{self, Job},
 };
 
@@ -24,15 +21,8 @@ use crate::{
 
 /// Handler that returns the page to add a new job.
 #[instrument(skip_all, err)]
-pub(crate) async fn add_page(
-    State(db): State<DynDB>,
-    JobBoardId(job_board_id): JobBoardId,
-) -> Result<impl IntoResponse, HandlerError> {
-    let job_board = db.get_job_board(&job_board_id).await?;
-    let template = jobs::AddPage {
-        benefits: job_board.benefits,
-        skills: job_board.skills,
-    };
+pub(crate) async fn add_page(State(_db): State<DynDB>) -> Result<impl IntoResponse, HandlerError> {
+    let template = jobs::AddPage {};
 
     Ok(Html(template.render()?))
 }
@@ -91,14 +81,9 @@ pub(crate) async fn preview_page_wo_job(
 pub(crate) async fn update_page(
     State(db): State<DynDB>,
     Path(job_id): Path<Uuid>,
-    JobBoardId(job_board_id): JobBoardId,
 ) -> Result<impl IntoResponse, HandlerError> {
-    let (job_board, job) = tokio::try_join!(db.get_job_board(&job_board_id), db.get_job_dashboard(&job_id))?;
-    let template = jobs::UpdatePage {
-        benefits: job_board.benefits,
-        job,
-        skills: job_board.skills,
-    };
+    let job = db.get_job_dashboard(&job_id).await?;
+    let template = jobs::UpdatePage { job };
 
     Ok(Html(template.render()?).into_response())
 }

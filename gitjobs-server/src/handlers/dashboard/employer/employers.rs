@@ -15,11 +15,7 @@ use uuid::Uuid;
 use crate::{
     auth::AuthSession,
     db::DynDB,
-    handlers::{
-        auth::SELECTED_EMPLOYER_ID_KEY,
-        error::HandlerError,
-        extractors::{JobBoardId, SelectedEmployerIdRequired},
-    },
+    handlers::{auth::SELECTED_EMPLOYER_ID_KEY, error::HandlerError, extractors::SelectedEmployerIdRequired},
     templates::dashboard::employer::employers::{self, Employer},
 };
 
@@ -55,7 +51,6 @@ pub(crate) async fn add(
     session: Session,
     State(db): State<DynDB>,
     State(serde_qs_de): State<serde_qs::Config>,
-    JobBoardId(job_board_id): JobBoardId,
     body: String,
 ) -> Result<impl IntoResponse, HandlerError> {
     // Get user from session
@@ -70,7 +65,7 @@ pub(crate) async fn add(
     };
 
     // Add employer to database
-    let employer_id = db.add_employer(&job_board_id, &user.user_id, &employer).await?;
+    let employer_id = db.add_employer(&user.user_id, &employer).await?;
     messages.success("Employer added successfully.");
 
     // Use new employer as the selected employer for the session

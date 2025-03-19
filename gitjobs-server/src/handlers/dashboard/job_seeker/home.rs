@@ -16,7 +16,7 @@ use tracing::instrument;
 use crate::{
     auth::AuthSession,
     db::DynDB,
-    handlers::{error::HandlerError, extractors::JobBoardId},
+    handlers::error::HandlerError,
     templates::{
         PageId, auth,
         dashboard::job_seeker::{
@@ -34,7 +34,6 @@ pub(crate) async fn page(
     auth_session: AuthSession,
     messages: Messages,
     State(db): State<DynDB>,
-    JobBoardId(job_board_id): JobBoardId,
     Query(query): Query<HashMap<String, String>>,
 ) -> Result<impl IntoResponse, HandlerError> {
     // Get user from session
@@ -50,14 +49,8 @@ pub(crate) async fn page(
             Content::Account(auth::UpdateUserPage { user_summary })
         }
         Tab::Profile => {
-            let (profile, job_board) = tokio::try_join!(
-                db.get_job_seeker_profile(&user.user_id),
-                db.get_job_board(&job_board_id),
-            )?;
-            Content::Profile(profile::UpdatePage {
-                profile,
-                skills: job_board.skills,
-            })
+            let profile = db.get_job_seeker_profile(&user.user_id).await?;
+            Content::Profile(profile::UpdatePage { profile })
         }
     };
 

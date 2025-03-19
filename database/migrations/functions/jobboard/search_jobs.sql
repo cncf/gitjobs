@@ -1,5 +1,5 @@
 -- Returns the jobs that match the filters provided.
-create or replace function search_jobs(p_board_id uuid, p_filters jsonb)
+create or replace function search_jobs(p_filters jsonb)
 returns table(jobs json, total bigint) as $$
 declare
     v_benefits text[];
@@ -123,8 +123,7 @@ begin
         join employer e on j.employer_id = e.employer_id
         left join location l on j.location_id = l.location_id
         left join member m on e.member_id = m.member_id
-        where e.job_board_id = p_board_id
-        and j.status = 'published'
+        where j.status = 'published'
         and
             case when cardinality(v_benefits) > 0 then
                 j.benefits @> v_benefits

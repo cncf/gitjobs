@@ -26,13 +26,13 @@ pub(crate) trait DBAuth {
     async fn get_session(&self, session_id: &session::Id) -> Result<Option<session::Record>>;
 
     /// Get user by email.
-    async fn get_user_by_email(&self, job_board_id: &Uuid, email: &str) -> Result<Option<User>>;
+    async fn get_user_by_email(&self, email: &str) -> Result<Option<User>>;
 
     /// Get user by id.
     async fn get_user_by_id(&self, user_id: &Uuid) -> Result<Option<User>>;
 
     /// Get user by username.
-    async fn get_user_by_username(&self, job_board_id: &Uuid, username: &str) -> Result<Option<User>>;
+    async fn get_user_by_username(&self, username: &str) -> Result<Option<User>>;
 
     /// Get user password.
     async fn get_user_password(&self, user_id: &Uuid) -> Result<Option<String>>;
@@ -43,7 +43,6 @@ pub(crate) trait DBAuth {
     /// Sign up a new user.
     async fn sign_up_user(
         &self,
-        job_board_id: &Uuid,
         user_summary: &UserSummary,
         email_verified: bool,
     ) -> Result<(User, Option<VerificationCode>)>;
@@ -142,7 +141,7 @@ impl DBAuth for PgDB {
     }
 
     #[instrument(skip(self), err)]
-    async fn get_user_by_email(&self, job_board_id: &Uuid, email: &str) -> Result<Option<User>> {
+    async fn get_user_by_email(&self, email: &str) -> Result<Option<User>> {
         trace!("getting user (by email) from database");
 
         let db = self.pool.get().await?;
@@ -159,10 +158,9 @@ impl DBAuth for PgDB {
                     username
                 from "user"
                 where email = $1::text
-                and job_board_id = $2::uuid
                 and email_verified = true;
                 "#,
-                &[&email, &job_board_id],
+                &[&email],
             )
             .await?
             .map(|row| User {
@@ -217,7 +215,7 @@ impl DBAuth for PgDB {
     }
 
     #[instrument(skip(self), err)]
-    async fn get_user_by_username(&self, job_board_id: &Uuid, username: &str) -> Result<Option<User>> {
+    async fn get_user_by_username(&self, username: &str) -> Result<Option<User>> {
         trace!("getting user (by username) from database");
 
         let db = self.pool.get().await?;
@@ -235,11 +233,10 @@ impl DBAuth for PgDB {
                     username
                 from "user"
                 where username = $1::text
-                and job_board_id = $2::uuid
                 and password is not null
                 and email_verified = true;
                 "#,
-                &[&username, &job_board_id],
+                &[&username],
             )
             .await?
             .map(|row| User {
@@ -298,7 +295,6 @@ impl DBAuth for PgDB {
     #[instrument(skip(self), err)]
     async fn sign_up_user(
         &self,
-        job_board_id: &Uuid,
         user_summary: &UserSummary,
         email_verified: bool,
     ) -> Result<(User, Option<VerificationCode>)> {
@@ -318,16 +314,14 @@ impl DBAuth for PgDB {
                     email_verified,
                     name,
                     password,
-                    username,
-                    job_board_id
+                    username
                 ) values (
                     gen_random_bytes(32),
                     $1::text,
                     $2::boolean,
                     $3::text,
                     $4::text,
-                    $5::text,
-                    $6::uuid
+                    $5::text
                 ) returning
                     user_id,
                     auth_hash,
@@ -342,7 +336,6 @@ impl DBAuth for PgDB {
                     &user_summary.name,
                     &user_summary.password,
                     &user_summary.username,
-                    &job_board_id,
                 ],
             )
             .await?;

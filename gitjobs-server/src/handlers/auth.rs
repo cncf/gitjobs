@@ -24,7 +24,7 @@ use crate::{
     db::DynDB,
     handlers::{
         error::HandlerError,
-        extractors::{JobBoardId, OAuth2, Oidc},
+        extractors::{OAuth2, Oidc},
     },
     notifications::{DynNotificationsManager, NewNotification, NotificationKind},
     templates::{self, PageId, notifications::EmailVerification},
@@ -99,11 +99,9 @@ pub(crate) async fn log_in(
     session: Session,
     Query(query): Query<HashMap<String, String>>,
     State(db): State<DynDB>,
-    JobBoardId(job_board_id): JobBoardId,
-    Form(mut creds): Form<PasswordCredentials>,
+    Form(creds): Form<PasswordCredentials>,
 ) -> Result<impl IntoResponse, HandlerError> {
     // Authenticate user
-    creds.job_board_id = Some(job_board_id);
     let Some(user) = auth_session
         .authenticate(Credentials::Password(creds.clone()))
         .await
@@ -156,7 +154,6 @@ pub(crate) async fn oauth2_callback(
     messages: Messages,
     session: Session,
     State(db): State<DynDB>,
-    JobBoardId(job_board_id): JobBoardId,
     Path(provider): Path<OAuth2Provider>,
     Query(OAuth2AuthorizationResponse { code, state }): Query<OAuth2AuthorizationResponse>,
 ) -> Result<impl IntoResponse, HandlerError> {
@@ -177,11 +174,7 @@ pub(crate) async fn oauth2_callback(
     let log_in_url = get_log_in_url(next_url.as_ref());
 
     // Authenticate user
-    let creds = OAuth2Credentials {
-        code,
-        job_board_id,
-        provider,
-    };
+    let creds = OAuth2Credentials { code, provider };
     let user = match auth_session.authenticate(Credentials::OAuth2(creds)).await {
         Ok(Some(user)) => user,
         Ok(None) => {
@@ -243,7 +236,6 @@ pub(crate) async fn oidc_callback(
     messages: Messages,
     session: Session,
     State(db): State<DynDB>,
-    JobBoardId(job_board_id): JobBoardId,
     Path(provider): Path<OidcProvider>,
     Query(OAuth2AuthorizationResponse { code, state }): Query<OAuth2AuthorizationResponse>,
 ) -> Result<impl IntoResponse, HandlerError> {
@@ -272,7 +264,6 @@ pub(crate) async fn oidc_callback(
     // Authenticate user
     let creds = OidcCredentials {
         code,
-        job_board_id,
         nonce,
         provider,
     };
@@ -342,7 +333,6 @@ pub(crate) async fn sign_up(
     State(cfg): State<HttpServerConfig>,
     State(db): State<DynDB>,
     State(notifications_manager): State<DynNotificationsManager>,
-    JobBoardId(job_board_id): JobBoardId,
     Query(query): Query<HashMap<String, String>>,
     Form(mut user_summary): Form<auth::UserSummary>,
 ) -> Result<impl IntoResponse, HandlerError> {
@@ -355,8 +345,7 @@ pub(crate) async fn sign_up(
     user_summary.password = Some(password_auth::generate_hash(&password));
 
     // Sign up the user
-    let Ok((user, email_verification_code)) = db.sign_up_user(&job_board_id, &user_summary, false).await
-    else {
+    let Ok((user, email_verification_code)) = db.sign_up_user(&user_summary, false).await else {
         // Redirect to the sign up page on error
         messages.error("Something went wrong while signing up. Please try again later.");
         return Ok(Redirect::to(SIGN_UP_URL).into_response());

@@ -14,7 +14,7 @@ use uuid::Uuid;
 
 use crate::{
     auth::AuthSession,
-    handlers::{error::HandlerError, extractors::JobBoardId},
+    handlers::error::HandlerError,
     img::{DynImageStore, ImageFormat},
 };
 
@@ -45,7 +45,6 @@ pub(crate) async fn get(
 #[instrument(skip_all, err)]
 pub(crate) async fn upload(
     auth_session: AuthSession,
-    JobBoardId(job_board_id): JobBoardId,
     State(image_store): State<DynImageStore>,
     mut multipart: Multipart,
 ) -> Result<impl IntoResponse, HandlerError> {
@@ -66,9 +65,7 @@ pub(crate) async fn upload(
     };
 
     // Save image to store
-    let image_id = image_store
-        .save(&job_board_id, &user.user_id, &file_name, data.to_vec())
-        .await?;
+    let image_id = image_store.save(&user.user_id, &file_name, data.to_vec()).await?;
 
     Ok((StatusCode::OK, image_id.to_string()).into_response())
 }

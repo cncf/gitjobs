@@ -58,9 +58,10 @@ impl std::fmt::Display for Location {
 #[allow(clippy::struct_field_names)]
 pub(crate) struct Member {
     pub member_id: Uuid,
-    pub name: String,
+    pub foundation: String,
     pub level: String,
     pub logo_url: String,
+    pub name: String,
 }
 
 /// Project information.
@@ -68,7 +69,8 @@ pub(crate) struct Member {
 #[allow(clippy::struct_field_names)]
 pub(crate) struct Project {
     pub project_id: Uuid,
+    pub foundation: String,
+    pub logo_url: String,
     pub maturity: String,
     pub name: String,
-    pub logo_url: String,
 }

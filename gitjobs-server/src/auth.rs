@@ -154,14 +154,10 @@ impl AuthnBackend {
         let user_summary = match creds.provider {
             OAuth2Provider::GitHub => UserSummary::from_github_profile(&access_token).await?,
         };
-        let user = if let Some(user) = self
-            .db
-            .get_user_by_email(&creds.job_board_id, &user_summary.email)
-            .await?
-        {
+        let user = if let Some(user) = self.db.get_user_by_email(&user_summary.email).await? {
             user
         } else {
-            let (user, _) = self.db.sign_up_user(&creds.job_board_id, &user_summary, true).await?;
+            let (user, _) = self.db.sign_up_user(&user_summary, true).await?;
             user
         };
 
@@ -191,14 +187,10 @@ impl AuthnBackend {
         let user_summary = match creds.provider {
             OidcProvider::LinuxFoundation => UserSummary::from_oidc_id_token_claims(claims)?,
         };
-        let user = if let Some(user) = self
-            .db
-            .get_user_by_email(&creds.job_board_id, &user_summary.email)
-            .await?
-        {
+        let user = if let Some(user) = self.db.get_user_by_email(&user_summary.email).await? {
             user
         } else {
-            let (user, _) = self.db.sign_up_user(&creds.job_board_id, &user_summary, true).await?;
+            let (user, _) = self.db.sign_up_user(&user_summary, true).await?;
             user
         };
 
@@ -207,13 +199,8 @@ impl AuthnBackend {
 
     /// Authenticate user using password credentials.
     async fn authenticate_password(&self, creds: PasswordCredentials) -> Result<Option<User>> {
-        // Ensure job board id is present
-        let Some(job_board_id) = creds.job_board_id else {
-            bail!("job_board_id missing")
-        };
-
         // Get user from database
-        let user = self.db.get_user_by_username(&job_board_id, &creds.username).await?;
+        let user = self.db.get_user_by_username(&creds.username).await?;
 
         // Check if the credentials are valid, returning the user if they are
         if let Some(mut user) = user {
@@ -360,7 +347,6 @@ pub enum Credentials {
 #[derive(Clone, Serialize, Deserialize)]
 pub(crate) struct OAuth2Credentials {
     pub code: String,
-    pub job_board_id: Uuid,
     pub provider: OAuth2Provider,
 }
 
@@ -368,7 +354,6 @@ pub(crate) struct OAuth2Credentials {
 #[derive(Clone, Serialize, Deserialize)]
 pub(crate) struct OidcCredentials {
     pub code: String,
-    pub job_board_id: Uuid,
     pub nonce: oidc::Nonce,
     pub provider: OidcProvider,
 }
@@ -378,8 +363,6 @@ pub(crate) struct OidcCredentials {
 pub(crate) struct PasswordCredentials {
     pub username: String,
     pub password: String,
-
-    pub job_board_id: Option<Uuid>,
 }
 
 // User types and implementations.
@@ -438,7 +421,7 @@ impl UserSummary {
     async fn from_github_profile(access_token: &str) -> Result<Self> {
         // Setup headers for GitHub API requests
         let mut headers = HeaderMap::new();
-        headers.insert(USER_AGENT, "open-job-board".parse()?);
+        headers.insert(USER_AGENT, "gitjobs".parse()?);
         headers.insert(AUTHORIZATION, format!("Bearer {access_token}").as_str().parse()?);
 
         // Get user profile from GitHub

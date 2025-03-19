@@ -11,7 +11,7 @@ use tracing::instrument;
 use crate::{
     auth::AuthSession,
     db::DynDB,
-    handlers::{error::HandlerError, extractors::JobBoardId},
+    handlers::error::HandlerError,
     templates::{PageId, jobboard::home::Page},
 };
 
@@ -20,7 +20,6 @@ use crate::{
 pub(crate) async fn page(
     auth_session: AuthSession,
     State(_db): State<DynDB>,
-    JobBoardId(_job_board_id): JobBoardId,
 ) -> Result<impl IntoResponse, HandlerError> {
     // Prepare template
     let template = Page {

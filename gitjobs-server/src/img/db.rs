@@ -29,7 +29,7 @@ impl ImageStore for DbImageStore {
         self.db.get_image_version(image_id, version).await
     }
 
-    async fn save(&self, job_board_id: &Uuid, user_id: &Uuid, filename: &str, data: Vec<u8>) -> Result<Uuid> {
+    async fn save(&self, user_id: &Uuid, filename: &str, data: Vec<u8>) -> Result<Uuid> {
         // Prepare image versions
         let versions = if is_svg(filename) {
             // Use the original svg image, no need to generate other versions
@@ -43,6 +43,6 @@ impl ImageStore for DbImageStore {
         };
 
         // Save image versions to the database
-        self.db.save_image_versions(job_board_id, user_id, versions).await
+        self.db.save_image_versions(user_id, versions).await
     }
 }

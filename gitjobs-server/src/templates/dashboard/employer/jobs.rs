@@ -20,10 +20,7 @@ use crate::templates::{
 /// Add job page template.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
 #[template(path = "dashboard/employer/jobs/add.html")]
-pub(crate) struct AddPage {
-    pub benefits: Vec<String>,
-    pub skills: Vec<String>,
-}
+pub(crate) struct AddPage {}
 
 /// Jobs list page template.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
@@ -44,9 +41,7 @@ pub(crate) struct PreviewPage {
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
 #[template(path = "dashboard/employer/jobs/update.html")]
 pub(crate) struct UpdatePage {
-    pub benefits: Vec<String>,
     pub job: Job,
-    pub skills: Vec<String>,
 }
 
 // Types.
@@ -165,11 +160,4 @@ pub(crate) enum Workplace {
     Hybrid,
     OnSite,
     Remote,
-}
-
-/// Job board.
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub(crate) struct JobBoard {
-    pub benefits: Vec<String>,
-    pub skills: Vec<String>,
 }

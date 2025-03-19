@@ -11,11 +11,7 @@ use axum::{
 };
 use tracing::instrument;
 
-use crate::{
-    db::DynDB,
-    handlers::{error::HandlerError, extractors::JobBoardId},
-    templates::misc,
-};
+use crate::{db::DynDB, handlers::error::HandlerError, templates::misc};
 
 /// Handler that returns the locations search results.
 #[instrument(skip_all, err)]
@@ -36,13 +32,12 @@ pub(crate) async fn search_locations(
 #[instrument(skip_all, err)]
 pub(crate) async fn search_members(
     State(db): State<DynDB>,
-    JobBoardId(job_board_id): JobBoardId,
     Query(query): Query<HashMap<String, String>>,
 ) -> Result<impl IntoResponse, HandlerError> {
     let Some(name) = query.get("name") else {
         return Ok((StatusCode::BAD_REQUEST, "missing name parameter").into_response());
     };
-    let members = db.search_members(&job_board_id, name).await?;
+    let members = db.search_members(name).await?;
     let template = misc::Members { members };
 
     Ok(Html(template.render()?).into_response())
@@ -52,13 +47,12 @@ pub(crate) async fn search_members(
 #[instrument(skip_all, err)]
 pub(crate) async fn search_projects(
     State(db): State<DynDB>,
-    JobBoardId(job_board_id): JobBoardId,
     Query(query): Query<HashMap<String, String>>,
 ) -> Result<impl IntoResponse, HandlerError> {
     let Some(name) = query.get("name") else {
         return Ok((StatusCode::BAD_REQUEST, "missing name parameter").into_response());
     };
-    let projects = db.search_projects(&job_board_id, name).await?;
+    let projects = db.search_projects(name).await?;
     let template = misc::Projects { projects };
 
     Ok(Html(template.render()?).into_response())

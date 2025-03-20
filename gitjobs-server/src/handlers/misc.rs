@@ -13,6 +13,13 @@ use tracing::instrument;
 
 use crate::{db::DynDB, handlers::error::HandlerError, templates::misc};
 
+/// Handler that returns the not found page.
+#[instrument(skip_all, err)]
+pub(crate) async fn not_found() -> Result<impl IntoResponse, HandlerError> {
+    let template = misc::NotFound {};
+    Ok(Html(template.render()?).into_response())
+}
+
 /// Handler that returns the locations search results.
 #[instrument(skip_all, err)]
 pub(crate) async fn search_locations(

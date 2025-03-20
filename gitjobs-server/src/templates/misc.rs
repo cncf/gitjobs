@@ -22,6 +22,11 @@ pub(crate) struct Members {
     pub members: Vec<Member>,
 }
 
+/// Not found template.
+#[derive(Debug, Clone, Template, PartialEq, Serialize, Deserialize)]
+#[template(path = "misc/not_found.html")]
+pub(crate) struct NotFound {}
+
 /// Projects selector template.
 #[derive(Debug, Clone, Template, PartialEq, Serialize, Deserialize)]
 #[template(path = "misc/projects.html")]

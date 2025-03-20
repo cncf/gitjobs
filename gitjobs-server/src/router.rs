@@ -30,7 +30,7 @@ use crate::{
     handlers::{
         auth::{self, LOG_IN_URL},
         dashboard, img, jobboard,
-        misc::{search_locations, search_members, search_projects},
+        misc::{not_found, search_locations, search_members, search_projects},
     },
     img::DynImageStore,
     notifications::DynNotificationsManager,
@@ -118,6 +118,7 @@ pub(crate) async fn setup(
         .route_layer(auth_layer)
         .route_layer(ServiceBuilder::new().layer(TraceLayer::new_for_http()))
         .route("/static/{*file}", get(static_handler))
+        .fallback(not_found)
         .layer(Extension(QsQueryConfig::new(3, false).error_handler(|err| {
             QsQueryRejection::new(err, StatusCode::UNPROCESSABLE_ENTITY)
         })))

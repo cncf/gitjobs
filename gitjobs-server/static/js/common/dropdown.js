@@ -34,11 +34,13 @@ export const addCard = (id, name, label, logo_url, elId, onRemove, extra = "", m
       <div class="svg-icon size-5 bg-gray-400 hover:bg-gray-700 icon-close"></div>
     </button>
     <div class="flex items-center space-x-3">
-      <img class="size-${mini ? "5" : "10"}"
-          height="40"
-          width="40"
-          src="${logo_url}"
-          alt="${name} logo">
+      <div class="size-${mini ? "5" : "10"} shrink-0 flex items-center justify-center">
+        <img class="size-auto"
+            height="auto"
+            width="auto"
+            src="${logo_url}"
+            alt="${name} logo">
+      </div>
       <div class="flex flex-col justify-start min-w-0">
         <div class="truncate text-start text-gray-700 font-medium ${mini ? "text-sm" : ""}">${name}</div>
         ${

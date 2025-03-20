@@ -2,12 +2,12 @@
   {# Photo #}
   {% if let Some(photo_id) = profile.photo_id %}
     {% let photo = &self::build_dashboard_image_url(photo_id, "small") %}
-    <div>
+    <div class="flex justify-center items-center size-24 shrink-0 rounded-lg">
       <img src="{{ photo }}"
            alt="{{ profile.name }} photo"
-           height="96"
-           width="96"
-           class="size-24 rounded-lg">
+           height="auto"
+           width="auto"
+           class="size-auto rounded-lg">
     </div>
   {% endif %}
   {# End photo #}

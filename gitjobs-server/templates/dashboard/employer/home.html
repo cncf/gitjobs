@@ -139,7 +139,7 @@
   {% if let Some(logo_id) = logo_id %}
     {% let logo = &self::build_dashboard_image_url(logo_id, "small") %}
     <div class="flex items-center justify-center size-6 me-3">
-      <img class="h-auto w-auto"
+      <img class="size-auto"
            height="auto"
            width="auto"
            src="{{ logo }}"

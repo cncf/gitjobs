@@ -36,12 +36,12 @@
   {% if let Some(member) = job.employer.member %}
     <div class="flex xl:w-1/4">
       <div class="flex gap-x-2 items-center bg-gray-50 border rounded-lg p-2 max-w-full xl:min-w-full">
-        <div>
+        <div class="flex items-center justify-center size-10 shrink-0">
           <img src="/static/images/foundations/{{ member.foundation }}.svg"
                alt="{{ member.foundation }} logo"
-               height="40"
-               width="40"
-               class="size-10">
+               height="auto"
+               width="auto"
+               class="size-auto">
         </div>
         <div class="flex flex-col justify-start min-w-0">
           <div class="truncate text-start text-gray-700 font-medium">{{ member.name }}</div>

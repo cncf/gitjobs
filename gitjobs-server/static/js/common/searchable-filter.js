@@ -155,13 +155,15 @@ export class SearchableFilter extends LitWrapper {
                     >
                       ${isProjectsType
                         ? html`<div class="flex items-center space-x-3">
-                            <img
-                              class="size-8"
-                              height="32"
-                              width="32"
-                              src="${option.logo_url}"
-                              alt="${name} logo"
-                            />
+                            <div class="size-8 shrink-0 flex items-center justify-center">
+                              <img
+                                class="size-auto"
+                                height="auto"
+                                width="auto"
+                                src="${option.logo_url}"
+                                alt="${name} logo"
+                              />
+                            </div>
                             <div class="flex flex-col justify-start min-w-0">
                               <div class="truncate text-start text-xs/5 text-gray-700 font-medium">
                                 ${name}

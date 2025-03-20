@@ -200,7 +200,7 @@ impl DBAuth for PgDB {
                     p.job_seeker_profile_id is not null as has_profile
                 from "user" u
                 left join job_seeker_profile p on u.user_id = p.user_id
-                where user_id = $1::uuid
+                where u.user_id = $1::uuid
                 and email_verified = true;
                 "#,
                 &[&user_id],
@@ -241,7 +241,7 @@ impl DBAuth for PgDB {
                     p.job_seeker_profile_id is not null as has_profile
                 from "user" u
                 left join job_seeker_profile p on u.user_id = p.user_id
-                where username = $1::text
+                where u.username = $1::text
                 and password is not null
                 and email_verified = true;
                 "#,

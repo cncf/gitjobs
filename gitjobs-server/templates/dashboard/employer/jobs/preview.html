@@ -4,12 +4,12 @@
   <div class="flex-grow">
     <div class="flex-grow flex items-stretch gap-x-5 min-w-0">
       {# Image #}
-      <div class="min-w-[56px]">
+      <div class="flex justify-center items-center size-14 shrink-0">
         {% if let Some(logo_id) = employer.logo_id %}
           {% let logo = &self::build_dashboard_image_url(logo_id, "small") %}
-          <img class="size-14 rounded-lg"
-               height="56"
-               width="56"
+          <img class="size-auto"
+               height="auto"
+               width="auto"
                src="{{ logo }}"
                alt="{{ employer.company }} logo">
         {% else %}

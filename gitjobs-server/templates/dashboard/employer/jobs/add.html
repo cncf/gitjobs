@@ -252,6 +252,7 @@
           <label for="salary_currency" class="form-label">Currency</label>
           <div class="mt-2 grid grid-cols-1">
             <select id="salary_currency" name="salary_currency" class="select-primary">
+              {% call macros::select_option(value = "", label = "") %}
               {% call macros::select_option(value = "USD", label = "USD - United States Dollar") %}
             </select>
           </div>
@@ -263,6 +264,7 @@
           <label for="salary_period" class="form-label">Timeframe</label>
           <div class="mt-2 grid grid-cols-1">
             <select id="salary_period" name="salary_period" class="select-primary">
+              {% call macros::select_option(value = "", label = "") %}
               {% call macros::select_option(value = "annual", label = "Annual") %}
             </select>
           </div>

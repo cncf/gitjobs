@@ -4,16 +4,9 @@ use askama::Template;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::templates::{filters, helpers::format_location};
+use crate::templates::helpers::format_location;
 
 // Templates.
-
-/// Locations selector template.
-#[derive(Debug, Clone, Template, PartialEq, Serialize, Deserialize)]
-#[template(path = "misc/locations.html")]
-pub(crate) struct Locations {
-    pub locations: Vec<Location>,
-}
 
 /// Members selector template.
 #[derive(Debug, Clone, Template, PartialEq, Serialize, Deserialize)]

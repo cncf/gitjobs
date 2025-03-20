@@ -13,9 +13,10 @@
                   data-project-id="{{ p.project_id }}"
                   data-name="{{ p.name }}"
                   data-maturity="{{ p.maturity }}"
+                  data-foundation="{{ p.foundation }}"
                   data-logo-url="{{ p.logo_url }}"
                   class="btn-project px-4 py-2 w-full hover:bg-gray-100 group-[.active]:bg-gray-100">
-            {% let label = &format!("CNCF {}", p.maturity) %}
+            {% let label = &format!("{} {}", p.foundation, p.maturity) %}
             {% call macros::dropdown_card(name = p.name, label = label, logo_url = p.logo_url) %}
           </button>
         </li>
@@ -44,13 +45,14 @@
         const projectId = btn.dataset.projectId;
         const name = btn.dataset.name;
         const maturity = btn.dataset.maturity;
+        const foundation = btn.dataset.foundation;
         const logoUrl = btn.dataset.logoUrl;
 
         if (input) {
           input.value = "";
           input.blur();
 
-          addProjectCard(projectId, name, maturity, logoUrl, `selected-${projectsListId}`, miniCards === "true");
+          addProjectCard(projectId, name, maturity, foundation, logoUrl, `selected-${projectsListId}`, miniCards === "true");
         }
 
         // Clean the search results

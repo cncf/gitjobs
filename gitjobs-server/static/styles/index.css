@@ -1,3 +1,7 @@
+:root {
+  --primary-color: #fd4d12;
+}
+
 .bg-jobboard {
   background-image: url('/static/images/background.jpg');
   background-size: cover;

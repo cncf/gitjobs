@@ -170,7 +170,7 @@ export class SearchableFilter extends LitWrapper {
                                 <div
                                   class="truncate text-nowrap uppercase max-w-[100%] text-[0.65rem] font-medium text-gray-400"
                                 >
-                                  CNCF ${option.maturity}
+                                  ${option.foundation} ${option.maturity}
                                 </div>
                               </div>
                             </div>

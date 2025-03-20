@@ -34,13 +34,13 @@
               hx-boost="true">
         <div class="flex flex-1 flex-row items-stretch space-x-4 w-full">
           {# Company logo #}
-          <div class="shrink-0 bg-white">
+          <div class="flex justify-center items-center shrink-0 size-12 bg-white">
             {% if let Some(logo_id) = job.employer.logo_id %}
               {% let logo = &self::build_jobboard_image_url(logo_id, "medium") %}
               {% let logo_small = &self::build_jobboard_image_url(logo_id, "small") %}
-              <img class="size-12 flex"
-                   height="48"
-                   width="48"
+              <img class="size-auto flex"
+                   height="auto"
+                   width="auto"
                    srcset="{{ logo_small }}, {{ logo }} 2x"
                    src="{{ logo }}"
                    alt="{{ job.employer.company }} image">

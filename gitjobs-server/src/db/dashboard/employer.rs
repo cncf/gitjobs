@@ -331,9 +331,10 @@ impl DBDashBoardEmployer for PgDB {
                     (
                         select nullif(jsonb_strip_nulls(jsonb_build_object(
                             'member_id', m.member_id,
-                            'name', m.name,
+                            'foundation', m.foundation,
                             'level', m.level,
-                            'logo_url', m.logo_url
+                            'logo_url', m.logo_url,
+                            'name', m.name
                         )), '{}'::jsonb)
                     ) as member
                 from employer e

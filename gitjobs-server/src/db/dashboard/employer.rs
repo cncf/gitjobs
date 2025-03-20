@@ -402,9 +402,10 @@ impl DBDashBoardEmployer for PgDB {
                     (
                         select json_agg(json_build_object(
                             'project_id', p.project_id,
-                            'name', p.name,
+                            'foundation', p.foundation,
+                            'logo_url', p.logo_url,
                             'maturity', p.maturity,
-                            'logo_url', p.logo_url
+                            'name', p.name
                         ))
                         from project p
                         left join job_project jp using (project_id)

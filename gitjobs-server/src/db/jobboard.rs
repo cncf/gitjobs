@@ -67,9 +67,10 @@ impl DBJobBoard for PgDB {
                             'member', (
                                 select nullif(jsonb_strip_nulls(jsonb_build_object(
                                     'member_id', m.member_id,
-                                    'name', m.name,
+                                    'foundation', m.foundation,
                                     'level', m.level,
-                                    'logo_url', m.logo_url
+                                    'logo_url', m.logo_url,
+                                    'name', m.name
                                 )), '{}'::jsonb)
                             )
                         )), '{}'::jsonb)
@@ -85,9 +86,10 @@ impl DBJobBoard for PgDB {
                     (
                         select json_agg(json_build_object(
                             'project_id', p.project_id,
-                            'name', p.name,
+                            'foundation', p.foundation,
+                            'logo_url', p.logo_url,
                             'maturity', p.maturity,
-                            'logo_url', p.logo_url
+                            'name', p.name
                         ))
                         from project p
                         left join job_project jp using (project_id)

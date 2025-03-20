@@ -37,8 +37,8 @@
     <div class="flex xl:w-1/4">
       <div class="flex gap-x-2 items-center bg-gray-50 border rounded-lg p-2 max-w-full xl:min-w-full">
         <div>
-          <img src="/static/images/cncf_icon.svg"
-               alt="CNCF icon"
+          <img src="/static/images/foundations/{{ member.foundation }}.svg"
+               alt="{{ member.foundation }} logo"
                height="40"
                width="40"
                class="size-10">
@@ -46,7 +46,7 @@
         <div class="flex flex-col justify-start min-w-0">
           <div class="truncate text-start text-gray-700 font-medium">{{ member.name }}</div>
           <div class="truncate text-nowrap uppercase max-w-[100%] text-xs/4 font-medium text-gray-400">
-            CNCF {{ member.level }} member
+            {{ member.foundation }} {{ member.level }} member
           </div>
         </div>
       </div>

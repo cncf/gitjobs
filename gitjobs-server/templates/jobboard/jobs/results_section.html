@@ -71,12 +71,12 @@
                         <img class="size-3"
                              height="12"
                              width="12"
-                             src="/static/images/cncf_icon.svg"
-                             alt="CNCF logo">
+                             src="/static/images/foundations/{{ member.foundation }}.svg"
+                             alt="{{ member.foundation }} logo">
                       </div>
 
                       <div class="leading-3 text-gray-600 text-xs font-semibold tracking-wide uppercase">
-                        CNCF {{ member.level }} member
+                        {{ member.foundation }} {{ member.level }} member
                       </div>
                     </div>
                   {% endif %}

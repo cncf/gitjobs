@@ -1,10 +1,10 @@
 import { addCard } from "/static/js/common/dropdown.js";
 
-export const addMemberCard = (id, name, level, logo_url, elId) => {
+export const addMemberCard = (id, name, level, foundation, logo_url, elId) => {
   // Remove previous selected member
   document.getElementById("selected-member").innerHTML = "";
 
-  addCard(id, name, `CNCF ${level} member`, logo_url, elId, removeSelectedMember);
+  addCard(id, name, `${foundation} ${level} member`, logo_url, elId, removeSelectedMember);
 };
 
 export const removeSelectedMember = () => {
@@ -12,6 +12,7 @@ export const removeSelectedMember = () => {
   const memberIdInput = document.getElementById("member_id");
   const memberNameInput = document.getElementById("member_name");
   const memberLevelInput = document.getElementById("member_level");
+  const memberFoundationInput = document.getElementById("member_foundation");
   const memberLogoUrlInput = document.getElementById("member_logo_url");
   const contentData = "search-member";
 
@@ -20,6 +21,7 @@ export const removeSelectedMember = () => {
   memberIdInput.value = "";
   memberNameInput.value = "";
   memberLevelInput.value = "";
+  memberFoundationInput.value = "";
   memberLogoUrlInput.value = "";
   // Remove members dropdown
   document.getElementById(contentData).innerHTML = "";

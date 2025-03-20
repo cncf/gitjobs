@@ -52,14 +52,14 @@
 
       {# Member #}
       <div class="col-span-full">
-        <label for="member" class="form-label">CNCF member</label>
+        <label for="member" class="form-label">Foundation member</label>
         {% if let Some(member) = employer.member %}
-          {% call macros::search_member(member_id = member.member_id, member_name = member.name, member_level = member.level, member_logo_url = member.logo_url) %}
+          {% call macros::search_member(member_id = member.member_id, member_name = member.name, member_level = member.level, member_foundation = member.foundation, member_logo_url = member.logo_url) %}
         {% else %}
           {% call macros::search_member() %}
         {% endif %}
         <p class="form-legend">
-          If your company is a member of the CNCF please select the corresponding member entry. Jobs posted by members will be featured across the site. False membership claims may lead to the suspension of the employer and associated user accounts.
+          If your company is a member of any of the supported foundations please select the corresponding member entry. Jobs posted by members will be featured across the site. False membership claims may lead to the suspension of the employer and associated user accounts.
         </p>
         <div id="selected-member" class="flex space-x-5 mt-4">
           {% if let Some(member) = employer.member %}
@@ -70,7 +70,7 @@
                       class="rounded-full bg-gray-100 hover:bg-gray-200 absolute top-1 end-1">
                 <div class="svg-icon size-5 bg-gray-400 hover:bg-gray-700 icon-close"></div>
               </button>
-              {% let label = &format!("CNCF {} member", member.level) %}
+              {% let label = &format!("{} {} member", member.foundation, member.level) %}
               {% call macros::dropdown_card(name = member.name, label = label, logo_url = member.logo_url) %}
             </div>
             <script type="module">

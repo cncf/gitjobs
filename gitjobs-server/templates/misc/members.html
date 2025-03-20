@@ -13,9 +13,10 @@
                   data-member-id="{{ m.member_id }}"
                   data-name="{{ m.name }}"
                   data-level="{{ m.level }}"
+                  data-foundation="{{ m.foundation }}"
                   data-logo-url="{{ m.logo_url }}"
                   class="btn-member px-4 py-2 w-full hover:bg-gray-100 group-[.active]:bg-gray-100">
-            {% let label = &format!("CNCF {} member", m.level) %}
+            {% let label = &format!("{} {} member", m.foundation, m.level) %}
             {% call macros::dropdown_card(name = m.name, label = label, logo_url = m.logo_url) %}
           </button>
         </li>
@@ -38,6 +39,7 @@
         const memberId = btn.dataset.memberId;
         const name = btn.dataset.name;
         const level = btn.dataset.level;
+        const foundation = btn.dataset.foundation;
         const logoUrl = btn.dataset.logoUrl;
 
         if (input) {
@@ -48,6 +50,7 @@
           const memberIdInput = document.getElementById('member_id');
           const nameInput = document.getElementById('member_name');
           const levelInput = document.getElementById('member_level');
+          const foundationInput = document.getElementById('member_foundation');
           const logoUrlInput = document.getElementById('member_logo_url');
 
           if (memberIdInput) {
@@ -62,11 +65,15 @@
             levelInput.value = level;
           }
 
+          if (foundationInput) {
+            foundationInput.value = foundation;
+          }
+
           if (logoUrlInput) {
             logoUrlInput.value = logoUrl;
           }
 
-          addMemberCard(memberId, name, level, logoUrl, 'selected-member');
+          addMemberCard(memberId, name, level, foundation, logoUrl, 'selected-member');
         }
 
         // Clean the search results

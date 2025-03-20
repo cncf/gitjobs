@@ -150,7 +150,7 @@
 {# End location -#}
 
 {# Search member #}
-{% macro search_member(member_id = "", member_name = "", member_level = "", member_logo_url = "") %}
+{% macro search_member(member_id = "", member_name = "", member_level = "", member_foundation = "", member_logo_url = "") %}
   <div class="mt-2 relative">
     <div class="absolute top-2.5 start-0 flex items-center ps-3 pointer-events-none">
       <div class="svg-icon size-4 icon-search bg-gray-300"></div>
@@ -183,6 +183,10 @@
            name="member[level]"
            id="member_level"
            value="{{ member_level }}">
+    <input type="hidden"
+           name="member[foundation]"
+           id="member_foundation"
+           value="{{ member_foundation }}">
     <input type="hidden"
            name="member[logo_url]"
            id="member_logo_url"

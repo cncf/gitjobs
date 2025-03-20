@@ -8,19 +8,19 @@
       {% call filters_subtitle(text = "Job type") %}
       <div class="grid grid-cols-2 w-full gap-2 mt-3">
         {# Full time #}
-        {% call checkbox(name = "kind[]", value = JobKind::FullTime, label = "Full Time", icon = "signature", active_filters = filters.kind, required = false, device = device) %}
+        {% call checkbox(form = form, name = "kind[]", value = JobKind::FullTime, label = "Full Time", icon = "signature", active_filters = filters.kind, required = false, device = device) %}
         {# End Full time #}
 
         {# Part time #}
-        {% call checkbox(name = "kind[]", value = JobKind::PartTime, label = "Part Time", icon = "hour_glass", active_filters = filters.kind, required = false, device = device) %}
+        {% call checkbox(form = form, name = "kind[]", value = JobKind::PartTime, label = "Part Time", icon = "hour_glass", active_filters = filters.kind, required = false, device = device) %}
         {# End Part time #}
 
         {# Contractor #}
-        {% call checkbox(name = "kind[]", value = JobKind::Contractor, label = "Contractor", icon = "clipboard", active_filters = filters.kind, required = false, device = device) %}
+        {% call checkbox(form = form, name = "kind[]", value = JobKind::Contractor, label = "Contractor", icon = "clipboard", active_filters = filters.kind, required = false, device = device) %}
         {# End Contractor #}
 
         {# Internship #}
-        {% call checkbox(name = "kind[]", value = JobKind::Internship, label = "Internship", icon = "graduation_cap", active_filters = filters.kind, required = false, device = device) %}
+        {% call checkbox(form = form, name = "kind[]", value = JobKind::Internship, label = "Internship", icon = "graduation_cap", active_filters = filters.kind, required = false, device = device) %}
         {# End Internship #}
       </div>
     </div>
@@ -31,26 +31,39 @@
       {% call filters_subtitle(text = "Workplace") %}
       <div class="grid grid-cols-2 w-full gap-2 mt-3">
         {# On site #}
-        {% call checkbox(name = "workplace[]", value = Workplace::OnSite, label = "On Site", icon = "office_chair", active_filters = filters.workplace, required = false, device = device) %}
+        {% call checkbox(form = form, name = "workplace[]", value = Workplace::OnSite, label = "On Site", icon = "office_chair", active_filters = filters.workplace, required = false, device = device) %}
         {# End On site #}
 
         {# Remote #}
-        {% call checkbox(name = "workplace[]", value = Workplace::Remote, label = "Remote", icon = "remote", active_filters = filters.workplace, required = false, device = device) %}
+        {% call checkbox(form = form, name = "workplace[]", value = Workplace::Remote, label = "Remote", icon = "remote", active_filters = filters.workplace, required = false, device = device) %}
         {# End Remote #}
 
         {# Hybrid #}
-        {% call checkbox(name = "workplace[]", value = Workplace::Hybrid, label = "Hybrid", icon = "buildings", active_filters = filters.workplace, required = false, device = device) %}
+        {% call checkbox(form = form, name = "workplace[]", value = Workplace::Hybrid, label = "Hybrid", icon = "buildings", active_filters = filters.workplace, required = false, device = device) %}
         {# End Hybrid #}
       </div>
     </div>
     {# End workplace #}
+
+    {# Location #}
+    <div>
+      {% call filters_subtitle(text = "Location") %}
+      {% if let Some(location) = filters.location %}
+        <search-location form="{{ form }}" device="{{ device }}" location_id="{{ location.location_id }}" city="{{ location.city }}" state="{{ location.state|display_some }}" country="{{ location.country }}" withDistance="true" distance="{{ filters.max_distance|display_some }}" size="small"></search-location>
+      {% else %}
+        <search-location form="{{ form }}" device="{{ device }}" withDistance="true" distance="{{ filters.max_distance|display_some }}" size="small"></search-location>
+      {% endif %}
+    </div>
+    {# End location #}
 
     <div class="grid grid-cols-2 w-full gap-2">
       {# Seniority #}
       <div>
         {% call filters_subtitle(text = "Seniority level") %}
         <div class="mt-2">
-          <select name="seniority"
+          <select form="{{ form }}"
+                  data-trigger-form="true"
+                  name="seniority"
                   class="select-primary py-0.5 text-[0.8rem]/6 text-gray-500">
             {% call macros::select_option(value = "", label = "Any", selected = filters.seniority|display_some) %}
             {% call macros::select_option(value = "entry", label = "Entry", selected = filters.seniority|display_some) %}
@@ -67,7 +80,9 @@
       <div>
         {% call filters_subtitle(text = "Published") %}
         <div class="mt-2 relative">
-          <select name="date_range"
+          <select form="{{ form }}"
+                  name="date_range"
+                  data-trigger-form="true"
                   class="select-primary py-0.5 text-[0.8rem]/6 text-gray-500">
             {% call macros::select_option(value = "last-day", label = "Last day", selected = filters.date_range|display_some_or("last30-days")) %}
             {% call macros::select_option(value = "last3-days", label = "Last 3 days", selected = filters.date_range|display_some_or("last30-days")) %}
@@ -160,12 +175,14 @@
 {# End current page #}
 
 {# Checkbox #}
-{% macro checkbox(name, value, label, icon, active_filters, required = false, device = "") %}
+{% macro checkbox(form, name, value, label, icon, active_filters, required = false, device = "") %}
   <div class="group">
     <input id="{%- if !device.is_empty() -%}{{ device }}-{%- endif -%}{{ name }}-{{ value }}"
+           form="{{ form }}"
            type="checkbox"
            name="{{ name }}"
            value="{{ value }}"
+           data-trigger-form="true"
            class="hidden peer"
            {%- if let Some(active_filters) = active_filters -%} {%- if active_filters.contains(value) -%}checked{%- endif -%} {%- endif %}
            {% if required %}required{% endif %}>

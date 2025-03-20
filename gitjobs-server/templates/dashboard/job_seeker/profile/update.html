@@ -166,9 +166,9 @@
             <div class="col-span-full lg:col-span-3">
               <label for="ts_query" class="form-label">Location</label>
               {% if let Some(location) = profile.location %}
-                {% call macros::location(location_id = location.location_id, city = location.city, state = location.state|display_some, country = location.country) %}
+                <search-location location_id="{{ location.location_id }}" city="{{ location.city }}" state="{{ location.state|display_some }}" country="{{ location.country }}"></search-location>
               {% else %}
-                {% call macros::location() %}
+                <search-location></search-location>
               {% endif %}
             </div>
             {# End location #}

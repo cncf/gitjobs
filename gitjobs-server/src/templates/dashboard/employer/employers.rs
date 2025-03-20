@@ -7,7 +7,7 @@ use uuid::Uuid;
 
 use crate::templates::{
     filters,
-    helpers::{build_dashboard_image_url, format_location},
+    helpers::build_dashboard_image_url,
     misc::{Location, Member},
 };
 

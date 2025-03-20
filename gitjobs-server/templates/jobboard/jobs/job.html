@@ -205,7 +205,6 @@
         {% if let Some(salary_max) = job.salary_max %}
           <div class="flex items-baseline text-gray-900 text-sm">
             <span class="mx-1">-</span>
-            {% call macros_preview::currency(value = job.salary_currency) %}
             {{ salary_max|humanize_number }}
           </div>
         {% endif %}

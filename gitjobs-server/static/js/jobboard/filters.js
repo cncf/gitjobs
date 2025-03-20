@@ -18,8 +18,8 @@ export const close = () => {
   backdrop.classList.add("hidden");
 };
 
-// Trigger change on the form provided.
-export const triggerChangeOnForm = (formId, fromSearch) => {
+// Trigger action on the form provided.
+export const triggerActionOnForm = (formId, action, fromSearch) => {
   // Prevent form submission if the search input is empty, and it is triggered
   // from the search input
   if (fromSearch) {
@@ -31,7 +31,7 @@ export const triggerChangeOnForm = (formId, fromSearch) => {
 
   const form = document.getElementById(formId);
   if (form) {
-    htmx.trigger(form, "change");
+    htmx.trigger(form, action);
   }
 };
 
@@ -39,7 +39,7 @@ export const triggerChangeOnForm = (formId, fromSearch) => {
 export const searchOnEnter = (e, formId) => {
   if (e.key === "Enter") {
     if (formId) {
-      triggerChangeOnForm(formId);
+      triggerActionOnForm(formId, "submit");
     } else {
       const value = e.currentTarget.value;
       if (value !== "") {
@@ -56,55 +56,7 @@ export const cleanInputField = (id, formId) => {
   input.value = "";
 
   if (formId) {
-    triggerChangeOnForm(formId);
-  }
-};
-
-// Reset form.
-export const resetForm = async (formId) => {
-  const form = document.getElementById(formId);
-  if (form) {
-    // Clean selects
-    form.querySelectorAll("select").forEach((el) => {
-      if (el.name === "date_range") {
-        el.value = "last30-days";
-      } else {
-        el.value = "";
-      }
-    });
-
-    // Clean radio/checkbox input fields
-    form.querySelectorAll("input[type=checkbox]").forEach((el) => (el.checked = false));
-    form.querySelectorAll("input[type=radio]").forEach((el) => (el.checked = false));
-    form.querySelectorAll("input[type=range]").forEach((el) => {
-      el.value = 0;
-      el.style = "";
-      // Reset tooltip style
-      const tooltip = el.nextElementSibling;
-      tooltip.style = "";
-      // Reset tooltip content
-      const contentTooltip = tooltip.getElementsByTagName("span")[0];
-      contentTooltip.textContent = 0;
-    });
-
-    // Clean text input fields
-    form.querySelectorAll("input[type=text]").forEach((el) => (el.value = ""));
-    form.querySelectorAll("input[type=hidden]").forEach((el) => (el.value = ""));
-
-    // Clean selected options in collapsible filters
-    const searchableFilters = form.getElementsByTagName("searchable-filter");
-    for (let i = 0; i < searchableFilters.length; i++) {
-      await searchableFilters[i].cleanSelected();
-    }
-
-    // Clean ts_query input field
-    const input = document.getElementById("ts_query");
-    if (input) {
-      input.value = "";
-    }
-
-    // Trigger change on form
-    triggerChangeOnForm(formId);
+    triggerActionOnForm(formId, "submit");
   }
 };
 

@@ -1,5 +1,6 @@
 import { html } from "https://cdn.jsdelivr.net/gh/lit/dist@3/all/lit-all.min.js";
 import { LitWrapper } from "/static/js/common/litWrapper.js";
+import { triggerActionOnForm } from "/static/js/jobboard/filters.js";
 
 export class InputRange extends LitWrapper {
   static properties = {
@@ -42,10 +43,18 @@ export class InputRange extends LitWrapper {
     }
   }
 
-  _onInputChange(event) {
+  async _onInputChange(event) {
     const value = event.target.value;
     this.value = value;
     this._refreshStyles(value);
+
+    // Wait for the update to complete
+    await this.updateComplete;
+
+    // Trigger change event on the form
+    if (this.form !== "") {
+      triggerActionOnForm(this.form, "submit");
+    }
   }
 
   _refreshStyles(value) {
@@ -75,6 +84,7 @@ export class InputRange extends LitWrapper {
     return html`
       <div class="relative">
         <input
+          form="${this.form}"
           name="${this.name}"
           type="range"
           @input=${this._onInputChange}

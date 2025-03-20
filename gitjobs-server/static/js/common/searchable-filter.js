@@ -1,6 +1,6 @@
 import { html } from "https://cdn.jsdelivr.net/gh/lit/dist@3/all/lit-all.min.js";
 import { unnormalize } from "/static/js/common/common.js";
-import { triggerChangeOnForm } from "/static/js/jobboard/filters.js";
+import { triggerActionOnForm } from "/static/js/jobboard/filters.js";
 import { LitWrapper } from "/static/js/common/litWrapper.js";
 import { getBenefits } from "/static/js/common/data.js";
 
@@ -96,7 +96,7 @@ export class SearchableFilter extends LitWrapper {
     await this.updateComplete;
 
     // Trigger change event on the form
-    triggerChangeOnForm(this.form);
+    triggerActionOnForm(this.form, "submit");
   }
 
   async _onRemove(value) {
@@ -106,7 +106,7 @@ export class SearchableFilter extends LitWrapper {
     await this.updateComplete;
 
     // Trigger change event on the form
-    triggerChangeOnForm(this.form);
+    triggerActionOnForm(this.form, "submit");
   }
 
   render() {
@@ -210,7 +210,7 @@ export class SearchableFilter extends LitWrapper {
                       ></div>
                     </div>
                   </button>
-                  <input type="hidden" name="${this.name}[]" value="${opt}" />`,
+                  <input type="hidden" form="${this.form}" name="${this.name}[]" value="${opt}" />`,
             )}
           </div>`
         : ""}

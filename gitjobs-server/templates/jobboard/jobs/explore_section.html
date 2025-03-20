@@ -20,25 +20,26 @@
   {# Filters content -#}
   <form id="mobile-jobs-form"
         hx-get='/jobs/section/results'
-        hx-trigger="change"
+        hx-trigger="submit"
         hx-target="#items-list"
         hx-include="#searchbar"
+        hx-ext="no-empty-vals"
         hx-indicator="#mobile-jobs-spinner"
         hx-boost="true">
+  </form>
 
-    {# Header Filters -#}
-    <div class="flex justify-between items-center border-solid border-0 border-b border-gray-100 p-5">
-      <div class="flex space-x-3 relative">
-        <div class="font-semibold text-sm text-black">Filters</div>
-        <div id="mobile-jobs-spinner" class="hx-spinner absolute start-10 -top-1">
-          {% call macros::spinner(size = 5) %}
-        </div>
+  {# Header Filters -#}
+  <div class="flex justify-between items-center border-solid border-0 border-b border-gray-100 p-5">
+    <div class="flex space-x-3 relative">
+      <div class="font-semibold text-sm text-black">Filters</div>
+      <div id="mobile-jobs-spinner" class="hx-spinner absolute start-10 -top-1">
+        {% call macros::spinner(size = 5) %}
       </div>
     </div>
-    {# End header filters -#}
-    {% call jobs_macros::filters(form = "mobile-jobs-form", device = "mobile") %}
-    {# End filters content -#}
-  </form>
+  </div>
+  {# End header filters -#}
+  {% call jobs_macros::filters(form = "mobile-jobs-form", device = "mobile") %}
+  {# End filters content -#}
 
   <div class="text-end p-5">
     <button hx-get="/jobs"
@@ -66,33 +67,34 @@
     <div class="relative hidden w-[28%] max-w-[28%] xl:w-1/4 xl:max-w-1/4 lg:block bg-white border rounded-lg pb-5">
       <form id="desktop-jobs-form"
             hx-get='/jobs/section/results'
-            hx-trigger="change"
+            hx-trigger="submit"
             hx-target="#items-list"
             hx-include="#searchbar"
-            hx-params="not location[state],location[country],location[city],ts_query_location"
             hx-ext="no-empty-vals"
             hx-indicator="#desktop-jobs-spinner"
             hx-boost="true">
-        {# Header #}
-        <div class="flex justify-between items-center border-solid border-0 border-b border-gray-100 p-5">
-          <div class="font-semibold text-sm text-black">Filters</div>
-
-          <div class="flex space-x-3 relative">
-            <div id="desktop-jobs-spinner" class="hx-spinner absolute -start-6 top-0">
-              {% call macros::spinner(size = 5) %}
-            </div>
-
-            <button hx-get="/jobs"
-                    hx-target="body"
-                    hx-boost="true"
-                    hx-push-url="/jobs"
-                    class="btn-primary-outline btn-mini">Reset</button>
-          </div>
-        </div>
-        {# End header #}
-
-        {% call jobs_macros::filters(form = "desktop-jobs-form") %}
       </form>
+
+      {# Header #}
+      <div class="flex justify-between items-center border-solid border-0 border-b border-gray-100 p-5">
+        <div class="font-semibold text-sm text-black">Filters</div>
+
+        <div class="flex space-x-3 relative">
+          <div id="desktop-jobs-spinner" class="hx-spinner absolute -start-6 top-0">
+            {% call macros::spinner(size = 5) %}
+          </div>
+
+          <button hx-get="/jobs"
+                  hx-target="body"
+                  hx-boost="true"
+                  hx-push-url="/jobs"
+                  class="btn-primary-outline btn-mini">Reset</button>
+        </div>
+      </div>
+      {# End header #}
+
+      {% call jobs_macros::filters(form = "desktop-jobs-form") %}
+
     </div>
     {# End filters #}
 
@@ -185,8 +187,7 @@
     close,
     searchOnEnter,
     cleanInputField,
-    triggerChangeOnForm,
-    resetForm
+    triggerActionOnForm
   } from '/static/js/jobboard/filters.js';
 
   const openFiltersBtn = document.getElementById('open-filters');
@@ -205,5 +206,20 @@
   cleanSearch.addEventListener('click', () => cleanInputField('searchbar', 'desktop-jobs-form'));
 
   const searchJobsBtn = document.getElementById('search-jobs-btn');
-  searchJobsBtn.addEventListener('click', () => triggerChangeOnForm('desktop-jobs-form', true));
+  searchJobsBtn.addEventListener('click', () => triggerActionOnForm('desktop-jobs-form', "submit", true));
+
+  const formItems = document.querySelectorAll("[data-trigger-form]");
+  formItems.forEach((item) => {
+    item.addEventListener("change", (event) => {
+      // If the item is a select element, blur it to trigger the change event
+      if (item.tagName === "SELECT") {
+        item.blur();
+      }
+      const form = item.getAttribute("form");
+      // Trigger the form submit event
+      if (form) {
+        triggerActionOnForm(form, "submit");
+      }
+    });
+  });
 </script>

@@ -149,14 +149,17 @@ impl DBAuth for PgDB {
             .query_opt(
                 r#"
                 select
-                    user_id,
-                    auth_hash,
-                    email,
-                    email_verified,
-                    password is not null as has_password,
-                    name,
-                    username
-                from "user"
+                    u.user_id,
+                    u.auth_hash,
+                    u.email,
+                    u.email_verified,
+                    u.password is not null as has_password,
+                    u.name,
+                    u.username,
+                    p.job_seeker_profile_id is not null as has_profile
+                from "user" u
+                left join job_seeker_profile p on u.user_id = p.user_id
+                where u.email = $1::text
                 where email = $1::text
                 and email_verified = true;
                 "#,
@@ -169,6 +172,7 @@ impl DBAuth for PgDB {
                 email: row.get("email"),
                 email_verified: row.get("email_verified"),
                 has_password: row.get("has_password"),
+                has_profile: row.get("has_profile"),
                 name: row.get("name"),
                 password: None,
                 username: row.get("username"),
@@ -186,14 +190,16 @@ impl DBAuth for PgDB {
             .query_opt(
                 r#"
                 select
-                    user_id,
-                    auth_hash,
-                    email,
-                    email_verified,
-                    password is not null as has_password,
-                    name,
-                    username
-                from "user"
+                    u.user_id,
+                    u.auth_hash,
+                    u.email,
+                    u.email_verified,
+                    u.password is not null as has_password,
+                    u.name,
+                    u.username,
+                    p.job_seeker_profile_id is not null as has_profile
+                from "user" u
+                left join job_seeker_profile p on u.user_id = p.user_id
                 where user_id = $1::uuid
                 and email_verified = true;
                 "#,
@@ -206,6 +212,7 @@ impl DBAuth for PgDB {
                 email: row.get("email"),
                 email_verified: row.get("email_verified"),
                 has_password: row.get("has_password"),
+                has_profile: row.get("has_profile"),
                 name: row.get("name"),
                 password: None,
                 username: row.get("username"),
@@ -223,15 +230,17 @@ impl DBAuth for PgDB {
             .query_opt(
                 r#"
                 select
-                    user_id,
-                    auth_hash,
-                    email,
-                    email_verified,
-                    password is not null as has_password,
-                    name,
-                    password,
-                    username
-                from "user"
+                    u.user_id,
+                    u.auth_hash,
+                    u.email,
+                    u.email_verified,
+                    u.password is not null as has_password,
+                    u.name,
+                    u.password,
+                    u.username,
+                    p.job_seeker_profile_id is not null as has_profile
+                from "user" u
+                left join job_seeker_profile p on u.user_id = p.user_id
                 where username = $1::text
                 and password is not null
                 and email_verified = true;
@@ -245,6 +254,7 @@ impl DBAuth for PgDB {
                 email: row.get("email"),
                 email_verified: row.get("email_verified"),
                 has_password: row.get("has_password"),
+                has_profile: row.get("has_profile"),
                 name: row.get("name"),
                 password: row.get("password"),
                 username: row.get("username"),
@@ -345,6 +355,7 @@ impl DBAuth for PgDB {
             email: row.get("email"),
             email_verified: row.get("email_verified"),
             has_password: Some(true),
+            has_profile: false,
             name: row.get("name"),
             password: None,
             username: row.get("username"),

@@ -47,6 +47,7 @@ pub(crate) async fn jobs_page(
                 offset: filters.offset,
             },
         },
+        has_profile: auth_session.user.as_ref().is_some_and(|u| u.has_profile),
         logged_in: auth_session.user.is_some(),
         page_id: PageId::JobBoard,
         name: auth_session.user.as_ref().map(|u| u.name.clone()),
@@ -126,4 +127,24 @@ pub(crate) async fn job_page(
     };
 
     Ok(Html(template.render()?).into_response())
+}
+
+// Actions handlers.
+
+/// Handler that allows users to apply to a job.
+#[instrument(skip_all, err)]
+pub(crate) async fn apply(
+    State(db): State<DynDB>,
+    Path(job_id): Path<Uuid>,
+    auth_session: AuthSession,
+) -> Result<impl IntoResponse, HandlerError> {
+    // Get user from session
+    let Some(user) = auth_session.user else {
+        return Ok(StatusCode::FORBIDDEN);
+    };
+
+    // Create job application entry in the database
+    db.apply_to_job(&job_id, &user.user_id).await?;
+
+    Ok(StatusCode::NO_CONTENT)
 }

@@ -375,6 +375,7 @@ pub(crate) struct User {
     pub auth_hash: Vec<u8>,
     pub email: String,
     pub email_verified: bool,
+    pub has_profile: bool,
     pub name: String,
     pub username: String,
 

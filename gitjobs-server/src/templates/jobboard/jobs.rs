@@ -23,6 +23,7 @@ use crate::templates::{
 #[allow(clippy::struct_field_names)]
 pub(crate) struct JobsPage {
     pub explore_section: ExploreSection,
+    pub has_profile: bool,
     pub logged_in: bool,
     pub page_id: PageId,
 

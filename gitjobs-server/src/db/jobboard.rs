@@ -16,6 +16,9 @@ use crate::{
 /// Trait that defines some database operations used in the job board.
 #[async_trait]
 pub(crate) trait DBJobBoard {
+    /// Apply to a job.
+    async fn apply_to_job(&self, job_id: &Uuid, user_id: &Uuid) -> Result<()>;
+
     /// Get job.
     async fn get_job_jobboard(&self, job_id: &Uuid) -> Result<Option<Job>>;
 
@@ -28,6 +31,27 @@ pub(crate) trait DBJobBoard {
 
 #[async_trait]
 impl DBJobBoard for PgDB {
+    #[instrument(skip(self), err)]
+    async fn apply_to_job(&self, job_id: &Uuid, user_id: &Uuid) -> Result<()> {
+        let db = self.pool.get().await?;
+        db.execute(
+            "
+            insert into application (
+                job_id,
+                job_seeker_profile_id,
+            ) values (
+                $1::uuid,
+                (select job_seeker_profile_id from job_seeker_profile where user_id = $2::uuid)
+            )
+            on conflict (job_seeker_profile_id, job_id) do nothing;
+            ",
+            &[&job_id, &user_id],
+        )
+        .await?;
+
+        Ok(())
+    }
+
     #[instrument(skip(self), err)]
     async fn get_job_jobboard(&self, job_id: &Uuid) -> Result<Option<Job>> {
         let db = self.pool.get().await?;

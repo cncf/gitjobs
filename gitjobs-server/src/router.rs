@@ -30,7 +30,7 @@ use crate::{
     handlers::{
         auth::{self, LOG_IN_URL},
         dashboard, img, jobboard,
-        misc::{search_locations, search_members, search_projects},
+        misc::{not_found, search_locations, search_members, search_projects},
     },
     img::DynImageStore,
     notifications::DynNotificationsManager,
@@ -90,6 +90,7 @@ pub(crate) async fn setup(
         .nest("/dashboard/employer", employer_dashboard_router)
         .nest("/dashboard/job-seeker", job_seeker_dashboard_router)
         .nest("/dashboard/images", dashboard_images_router)
+        .route("/jobs/{job_id}/apply", get(jobboard::jobs::apply))
         .route("/members/search", get(search_members))
         .route("/projects/search", get(search_projects))
         .route_layer(login_required!(
@@ -118,6 +119,7 @@ pub(crate) async fn setup(
         .route_layer(auth_layer)
         .route_layer(ServiceBuilder::new().layer(TraceLayer::new_for_http()))
         .route("/static/{*file}", get(static_handler))
+        .fallback(not_found)
         .layer(Extension(QsQueryConfig::new(3, false).error_handler(|err| {
             QsQueryRejection::new(err, StatusCode::UNPROCESSABLE_ENTITY)
         })))

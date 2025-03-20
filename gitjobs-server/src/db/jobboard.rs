@@ -157,9 +157,10 @@ impl DBJobBoard for PgDB {
                     (
                         select json_agg(json_build_object(
                             'project_id', project_id,
-                            'name', name,
+                            'foundation', foundation,
+                            'logo_url', logo_url,
                             'maturity', maturity,
-                            'logo_url', logo_url
+                            'name', name
                         ))
                         from project
                     )::text as projects;
@@ -182,7 +183,7 @@ impl DBJobBoard for PgDB {
         let db = self.pool.get().await?;
         let row = db
             .query_one(
-                "select jobs::text, total from search_jobs($1::uuid, $2::jsonb)",
+                "select jobs::text, total from search_jobs($1::jsonb)",
                 &[&Json(filters)],
             )
             .await?;

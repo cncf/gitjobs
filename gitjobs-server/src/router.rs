@@ -90,6 +90,7 @@ pub(crate) async fn setup(
         .nest("/dashboard/employer", employer_dashboard_router)
         .nest("/dashboard/job-seeker", job_seeker_dashboard_router)
         .nest("/dashboard/images", dashboard_images_router)
+        .route("/jobs/{job_id}/apply", get(jobboard::jobs::apply))
         .route("/members/search", get(search_members))
         .route("/projects/search", get(search_projects))
         .route_layer(login_required!(

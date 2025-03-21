@@ -3,7 +3,7 @@
 
 use anyhow::{Result, bail};
 use async_trait::async_trait;
-use tracing::instrument;
+use tracing::{instrument, trace};
 use uuid::Uuid;
 
 use crate::{
@@ -34,6 +34,8 @@ pub(crate) trait DBNotifications {
 impl DBNotifications for PgDB {
     #[instrument(skip(self), err)]
     async fn enqueue_notification(&self, notification: &NewNotification) -> Result<()> {
+        trace!("db: enqueue notification");
+
         let db = self.pool.get().await?;
         db.execute(
             "
@@ -53,6 +55,8 @@ impl DBNotifications for PgDB {
 
     #[instrument(skip(self), err)]
     async fn get_pending_notification(&self, client_id: Uuid) -> Result<Option<Notification>> {
+        trace!("db: get pending notification");
+
         // Get transaction client
         let clients = self.txs_clients.read().await;
         let Some((tx, _)) = clients.get(&client_id) else {
@@ -99,6 +103,8 @@ impl DBNotifications for PgDB {
         notification: &Notification,
         error: Option<String>,
     ) -> Result<()> {
+        trace!("db: update notification");
+
         // Get transaction client
         let clients = self.txs_clients.read().await;
         let Some((tx, _)) = clients.get(&client_id) else {

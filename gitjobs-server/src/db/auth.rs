@@ -76,7 +76,7 @@ pub(crate) trait DBAuth {
 impl DBAuth for PgDB {
     #[instrument(skip(self, record), err)]
     async fn create_session(&self, record: &session::Record) -> Result<()> {
-        trace!("creating session in database");
+        trace!("db: create session");
 
         let db = self.pool.get().await?;
         db.execute(
@@ -104,7 +104,7 @@ impl DBAuth for PgDB {
 
     #[instrument(skip(self), err)]
     async fn delete_session(&self, session_id: &session::Id) -> Result<()> {
-        trace!("deleting session from database");
+        trace!("db: delete session");
 
         let db = self.pool.get().await?;
         db.execute(
@@ -118,7 +118,7 @@ impl DBAuth for PgDB {
 
     #[instrument(skip(self), err)]
     async fn get_session(&self, session_id: &session::Id) -> Result<Option<session::Record>> {
-        trace!("getting session from database");
+        trace!("db: get session");
 
         let db = self.pool.get().await?;
         let row = db
@@ -142,7 +142,7 @@ impl DBAuth for PgDB {
 
     #[instrument(skip(self), err)]
     async fn get_user_by_email(&self, email: &str) -> Result<Option<User>> {
-        trace!("getting user (by email) from database");
+        trace!("db: get user (by email)");
 
         let db = self.pool.get().await?;
         let user = db
@@ -183,7 +183,7 @@ impl DBAuth for PgDB {
 
     #[instrument(skip(self), err)]
     async fn get_user_by_id(&self, user_id: &Uuid) -> Result<Option<User>> {
-        trace!("getting user (by id) from database");
+        trace!("db: get user (by id)");
 
         let db = self.pool.get().await?;
         let user = db
@@ -223,7 +223,7 @@ impl DBAuth for PgDB {
 
     #[instrument(skip(self), err)]
     async fn get_user_by_username(&self, username: &str) -> Result<Option<User>> {
-        trace!("getting user (by username) from database");
+        trace!("db: get user (by username)");
 
         let db = self.pool.get().await?;
         let user = db
@@ -265,7 +265,7 @@ impl DBAuth for PgDB {
 
     #[instrument(skip(self), err)]
     async fn get_user_password(&self, user_id: &Uuid) -> Result<Option<String>> {
-        trace!("getting user password from database");
+        trace!("db: get user password");
 
         let db = self.pool.get().await?;
         let password = db
@@ -281,7 +281,7 @@ impl DBAuth for PgDB {
 
     #[instrument(skip(self), err)]
     async fn is_image_public(&self, image_id: &Uuid) -> Result<bool> {
-        trace!("checking in database if image is public");
+        trace!("db: check if image is public");
 
         let db = self.pool.get().await?;
         let row = db
@@ -308,7 +308,7 @@ impl DBAuth for PgDB {
         user_summary: &UserSummary,
         email_verified: bool,
     ) -> Result<(User, Option<VerificationCode>)> {
-        trace!("signing up user in database");
+        trace!("db: sign up user");
 
         // Start a transaction
         let mut db = self.pool.get().await?;
@@ -385,7 +385,7 @@ impl DBAuth for PgDB {
 
     #[instrument(skip(self, record), err)]
     async fn update_session(&self, record: &session::Record) -> Result<()> {
-        trace!("updating session in database");
+        trace!("db: update session");
 
         let db = self.pool.get().await?;
         db.execute(
@@ -408,7 +408,7 @@ impl DBAuth for PgDB {
 
     #[instrument(skip(self), err)]
     async fn update_user_details(&self, user_id: &Uuid, user_summary: &UserSummary) -> Result<()> {
-        trace!("updating user details in database");
+        trace!("db: update user details");
 
         let db = self.pool.get().await?;
         db.execute(
@@ -433,7 +433,7 @@ impl DBAuth for PgDB {
 
     #[instrument(skip(self), err)]
     async fn update_user_password(&self, user_id: &Uuid, new_password: &str) -> Result<()> {
-        trace!("updating user password in database");
+        trace!("db: update user password");
 
         let db = self.pool.get().await?;
         db.execute(
@@ -452,7 +452,7 @@ impl DBAuth for PgDB {
 
     #[instrument(skip(self), err)]
     async fn user_has_image_access(&self, user_id: &Uuid, image_id: &Uuid) -> Result<bool> {
-        trace!("checking in database if user has access to image");
+        trace!("db: check if user has access to image");
 
         let db = self.pool.get().await?;
         let row = db
@@ -467,7 +467,7 @@ impl DBAuth for PgDB {
 
     #[instrument(skip(self), err)]
     async fn user_has_profile_access(&self, user_id: &Uuid, job_seeker_profile_id: &Uuid) -> Result<bool> {
-        trace!("checking in database if user has access to profile");
+        trace!("db: check if user has access to profile");
 
         let db = self.pool.get().await?;
         let row = db
@@ -492,7 +492,7 @@ impl DBAuth for PgDB {
 
     #[instrument(skip(self), err)]
     async fn user_owns_employer(&self, user_id: &Uuid, employer_id: &Uuid) -> Result<bool> {
-        trace!("checking in database if user owns employer");
+        trace!("db: check if user owns employer");
 
         let db = self.pool.get().await?;
         let row = db
@@ -514,7 +514,7 @@ impl DBAuth for PgDB {
 
     #[instrument(skip(self), err)]
     async fn user_owns_job(&self, user_id: &Uuid, job_id: &Uuid) -> Result<bool> {
-        trace!("checking in database if user owns job");
+        trace!("db: check if user owns job");
 
         let db = self.pool.get().await?;
         let row = db
@@ -537,7 +537,7 @@ impl DBAuth for PgDB {
 
     #[instrument(skip(self), err)]
     async fn verify_email(&self, code: &Uuid) -> Result<()> {
-        trace!("verifying email in database");
+        trace!("db: verify email");
 
         // Start a transaction
         let mut db = self.pool.get().await?;

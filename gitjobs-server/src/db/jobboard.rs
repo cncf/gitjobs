@@ -4,7 +4,7 @@ use anyhow::Result;
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 use tokio_postgres::types::Json;
-use tracing::instrument;
+use tracing::{instrument, trace};
 use uuid::Uuid;
 
 use crate::{
@@ -33,6 +33,8 @@ pub(crate) trait DBJobBoard {
 impl DBJobBoard for PgDB {
     #[instrument(skip(self), err)]
     async fn apply_to_job(&self, job_id: &Uuid, user_id: &Uuid) -> Result<()> {
+        trace!("db: apply to job");
+
         let db = self.pool.get().await?;
         db.execute(
             "
@@ -54,6 +56,8 @@ impl DBJobBoard for PgDB {
 
     #[instrument(skip(self), err)]
     async fn get_job_jobboard(&self, job_id: &Uuid) -> Result<Option<Job>> {
+        trace!("db: get job for jobboard");
+
         let db = self.pool.get().await?;
         let row = db
             .query_opt(
@@ -174,6 +178,8 @@ impl DBJobBoard for PgDB {
 
     #[instrument(skip(self))]
     async fn get_jobs_filters_options(&self) -> Result<FiltersOptions> {
+        trace!("db: get jobs filters options");
+
         // Query database
         let db = self.pool.get().await?;
         let row = db
@@ -205,6 +211,8 @@ impl DBJobBoard for PgDB {
 
     #[instrument(skip(self))]
     async fn search_jobs(&self, filters: &Filters) -> Result<JobsSearchOutput> {
+        trace!("db: search jobs");
+
         // Query database
         let db = self.pool.get().await?;
         let row = db

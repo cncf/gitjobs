@@ -4,7 +4,7 @@ use anyhow::Result;
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 use tokio_postgres::types::Json;
-use tracing::instrument;
+use tracing::{instrument, trace};
 use uuid::Uuid;
 
 use crate::{
@@ -74,6 +74,8 @@ pub(crate) trait DBDashBoardEmployer {
 impl DBDashBoardEmployer for PgDB {
     #[instrument(skip(self), err)]
     async fn add_employer(&self, user_id: &Uuid, employer: &Employer) -> Result<Uuid> {
+        trace!("db: add employer");
+
         let mut db = self.pool.get().await?;
         let tx = db.transaction().await?;
 
@@ -135,6 +137,8 @@ impl DBDashBoardEmployer for PgDB {
 
     #[instrument(skip(self), err)]
     async fn add_job(&self, employer_id: &Uuid, job: &Job) -> Result<()> {
+        trace!("db: add job");
+
         // Begin transaction
         let mut db = self.pool.get().await?;
         let tx = db.transaction().await?;
@@ -241,6 +245,8 @@ impl DBDashBoardEmployer for PgDB {
 
     #[instrument(skip(self), err)]
     async fn archive_job(&self, job_id: &Uuid) -> Result<()> {
+        trace!("db: archive job");
+
         let db = self.pool.get().await?;
         db.execute(
             "
@@ -261,6 +267,8 @@ impl DBDashBoardEmployer for PgDB {
 
     #[instrument(skip(self), err)]
     async fn delete_job(&self, job_id: &Uuid) -> Result<()> {
+        trace!("db: delete job");
+
         let db = self.pool.get().await?;
         db.execute("delete from job where job_id = $1::uuid;", &[&job_id])
             .await?;
@@ -273,6 +281,8 @@ impl DBDashBoardEmployer for PgDB {
         &self,
         employer_id: &Uuid,
     ) -> Result<applications::FiltersOptions> {
+        trace!("db: get applications filters options");
+
         // Query database
         let db = self.pool.get().await?;
         let rows = db
@@ -310,6 +320,8 @@ impl DBDashBoardEmployer for PgDB {
 
     #[instrument(skip(self), err)]
     async fn get_employer(&self, employer_id: &Uuid) -> Result<Employer> {
+        trace!("db: get employer");
+
         let db = self.pool.get().await?;
         let row = db
             .query_one(
@@ -364,6 +376,8 @@ impl DBDashBoardEmployer for PgDB {
 
     #[instrument(skip(self), err)]
     async fn get_job_dashboard(&self, job_id: &Uuid) -> Result<Job> {
+        trace!("db: get job dashboard");
+
         let db = self.pool.get().await?;
         let row = db
             .query_one(
@@ -459,6 +473,8 @@ impl DBDashBoardEmployer for PgDB {
 
     #[instrument(skip(self), err)]
     async fn get_job_seeker_user_id(&self, job_seeker_profile_id: &Uuid) -> Result<Option<Uuid>> {
+        trace!("db: get job seeker user id");
+
         let db = self.pool.get().await?;
         let user_id = db
             .query_opt(
@@ -477,6 +493,8 @@ impl DBDashBoardEmployer for PgDB {
 
     #[instrument(skip(self), err)]
     async fn list_employer_jobs(&self, employer_id: &Uuid) -> Result<Vec<JobSummary>> {
+        trace!("db: list employer jobs");
+
         let db = self.pool.get().await?;
         let jobs = db
             .query(
@@ -516,6 +534,8 @@ impl DBDashBoardEmployer for PgDB {
 
     #[instrument(skip(self), err)]
     async fn list_employers(&self, user_id: &Uuid) -> Result<Vec<EmployerSummary>> {
+        trace!("db: list employers");
+
         let db = self.pool.get().await?;
         let employers = db
             .query(
@@ -542,6 +562,8 @@ impl DBDashBoardEmployer for PgDB {
 
     #[instrument(skip(self), err)]
     async fn publish_job(&self, job_id: &Uuid) -> Result<()> {
+        trace!("db: publish job");
+
         let db = self.pool.get().await?;
         db.execute(
             "
@@ -567,6 +589,8 @@ impl DBDashBoardEmployer for PgDB {
         employer_id: &Uuid,
         filters: &applications::Filters,
     ) -> Result<ApplicationsSearchOutput> {
+        trace!("db: search applications");
+
         // Query database
         let db = self.pool.get().await?;
         let row = db
@@ -588,6 +612,8 @@ impl DBDashBoardEmployer for PgDB {
 
     #[instrument(skip(self), err)]
     async fn update_employer(&self, employer_id: &Uuid, employer: &Employer) -> Result<()> {
+        trace!("db: update employer");
+
         let db = self.pool.get().await?;
         db.execute(
             "
@@ -621,6 +647,8 @@ impl DBDashBoardEmployer for PgDB {
 
     #[instrument(skip(self), err)]
     async fn update_job(&self, job_id: &Uuid, job: &Job) -> Result<()> {
+        trace!("db: update job");
+
         // Begin transaction
         let mut db = self.pool.get().await?;
         let tx = db.transaction().await?;

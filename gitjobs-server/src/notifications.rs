@@ -116,11 +116,11 @@ impl Worker {
         loop {
             // Try to deliver a pending notification
             match self.deliver_notification().await {
-                Ok(Some(())) => {
+                Ok(true) => {
                     // One notification was delivered, try to deliver another
                     // one immediately
                 }
-                Ok(None) => tokio::select! {
+                Ok(false) => tokio::select! {
                     // No pending notifications, pause unless we've been asked
                     // to stop
                     () = sleep(PAUSE_ON_NONE) => {},
@@ -146,7 +146,7 @@ impl Worker {
 
     /// Deliver pending notification (if any).
     #[instrument(skip(self), err)]
-    async fn deliver_notification(&mut self) -> Result<Option<()>> {
+    async fn deliver_notification(&mut self) -> Result<bool> {
         // Begin transaction
         let client_id = self.db.tx_begin().await?;
 
@@ -160,7 +160,7 @@ impl Worker {
         };
 
         // Deliver notification (if any)
-        if let Some(notification) = &notification {
+        let notification_delivered = if let Some(notification) = &notification {
             // Prepare subject and body based on notification kind
             let (subject, body) = match notification.kind {
                 NotificationKind::EmailVerification => {
@@ -182,12 +182,19 @@ impl Worker {
             if let Err(err) = self.db.update_notification(client_id, notification, err).await {
                 error!("error updating notification: {err}");
             }
-        }
 
-        // Commit transaction
-        self.db.tx_commit(client_id).await?;
+            // Commit transaction
+            self.db.tx_commit(client_id).await?;
 
-        Ok(Some(()))
+            true
+        } else {
+            // No pending notification, rollback transaction
+            self.db.tx_rollback(client_id).await?;
+
+            false
+        };
+
+        Ok(notification_delivered)
     }
 
     /// Send email to the given address.

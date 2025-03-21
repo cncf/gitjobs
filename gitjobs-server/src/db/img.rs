@@ -2,7 +2,7 @@
 
 use anyhow::Result;
 use async_trait::async_trait;
-use tracing::instrument;
+use tracing::{instrument, trace};
 use uuid::Uuid;
 
 use crate::{
@@ -32,6 +32,8 @@ impl DBImage for PgDB {
         image_id: Uuid,
         version: &str,
     ) -> Result<Option<(Vec<u8>, ImageFormat)>> {
+        trace!("db: get image version");
+
         let db = self.pool.get().await?;
         let Some(row) = db
             .query_opt(
@@ -50,6 +52,8 @@ impl DBImage for PgDB {
 
     #[instrument(skip(self), err)]
     async fn save_image_versions(&self, user_id: &Uuid, versions: Vec<ImageVersion>) -> Result<Uuid> {
+        trace!("db: save image versions");
+
         // Begin transaction
         let mut db = self.pool.get().await?;
         let tx = db.transaction().await?;

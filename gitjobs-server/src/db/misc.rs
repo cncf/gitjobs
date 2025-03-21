@@ -2,7 +2,7 @@
 
 use anyhow::Result;
 use async_trait::async_trait;
-use tracing::instrument;
+use tracing::{instrument, trace};
 
 use crate::{
     PgDB,
@@ -26,6 +26,8 @@ pub(crate) trait DBMisc {
 impl DBMisc for PgDB {
     #[instrument(skip(self), err)]
     async fn search_locations(&self, ts_query: &str) -> Result<Vec<Location>> {
+        trace!("db: search locations");
+
         let db = self.pool.get().await?;
         let locations = db
             .query(
@@ -54,6 +56,8 @@ impl DBMisc for PgDB {
 
     #[instrument(skip(self), err)]
     async fn search_members(&self, name: &str) -> Result<Vec<Member>> {
+        trace!("db: search members");
+
         let db = self.pool.get().await?;
         let members = db
             .query(
@@ -86,6 +90,8 @@ impl DBMisc for PgDB {
 
     #[instrument(skip(self), err)]
     async fn search_projects(&self, name: &str) -> Result<Vec<Project>> {
+        trace!("db: search projects");
+
         let db = self.pool.get().await?;
         let projects = db
             .query(

@@ -3,7 +3,7 @@
 
 use anyhow::Result;
 use async_trait::async_trait;
-use tracing::instrument;
+use tracing::{instrument, trace};
 use uuid::Uuid;
 
 use crate::{PgDB, templates::dashboard::job_seeker::profile::JobSeekerProfile};
@@ -23,6 +23,8 @@ pub(crate) trait DBDashBoardJobSeeker {
 impl DBDashBoardJobSeeker for PgDB {
     #[instrument(skip(self), err)]
     async fn get_job_seeker_profile(&self, user_id: &Uuid) -> Result<Option<JobSeekerProfile>> {
+        trace!("db: get job seeker profile");
+
         let db = self.pool.get().await?;
         let profile = db
             .query_opt(
@@ -99,6 +101,8 @@ impl DBDashBoardJobSeeker for PgDB {
 
     #[instrument(skip(self), err)]
     async fn update_job_seeker_profile(&self, user_id: &Uuid, profile: &JobSeekerProfile) -> Result<()> {
+        trace!("db: update job seeker profile");
+
         let db = self.pool.get().await?;
         db.execute(
             "

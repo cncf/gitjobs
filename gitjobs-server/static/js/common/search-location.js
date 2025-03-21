@@ -37,7 +37,7 @@ export class SearchLocation extends LitWrapper {
     this.distance = "";
     this.isLoading = false;
     this.activeIndex = null;
-    this.defaultDistance = "100";
+    this.defaultDistance = "100000";
   }
 
   connectedCallback() {
@@ -305,9 +305,9 @@ export class SearchLocation extends LitWrapper {
                 >
                   ${this.location_id === ""
                     ? html`<option value="" selected></option>`
-                    : html`${["10", "50", "100", "500"].map((d) => {
+                    : html`${["10000", "50000", "100000", "500000"].map((d) => {
                         return html`<option value=${d} ?selected=${this.distance === d}>
-                          ${d === "" ? "" : d + "km"}
+                          ${d === "" ? "" : `${d / 1000}km`}
                         </option>`;
                       })} `}
                 </select>

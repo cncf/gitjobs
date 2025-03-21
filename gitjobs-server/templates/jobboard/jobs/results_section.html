@@ -31,9 +31,9 @@
               hx-get="/jobs/{{ job.job_id }}"
               hx-target="#preview-content"
               hx-trigger="click,open-modal"
+              hx-indicator="#spinner-{{ job.job_id }}"
               class="relative mx-5 md:mx-7 text-start cursor-pointer border rounded-lg hover:outline hover:-outline-offset-1 p-5 md:p-7 {%- if let Some(member) = job.employer.member %} border-primary-400 bg-primary-50/20 hover:outline-primary-500{%- else -%}hover:outline-gray-300{%- endif -%}"
               hx-boost="true">
-
         {# Job title #}
         <div class="flex flex-1 flex-row items-stretch space-x-4 w-full">
           {# Company logo #}
@@ -192,6 +192,10 @@
               {# End salary range #}
             {% endif %}
           </div>
+        </div>
+
+        <div id="spinner-{{ job.job_id }}"
+             class="hx-spinner absolute animate-pulse outline outline-4 -outline-offset-1 top-0 left-0 h-full w-full rounded-lg {%- if let Some(member) = job.employer.member %} outline-primary-600{%- else -%} outline-gray-400{%- endif -%}">
         </div>
       </button>
     {% endfor %}

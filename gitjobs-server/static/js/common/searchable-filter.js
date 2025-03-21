@@ -138,7 +138,7 @@ export class SearchableFilter extends LitWrapper {
             ? "hidden"
             : ""} bg-white divide-y divide-gray-100 rounded-lg shadow w-full border mt-1"
         >
-          ${this.visibleOptions.length > 0
+          ${this.visibleOptions.length > 0 && this.visibleDropdown
             ? html`<ul class="text-sm text-gray-700 overflow-auto max-h-[180px]">
                 ${this.visibleOptions.map((option) => {
                   const isProjectsType = this.name === "projects";
@@ -157,6 +157,7 @@ export class SearchableFilter extends LitWrapper {
                         ? html`<div class="flex items-center space-x-3">
                             <div class="size-8 shrink-0 flex items-center justify-center">
                               <img
+                                loading="lazy"
                                 class="size-auto"
                                 height="auto"
                                 width="auto"

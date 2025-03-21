@@ -456,7 +456,8 @@
 {% macro dropdown_card(name, label, logo_url, line_height = 6) %}
   <div class="flex items-center space-x-3">
     <div class="flex justify-center items-center shrink-0 size-10">
-      <img class="size-auto"
+      <img loading="lazy"
+           class="size-auto"
            height="auto"
            width="auto"
            src="{{ logo_url }}"

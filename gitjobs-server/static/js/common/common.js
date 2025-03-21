@@ -58,3 +58,30 @@ export const isObjectEmpty = (obj) => {
 export const unnormalize = (text) => {
   return text.replace(/-/g, " ");
 };
+
+export const addParamToQueryString = (param, value) => {
+  const searchParams = new URLSearchParams(window.location.search);
+  if (searchParams.has(param)) {
+    searchParams.delete(param);
+  }
+  searchParams.set(param, value);
+  replaceUrl(searchParams.toString());
+};
+
+export const removeParamFromQueryString = (param) => {
+  const searchParams = new URLSearchParams(window.location.search);
+  if (searchParams.has(param)) {
+    searchParams.delete(param);
+    replaceUrl(searchParams.toString());
+  }
+};
+
+export const getParamFromQueryString = (param) => {
+  const searchParams = new URLSearchParams(window.location.search);
+  return searchParams.get(param);
+};
+
+export const replaceUrl = (params) => {
+  const newUrl = `${window.location.pathname}${params ? `?${params}` : ""}`;
+  window.history.replaceState({}, "new_url", newUrl);
+};

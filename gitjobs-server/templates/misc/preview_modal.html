@@ -1,37 +1,51 @@
-{# Preview modal -#}
-<div id="preview-modal"
-     tabindex="-1"
-     aria-hidden="true"
-     role="dialog"
-     data-open="false"
-     class="hidden modal fixed w-full h-full top-0 left-0 z-50 flex items-center justify-center">
-  <div id="backdrop-preview-modal"
-       class="modal-overlay absolute w-full h-full bg-black opacity-50"></div>
-  {# Close button -#}
-  <button id="close-preview-modal"
-          class="modal-close absolute top-0 right-0 cursor-pointer mt-10 mr-10 p-2 rounded-full hover:bg-gray-300/30">
-    <div class="svg-icon size-8 bg-gray-100 icon-close"></div>
-  </button>
-  {# End close button -#}
-  <div class="modal-container fixed w-[1200px] max-w-[80%] top-20 bottom-20 bg-white drop-shadow-lg">
-    {# Modal content -#}
-    <div id="preview-content"
-         class="modal-content w-full h-full overflow-x-auto p-10"></div>
-    {# End modal content -#}
+{% macro modal(on_close = "") %}
+  {# Preview modal -#}
+  <div id="preview-modal"
+       tabindex="-1"
+       aria-hidden="true"
+       role="dialog"
+       data-open="false"
+       class="hidden fixed w-full h-full top-0 left-0 z-50 flex items-center justify-center">
+    <div id="backdrop-preview-modal"
+         class="absolute w-full h-full bg-black opacity-[.35]"></div>
+    <div class="fixed w-[1200px] max-w-[80%] top-20 bottom-20 bg-white rounded-lg drop-shadow-lg">
+      {# Close button -#}
+      <button id="close-preview-modal"
+              class="absolute top-0 -right-20 cursor-pointer p-2 rounded-full bg-gray-600/50 hover:bg-gray-600/75">
+        <div class="svg-icon size-8 bg-gray-100 icon-close"></div>
+      </button>
+      {# End close button -#}
+      {# Modal content -#}
+      <div id="preview-content" class="w-full h-full overflow-x-auto p-10"></div>
+      {# End modal content -#}
+    </div>
   </div>
-</div>
-{# End preview modal -#}
+  {# End preview modal -#}
 
-<script type="module">
-  import {
-    toggleModalVisibility
-  } from '/static/js/common/common.js';
+  {# djlint:off #}
+  <script type="module">
+    import {
+      toggleModalVisibility,
+      removeParamFromQueryString
+    } from '/static/js/common/common.js';
 
-  // Close the preview modal on backdrop click
-  const backdropPreviewModal = document.querySelector('#backdrop-preview-modal');
-  backdropPreviewModal.addEventListener('click', () => toggleModalVisibility('preview-modal'));
+    const onCloseModal = () => {
+      // Reset the scroll position
+      document.getElementById('preview-content').scrollTop = 0;
+      // Close the preview modal
+      toggleModalVisibility('preview-modal');
+      {%- if on_close.to_string() == "clean_job_id_param" -%}
+        removeParamFromQueryString('job_id');
+      {%- endif -%}
+    };
 
-  // Close the preview modal on close button click
-  const closePreviewModal = document.querySelector('#close-preview-modal');
-  closePreviewModal.addEventListener('click', () => toggleModalVisibility('preview-modal'));
+    // Close the preview modal on backdrop click
+    const backdropPreviewModal = document.querySelector('#backdrop-preview-modal');
+    backdropPreviewModal.addEventListener('click',onCloseModal);
+
+    // Close the preview modal on close button click
+    const closePreviewModal = document.querySelector('#close-preview-modal');
+    closePreviewModal.addEventListener('click', onCloseModal);
 </script>
+  {# djlint:on #}
+{% endmacro modal %}

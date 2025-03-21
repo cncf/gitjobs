@@ -25,174 +25,179 @@
   {% else %}
     {# Cards -#}
     {% for job in jobs %}
-      <button data-preview-job="true"
+      <button id="job-preview-{{ job.job_id }}"
+              data-preview-job="true"
+              data-job-id="{{ job.job_id }}"
               hx-get="/jobs/{{ job.job_id }}"
               hx-target="#preview-content"
-              class="mx-5 md:mx-7 text-start cursor-pointer border rounded-lg hover:outline hover:-outline-offset-1 p-5 md:p-7
-                     {% if let Some(member) = job.employer.member -%}
-                       border-primary-400 bg-primary-50/20 hover:outline-primary-500{%- else -%}hover:outline-gray-300{%- endif -%}"
+              hx-trigger="click,open-modal"
+              class="relative mx-5 md:mx-7 text-start cursor-pointer border rounded-lg hover:outline hover:-outline-offset-1 p-5 md:p-7 {%- if let Some(member) = job.employer.member %} border-primary-400 bg-primary-50/20 hover:outline-primary-500{%- else -%}hover:outline-gray-300{%- endif -%}"
               hx-boost="true">
-        <div class="flex flex-1 flex-row items-stretch space-x-4 w-full">
-          {# Company logo #}
-          <div class="flex justify-center items-center shrink-0 size-12 bg-white">
-            {% if let Some(logo_id) = job.employer.logo_id %}
-              {% let logo = &self::build_jobboard_image_url(logo_id, "medium") %}
-              {% let logo_small = &self::build_jobboard_image_url(logo_id, "small") %}
-              <img class="size-auto flex"
-                   height="auto"
-                   width="auto"
-                   srcset="{{ logo_small }}, {{ logo }} 2x"
-                   src="{{ logo }}"
-                   alt="{{ job.employer.company }} image">
-            {% else %}
-              <div class="size-12 bg-gray-200 p-1 flex">
-                <div class="svg-icon size-8 icon-company bg-gray-600 m-auto"></div>
-              </div>
-            {% endif %}
-          </div>
-          {# End company logo #}
+      </div>
 
-          {# Info #}
-          <div class="flex-grow min-w-0 flex flex-col content-between">
-            {# Company and member #}
-            <div class="flex justify-between items-center space-x-5">
-              {# Company #}
-              <div class="truncate leading-3 text-gray-400 text-xs font-semibold tracking-wide uppercase">
-                {{ job.employer.company }}
-              </div>
-              {# End company #}
-
-              <div class="shrink-0 flex items-center space-x-8">
-                <div>
-                  {# Member #}
-                  {% if let Some(member) = job.employer.member %}
-                    <div class="flex items-center space-x-1 rounded-md uppercase">
-                      <div class="shrink-0 size-3 flex items-center justify-center">
-                        <img class="size-auto"
-                             height="auto"
-                             width="auto"
-                             src="/static/images/foundations/{{ member.foundation }}.svg"
-                             alt="{{ member.foundation }} logo">
-                      </div>
-
-                      <div class="leading-3 text-gray-600 text-xs font-semibold tracking-wide uppercase">
-                        {{ member.foundation }} {{ member.level }} member
-                      </div>
-                    </div>
-                  {% endif %}
-                  {# End member #}
-                </div>
-
-                {# Published date #}
-                <div class="truncate leading-3 text-gray-400 text-xs font-semibold tracking-wide uppercase">
-                  {{ job.published_at.format(DATE_FORMAT_3) }}
-                </div>
-                {# End published date #}
-              </div>
+      {# Job title #}
+      <div class="flex flex-1 flex-row items-stretch space-x-4 w-full">
+        {# Company logo #}
+        <div class="flex justify-center items-center shrink-0 size-12 bg-white">
+          {% if let Some(logo_id) = job.employer.logo_id %}
+            {% let logo = &self::build_jobboard_image_url(logo_id, "medium") %}
+            {% let logo_small = &self::build_jobboard_image_url(logo_id, "small") %}
+            <img loading="lazy"
+                 class="size-auto flex"
+                 height="auto"
+                 width="auto"
+                 srcset="{{ logo_small }}, {{ logo }} 2x"
+                 src="{{ logo }}"
+                 alt="{{ job.employer.company }} image">
+          {% else %}
+            <div class="size-12 bg-gray-200 p-1 flex">
+              <div class="svg-icon size-8 icon-company bg-gray-600 m-auto"></div>
             </div>
+          {% endif %}
+        </div>
+        {# End company logo #}
 
-            <div class="flex space-x-3 items-center mt-auto">
-              <div class="flex items-center space-x-4">
-                {# Title #}
-                <div class="text-base font-stretch-condensed font-medium text-gray-900 truncate">{{ job.title }}</div>
-                {# End title #}
+        {# Info #}
+        <div class="flex-grow min-w-0 flex flex-col content-between">
+          {# Company and member #}
+          <div class="flex justify-between items-center space-x-5">
+            {# Company #}
+            <div class="truncate leading-3 text-gray-400 text-xs font-semibold tracking-wide uppercase">
+              {{ job.employer.company }}
+            </div>
+            {# End company #}
 
-                {# Location #}
-                {% if let Some(location) = job.location %}
-                  <div class="hidden lg:inline-flex border bg-white rounded-md px-2 py-0.5 text-xs text-gray-500 font-normal items-center">
-                    <div class="svg-icon size-2.5 icon-location bg-gray-500 me-1"></div>
-                    <div>{{ location.city }}, {{ location.country }}</div>
+            <div class="shrink-0 flex items-center space-x-8">
+              <div>
+                {# Member #}
+                {% if let Some(member) = job.employer.member %}
+                  <div class="flex items-center space-x-1 rounded-md uppercase">
+                    <div class="shrink-0 size-3 flex items-center justify-center">
+                      <img class="size-auto"
+                           height="auto"
+                           width="auto"
+                           src="/static/images/foundations/{{ member.foundation }}.svg"
+                           alt="{{ member.foundation }} logo">
+                    </div>
+
+                    <div class="leading-3 text-gray-600 text-xs font-semibold tracking-wide uppercase">
+                      {{ member.foundation }} {{ member.level }} member
+                    </div>
                   </div>
                 {% endif %}
-                {# End location #}
+                {# End member #}
               </div>
+
+              {# Published date #}
+              <div class="truncate leading-3 text-gray-400 text-xs font-semibold tracking-wide uppercase">
+                {{ job.published_at.format(DATE_FORMAT_3) }}
+              </div>
+              {# End published date #}
             </div>
           </div>
-          {# End info #}
+
+          <div class="flex space-x-3 items-center mt-auto">
+            <div class="flex items-center space-x-4">
+              {# Title #}
+              <div class="text-base font-stretch-condensed font-medium text-gray-900 truncate">{{ job.title }}</div>
+              {# End title #}
+
+              {# Location #}
+              {% if let Some(location) = job.location %}
+                <div class="hidden lg:inline-flex border bg-white rounded-md px-2 py-0.5 text-xs text-gray-500 font-normal items-center">
+                  <div class="svg-icon size-2.5 icon-location bg-gray-500 me-1"></div>
+                  <div>{{ location.city }}, {{ location.country }}</div>
+                </div>
+              {% endif %}
+              {# End location #}
+            </div>
+          </div>
         </div>
+        {# End info #}
+      </div>
 
-        <div class="flex justify-between items-end space-x-6 w-full mt-5 ps-16">
-          {# Tags #}
-          <div class="flex items-center space-x-6 w-full text-[0.8rem] text-gray-600">
-            {% let kind = job.kind.to_string() %}
-            {% let workplace = job.workplace.to_string() %}
+      <div class="flex justify-between items-end space-x-6 w-full mt-5 ps-16">
+        {# Tags #}
+        <div class="flex items-center space-x-6 w-full text-[0.8rem] text-gray-600">
+          {% let kind = job.kind.to_string() %}
+          {% let workplace = job.workplace.to_string() %}
 
-            {# Job type #}
-            <div class="flex items-baseline space-x-1">
-              <div class="svg-icon size-3 icon-briefcase bg-gray-500"></div>
-              <div class="capitalize">{{ kind|unnormalize }}</div>
-            </div>
-            {# End job type #}
+          {# Job type #}
+          <div class="flex items-baseline space-x-1">
+            <div class="svg-icon size-3 icon-briefcase bg-gray-500"></div>
+            <div class="capitalize">{{ kind|unnormalize }}</div>
+          </div>
+          {# End job type #}
 
-            {# Workplace #}
+          {# Workplace #}
+          <div class="flex items-center space-x-1">
+            <div class="svg-icon size-3 icon-company bg-gray-500"></div>
+            <div class="capitalize">{{ workplace|unnormalize }}</div>
+          </div>
+          {# Workplace #}
+
+          {# Seniority #}
+          {% if let Some(seniority) = job.seniority %}
+            {% let seniority = seniority.to_string() %}
             <div class="flex items-center space-x-1">
-              <div class="svg-icon size-3 icon-company bg-gray-500"></div>
-              <div class="capitalize">{{ workplace|unnormalize }}</div>
+              <div class="svg-icon size-3 icon-organigram bg-gray-500"></div>
+              <div class="capitalize">{{ seniority|unnormalize }} level</div>
             </div>
-            {# Workplace #}
+          {% endif %}
+          {# End seniority #}
 
-            {# Seniority #}
-            {% if let Some(seniority) = job.seniority %}
-              {% let seniority = seniority.to_string() %}
-              <div class="flex items-center space-x-1">
-                <div class="svg-icon size-3 icon-organigram bg-gray-500"></div>
-                <div class="capitalize">{{ seniority|unnormalize }} level</div>
-              </div>
-            {% endif %}
-            {# End seniority #}
-
-            {# Open source #}
-            <div class="flex space-x-1 items-center justify-center">
-              {% if let Some(open_source) = job.open_source %}
-                {% if open_source + 0 > 0 %}
-                  <div class="svg-icon size-3 icon-check bg-green-500"></div>
-                {% else %}
-                  <div class="svg-icon size-3.5 icon-close bg-red-500"></div>
-                {% endif %}
+          {# Open source #}
+          <div class="flex space-x-1 items-center justify-center">
+            {% if let Some(open_source) = job.open_source %}
+              {% if open_source + 0 > 0 %}
+                <div class="svg-icon size-3 icon-check bg-green-500"></div>
               {% else %}
                 <div class="svg-icon size-3.5 icon-close bg-red-500"></div>
               {% endif %}
-              <div>Open source</div>
-            </div>
-            {# End open source #}
-          </div>
-          {# End tags #}
-
-          <div class="text-sm/6 text-gray-600">
-            {% if let Some(salary) = job.salary %}
-              {# Salary #}
-              <div class="flex items-baseline space-x-1 border bg-white rounded-md px-2 py-0.5 text-xs text-gray-500 font-normal">
-                {% if let Some(salary_currency) = job.salary_currency %}
-                  <div class="text-[0.7rem] text-gray-500">{{ salary_currency }}</div>
-                {% endif %}
-                <div class="capitalize">{{ salary|humanize_number }}</div>
-                {%- if let Some(salary_period) = job.salary_period -%}
-                  <div class="text-[0.7rem] text-nowrap">/ year</div>
-                {%- endif -%}
-              </div>
-              {# End salary #}
-            {% else if let Some(salary_min) = job.salary_min %}
-              {# Salary range #}
-              <div class="flex items-baseline space-x-1 border bg-white rounded-md px-2 py-0.5 text-xs text-gray-500 font-normal">
-                {% if let Some(salary_currency) = job.salary_currency %}
-                  <div class="text-[0.7rem] text-gray-500">{{ salary_currency }}</div>
-                {% endif %}
-                <div class="capitalize text-nowrap">
-                  {{ salary_min|humanize_number }}
-                  {%- if let Some(salary_max) = job.salary_max -%}-{{ salary_max|humanize_number }}{% endif %}
-                </div>
-                {%- if let Some(salary_period) = job.salary_period -%}
-                  <div class="text-[0.7rem] text-nowrap">/ year</div>
-                {%- endif -%}
-              </div>
-              {# End salary range #}
+            {% else %}
+              <div class="svg-icon size-3.5 icon-close bg-red-500"></div>
             {% endif %}
+            <div>Open source</div>
           </div>
+          {# End open source #}
         </div>
-      </button>
-    {% endfor %}
-    {# End cards -#}
-  {% endif %}
+        {# End tags #}
+
+        <div class="text-sm/6 text-gray-600">
+          {% if let Some(salary) = job.salary %}
+            {# Salary #}
+            <div class="flex items-baseline space-x-1 border bg-white rounded-md px-2 py-0.5 text-xs text-gray-500 font-normal">
+              {% if let Some(salary_currency) = job.salary_currency %}
+                <div class="text-[0.7rem] text-gray-500">{{ salary_currency }}</div>
+              {% endif %}
+              <div class="capitalize">{{ salary|humanize_number }}</div>
+              {%- if let Some(salary_period) = job.salary_period -%}
+                <div class="text-[0.7rem] text-nowrap">/ year</div>
+              {%- endif -%}
+            </div>
+            {# End salary #}
+          {% else if let Some(salary_min) = job.salary_min %}
+            {# Salary range #}
+            <div class="flex items-baseline space-x-1 border bg-white rounded-md px-2 py-0.5 text-xs text-gray-500 font-normal">
+              {% if let Some(salary_currency) = job.salary_currency %}
+                <div class="text-[0.7rem] text-gray-500">{{ salary_currency }}</div>
+              {% endif %}
+              <div class="capitalize text-nowrap">
+                {{ salary_min|humanize_number }}
+                {%- if let Some(salary_max) = job.salary_max -%}-{{ salary_max|humanize_number }}{% endif %}
+              </div>
+              {%- if let Some(salary_period) = job.salary_period -%}
+                <div class="text-[0.7rem] text-nowrap">/ year</div>
+              {%- endif -%}
+            </div>
+            {# End salary range #}
+          {% endif %}
+        </div>
+      </div>
+    </button>
+  {% endfor %}
+  {# End cards -#}
+{% endif %}
 </div>
 
 {# Pagination -#}
@@ -206,7 +211,8 @@
   } from '/static/js/jobboard/filters.js';
   import {
     toggleModalVisibility,
-    isSuccessfulXHRStatus
+    isSuccessfulXHRStatus,
+    addParamToQueryString
   } from '/static/js/common/common.js';
 
   const previewBtns = document.querySelectorAll('[data-preview-job]');
@@ -214,6 +220,7 @@
     btn.addEventListener('htmx:afterRequest', (e) => {
       if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
         toggleModalVisibility('preview-modal');
+        addParamToQueryString('job_id', btn.dataset.jobId);
       } else {
         // When the preview is not available, show an error message
         showErrorAlert('Something went wrong previewing the job, please try again later.');

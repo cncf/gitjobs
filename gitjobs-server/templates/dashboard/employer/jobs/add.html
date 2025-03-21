@@ -1,4 +1,5 @@
 {% import "macros.html" as macros %}
+{% import "misc/preview_modal.html" as preview %}
 
 {# Jobs form #}
 <form id="jobs-form"
@@ -376,7 +377,7 @@
 </form>
 
 {# Preview modal -#}
-{% include "misc/preview_modal.html" %}
+{% call preview::modal() %}
 {# End preview modal -#}
 
 <script type="module">

@@ -195,9 +195,11 @@
           </div>
         </div>
 
+        {# Spinner #}
         <div id="spinner-{{ job.job_id }}"
              class="hx-spinner absolute rounded-lg top-0 left-0 h-full w-full rounded-lg box-animated {%- if let Some(member) = job.employer.member %} box-animated-primary{%- endif -%}">
         </div>
+        {# End spinner #}
       </button>
     {% endfor %}
     {# End cards -#}

@@ -133,14 +133,17 @@
 
   {# Right column #}
   <div class="border-t md:border-0 mt-10 md:mt-0 md:border md:w-1/4 pt-6">
-    {# Apply url #}
-    {% if let Some(apply_url) = job.apply_url %}
-      <a href="{{ apply_url }}"
-         class="btn-primary-outline w-full block mt-4 mb-6"
-         target="_blank"
-         rel="noopener noreferrer">Apply</a>
-    {% endif %}
-    {# End apply url #}
+    <button id="apply-button"
+            data-job-id="{{ job.job_id }}"
+            data-apply-url="{{ job.apply_url|display_some }}"
+            class="btn-primary-outline w-full block mt-4 mb-6"
+            disabled>Apply</button>
+    <script type="module">
+      import {
+        applyButton
+      } from '/static/js/jobboard/job_section.js';
+      applyButton();
+    </script>
 
     {# Published date #}
     {% call macros_preview::job_details_subheading(content = "Published") %}

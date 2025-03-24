@@ -55,7 +55,9 @@
 {# Header user menu #}
 {% macro user_menu(user) %}
   {% if user.logged_in %}
-    <button id="dropdown-button"
+    <button id="user-dropdown-button"
+            data-logged-in="true"
+            data-has-profile="{%- if user.has_profile -%}true{%- else -%}false{%- endif -%}"
             class="cursor-pointer group rounded-full bg-white border text-xl border-primary-500 text-primary-600 hover:text-primary-800 hover:border-primary-800 size-[38px] p-0.5 overflow-hidden">
       {% let name = user.name|display_some %}
       {% let initial = name.chars().nth(0).unwrap_or('-') %}
@@ -107,7 +109,9 @@
     </div>
     {# End dropdown user #}
   {% else %}
-    <button id="dropdown-button"
+    <button id="user-dropdown-button"
+            data-logged-in="false"
+            data-has-profile="false"
             class="cursor-pointer group rounded-full bg-white border text-xl border-primary-500 text-primary-600 hover:text-primary-800 hover:border-primary-800 size-[38px] p-0.5 overflow-hidden">
       <div class="svg-icon size-4 mx-auto bg-primary-500 group-hover:bg-primary-800 icon-user"></div>
     </button>
@@ -148,7 +152,7 @@
   {% endif %}
   {# Dropdown script #}
   <script type="module">
-    const dropdownButton = document.getElementById('dropdown-button');
+    const dropdownButton = document.getElementById('user-dropdown-button');
     const dropdown = document.getElementById('dropdown-user');
 
     if (dropdownButton) {

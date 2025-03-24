@@ -419,3 +419,40 @@
   display: none;
 }
 /* End EasyMD Editor */
+
+/* Animation */
+.box-animated {
+  box-shadow: 0 0 0 rgb(209 213 219);
+  animation: pulse-shadow 1s infinite;
+}
+
+.box-animated-primary {
+  box-shadow: 0 0 0 var(--primary-color);
+}
+
+@-webkit-keyframes pulse-shadow {
+  0% {
+    -webkit-box-shadow: 0 0 0 0 inherit;
+  }
+  70% {
+      -webkit-box-shadow: 0 0 0 6px transparent;
+  }
+  100% {
+      -webkit-box-shadow: 0 0 0 0 transparent;
+  }
+}
+@keyframes pulse-shadow {
+  0% {
+    -moz-box-shadow: 0 0 0 0 inherit;
+    box-shadow: 0 0 0 0 inherit;
+  }
+  70% {
+      -moz-box-shadow: 0 0 0 6px transparent;
+      box-shadow: 0 0 0 6px transparent;
+  }
+  100% {
+      -moz-box-shadow: 0 0 0 0 transparent;
+      box-shadow: 0 0 0 0 transparent;
+  }
+}
+/* End animation */

@@ -81,7 +81,7 @@ pub(crate) async fn results_section(
     Ok((headers, Html(template.render()?)))
 }
 
-/// Handler that returns the job section.
+/// Handler that returns the job details section.
 #[instrument(skip_all, err)]
 pub(crate) async fn job_section(
     State(db): State<DynDB>,

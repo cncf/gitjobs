@@ -86,11 +86,7 @@ pub(crate) async fn search_projects(
 pub(crate) async fn user_menu_section(auth_session: AuthSession) -> Result<impl IntoResponse, HandlerError> {
     // Prepare template
     let template = UserMenuSection {
-        has_profile: auth_session.user.as_ref().is_some_and(|u| u.has_profile),
-        logged_in: auth_session.user.is_some(),
-
-        name: auth_session.user.as_ref().map(|u| u.name.clone()),
-        username: auth_session.user.as_ref().map(|u| u.username.clone()),
+        user: auth_session.into(),
     };
 
     Ok(Html(template.render()?))

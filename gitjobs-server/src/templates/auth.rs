@@ -5,7 +5,7 @@ use axum_messages::{Level, Message};
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    auth::UserSummary,
+    auth::{AuthSession, UserSummary},
     templates::{PageId, filters},
 };
 
@@ -16,12 +16,10 @@ use crate::{
 #[template(path = "auth/log_in.html")]
 pub(crate) struct LogInPage {
     pub page_id: PageId,
-    pub logged_in: bool,
     pub messages: Vec<Message>,
+    pub user: User,
 
-    pub name: Option<String>,
     pub next_url: Option<String>,
-    pub username: Option<String>,
 }
 
 /// Sign up page.
@@ -29,12 +27,10 @@ pub(crate) struct LogInPage {
 #[template(path = "auth/sign_up.html")]
 pub(crate) struct SignUpPage {
     pub page_id: PageId,
-    pub logged_in: bool,
     pub messages: Vec<Message>,
+    pub user: User,
 
-    pub name: Option<String>,
     pub next_url: Option<String>,
-    pub username: Option<String>,
 }
 
 /// Update user page.
@@ -42,4 +38,29 @@ pub(crate) struct SignUpPage {
 #[template(path = "auth/update_user.html")]
 pub(crate) struct UpdateUserPage {
     pub user_summary: UserSummary,
+}
+
+// Types.
+
+/// User information.
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub(crate) struct User {
+    pub has_profile: bool,
+    pub logged_in: bool,
+
+    pub name: Option<String>,
+    pub username: Option<String>,
+}
+
+impl From<AuthSession> for User {
+    fn from(session: AuthSession) -> Self {
+        let user = session.user.as_ref();
+
+        Self {
+            has_profile: user.is_some_and(|u| u.has_profile),
+            logged_in: user.is_some(),
+            name: user.map(|u| u.name.clone()),
+            username: user.map(|u| u.username.clone()),
+        }
+    }
 }

@@ -27,7 +27,7 @@ use crate::{
         extractors::{OAuth2, Oidc},
     },
     notifications::{DynNotificationsManager, NewNotification, NotificationKind},
-    templates::{self, PageId, notifications::EmailVerification},
+    templates::{self, PageId, auth::User, notifications::EmailVerification},
 };
 
 /// Log in URL.
@@ -60,12 +60,10 @@ pub(crate) async fn log_in_page(
     Query(query): Query<HashMap<String, String>>,
 ) -> Result<impl IntoResponse, HandlerError> {
     let template = templates::auth::LogInPage {
-        logged_in: false,
         messages: messages.into_iter().collect(),
-        name: None,
         next_url: query.get("next_url").cloned(),
         page_id: PageId::LogIn,
-        username: None,
+        user: User::default(),
     };
 
     Ok(Html(template.render()?))
@@ -78,12 +76,10 @@ pub(crate) async fn sign_up_page(
     Query(query): Query<HashMap<String, String>>,
 ) -> Result<impl IntoResponse, HandlerError> {
     let template = templates::auth::SignUpPage {
-        logged_in: false,
         messages: messages.into_iter().collect(),
-        name: None,
         next_url: query.get("next_url").cloned(),
         page_id: PageId::SignUp,
-        username: None,
+        user: User::default(),
     };
 
     Ok(Html(template.render()?))

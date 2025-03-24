@@ -41,7 +41,7 @@ pub(crate) async fn page(
     SelectedEmployerIdOptional(employer_id): SelectedEmployerIdOptional,
 ) -> Result<impl IntoResponse, HandlerError> {
     // Get user from session
-    let Some(user) = auth_session.user else {
+    let Some(user) = auth_session.user.clone() else {
         return Ok(StatusCode::FORBIDDEN.into_response());
     };
 
@@ -87,12 +87,10 @@ pub(crate) async fn page(
     let template = home::Page {
         content,
         employers,
-        logged_in: true,
         messages: messages.into_iter().collect(),
         page_id: PageId::EmployerDashboard,
-        name: Some(user.name),
         selected_employer_id: employer_id,
-        username: Some(user.username),
+        user: auth_session.into(),
     };
 
     Ok(Html(template.render()?).into_response())

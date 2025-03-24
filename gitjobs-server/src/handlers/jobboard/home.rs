@@ -23,10 +23,8 @@ pub(crate) async fn page(
 ) -> Result<impl IntoResponse, HandlerError> {
     // Prepare template
     let template = Page {
-        logged_in: auth_session.user.is_some(),
         page_id: PageId::JobBoard,
-        name: auth_session.user.as_ref().map(|u| u.name.clone()),
-        username: auth_session.user.as_ref().map(|u| u.username.clone()),
+        user: auth_session.into(),
     };
 
     Ok(Html(template.render()?))

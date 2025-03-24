@@ -7,7 +7,8 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::templates::{
-    PageId, auth,
+    PageId,
+    auth::{self, User},
     dashboard::employer,
     filters,
     helpers::{build_dashboard_image_url, find_employer},
@@ -22,13 +23,11 @@ use crate::templates::{
 pub(crate) struct Page {
     pub content: Content,
     pub employers: Vec<employer::employers::EmployerSummary>,
-    pub logged_in: bool,
     pub messages: Vec<Message>,
     pub page_id: PageId,
+    pub user: User,
 
-    pub name: Option<String>,
     pub selected_employer_id: Option<Uuid>,
-    pub username: Option<String>,
 }
 
 // Types.

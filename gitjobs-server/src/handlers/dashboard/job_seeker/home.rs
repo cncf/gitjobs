@@ -37,7 +37,7 @@ pub(crate) async fn page(
     Query(query): Query<HashMap<String, String>>,
 ) -> Result<impl IntoResponse, HandlerError> {
     // Get user from session
-    let Some(user) = auth_session.user else {
+    let Some(user) = auth_session.user.clone() else {
         return Ok(StatusCode::FORBIDDEN.into_response());
     };
 
@@ -57,11 +57,9 @@ pub(crate) async fn page(
     // Prepare template
     let template = home::Page {
         content,
-        logged_in: true,
         messages: messages.into_iter().collect(),
-        name: Some(user.name),
         page_id: PageId::JobSeekerDashboard,
-        username: Some(user.username),
+        user: auth_session.into(),
     };
 
     Ok(Html(template.render()?).into_response())

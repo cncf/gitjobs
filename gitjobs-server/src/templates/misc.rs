@@ -4,7 +4,7 @@ use askama::Template;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::templates::{PageId, helpers::format_location};
+use crate::templates::{PageId, auth::User, helpers::format_location};
 
 // Templates.
 
@@ -33,11 +33,7 @@ pub(crate) struct Projects {
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
 #[template(path = "misc/user_menu_section.html")]
 pub(crate) struct UserMenuSection {
-    pub has_profile: bool,
-    pub logged_in: bool,
-
-    pub name: Option<String>,
-    pub username: Option<String>,
+    pub user: User,
 }
 
 // Types.

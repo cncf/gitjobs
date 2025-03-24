@@ -5,7 +5,12 @@ use askama::Template;
 use axum_messages::{Level, Message};
 use serde::{Deserialize, Serialize};
 
-use crate::templates::{PageId, auth, dashboard::job_seeker, filters};
+use crate::templates::{
+    PageId,
+    auth::{self, User},
+    dashboard::job_seeker,
+    filters,
+};
 
 // Pages templates.
 
@@ -16,11 +21,8 @@ use crate::templates::{PageId, auth, dashboard::job_seeker, filters};
 pub(crate) struct Page {
     pub content: Content,
     pub page_id: PageId,
-    pub logged_in: bool,
     pub messages: Vec<Message>,
-
-    pub name: Option<String>,
-    pub username: Option<String>,
+    pub user: User,
 }
 
 // Types.

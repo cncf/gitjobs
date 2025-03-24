@@ -12,12 +12,23 @@ use axum::{
 };
 use tracing::instrument;
 
-use crate::{db::DynDB, handlers::error::HandlerError, templates::misc};
+use crate::{
+    auth::AuthSession,
+    db::DynDB,
+    handlers::error::HandlerError,
+    templates::{
+        PageId,
+        misc::{self, UserMenuSection},
+    },
+};
 
 /// Handler that returns the not found page.
 #[instrument(skip_all, err)]
 pub(crate) async fn not_found() -> Result<impl IntoResponse, HandlerError> {
-    let template = misc::NotFound {};
+    let template = misc::NotFoundPage {
+        page_id: PageId::NotFound,
+    };
+
     Ok(Html(template.render()?).into_response())
 }
 
@@ -63,4 +74,19 @@ pub(crate) async fn search_projects(
     let template = misc::Projects { projects };
 
     Ok(Html(template.render()?).into_response())
+}
+
+/// Handler that returns the header user menu section.
+#[instrument(skip_all, err)]
+pub(crate) async fn user_menu_section(auth_session: AuthSession) -> Result<impl IntoResponse, HandlerError> {
+    // Prepare template
+    let template = UserMenuSection {
+        has_profile: auth_session.user.as_ref().is_some_and(|u| u.has_profile),
+        logged_in: auth_session.user.is_some(),
+
+        name: auth_session.user.as_ref().map(|u| u.name.clone()),
+        username: auth_session.user.as_ref().map(|u| u.username.clone()),
+    };
+
+    Ok(Html(template.render()?))
 }

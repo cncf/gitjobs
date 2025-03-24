@@ -7,7 +7,7 @@ use axum::{
 };
 use reqwest::{
     StatusCode,
-    header::{CONTENT_LENGTH, CONTENT_TYPE},
+    header::{CACHE_CONTROL, CONTENT_LENGTH, CONTENT_TYPE},
 };
 use tracing::instrument;
 use uuid::Uuid;
@@ -35,8 +35,12 @@ pub(crate) async fn get(
         ImageFormat::Png => "image/png",
         ImageFormat::Svg => "image/svg+xml",
     };
-    headers.insert(CONTENT_TYPE, HeaderValue::from_static(content_type));
+    headers.insert(
+        CACHE_CONTROL,
+        HeaderValue::from_static("max-age=2592000, immutable"),
+    );
     headers.insert(CONTENT_LENGTH, data.len().into());
+    headers.insert(CONTENT_TYPE, HeaderValue::from_static(content_type));
 
     Ok((headers, data).into_response())
 }

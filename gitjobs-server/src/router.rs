@@ -6,7 +6,7 @@ use axum::{
     Extension, Router,
     extract::FromRef,
     http::{
-        HeaderValue, StatusCode, Uri,
+        StatusCode, Uri,
         header::{CACHE_CONTROL, CONTENT_TYPE},
     },
     middleware,
@@ -18,9 +18,7 @@ use axum_messages::MessagesManagerLayer;
 use rust_embed::Embed;
 use serde_qs::axum::{QsQueryConfig, QsQueryRejection};
 use tower::ServiceBuilder;
-use tower_http::{
-    set_header::SetResponseHeaderLayer, trace::TraceLayer, validate_request::ValidateRequestHeaderLayer,
-};
+use tower_http::{trace::TraceLayer, validate_request::ValidateRequestHeaderLayer};
 use tracing::instrument;
 
 use crate::{
@@ -30,17 +28,11 @@ use crate::{
     handlers::{
         auth::{self, LOG_IN_URL},
         dashboard, img, jobboard,
-        misc::{not_found, search_locations, search_members, search_projects},
+        misc::{not_found, search_locations, search_members, search_projects, user_menu_section},
     },
     img::DynImageStore,
     notifications::DynNotificationsManager,
 };
-
-/// Default cache duration.
-#[cfg(debug_assertions)]
-pub(crate) const DEFAULT_CACHE_DURATION: usize = 0; // No cache
-#[cfg(not(debug_assertions))]
-pub(crate) const DEFAULT_CACHE_DURATION: usize = 0; // No cache
 
 /// Embed static files in the binary.
 #[derive(Embed)]
@@ -102,10 +94,6 @@ pub(crate) async fn setup(
         .route("/about", get(jobboard::about::page))
         .route("/health-check", get(health_check))
         .nest("/jobboard/images", jobboard_images_router)
-        .route("/jobs", get(jobboard::jobs::jobs_page))
-        .route("/jobs/{job_id}", get(jobboard::jobs::job_page))
-        .route("/jobs/section/explore", get(jobboard::jobs::explore_section))
-        .route("/jobs/section/results", get(jobboard::jobs::results_section))
         .route("/locations/search", get(search_locations))
         .route("/log-in", get(auth::log_in_page).post(auth::log_in))
         .route("/log-in/oauth2/{provider}", get(auth::oauth2_redirect))
@@ -113,6 +101,9 @@ pub(crate) async fn setup(
         .route("/log-in/oidc/{provider}", get(auth::oidc_redirect))
         .route("/log-in/oidc/{provider}/callback", get(auth::oidc_callback))
         .route("/log-out", get(auth::log_out))
+        .route("/section/jobs/{job_id}", get(jobboard::jobs::job_section))
+        .route("/section/jobs/results", get(jobboard::jobs::results_section))
+        .route("/section/user-menu", get(user_menu_section))
         .route("/sign-up", get(auth::sign_up_page).post(auth::sign_up))
         .route("/verify-email/{code}", get(auth::verify_email))
         .route_layer(MessagesManagerLayer)
@@ -123,10 +114,6 @@ pub(crate) async fn setup(
         .layer(Extension(QsQueryConfig::new(3, false).error_handler(|err| {
             QsQueryRejection::new(err, StatusCode::UNPROCESSABLE_ENTITY)
         })))
-        .layer(SetResponseHeaderLayer::if_not_present(
-            CACHE_CONTROL,
-            HeaderValue::try_from(format!("max-age={DEFAULT_CACHE_DURATION}")).expect("valid header value"),
-        ))
         .with_state(state);
 
     // Setup basic auth

@@ -4,6 +4,8 @@
 use anyhow::{Result, anyhow};
 use async_trait::async_trait;
 use axum_login::tower_sessions::session;
+use cached::proc_macro::cached;
+use deadpool_postgres::Object;
 use tracing::{instrument, trace};
 use uuid::Uuid;
 
@@ -281,25 +283,35 @@ impl DBAuth for PgDB {
 
     #[instrument(skip(self), err)]
     async fn is_image_public(&self, image_id: &Uuid) -> Result<bool> {
-        trace!("db: check if image is public");
+        #[cached(
+            key = "Uuid",
+            convert = r#"{ image_id.clone() }"#,
+            sync_writes = "by_key",
+            result = true
+        )]
+        async fn inner(db: Object, image_id: &Uuid) -> Result<bool> {
+            trace!("db: check if image is public");
+
+            let row = db
+                .query_one(
+                    "
+                    select exists (
+                        select 1
+                        from employer e
+                        join job j using (employer_id)
+                        where e.logo_id = $1::uuid
+                        and j.status = 'published'
+                    ) as is_public;
+                    ",
+                    &[&image_id],
+                )
+                .await?;
+
+            Ok(row.get("is_public"))
+        }
 
         let db = self.pool.get().await?;
-        let row = db
-            .query_one(
-                "
-                select exists (
-                    select 1
-                    from employer e
-                    join job j using (employer_id)
-                    where e.logo_id = $1::uuid
-                    and j.status = 'published'
-                ) as is_public;
-                ",
-                &[&image_id],
-            )
-            .await?;
-
-        Ok(row.get("is_public"))
+        inner(db, image_id).await
     }
 
     #[instrument(skip(self), err)]

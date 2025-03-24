@@ -20,21 +20,14 @@ use crate::templates::{
 /// Jobs page template.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
 #[template(path = "jobboard/jobs/jobs.html")]
-#[allow(clippy::struct_field_names)]
 pub(crate) struct JobsPage {
     pub explore_section: ExploreSection,
-    pub has_profile: bool,
-    pub logged_in: bool,
     pub page_id: PageId,
-
-    pub name: Option<String>,
-    pub username: Option<String>,
 }
 
 /// Explore section template.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
 #[template(path = "jobboard/jobs/explore_section.html")]
-#[allow(clippy::struct_field_names)]
 pub(crate) struct ExploreSection {
     pub filters: Filters,
     pub filters_options: FiltersOptions,
@@ -44,7 +37,6 @@ pub(crate) struct ExploreSection {
 /// Results section template.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
 #[template(path = "jobboard/jobs/results_section.html")]
-#[allow(clippy::struct_field_names)]
 pub(crate) struct ResultsSection {
     pub jobs: Vec<JobSummary>,
     pub navigation_links: NavigationLinks,
@@ -53,17 +45,11 @@ pub(crate) struct ResultsSection {
     pub offset: Option<usize>,
 }
 
-/// Job page template.
+/// Job section template.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
-#[template(path = "jobboard/jobs/job.html")]
-#[allow(clippy::struct_field_names)]
-pub(crate) struct JobPage {
+#[template(path = "jobboard/jobs/job_section.html")]
+pub(crate) struct JobSection {
     pub job: Job,
-    pub logged_in: bool,
-    pub page_id: PageId,
-
-    pub name: Option<String>,
-    pub username: Option<String>,
 }
 
 // Types.
@@ -113,11 +99,11 @@ impl Filters {
 
 impl Pagination for Filters {
     fn get_base_hx_url(&self) -> String {
-        "/jobs/section/results".to_string()
+        "/section/jobs/results".to_string()
     }
 
     fn get_base_url(&self) -> String {
-        "/jobs".to_string()
+        "/".to_string()
     }
 
     fn limit(&self) -> Option<usize> {
@@ -208,14 +194,14 @@ pub(crate) struct Employer {
 pub(crate) struct Job {
     pub description: String,
     pub employer: Employer,
-    pub title: String,
+    pub job_id: Uuid,
     pub kind: JobKind,
+    pub title: String,
     pub workplace: Workplace,
 
     pub apply_instructions: Option<String>,
     pub apply_url: Option<String>,
     pub benefits: Option<Vec<String>>,
-    pub job_id: Option<Uuid>,
     pub location: Option<Location>,
     pub open_source: Option<i32>,
     pub projects: Option<Vec<Project>>,

@@ -4,7 +4,7 @@ use askama::Template;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::templates::helpers::format_location;
+use crate::templates::{PageId, helpers::format_location};
 
 // Templates.
 
@@ -15,16 +15,29 @@ pub(crate) struct Members {
     pub members: Vec<Member>,
 }
 
-/// Not found template.
+/// Not found page template.
 #[derive(Debug, Clone, Template, PartialEq, Serialize, Deserialize)]
 #[template(path = "misc/not_found.html")]
-pub(crate) struct NotFound {}
+pub(crate) struct NotFoundPage {
+    pub page_id: PageId,
+}
 
 /// Projects selector template.
 #[derive(Debug, Clone, Template, PartialEq, Serialize, Deserialize)]
 #[template(path = "misc/projects.html")]
 pub(crate) struct Projects {
     pub projects: Vec<Project>,
+}
+
+/// User menu section template.
+#[derive(Debug, Clone, Template, Serialize, Deserialize)]
+#[template(path = "misc/user_menu_section.html")]
+pub(crate) struct UserMenuSection {
+    pub has_profile: bool,
+    pub logged_in: bool,
+
+    pub name: Option<String>,
+    pub username: Option<String>,
 }
 
 // Types.

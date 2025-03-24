@@ -55,8 +55,6 @@ impl DBNotifications for PgDB {
 
     #[instrument(skip(self), err)]
     async fn get_pending_notification(&self, client_id: Uuid) -> Result<Option<Notification>> {
-        trace!("db: get pending notification");
-
         // Get transaction client
         let clients = self.txs_clients.read().await;
         let Some((tx, _)) = clients.get(&client_id) else {

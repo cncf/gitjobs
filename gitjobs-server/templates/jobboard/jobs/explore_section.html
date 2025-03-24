@@ -19,7 +19,7 @@
 
   {# Filters content -#}
   <form id="mobile-jobs-form"
-        hx-get='/jobs/section/results'
+        hx-get='/section/jobs/results'
         hx-trigger="submit"
         hx-target="#items-list"
         hx-include="#searchbar"
@@ -42,10 +42,10 @@
   {# End filters content -#}
 
   <div class="text-end p-5">
-    <button hx-get="/jobs"
+    <button hx-get="/"
             hx-target="body"
             hx-boost="true"
-            hx-push-url="/jobs"
+            hx-push-url="/"
             class="btn-primary-outline btn-mini group">
       <div class="flex items-center space-x-1">
         <div class="svg-icon size-3 icon-close group-hover:bg-white"></div>
@@ -66,7 +66,7 @@
     {# Filters #}
     <div class="relative hidden w-[28%] max-w-[28%] xl:w-1/4 xl:max-w-1/4 lg:block bg-white border rounded-lg pb-5">
       <form id="desktop-jobs-form"
-            hx-get='/jobs/section/results'
+            hx-get='/section/jobs/results'
             hx-trigger="submit"
             hx-target="#items-list"
             hx-include="#searchbar"
@@ -84,10 +84,10 @@
             {% call macros::spinner(size = 5) %}
           </div>
 
-          <button hx-get="/jobs"
+          <button hx-get="/"
                   hx-target="body"
                   hx-boost="true"
-                  hx-push-url="/jobs"
+                  hx-push-url="/"
                   class="btn-primary-outline btn-mini">Reset</button>
         </div>
       </div>

@@ -11,10 +11,10 @@
           <p class="mb-10">We can't seem to find any jobs that match your search criteria.</p>
           <p>
             You can
-            <button hx-get="/jobs"
+            <button hx-get="/"
                     hx-target="body"
                     hx-boost="true"
-                    hx-push-url="/jobs"
+                    hx-push-url="/"
                     class="p-0 underline">reset</button>
             your filters or try a different search.
           </p>
@@ -28,7 +28,7 @@
       <button id="job-preview-{{ job.job_id }}"
               data-preview-job="true"
               data-job-id="{{ job.job_id }}"
-              hx-get="/jobs/{{ job.job_id }}"
+              hx-get="/section/jobs/{{ job.job_id }}"
               hx-target="#preview-content"
               hx-trigger="click,open-modal"
               hx-indicator="#spinner-{{ job.job_id }}"

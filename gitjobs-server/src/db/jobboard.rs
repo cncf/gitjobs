@@ -2,6 +2,8 @@
 
 use anyhow::Result;
 use async_trait::async_trait;
+use cached::proc_macro::cached;
+use deadpool_postgres::Object;
 use serde::{Deserialize, Serialize};
 use tokio_postgres::types::Json;
 use tracing::{instrument, trace};
@@ -40,7 +42,7 @@ impl DBJobBoard for PgDB {
             "
             insert into application (
                 job_id,
-                job_seeker_profile_id,
+                job_seeker_profile_id
             ) values (
                 $1::uuid,
                 (select job_seeker_profile_id from job_seeker_profile where user_id = $2::uuid)
@@ -64,13 +66,13 @@ impl DBJobBoard for PgDB {
                 "
                 select
                     j.description,
-                    j.title,
+                    j.job_id,
                     j.kind,
+                    j.title,
                     j.workplace,
                     j.apply_instructions,
                     j.apply_url,
                     j.benefits,
-                    j.job_id,
                     j.location_id,
                     j.open_source,
                     j.published_at,
@@ -140,13 +142,13 @@ impl DBJobBoard for PgDB {
                 description: row.get("description"),
                 employer: serde_json::from_value(row.get::<_, serde_json::Value>("employer"))
                     .expect("employer should be valid json"),
-                title: row.get("title"),
+                job_id: row.get("job_id"),
                 kind: row.get::<_, String>("kind").parse().expect("valid job kind"),
+                title: row.get("title"),
                 workplace: row.get::<_, String>("workplace").parse().expect("valid workplace"),
                 apply_instructions: row.get("apply_instructions"),
                 apply_url: row.get("apply_url"),
                 benefits: row.get("benefits"),
-                job_id: row.get("job_id"),
                 location: row
                     .get::<_, Option<serde_json::Value>>("location")
                     .map(|v| serde_json::from_value(v).expect("location should be valid json")),
@@ -178,13 +180,20 @@ impl DBJobBoard for PgDB {
 
     #[instrument(skip(self))]
     async fn get_jobs_filters_options(&self) -> Result<FiltersOptions> {
-        trace!("db: get jobs filters options");
+        #[cached(
+            time = 3600,
+            key = "&str",
+            convert = r#"{ "jobs_filters_options" }"#,
+            sync_writes = "default",
+            result = true
+        )]
+        async fn inner(db: Object) -> Result<FiltersOptions> {
+            trace!("db: get jobs filters options");
 
-        // Query database
-        let db = self.pool.get().await?;
-        let row = db
-            .query_one(
-                "
+            // Query database
+            let row = db
+                .query_one(
+                    "
                 select
                     (
                         select json_agg(json_build_object(
@@ -197,16 +206,20 @@ impl DBJobBoard for PgDB {
                         from project
                     )::text as projects;
                 ",
-                &[],
-            )
-            .await?;
+                    &[],
+                )
+                .await?;
 
-        // Prepare filters options
-        let filters_options = FiltersOptions {
-            projects: serde_json::from_str(&row.get::<_, String>("projects"))?,
-        };
+            // Prepare filters options
+            let filters_options = FiltersOptions {
+                projects: serde_json::from_str(&row.get::<_, String>("projects"))?,
+            };
 
-        Ok(filters_options)
+            Ok(filters_options)
+        }
+
+        let db = self.pool.get().await?;
+        inner(db).await
     }
 
     #[instrument(skip(self))]

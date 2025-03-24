@@ -20,5 +20,6 @@ pub(crate) enum PageId {
     JobBoard,
     JobSeekerDashboard,
     LogIn,
+    NotFound,
     SignUp,
 }

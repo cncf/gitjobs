@@ -1,4 +1,5 @@
 #![warn(clippy::all, clippy::pedantic)]
+#![allow(clippy::cmp_owned)]
 
 use std::{path::PathBuf, sync::Arc};
 

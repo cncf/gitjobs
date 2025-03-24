@@ -1,53 +1,17 @@
-{% import "macros.html" as macros %}
+{% import "header.html" as macros_header %}
 
-{% if user.logged_in %}
-  <div class="hidden lg:flex items-center space-x-5">
-    <a hx-boost="true"
-       href="/dashboard/employer"
-       class="btn-primary-outline-anchor w-[140px]">Post a job</a>
-    <a hx-boost="true"
-       href="/dashboard/job-seeker"
-       class="btn-primary-outline-anchor w-[140px]">Create profile</a>
-  </div>
-  <div class="ms-10">{% call macros::user_menu(user.name, user.username) %}</div>
-
-{% else %}
-  <div>
-    <button id="dropdown-button"
-            class="cursor-pointer group rounded-full bg-white border text-xl border-primary-500 text-primary-600 hover:text-primary-800 hover:border-primary-800 size-[38px] p-0.5 overflow-hidden">
-      <div class="svg-icon size-4 mx-auto bg-primary-500 group-hover:bg-white icon-user"></div>
-    </button>
-    {# Dropdown user #}
-    <div id="dropdown-user"
-         class="dropdown absolute hidden z-10 end-0 top-10 w-[250px] bg-white divide-y divide-gray-100 rounded-lg shadow border">
-      <ul class="text-gray-700 my-2">
-        {# Sign up #}
-        <li class="border-t mt-2 pt-2">
-          <a hx-boost="true"
-             href="/sign-up"
-             class="inline-block w-full text-start px-4 py-2 hover:bg-gray-100">
-            <div class="flex items-center">
-              <div class="svg-icon size-4 icon-user_plus bg-gray-600"></div>
-              <div class="ms-2 text-xs/6">Sign up</div>
-            </div>
-          </a>
-        </li>
-        {# End sign up #}
-
-        {# Login #}
-        <li>
-          <a hx-boost="true"
-             href="/log-in"
-             class="inline-block w-full text-start px-4 py-2 hover:bg-gray-100">
-            <div class="flex items-center">
-              <div class="svg-icon size-4 icon-login bg-gray-600"></div>
-              <div class="ms-2 text-xs/6">Log in</div>
-            </div>
-          </a>
-        </li>
-        {# End login #}
-      </ul>
+<div class="flex items-center">
+  {% if user.logged_in %}
+    <div class="hidden lg:flex items-center space-x-5">
+      <a hx-boost="true"
+         href="/dashboard/employer"
+         hx-target="body"
+         class="btn-primary-outline-anchor w-[140px]">Post a job</a>
+      <a hx-boost="true"
+         href="/dashboard/job-seeker"
+         hx-target="body"
+         class="btn-primary-outline-anchor w-[140px]">Create profile</a>
     </div>
-    {# End dropdown user #}
-  </div>
-{% endif %}
+  {% endif %}
+  <div class="ms-10">{% call macros_header::user_menu(user) %}</div>
+</div>

@@ -24,39 +24,18 @@
 
 <div class="relative flex">
   {% if page_id == PageId::JobBoard %}
-    job board
+    <div hx-get="/section/user-menu" hx-trigger="load" hx-target="this">
+      <button class="relative group rounded-full bg-white border text-xl border-primary-500 text-primary-600 size-[38px] p-0.5 overflow-hidden"
+              disabled>
+        {% call macros::btn_spinner(id = "user-spinner", size = "[2.35rem]", bg_color = "white", fill_color = "primary-500", htmx = false) %}
+        <div class="svg-icon size-4 mx-auto bg-primary-500 icon-user"></div>
+      </button>
+    </div>
   {% else %}
-    {% if user.logged_in %}
-      {% call macros::user_menu(user.name, user.username) %}
-    {% endif %}
+    {% call user_menu(user) %}
   {% endif %}
 </div>
 
-{# Dropdown script #}
-<script type="module">
-  const dropdownButton = document.getElementById('dropdown-button');
-  const dropdown = document.getElementById('dropdown-user');
-
-  if (dropdownButton) {
-    dropdownButton.addEventListener('click', () => {
-      const isOpen = dropdown.classList.contains('hidden');
-      dropdown.classList.toggle('hidden');
-
-      if (isOpen) {
-        // Close dropdown actions when clicking outside
-        document.addEventListener('click', (event) => {
-          if (!dropdown.contains(event.target) && !dropdownButton.contains(event.target)) {
-            dropdown.classList.add('hidden');
-          }
-        });
-      } else {
-        // Remove event listener when dropdown is closed
-        document.removeEventListener('click', () => {});
-      }
-    });
-  }
-</script>
-{# End dropdown script #}
 {# End Navbar #}
 
 {% macro header_link(text, href, active = false) %}
@@ -72,3 +51,124 @@
           disabled
           title="Coming soon!">{{ text }}</button>
 {% endmacro disabled_header_link %}
+
+{# Header user menu #}
+{% macro user_menu(user) %}
+  {% if user.logged_in %}
+    <button id="dropdown-button"
+            class="cursor-pointer group rounded-full bg-white border text-xl border-primary-500 text-primary-600 hover:text-primary-800 hover:border-primary-800 size-[38px] p-0.5 overflow-hidden">
+      {% let name = user.name|display_some %}
+      {% let initial = name.chars().nth(0).unwrap_or('-') %}
+      <div class="font-semibold uppercase mt-px">{{ initial }}</div>
+    </button>
+
+    {# Dropdown user #}
+    <div id="dropdown-user"
+         class="dropdown absolute hidden z-10 end-0 top-10 w-[250px] bg-white divide-y divide-gray-100 rounded-lg shadow border">
+      <ul class="text-gray-700 my-2">
+        <li>
+          <div class="flex flex-col px-4 py-2">
+            <div class="font-medium text-sm/6 truncate text-gray-700 mb-3">{{ user.username|display_some }}</div>
+            <div class="text-xs/4 truncate">{{ name }}</div>
+          </div>
+        </li>
+        <li class="border-t mt-2 pt-2">
+          <a hx-boost="true"
+             href="/dashboard/employer"
+             hx-target="body"
+             class="inline-block w-full text-start px-4 py-2 hover:bg-gray-100">
+            <div class="flex items-center">
+              <div class="svg-icon size-4 icon-company bg-gray-600"></div>
+              <div class="ms-2 text-xs/6">Employer dashboard</div>
+            </div>
+          </a>
+        </li>
+        <li>
+          <a hx-boost="true"
+             href="/dashboard/job-seeker"
+             hx-target="body"
+             class="inline-block w-full text-start px-4 py-2 hover:bg-gray-100">
+            <div class="flex items-center">
+              <div class="svg-icon size-4 icon-search bg-gray-600"></div>
+              <div class="ms-2 text-xs/6">Job seeker dashboard</div>
+            </div>
+          </a>
+        </li>
+        <li class="border-t mt-2 pt-2">
+          <a href="/log-out"
+             class="inline-block w-full text-start px-4 py-2 hover:bg-gray-100">
+            <div class="flex items-center">
+              <div class="svg-icon size-4 icon-logout bg-gray-600"></div>
+              <div class="ms-2 text-xs/6">Log out</div>
+            </div>
+          </a>
+        </li>
+      </ul>
+    </div>
+    {# End dropdown user #}
+  {% else %}
+    <button id="dropdown-button"
+            class="cursor-pointer group rounded-full bg-white border text-xl border-primary-500 text-primary-600 hover:text-primary-800 hover:border-primary-800 size-[38px] p-0.5 overflow-hidden">
+      <div class="svg-icon size-4 mx-auto bg-primary-500 group-hover:bg-primary-800 icon-user"></div>
+    </button>
+    {# Dropdown user #}
+    <div id="dropdown-user"
+         class="dropdown absolute hidden z-10 end-0 top-10 w-[250px] bg-white divide-y divide-gray-100 rounded-lg shadow border">
+      <ul class="text-gray-700 my-2">
+        {# Sign up #}
+        <li>
+          <a hx-boost="true"
+             href="/sign-up"
+             hx-target="body"
+             class="inline-block w-full text-start px-4 py-2 hover:bg-gray-100">
+            <div class="flex items-center">
+              <div class="svg-icon size-4 icon-user_plus bg-gray-600"></div>
+              <div class="ms-2 text-xs/6">Sign up</div>
+            </div>
+          </a>
+        </li>
+        {# End sign up #}
+
+        {# Login #}
+        <li>
+          <a hx-boost="true"
+             href="/log-in"
+             hx-target="body"
+             class="inline-block w-full text-start px-4 py-2 hover:bg-gray-100">
+            <div class="flex items-center">
+              <div class="svg-icon size-4 icon-login bg-gray-600"></div>
+              <div class="ms-2 text-xs/6">Log in</div>
+            </div>
+          </a>
+        </li>
+        {# End login #}
+      </ul>
+    </div>
+    {# End dropdown user #}
+  {% endif %}
+  {# Dropdown script #}
+  <script type="module">
+    const dropdownButton = document.getElementById('dropdown-button');
+    const dropdown = document.getElementById('dropdown-user');
+
+    if (dropdownButton) {
+      dropdownButton.addEventListener('click', () => {
+        const isOpen = dropdown.classList.contains('hidden');
+        dropdown.classList.toggle('hidden');
+
+        if (isOpen) {
+          // Close dropdown actions when clicking outside
+          document.addEventListener('click', (event) => {
+            if (!dropdown.contains(event.target) && !dropdownButton.contains(event.target)) {
+              dropdown.classList.add('hidden');
+            }
+          });
+        } else {
+          // Remove event listener when dropdown is closed
+          document.removeEventListener('click', () => {});
+        }
+      });
+    }
+  </script>
+  {# End dropdown script #}
+{% endmacro user_menu %}

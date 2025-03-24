@@ -15,9 +15,9 @@
 {# End spinner -#}
 
 {# Button spinner #}
-{% macro btn_spinner(id, size = 5, bg_color = "gray-200", fill_color="primary-600") %}
+{% macro btn_spinner(id, size = 5, bg_color = "gray-200", fill_color="primary-600", htmx = true) %}
   <div id="{{ id }}"
-       class="top-0 start-0 bottom-0 end-0 bg-inherit absolute hx-spinner">
+       class="top-0 start-0 bottom-0 end-0 bg-inherit absolute {%- if htmx %} hx-spinner{%- endif -%}">
     <div class="flex items-center justify-center h-full w-full">
       {% call spinner(size = size, fill_color = fill_color, bg_color = bg_color) %}
     </div>
@@ -474,60 +474,6 @@
   </div>
 {% endmacro dropdown_card %}
 {# End dropdown card #}
-
-{# Header user menu #}
-{% macro user_menu(name, username) %}
-  <button id="dropdown-button"
-          class="cursor-pointer group rounded-full bg-white border text-xl border-primary-500 text-primary-600 hover:text-primary-800 hover:border-primary-800 size-[38px] p-0.5 overflow-hidden">
-    {% let name = name|display_some %}
-    {% let initial = name.chars().nth(0).unwrap_or('-') %}
-    <div class="font-semibold uppercase mt-px">{{ initial }}</div>
-  </button>
-
-  {# Dropdown user #}
-  <div id="dropdown-user"
-       class="dropdown absolute hidden z-10 end-0 top-10 w-[250px] bg-white divide-y divide-gray-100 rounded-lg shadow border">
-    <ul class="text-gray-700 my-2">
-      <li>
-        <div class="flex flex-col px-4 py-2">
-          <div class="font-medium text-sm/6 truncate text-gray-700 mb-3">{{ username|display_some }}</div>
-          <div class="text-xs/4 truncate">{{ name }}</div>
-        </div>
-      </li>
-      <li class="border-t mt-2 pt-2">
-        <a hx-boost="true"
-           href="/dashboard/employer"
-           class="inline-block w-full text-start px-4 py-2 hover:bg-gray-100">
-          <div class="flex items-center">
-            <div class="svg-icon size-4 icon-company bg-gray-600"></div>
-            <div class="ms-2 text-xs/6">Employer dashboard</div>
-          </div>
-        </a>
-      </li>
-      <li>
-        <a hx-boost="true"
-           href="/dashboard/job-seeker"
-           class="inline-block w-full text-start px-4 py-2 hover:bg-gray-100">
-          <div class="flex items-center">
-            <div class="svg-icon size-4 icon-search bg-gray-600"></div>
-            <div class="ms-2 text-xs/6">Job seeker dashboard</div>
-          </div>
-        </a>
-      </li>
-      <li class="border-t mt-2 pt-2">
-        <a href="/log-out"
-           class="inline-block w-full text-start px-4 py-2 hover:bg-gray-100">
-          <div class="flex items-center">
-            <div class="svg-icon size-4 icon-logout bg-gray-600"></div>
-            <div class="ms-2 text-xs/6">Log out</div>
-          </div>
-        </a>
-      </li>
-    </ul>
-  </div>
-  {# End dropdown user #}
-{% endmacro user_menu %}
-{# Header user menu #}
 
 {# Alert box #}
 {% macro alert_box(content, title = "") %}

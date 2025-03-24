@@ -43,7 +43,7 @@ pub(crate) struct UpdateUserPage {
 // Types.
 
 /// User information.
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 pub(crate) struct User {
     pub has_profile: bool,
     pub logged_in: bool,

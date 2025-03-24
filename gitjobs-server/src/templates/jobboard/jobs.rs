@@ -8,6 +8,7 @@ use uuid::Uuid;
 
 use crate::templates::{
     PageId,
+    auth::User,
     dashboard::employer::jobs::{JobKind, SalaryKind, Workplace},
     filters,
     helpers::{DATE_FORMAT, DATE_FORMAT_3, build_jobboard_image_url, option_is_none_or_default},
@@ -23,6 +24,7 @@ use crate::templates::{
 pub(crate) struct JobsPage {
     pub explore_section: ExploreSection,
     pub page_id: PageId,
+    pub user: User,
 }
 
 /// Explore section template.

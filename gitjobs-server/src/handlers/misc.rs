@@ -19,6 +19,7 @@ use crate::{
     handlers::{error::HandlerError, prepare_headers},
     templates::{
         PageId,
+        auth::User,
         misc::{self, UserMenuSection},
     },
 };
@@ -29,6 +30,7 @@ pub(crate) async fn not_found() -> Result<impl IntoResponse, HandlerError> {
     // Prepare template
     let template = misc::NotFoundPage {
         page_id: PageId::NotFound,
+        user: User::default(),
     };
 
     // Prepare response headers

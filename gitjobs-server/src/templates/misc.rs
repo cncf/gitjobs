@@ -20,6 +20,7 @@ pub(crate) struct Members {
 #[template(path = "misc/not_found.html")]
 pub(crate) struct NotFoundPage {
     pub page_id: PageId,
+    pub user: User,
 }
 
 /// Projects selector template.

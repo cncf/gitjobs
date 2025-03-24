@@ -18,6 +18,7 @@ use crate::{
     handlers::{error::HandlerError, prepare_headers},
     templates::{
         PageId,
+        auth::User,
         jobboard::jobs::{ExploreSection, Filters, JobSection, JobsPage, ResultsSection},
         pagination::{NavigationLinks, build_url},
     },
@@ -48,6 +49,7 @@ pub(crate) async fn jobs_page(
             },
         },
         page_id: PageId::JobBoard,
+        user: User::default(),
     };
 
     // Prepare response headers

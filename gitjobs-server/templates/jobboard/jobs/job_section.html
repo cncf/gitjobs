@@ -135,17 +135,10 @@
   <div class="border-t md:border-0 mt-10 md:mt-0 md:border md:w-1/4 pt-6">
     {# Apply url #}
     {% if let Some(apply_url) = job.apply_url %}
-      {% if logged_in %}
-        <a href="{{ apply_url }}"
-           class="btn-primary-outline w-full block mt-4 mb-6"
-           target="_blank"
-           rel="noopener noreferrer">Apply</a>
-      {% else %}
-        <button type="button"
-                class="btn-primary-outline w-full cursor-not-allowed mt-4 mb-6"
-                title="You need to be logged in to apply"
-                disabled>Apply</button>
-      {% endif %}
+      <a href="{{ apply_url }}"
+         class="btn-primary-outline w-full block mt-4 mb-6"
+         target="_blank"
+         rel="noopener noreferrer">Apply</a>
     {% endif %}
     {# End apply url #}
 

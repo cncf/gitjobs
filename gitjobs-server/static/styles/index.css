@@ -237,6 +237,11 @@
   -webkit-mask-image: url('/static/images/icons/location.svg')
 }
 
+.icon-login {
+  mask-image: url('/static/images/icons/login.svg');
+  -webkit-mask-image: url('/static/images/icons/login.svg')
+}
+
 .icon-logout {
   mask-image: url('/static/images/icons/logout.svg');
   -webkit-mask-image: url('/static/images/icons/logout.svg')
@@ -345,6 +350,11 @@
 .icon-user {
   mask-image: url('/static/images/icons/user.svg');
   -webkit-mask-image: url('/static/images/icons/user.svg')
+}
+
+.icon-user_plus {
+  mask-image: url('/static/images/icons/user_plus.svg');
+  -webkit-mask-image: url('/static/images/icons/user_plus.svg')
 }
 
 .icon-vertical_dots {

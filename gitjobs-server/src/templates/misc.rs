@@ -4,7 +4,7 @@ use askama::Template;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::templates::{PageId, auth::User, helpers::format_location};
+use crate::templates::{PageId, auth::User, filters, helpers::format_location};
 
 // Templates.
 

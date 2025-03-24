@@ -1,3 +1,5 @@
+{% import "macros.html" as macros %}
+
 {# Navbar #}
 <div class="flex items-center space-x-6">
   {# Logo #}
@@ -21,84 +23,16 @@
 </div>
 
 <div class="relative flex">
-  {# When user is logged in, we display a button to open a dropdown with options #}
-  {# and if page is jobboard we display 2 buttons to post a job and to create #}
-  {# an employer profile  #}
-  {% if logged_in %}
-    {% if page_id == PageId::JobBoard %}
-      <div class="hidden lg:flex items-center space-x-5">
-        <a hx-boost="true"
-           href="/dashboard/employer"
-           class="btn-primary-outline-anchor w-[140px]">Post a job</a>
-        <a hx-boost="true"
-           href="/dashboard/job-seeker"
-           class="btn-primary-outline-anchor w-[140px]">Create profile</a>
-      </div>
-    {% endif %}
-    <div class="ms-10">
-      <button id="dropdown-button"
-              class="cursor-pointer group rounded-full bg-white border text-xl border-primary-500 text-primary-600 hover:text-primary-800 hover:border-primary-800 size-[38px] p-0.5 overflow-hidden">
-        {% let name = name|display_some %}
-        {% let initial = name.chars().nth(0).unwrap_or('-') %}
-        <div class="font-semibold uppercase mt-px">{{ initial }}</div>
-      </button>
-
-      {# Dropdown user #}
-      <div id="dropdown-user"
-           class="dropdown absolute hidden z-10 end-0 top-10 w-[250px] bg-white divide-y divide-gray-100 rounded-lg shadow border">
-        <ul class="text-gray-700 my-2">
-          <li>
-            <div class="flex flex-col px-4 py-2">
-              <div class="font-medium text-sm/6 truncate text-gray-700 mb-3">{{ username|display_some }}</div>
-              <div class="text-xs/4 truncate">{{ name }}</div>
-            </div>
-          </li>
-          <li class="border-t mt-2 pt-2">
-            <a hx-boost="true"
-               href="/dashboard/employer"
-               class="inline-block w-full text-start px-4 py-2 hover:bg-gray-100">
-              <div class="flex items-center">
-                <div class="svg-icon size-4 icon-company bg-gray-600"></div>
-                <div class="ms-2 text-xs/6">Employer dashboard</div>
-              </div>
-            </a>
-          </li>
-          <li>
-            <a hx-boost="true"
-               href="/dashboard/job-seeker"
-               class="inline-block w-full text-start px-4 py-2 hover:bg-gray-100">
-              <div class="flex items-center">
-                <div class="svg-icon size-4 icon-search bg-gray-600"></div>
-                <div class="ms-2 text-xs/6">Job seeker dashboard</div>
-              </div>
-            </a>
-          </li>
-          <li class="border-t mt-2 pt-2">
-            <a href="/log-out"
-               class="inline-block w-full text-start px-4 py-2 hover:bg-gray-100">
-              <div class="flex items-center">
-                <div class="svg-icon size-4 icon-logout bg-gray-600"></div>
-                <div class="ms-2 text-xs/6">Log out</div>
-              </div>
-            </a>
-          </li>
-        </ul>
-      </div>
-      {# End dropdown user #}
-    </div>
-
-    {# When user is not logged in, we display a button to go to login page #}
+  {% if page_id == PageId::JobBoard %}
+    job board
   {% else %}
-    {# TODO - mobile version #}
-    <div class="hidden lg:flex items-center space-x-5">
-      <a hx-boost="true"
-         class="btn-primary-outline-anchor w-28"
-         href="/sign-up">Sign Up</a>
-      <a hx-boost="true" class="btn-primary-anchor w-28" href="/log-in">Log In</a>
-    </div>
+    {% if user.logged_in %}
+      {% call macros::user_menu(user.name, user.username) %}
+    {% endif %}
   {% endif %}
 </div>
 
+{# Dropdown script #}
 <script type="module">
   const dropdownButton = document.getElementById('dropdown-button');
   const dropdown = document.getElementById('dropdown-user');
@@ -122,6 +56,7 @@
     });
   }
 </script>
+{# End dropdown script #}
 {# End Navbar #}
 
 {% macro header_link(text, href, active = false) %}

@@ -10,12 +10,13 @@ use axum::{
     http::StatusCode,
     response::{Html, IntoResponse},
 };
+use chrono::Duration;
 use tracing::instrument;
 
 use crate::{
     auth::AuthSession,
     db::DynDB,
-    handlers::error::HandlerError,
+    handlers::{error::HandlerError, prepare_headers},
     templates::{
         PageId,
         misc::{self, UserMenuSection},
@@ -25,11 +26,15 @@ use crate::{
 /// Handler that returns the not found page.
 #[instrument(skip_all, err)]
 pub(crate) async fn not_found() -> Result<impl IntoResponse, HandlerError> {
+    // Prepare template
     let template = misc::NotFoundPage {
         page_id: PageId::NotFound,
     };
 
-    Ok(Html(template.render()?).into_response())
+    // Prepare response headers
+    let headers = prepare_headers(Duration::hours(1), &[])?;
+
+    Ok((headers, Html(template.render()?)).into_response())
 }
 
 /// Handler that returns the locations search results.

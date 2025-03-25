@@ -25,6 +25,7 @@
   {% else %}
     {# Cards -#}
     {% for job in jobs %}
+      {% let open_source = job.open_source.unwrap_or_default() %}
       <button id="job-preview-{{ job.job_id }}"
               data-preview-job="true"
               data-job-id="{{ job.job_id }}"
@@ -32,7 +33,7 @@
               hx-target="#preview-content"
               hx-trigger="click,open-modal"
               hx-indicator="#spinner-{{ job.job_id }}"
-              class="relative mx-5 md:mx-7 text-start enabled:cursor-pointer border rounded-lg enabled:hover:outline enabled:hover:-outline-offset-1 p-5 md:p-7 {%- if let Some(member) = job.employer.member %} border-primary-400 bg-primary-50/20 enabled:hover:outline-primary-500{%- else %} enabled:hover:outline-gray-400{%- endif -%}"
+              class="relative mx-5 md:mx-7 text-start enabled:cursor-pointer border border-2 rounded-lg enabled:hover:outline enabled:hover:-outline-offset-1 p-5 md:p-7 {%- if open_source > 0 %} border-primary-400 bg-primary-50/20 enabled:hover:outline-primary-500{%- else if let Some(member) = job.employer.member %} border-secondary-400 bg-secondary-50/20 enabled:hover:outline-secondary-500{%- else %} enabled:hover:outline-gray-400{%- endif -%}"
               hx-disabled-elt="[data-preview-job]"
               hx-boost="true">
         {# Job title #}
@@ -148,12 +149,8 @@
 
             {# Open source #}
             <div class="flex space-x-1 items-center justify-center">
-              {% if let Some(open_source) = job.open_source %}
-                {% if open_source + 0 > 0 %}
-                  <div class="svg-icon size-3 icon-check bg-green-500"></div>
-                {% else %}
-                  <div class="svg-icon size-3.5 icon-close bg-red-500"></div>
-                {% endif %}
+              {% if open_source > 0 %}
+                <div class="svg-icon size-3 icon-check bg-green-500"></div>
               {% else %}
                 <div class="svg-icon size-3.5 icon-close bg-red-500"></div>
               {% endif %}
@@ -197,7 +194,7 @@
 
         {# Spinner #}
         <div id="spinner-{{ job.job_id }}"
-             class="hx-spinner absolute rounded-lg top-0 left-0 h-full w-full rounded-lg box-animated {%- if let Some(member) = job.employer.member %} box-animated-primary{%- endif -%}">
+             class="hx-spinner absolute rounded-lg top-0 left-0 h-full w-full rounded-lg box-animated {%- if open_source > 0 %} box-animated-primary{%- else if let Some(member) = job.employer.member %} box-animated-secondary{%- endif -%}">
         </div>
         {# End spinner #}
       </button>

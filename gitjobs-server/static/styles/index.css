@@ -1,5 +1,6 @@
 :root {
   --primary-color: #fd4d12;
+  --secondary-color: #2a71ff;
 }
 
 .bg-jobboard {
@@ -443,6 +444,10 @@
 
 .box-animated-primary {
   box-shadow: 0 0 0 var(--primary-color);
+}
+
+.box-animated-secondary {
+  box-shadow: 0 0 0 var(--secondary-color);
 }
 
 @-webkit-keyframes pulse-shadow {

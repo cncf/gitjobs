@@ -162,8 +162,7 @@ impl DBAuth for PgDB {
                 from "user" u
                 left join job_seeker_profile p on u.user_id = p.user_id
                 where u.email = $1::text
-                where email = $1::text
-                and email_verified = true;
+                and u.email_verified = true;
                 "#,
                 &[&email],
             )

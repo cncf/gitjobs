@@ -2,7 +2,7 @@
 
 {# Update user details form #}
 <form id="user-details-form"
-      hx-put="/account/update/details"
+      hx-put="/dashboard/account/update/details"
       hx-ext="no-empty-vals"
       hx-trigger="submit"
       hx-indicator="#dashboard-spinner, #save-user-spinner"
@@ -87,7 +87,7 @@
 
   {# Update user password form #}
   <form id="password-form"
-        hx-put="/account/update/password"
+        hx-put="/dashboard/account/update/password"
         hx-ext="no-empty-vals"
         hx-trigger="submit"
         hx-target="body"

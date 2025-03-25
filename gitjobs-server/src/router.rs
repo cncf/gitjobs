@@ -6,7 +6,7 @@ use axum::{
     Extension, Router,
     extract::FromRef,
     http::{
-        StatusCode, Uri,
+        HeaderValue, StatusCode, Uri,
         header::{CACHE_CONTROL, CONTENT_TYPE},
     },
     middleware,
@@ -18,7 +18,9 @@ use axum_messages::MessagesManagerLayer;
 use rust_embed::Embed;
 use serde_qs::axum::{QsQueryConfig, QsQueryRejection};
 use tower::ServiceBuilder;
-use tower_http::{trace::TraceLayer, validate_request::ValidateRequestHeaderLayer};
+use tower_http::{
+    set_header::SetResponseHeaderLayer, trace::TraceLayer, validate_request::ValidateRequestHeaderLayer,
+};
 use tracing::instrument;
 
 use crate::{
@@ -77,14 +79,20 @@ pub(crate) async fn setup(
 
     // Setup main router
     let mut router = Router::new()
-        .route("/account/update/details", put(auth::update_user_details))
-        .route("/account/update/password", put(auth::update_user_password))
+        .route(
+            "/dashboard/account/update/details",
+            put(auth::update_user_details),
+        )
+        .route(
+            "/dashboard/account/update/password",
+            put(auth::update_user_password),
+        )
         .nest("/dashboard/employer", employer_dashboard_router)
         .nest("/dashboard/job-seeker", job_seeker_dashboard_router)
         .nest("/dashboard/images", dashboard_images_router)
+        .route("/dashboard/members/search", get(search_members))
+        .route("/dashboard/projects/search", get(search_projects))
         .route("/jobs/{job_id}/apply", get(jobboard::jobs::apply))
-        .route("/members/search", get(search_members))
-        .route("/projects/search", get(search_projects))
         .route_layer(login_required!(
             AuthnBackend,
             login_url = LOG_IN_URL,
@@ -114,6 +122,10 @@ pub(crate) async fn setup(
         .layer(Extension(QsQueryConfig::new(3, false).error_handler(|err| {
             QsQueryRejection::new(err, StatusCode::UNPROCESSABLE_ENTITY)
         })))
+        .layer(SetResponseHeaderLayer::if_not_present(
+            CACHE_CONTROL,
+            HeaderValue::from_static("max-age=0"),
+        ))
         .with_state(state);
 
     // Setup basic auth

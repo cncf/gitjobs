@@ -51,6 +51,12 @@ export class SearchableFilter extends LitWrapper {
       case "benefits":
         this.options = getBenefits();
         break;
+      case "projects":
+        const projects = document.getElementById("projects-list");
+        if (projects) {
+          this.options = JSON.parse(projects.dataset.projects);
+        }
+        break;
       default:
         this.options = this.options;
     }

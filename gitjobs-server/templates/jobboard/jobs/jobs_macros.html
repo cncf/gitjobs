@@ -102,7 +102,7 @@
     {# Projects #}
     <div>
       {% call filters_subtitle(text = "Projects you'd like to work on") %}
-      <searchable-filter name="projects" options="{{ filters_options.projects|json }}" form="{{ device }}-jobs-form" {%- if let Some(filters_projects) = filters.projects %}selected="{{ filters_projects|json }}"{%- endif -%}></searchable-filter>
+      <searchable-filter name="projects" form="{{ device }}-jobs-form" {%- if let Some(filters_projects) = filters.projects %}selected="{{ filters_projects|json }}"{%- endif -%}></searchable-filter>
     </div>
     {# End projects #}
 

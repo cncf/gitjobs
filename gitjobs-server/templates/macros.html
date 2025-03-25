@@ -337,21 +337,19 @@
           {% call spinner(size = 14, bg_color = "gray-300") %}
         </div>
         <div id="image-container" class="relative w-100 h-100 flex mx-auto">
-          {% if !empty_image %}
-            {# Image #}
-            <img id="image"
-                 src="{{ url_image }}"
-                 alt="Image"
-                 height="auto"
-                 width="auto"
-                 class="size-[86px] object-contain rounded-lg m-auto">
-            {# End image #}
-          {% else %}
-            {# Placeholder image #}
-            <div id="placeholder-image"
-                 class="svg-icon size-20 icon-{{ icon }} bg-white m-auto"></div>
-            {# End placeholder image #}
-          {% endif %}
+          {# Image #}
+          <img id="image"
+               src="{{ url_image }}"
+               alt="Image"
+               height="auto"
+               width="auto"
+               class="size-[86px] object-contain rounded-lg m-auto {%- if empty_image %} hidden{%- endif -%}">
+          {# End image #}
+          {# Placeholder image #}
+          <div id="placeholder-image"
+               class="svg-icon size-20 icon-{{ icon }} bg-white m-auto {%- if !empty_image %} hidden{%- endif -%}">
+          </div>
+          {# End placeholder image #}
         </div>
       </div>
 
@@ -379,34 +377,6 @@
       </div>
     </div>
   </form>
-  <script type="module">
-    import {
-      showErrorAlert,
-      showSuccessAlert
-    } from '/static/js/common/alerts.js';
-    import {
-      isSuccessfulXHRStatus
-    } from '/static/js/common/common.js';
-
-    const imagesForm = document.getElementById('images-form');
-    imagesForm.addEventListener('htmx:afterRequest', (e) => {
-      if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
-        showSuccessAlert('Image added successfully.');
-        const imageId = e.detail.xhr.response;
-        const imgContainer = document.getElementById('image-container');
-        const image = document.createElement('img');
-        image.setAttribute('src', `/dashboard/images/${imageId}/small`);
-        image.setAttribute('alt', 'Image');
-        image.setAttribute('height', 'auto');
-        image.setAttribute('width', 'auto');
-        image.setAttribute('class', 'size-[86px] object-contain rounded-lg m-auto');
-        imgContainer.innerHTML = '';
-        imgContainer.appendChild(image);
-      } else {
-        showErrorAlert('Something went wrong adding the image, please try again later.');
-      }
-    });
-  </script>
   {# End images form #}
 
   {# Input hidden #}
@@ -418,35 +388,38 @@
       isSuccessfulXHRStatus
     } from '/static/js/common/common.js';
     import {
-      showErrorAlert
+      showErrorAlert,
+      showSuccessAlert
     } from '/static/js/common/alerts.js';
 
-    // On clean image button click, remove the image and the clear button, and show the placeholder
     const cleanImage = document.getElementById('clean-image');
+    const imagesForm = document.getElementById('images-form');
+    const image = document.getElementById('image');
     const inputHidden = document.getElementById('{{ name }}');
     const placeholderImage = document.getElementById('placeholder-image');
-    const image = document.getElementById('image');
+
+    // On image upload, show the image and enable clear button, and hide the placeholder
+    imagesForm.addEventListener('htmx:afterRequest', (e) => {
+      if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
+        showSuccessAlert('Image added successfully.');
+        const imageId = e.detail.xhr.response;
+        inputHidden.value = imageId;
+        image.setAttribute('src', `/dashboard/images/${imageId}/small`);
+        image.classList.remove('hidden');
+        placeholderImage.classList.add('hidden');
+        cleanImage.removeAttribute('disabled');
+      } else {
+        showErrorAlert('Something went wrong adding the image, please try again later.');
+      }
+    });
+
+    // On clean image button click, remove the image and the clear button, and show the placeholder
     cleanImage.addEventListener('click', () => {
       inputHidden.value = "";
       cleanImage.disabled = true;
       placeholderImage.classList.remove('hidden');
       image.setAttribute('src', '');
       image.classList.add('hidden');
-    });
-
-    // On image upload, show the image and the clear button, and hide the placeholder
-    const imagesForm = document.getElementById('images-form');
-    imagesForm.addEventListener('htmx:afterRequest', (e) => {
-      if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
-        const imageId = e.detail.xhr.response;
-        inputHidden.value = imageId;
-        cleanImage.disabled = false;
-        placeholderImage.classList.add('hidden');
-        image.setAttribute('src', `/dashboard/images/${imageId}/small`);
-        image.classList.remove('hidden');
-      } else {
-        showErrorAlert('Something went wrong adding the image, please try again later.');
-      }
     });
   </script>
 {% endmacro images_form %}

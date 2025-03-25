@@ -3,13 +3,20 @@
 {# Navbar #}
 <div class="flex items-center space-x-6">
   {# Logo #}
-  <div>
+  <div class="me-3">
     <a hx-boost="true" href="/">
-      <img src="/static/images/gitjobs.png"
-           height="33px"
-           width="162px"
-           class="ms-[2px]"
-           alt="GitJobs Logo">
+      <div class="flex items-top gap-x-2">
+        <div>
+          <img src="/static/images/gitjobs.png"
+               height="33px"
+               width="162px"
+               class="ms-[2px]"
+               alt="GitJobs Logo">
+        </div>
+        <div>
+          <div class="relative text-xs/6 tracking-widest rounded-full bg-gray-400/20 px-2 font-semibold">BETA</div>
+        </div>
+      </div>
     </a>
   </div>
   {# End logo #}

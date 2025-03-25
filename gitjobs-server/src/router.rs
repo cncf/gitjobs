@@ -77,14 +77,20 @@ pub(crate) async fn setup(
 
     // Setup main router
     let mut router = Router::new()
-        .route("/account/update/details", put(auth::update_user_details))
-        .route("/account/update/password", put(auth::update_user_password))
+        .route(
+            "/dashboard/account/update/details",
+            put(auth::update_user_details),
+        )
+        .route(
+            "/dashboard/account/update/password",
+            put(auth::update_user_password),
+        )
         .nest("/dashboard/employer", employer_dashboard_router)
         .nest("/dashboard/job-seeker", job_seeker_dashboard_router)
         .nest("/dashboard/images", dashboard_images_router)
+        .route("/dashboard/members/search", get(search_members))
+        .route("/dashboard/projects/search", get(search_projects))
         .route("/jobs/{job_id}/apply", get(jobboard::jobs::apply))
-        .route("/members/search", get(search_members))
-        .route("/projects/search", get(search_projects))
         .route_layer(login_required!(
             AuthnBackend,
             login_url = LOG_IN_URL,

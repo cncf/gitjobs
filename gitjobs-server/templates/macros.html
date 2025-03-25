@@ -34,7 +34,7 @@
     </div>
     <input id="member"
            name="name"
-           hx-get="/members/search"
+           hx-get="/dashboard/members/search"
            hx-include="#member"
            hx-trigger="searchMembers"
            hx-target="#search-member"
@@ -147,7 +147,7 @@
     </div>
     <input id="{{ id }}"
            name="name"
-           hx-get="/projects/search"
+           hx-get="/dashboard/projects/search"
            hx-include="#{{ id }}"
            hx-trigger="searchprojects"
            hx-target="#search-{{ id }}"

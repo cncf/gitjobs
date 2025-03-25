@@ -145,8 +145,10 @@
     {# End published date #}
 
     {# Last update #}
-    {% call job_details_subheading(content = "Last updated") %}
-    {% call job_details_content(text = job.updated_at|display_some_datetime_or(DATE_FORMAT, "-")) %}
+    {% if let Some(updated_at) = job.updated_at %}
+      {% call job_details_subheading(content = "Last updated") %}
+      {% call job_details_content(text = job.updated_at|display_some_datetime(DATE_FORMAT)) %}
+    {% endif %}
     {# End last update #}
 
     {# Type #}

@@ -1,1 +1,20 @@
-<h1>Not found page</h1>
+{% extends "common_base.html" %}
+
+{% block main %}
+  <div class="container max-w-6xl px-2 py-24 text-center mx-24 lg:mx-auto">
+    <div class="flex flex-col items-center justify-center h-3/4">
+      <div class="flex justify-center items-center mb-10">
+        <div class="svg-icon size-20 icon-warning bg-gray-400"></div>
+      </div>
+      <div class="text-4xl font-semibold mb-10 text-gray-900">Error 404 - Page Not Found</div>
+      <p class="text-3xl text-gray-700">The page you were looking for wasn't found.</p>
+
+      {# Button home #}
+      <div class="mt-20 flex justify-center items-center">
+
+        <a href="/" class="btn-primary-anchor w-64 text-xl" hx-boost="true">Go to Home</a>
+      </div>
+      {# End button home #}
+    </div>
+  </div>
+{% endblock main %}

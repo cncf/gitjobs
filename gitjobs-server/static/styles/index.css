@@ -361,6 +361,11 @@
   mask-image: url('/static/images/icons/vertical_dots.svg');
   -webkit-mask-image: url('/static/images/icons/vertical_dots.svg')
 }
+
+.icon-warning {
+  mask-image: url('/static/images/icons/warning.svg');
+  -webkit-mask-image: url('/static/images/icons/warning.svg')
+}
 /* End icons */
 
 /* Spinner */

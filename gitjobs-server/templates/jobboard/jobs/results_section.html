@@ -11,16 +11,25 @@
           <p class="mb-10">We can't seem to find any jobs that match your search criteria.</p>
           <p>
             You can
-            <button hx-get="/"
-                    hx-target="body"
-                    hx-boost="true"
-                    hx-push-url="/"
-                    class="p-0 underline">reset</button>
+            <button id="reset-link-mobile-filters" class="inline md:hidden p-0 underline">reset</button>
+            <button id="reset-link-desktop-filters"
+                    class="hidden md:inline p-0 underline">reset</button>
             your filters or try a different search.
           </p>
         </div>
       </div>
     </div>
+    <script type="module">
+      import {
+        resetForm
+      } from '/static/js/jobboard/filters.js';
+
+      const resetDesktopFilters = document.getElementById('reset-link-desktop-filters');
+      resetDesktopFilters.addEventListener('click', () => resetForm('desktop-jobs-form'));
+
+      const resetMobileFilters = document.getElementById('reset-link-mobile-filters');
+      resetMobileFilters.addEventListener('click', () => resetForm('mobile-jobs-form'));
+    </script>
     {# End placeholder cards -#}
   {% else %}
     {# Cards -#}

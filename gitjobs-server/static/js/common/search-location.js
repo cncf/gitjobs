@@ -51,6 +51,17 @@ export class SearchLocation extends LitWrapper {
     super.disconnectedCallback();
   }
 
+  async cleanLocation() {
+    this.location_id = "";
+    this.city = "";
+    this.state = "";
+    this.country = "";
+    this.value = "";
+
+    // Wait for the update to complete
+    await this.updateComplete;
+  }
+
   _formatLocation(city, state, country) {
     if (!city && !state && !country) {
       return "";

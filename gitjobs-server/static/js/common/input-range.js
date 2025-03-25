@@ -84,6 +84,16 @@ export class InputRange extends LitWrapper {
     }
   }
 
+  async cleanRange() {
+    this.value = 0;
+    this.percentValue = 0;
+    this.offset = 0;
+    this.visibleTooltip = false;
+
+    // Wait for the update to complete
+    await this.updateComplete;
+  }
+
   render() {
     return html`
       <div class="relative">

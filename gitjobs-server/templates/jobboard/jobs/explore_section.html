@@ -42,11 +42,7 @@
   {# End filters content -#}
 
   <div class="text-end p-5">
-    <button hx-get="/"
-            hx-target="body"
-            hx-boost="true"
-            hx-push-url="/"
-            class="btn-primary-outline btn-mini group">
+    <button id="reset-mobile-filters" class="btn-primary-outline btn-mini group">
       <div class="flex items-center space-x-1">
         <div class="svg-icon size-3 icon-close group-hover:bg-white"></div>
         <div>Reset</div>
@@ -84,11 +80,7 @@
             {% call macros::spinner(size = 5) %}
           </div>
 
-          <button hx-get="/"
-                  hx-target="body"
-                  hx-boost="true"
-                  hx-push-url="/"
-                  class="btn-primary-outline btn-mini">Reset</button>
+          <button id="reset-desktop-filters" class="btn-primary-outline btn-mini">Reset</button>
         </div>
       </div>
       {# End header #}
@@ -187,6 +179,7 @@
     close,
     searchOnEnter,
     cleanInputField,
+    resetForm,
     triggerActionOnForm
   } from '/static/js/jobboard/filters.js';
   import {
@@ -225,6 +218,12 @@
       }
     });
   });
+
+  const resetDesktopFilters = document.getElementById('reset-desktop-filters');
+  resetDesktopFilters.addEventListener('click', () => resetForm('desktop-jobs-form'));
+
+  const resetMobileFilters = document.getElementById('reset-mobile-filters');
+  resetMobileFilters.addEventListener('click', () => resetForm('mobile-jobs-form'));
 
   // Detect if the job preview modal should be displayed
   const shouldDisplayJobModal = () => {

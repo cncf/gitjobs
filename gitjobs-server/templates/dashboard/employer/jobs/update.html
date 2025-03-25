@@ -170,31 +170,10 @@
           <div class="mt-2 grid grid-cols-1">
             <select id="tz_start" name="tz_start" class="select-primary">
               {% call macros::select_option(value = "", label = "", selected = job.tz_start|display_some) %}
-              {% call macros::select_option(value = "UTC-12", label = "UTC-12", selected = job.tz_start|display_some) %}
-              {% call macros::select_option(value = "UTC-11", label = "UTC-11", selected = job.tz_start|display_some) %}
-              {% call macros::select_option(value = "UTC-10", label = "UTC-10", selected = job.tz_start|display_some) %}
-              {% call macros::select_option(value = "UTC-9", label = "UTC-9", selected = job.tz_start|display_some) %}
-              {% call macros::select_option(value = "UTC-8", label = "UTC-8", selected = job.tz_start|display_some) %}
-              {% call macros::select_option(value = "UTC-7", label = "UTC-7", selected = job.tz_start|display_some) %}
-              {% call macros::select_option(value = "UTC-6", label = "UTC-6", selected = job.tz_start|display_some) %}
-              {% call macros::select_option(value = "UTC-5", label = "UTC-5", selected = job.tz_start|display_some) %}
-              {% call macros::select_option(value = "UTC-4", label = "UTC-4", selected = job.tz_start|display_some) %}
-              {% call macros::select_option(value = "UTC-3", label = "UTC-3", selected = job.tz_start|display_some) %}
-              {% call macros::select_option(value = "UTC-2", label = "UTC-2", selected = job.tz_start|display_some) %}
-              {% call macros::select_option(value = "UTC-1", label = "UTC-1", selected = job.tz_start|display_some) %}
-              {% call macros::select_option(value = "UTC+0", label = "UTC+0", selected = job.tz_start|display_some) %}
-              {% call macros::select_option(value = "UTC+1", label = "UTC+1", selected = job.tz_start|display_some) %}
-              {% call macros::select_option(value = "UTC+2", label = "UTC+2", selected = job.tz_start|display_some) %}
-              {% call macros::select_option(value = "UTC+3", label = "UTC+3", selected = job.tz_start|display_some) %}
-              {% call macros::select_option(value = "UTC+4", label = "UTC+4", selected = job.tz_start|display_some) %}
-              {% call macros::select_option(value = "UTC+5", label = "UTC+5", selected = job.tz_start|display_some) %}
-              {% call macros::select_option(value = "UTC+6", label = "UTC+6", selected = job.tz_start|display_some) %}
-              {% call macros::select_option(value = "UTC+7", label = "UTC+7", selected = job.tz_start|display_some) %}
-              {% call macros::select_option(value = "UTC+8", label = "UTC+8", selected = job.tz_start|display_some) %}
-              {% call macros::select_option(value = "UTC+9", label = "UTC+9", selected = job.tz_start|display_some) %}
-              {% call macros::select_option(value = "UTC+10", label = "UTC+10", selected = job.tz_start|display_some) %}
-              {% call macros::select_option(value = "UTC+11", label = "UTC+11", selected = job.tz_start|display_some) %}
-              {% call macros::select_option(value = "UTC+12", label = "UTC+12", selected = job.tz_start|display_some) %}
+              {% for i in 0..25 %}
+                {% let timezone = format!("UTC{:+}", (12 - i)) %}
+                {% call macros::select_option(value=timezone, label=timezone, selected = job.tz_start|display_some) %}
+              {% endfor %}
             </select>
           </div>
         </div>
@@ -206,31 +185,10 @@
           <div class="mt-2 grid grid-cols-1">
             <select id="tz_end" name="tz_end" class="select-primary">
               {% call macros::select_option(value = "", label = "", selected = job.tz_end|display_some) %}
-              {% call macros::select_option(value = "UTC-12", label = "UTC-12", selected = job.tz_end|display_some) %}
-              {% call macros::select_option(value = "UTC-11", label = "UTC-11", selected = job.tz_end|display_some) %}
-              {% call macros::select_option(value = "UTC-10", label = "UTC-10", selected = job.tz_end|display_some) %}
-              {% call macros::select_option(value = "UTC-9", label = "UTC-9", selected = job.tz_end|display_some) %}
-              {% call macros::select_option(value = "UTC-8", label = "UTC-8", selected = job.tz_end|display_some) %}
-              {% call macros::select_option(value = "UTC-7", label = "UTC-7", selected = job.tz_end|display_some) %}
-              {% call macros::select_option(value = "UTC-6", label = "UTC-6", selected = job.tz_end|display_some) %}
-              {% call macros::select_option(value = "UTC-5", label = "UTC-5", selected = job.tz_end|display_some) %}
-              {% call macros::select_option(value = "UTC-4", label = "UTC-4", selected = job.tz_end|display_some) %}
-              {% call macros::select_option(value = "UTC-3", label = "UTC-3", selected = job.tz_end|display_some) %}
-              {% call macros::select_option(value = "UTC-2", label = "UTC-2", selected = job.tz_end|display_some) %}
-              {% call macros::select_option(value = "UTC-1", label = "UTC-1", selected = job.tz_end|display_some) %}
-              {% call macros::select_option(value = "UTC+0", label = "UTC+0", selected = job.tz_end|display_some) %}
-              {% call macros::select_option(value = "UTC+1", label = "UTC+1", selected = job.tz_end|display_some) %}
-              {% call macros::select_option(value = "UTC+2", label = "UTC+2", selected = job.tz_end|display_some) %}
-              {% call macros::select_option(value = "UTC+3", label = "UTC+3", selected = job.tz_end|display_some) %}
-              {% call macros::select_option(value = "UTC+4", label = "UTC+4", selected = job.tz_end|display_some) %}
-              {% call macros::select_option(value = "UTC+5", label = "UTC+5", selected = job.tz_end|display_some) %}
-              {% call macros::select_option(value = "UTC+6", label = "UTC+6", selected = job.tz_end|display_some) %}
-              {% call macros::select_option(value = "UTC+7", label = "UTC+7", selected = job.tz_end|display_some) %}
-              {% call macros::select_option(value = "UTC+8", label = "UTC+8", selected = job.tz_end|display_some) %}
-              {% call macros::select_option(value = "UTC+9", label = "UTC+9", selected = job.tz_end|display_some) %}
-              {% call macros::select_option(value = "UTC+10", label = "UTC+10", selected = job.tz_end|display_some) %}
-              {% call macros::select_option(value = "UTC+11", label = "UTC+11", selected = job.tz_end|display_some) %}
-              {% call macros::select_option(value = "UTC+12", label = "UTC+12", selected = job.tz_end|display_some) %}
+              {% for i in 0..25 %}
+                {% let timezone = format!("UTC{:+}", (12 - i)) %}
+                {% call macros::select_option(value=timezone, label=timezone, selected = job.tz_end|display_some) %}
+              {% endfor %}
             </select>
           </div>
         </div>

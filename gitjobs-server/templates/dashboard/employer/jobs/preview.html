@@ -228,21 +228,13 @@
   {# End timezone #}
 
   {# Open source #}
-  {% if let Some(open_source) = job.open_source %}
-    {% if open_source + 0 > 0 %}
-      {% call job_details_subheading(content = "Time working on open source") %}
-      {% call badge_percentage_bar(percentage = open_source) %}
-    {% endif %}
-  {% endif %}
+  {% call job_details_subheading(content = "Time working on open source") %}
+  {% call badge_percentage_bar(percentage = job.open_source|display_some_or("0")) %}
   {# End open source #}
 
   {# Upstream commitment #}
-  {% if let Some(upstream_commitment) = job.upstream_commitment %}
-    {% if upstream_commitment + 0 > 0 %}
-      {% call job_details_subheading(content = "Time working on upstream projects") %}
-      {% call badge_percentage_bar(percentage = upstream_commitment) %}
-    {% endif %}
-  {% endif %}
+  {% call job_details_subheading(content = "Time working on upstream projects") %}
+  {% call badge_percentage_bar(percentage = job.upstream_commitment|display_some_or("0")) %}
   {# End Upstream commitment #}
 
   {# Projects #}

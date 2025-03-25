@@ -97,6 +97,24 @@
       {% endif %}
       {# End skills #}
 
+      {# Job timezone start #}
+      {% if let Some(tz_start) = job.tz_start %}
+        <div>
+          {% call macros_preview::content_heading(content = "Timezone start") %}
+          <div class="text-sm/6 text-gray-600 markdown">{{ tz_start|md_to_html|safe }}</div>
+        </div>
+      {% endif %}
+      {# End job timezone start #}
+
+      {# Job timezone end #}
+      {% if let Some(tz_end) = job.tz_end %}
+        <div>
+          {% call macros_preview::content_heading(content = "Timezone end") %}
+          <div class="text-sm/6 text-gray-600 markdown">{{ tz_end|md_to_html|safe }}</div>
+        </div>
+      {% endif %}
+      {# End job timezone end #}
+
       {# Benefits #}
       {% if let Some(benefits) = job.benefits %}
         <div class="mb-5">

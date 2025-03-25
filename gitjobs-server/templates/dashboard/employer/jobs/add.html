@@ -151,6 +151,45 @@
         </div>
         {# End job skills #}
 
+    {# Timezone range section #}
+    <div class="border-b border-gray-900/10 pb-12">
+      {% call macros::form_title(title = "Timezone", description = "Timezone range where you would like your applicant to be located at.") %}
+
+      <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-6 max-w-5xl">
+        {# Timezone start #}
+        <div class="col-span-3 md:col-span-2 lg:col-span-1">
+          <label for="tz_start" class="form-label">Start</label>
+          <div class="mt-2 grid grid-cols-1">
+            <select id="tz_start" name="tz_start" class="select-primary">
+              {% call macros::select_option(value = "", label = "") %}
+              {% for i in 0..25 %}
+                {% let timezone = format!("UTC{:+}", (12 - i)) %}
+                {% call macros::select_option(value=timezone, label=timezone) %}
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        {# End Timezone start #}
+
+        {# Timezone end #}
+        <div class="col-span-3 md:col-span-2 lg:col-span-1">
+          <label for="tz_end" class="form-label">End</label>
+          <div class="mt-2 grid grid-cols-1">
+            <select id="tz_end" name="tz_end" class="select-primary">
+              {% call macros::select_option(value = "", label = "") %}
+              {% for i in 0..25 %}
+                {% let timezone = format!("UTC{:+}", (12 - i)) %}
+                {% call macros::select_option(value=timezone, label=timezone) %}
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        {# End Timezone end #}
+      </div>
+    </div>
+    {# End timezone range section #}
+
+
         {# Apply instructions #}
         <div class="col-span-full">
           <label for="apply_instructions" class="form-label">Apply instructions</label>

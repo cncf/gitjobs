@@ -85,6 +85,8 @@ impl DBJobBoard for PgDB {
                     j.salary_period,
                     j.seniority,
                     j.skills,
+                    j.tz_end,
+                    j.tz_start,
                     j.updated_at,
                     j.upstream_commitment,
                     (
@@ -168,6 +170,8 @@ impl DBJobBoard for PgDB {
                     .get::<_, Option<String>>("seniority")
                     .map(|s| s.parse().expect("valid seniority")),
                 skills: row.get("skills"),
+                tz_end: row.get("tz_end"),
+                tz_start: row.get("tz_start"),
                 updated_at: row.get("updated_at"),
                 upstream_commitment: row.get("upstream_commitment"),
             };

@@ -97,24 +97,6 @@
       {% endif %}
       {# End skills #}
 
-      {# Job timezone start #}
-      {% if let Some(tz_start) = job.tz_start %}
-        <div>
-          {% call macros_preview::content_heading(content = "Timezone start") %}
-          <div class="text-sm/6 text-gray-600 markdown">{{ tz_start|md_to_html|safe }}</div>
-        </div>
-      {% endif %}
-      {# End job timezone start #}
-
-      {# Job timezone end #}
-      {% if let Some(tz_end) = job.tz_end %}
-        <div>
-          {% call macros_preview::content_heading(content = "Timezone end") %}
-          <div class="text-sm/6 text-gray-600 markdown">{{ tz_end|md_to_html|safe }}</div>
-        </div>
-      {% endif %}
-      {# End job timezone end #}
-
       {# Benefits #}
       {% if let Some(benefits) = job.benefits %}
         <div class="mb-5">
@@ -236,6 +218,18 @@
   {% call macros_preview::job_details_subheading(content = "Location") %}
   {% call macros_preview::job_workplace(workplace = job.workplace, location = job.location|display_some_or("-")) %}
   {# End location #}
+
+  {# Timezone #}
+  {% if let Some(tz_start) = job.tz_start %}
+    {% call macros_preview::job_details_subheading(content = "Timezone") %}
+    {% if let Some(tz_end) = job.tz_end %}
+      {% let timezone = format!("{} - {}", tz_start, tz_end) %}
+      {% call macros_preview::job_details_content(text = timezone) %}
+    {% else %}
+      {% call macros_preview::job_details_content(text = tz_start) %}
+    {% endif %}
+  {% endif %}
+  {# End timezone #}
 
   {# Open source #}
   {% if let Some(open_source) = job.open_source %}

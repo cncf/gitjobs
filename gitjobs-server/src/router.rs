@@ -6,7 +6,7 @@ use axum::{
     Extension, Router,
     extract::FromRef,
     http::{
-        StatusCode, Uri,
+        HeaderValue, StatusCode, Uri,
         header::{CACHE_CONTROL, CONTENT_TYPE},
     },
     middleware,
@@ -18,7 +18,9 @@ use axum_messages::MessagesManagerLayer;
 use rust_embed::Embed;
 use serde_qs::axum::{QsQueryConfig, QsQueryRejection};
 use tower::ServiceBuilder;
-use tower_http::{trace::TraceLayer, validate_request::ValidateRequestHeaderLayer};
+use tower_http::{
+    set_header::SetResponseHeaderLayer, trace::TraceLayer, validate_request::ValidateRequestHeaderLayer,
+};
 use tracing::instrument;
 
 use crate::{
@@ -120,6 +122,10 @@ pub(crate) async fn setup(
         .layer(Extension(QsQueryConfig::new(3, false).error_handler(|err| {
             QsQueryRejection::new(err, StatusCode::UNPROCESSABLE_ENTITY)
         })))
+        .layer(SetResponseHeaderLayer::if_not_present(
+            CACHE_CONTROL,
+            HeaderValue::from_static("max-age=0"),
+        ))
         .with_state(state);
 
     // Setup basic auth

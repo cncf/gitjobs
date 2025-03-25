@@ -43,18 +43,10 @@ export class InputRange extends LitWrapper {
     }
   }
 
-  async _onInputChange(event) {
+  _onInputChange(event) {
     const value = event.target.value;
     this.value = value;
     this._refreshStyles(value);
-
-    // Wait for the update to complete
-    await this.updateComplete;
-
-    // Trigger change event on the form
-    if (this.form !== "") {
-      triggerActionOnForm(this.form, "submit");
-    }
   }
 
   _refreshStyles(value) {
@@ -80,6 +72,18 @@ export class InputRange extends LitWrapper {
     return value;
   }
 
+  async _mouseup() {
+    this._updateTooltipVisibility(false);
+
+    // Wait for the update to complete
+    await this.updateComplete;
+
+    // Trigger change event on the form
+    if (this.form !== "") {
+      triggerActionOnForm(this.form, "submit");
+    }
+  }
+
   render() {
     return html`
       <div class="relative">
@@ -89,7 +93,7 @@ export class InputRange extends LitWrapper {
           type="range"
           @input=${this._onInputChange}
           @mousedown=${() => this._updateTooltipVisibility(true)}
-          @mouseup=${() => this._updateTooltipVisibility(false)}
+          @mouseup=${this._mouseup}
           min="${this.min}"
           max="${this.max}"
           step="${this.step}"

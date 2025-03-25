@@ -92,7 +92,7 @@ pub(crate) async fn setup(
         .nest("/dashboard/images", dashboard_images_router)
         .route("/dashboard/members/search", get(search_members))
         .route("/dashboard/projects/search", get(search_projects))
-        .route("/jobs/{job_id}/apply", get(jobboard::jobs::apply))
+        .route("/jobs/{job_id}/apply", post(jobboard::jobs::apply))
         .route_layer(login_required!(
             AuthnBackend,
             login_url = LOG_IN_URL,

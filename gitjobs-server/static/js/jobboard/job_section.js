@@ -38,7 +38,7 @@ export const applyButton = () => {
         });
       } else {
         const jobId = applyButton.dataset.jobId;
-        applyButton.setAttribute("hx-get", `/jobs/${jobId}/apply`);
+        applyButton.setAttribute("hx-post", `/jobs/${jobId}/apply`);
         applyButton.setAttribute("hx-trigger", "confirmed");
         htmx.process(applyButton);
         applyButton.addEventListener("click", () => {

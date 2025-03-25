@@ -184,7 +184,7 @@ impl DBJobBoard for PgDB {
             time = 3600,
             key = "&str",
             convert = r#"{ "jobs_filters_options" }"#,
-            sync_writes = "default",
+            sync_writes = "by_key",
             result = true
         )]
         async fn inner(db: Object) -> Result<FiltersOptions> {

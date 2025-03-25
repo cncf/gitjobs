@@ -50,7 +50,7 @@ impl DBImage for PgDB {
         Ok(Some((data, format)))
     }
 
-    #[instrument(skip(self), err)]
+    #[instrument(skip(self, versions), err)]
     async fn save_image_versions(&self, user_id: &Uuid, versions: Vec<ImageVersion>) -> Result<Uuid> {
         trace!("db: save image versions");
 

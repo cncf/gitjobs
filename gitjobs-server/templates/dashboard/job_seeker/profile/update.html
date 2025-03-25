@@ -80,7 +80,7 @@
                 hx-include="[name=photo_id], #profile-form, #experience-form, #education-form, #projects-form"
                 hx-indicator="#dashboard-spinner, #save-spinner"
                 hx-disabled-elt="#update-profile-button, #preview-button">
-          {% call macros::btn_spinner(id = "save-spinner", bg_color = "white", fill_color = "primary-300") %}
+          {% call macros::btn_spinner(id = "save-spinner", spinner_type = "2") %}
           Save
         </button>
       </div>

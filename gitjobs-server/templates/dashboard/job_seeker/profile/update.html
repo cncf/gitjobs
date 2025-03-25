@@ -188,7 +188,7 @@
 
             {# Skills #}
             <div class="col-span-full">
-              <multi-select id="skills" name="Skills" legend="Indicate your top skills." {%+ if let Some(skills) = profile.skills -%} selected="{{ skills|json }}"{%- endif -%}></multi-select>
+              <multi-select name="skills" label="Skills" legend="Indicate your top skills." {%+ if let Some(skills) = profile.skills -%} selected="{{ skills|json }}"{%- endif -%}></multi-select>
             </div>
             {# End skills #}
 

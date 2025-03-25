@@ -153,7 +153,7 @@
 
         {# Job skills #}
         <div class="col-span-full">
-          <multi-select id="skills" name="Skills"
+          <multi-select name="skills" label="Skills"
           {% if let Some(job_skills) = job.skills %}selected="{{ job_skills|json }}"{% endif %}
           legend="Relevant skills for this job position."></multi-select>
         </div>
@@ -303,7 +303,7 @@
 
         {# Job benefits #}
         <div class="col-span-full">
-          <multi-select id="benefits" name="Benefits"
+          <multi-select name="benefits" label="Benefits"
           {% if let Some(job_benefits) = job.benefits %}selected="{{ job_benefits|json }}"{% endif %}
           legend="Benefits and perks for employees."></multi-select>
         </div>

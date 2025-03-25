@@ -5,8 +5,8 @@ import { getBenefits, getSkills } from "/static/js/common/data.js";
 
 export class MultiSelect extends LitWrapper {
   static properties = {
-    id: { type: String },
     name: { type: String },
+    label: { type: String },
     options: { type: Array },
     selected: { type: Array },
     enteredValue: { type: String },
@@ -17,8 +17,8 @@ export class MultiSelect extends LitWrapper {
 
   constructor() {
     super();
-    this.id = "id";
     this.name = "name";
+    this.label = "label";
     this.options = [];
     this.selected = [];
     this.enteredValue = "";
@@ -71,7 +71,7 @@ export class MultiSelect extends LitWrapper {
 
   render() {
     return html`
-      <label for="${this.id}" class="form-label">${this.name}</label>
+      <label for="${this.name}" class="form-label">${this.label}</label>
       <div class="mt-2 relative">
         <div
           class="input-primary px-1.5 flex flex-wrap focus-within:outline focus-within:outline-[3px] focus-within:-outline-offset-2 focus-within:outline-primary-600"
@@ -150,7 +150,7 @@ export class MultiSelect extends LitWrapper {
             : ""}
         </div>
       </div>
-      ${this.selected.map((option) => html`<input type="hidden" name="${this.id}[]" value="${option}" />`)}
+      ${this.selected.map((option) => html`<input type="hidden" name="${this.name}[]" value="${option}" />`)}
     `;
   }
 

@@ -107,7 +107,7 @@ export class EducationSection extends LitWrapper {
   }
 
   render() {
-    return html` <div class="text-sm/6 text-gray-500">
+    return html` <div class="text-sm/6 text-stone-500">
         Indicate your education. You can add additional entries by clicking on the
         <span class="font-semibold">+</span> buttons on the left of the card (
         <div class="inline-block svg-icon size-4 icon-plus_top bg-stone-600 relative -bottom-[2px]"></div>

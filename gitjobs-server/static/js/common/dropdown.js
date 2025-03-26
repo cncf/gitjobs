@@ -42,11 +42,11 @@ export const addCard = (id, name, label, logo_url, elId, onRemove, extra = "", m
             alt="${name} logo">
       </div>
       <div class="flex flex-col justify-start min-w-0">
-        <div class="truncate text-start text-gray-700 font-medium ${mini ? "text-sm" : ""}">${name}</div>
+        <div class="truncate text-start text-stone-700 font-medium ${mini ? "text-sm" : ""}">${name}</div>
         ${
           !mini
             ? `<div class="inline-flex">
-          <div class="truncate text-nowrap uppercase max-w-[100%] text-xs/6 font-medium text-gray-400">
+          <div class="truncate text-nowrap uppercase max-w-[100%] text-xs/6 font-medium text-stone-400">
             ${label}
           </div>
         </div>`

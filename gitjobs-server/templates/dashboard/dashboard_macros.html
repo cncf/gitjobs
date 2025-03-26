@@ -1,6 +1,6 @@
 {# Menu title #}
 {% macro menu_title(text, extra_styles = "") %}
-  <div class="text-xs/6 text-gray-500 uppercase px-3 {{ extra_styles }}">{{ text }}</div>
+  <div class="text-xs/6 text-stone-500 uppercase px-3 {{ extra_styles }}">{{ text }}</div>
 {% endmacro menu_title %}
 {# End menu title #}
 
@@ -29,7 +29,7 @@
         </div>
       </button>
     {% else %}
-      <div class="rounded-md px-3 border border-transparent hover:bg-white hover:border-gray-200 {{ extra_styles }}">
+      <div class="rounded-md px-3 border border-transparent hover:bg-white hover:border-stone-200 {{ extra_styles }}">
         <a hx-get="{{ href }}"
            hx-target="body"
            hx-indicator="#dashboard-spinner"

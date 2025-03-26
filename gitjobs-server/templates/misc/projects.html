@@ -1,10 +1,10 @@
 {% import "macros.html" as macros %}
 
-<div class="bg-white divide-y divide-gray-100 rounded-lg shadow w-full border mt-1">
+<div class="bg-white divide-y divide-stone-100 rounded-lg shadow w-full border mt-1">
   {% if projects.is_empty() %}
-    <div class="px-8 py-4 text-sm/6 text-gray-600 italic">No projects found</div>
+    <div class="px-8 py-4 text-sm/6 text-stone-600 italic">No projects found</div>
   {% else %}
-    <ul class="text-sm text-gray-700 overflow-auto max-h-[180px]">
+    <ul class="text-sm text-stone-700 overflow-auto max-h-[180px]">
       {% for p in projects %}
         <li class="group
                    {% if loop.index != 1 -%}border-t{%- endif %}"

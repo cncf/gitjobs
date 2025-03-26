@@ -54,8 +54,8 @@
 
 {# Jobs Table -#}
 <div class="relative overflow-visible">
-  <table class="table-auto w-full text-sm text-left rtl:text-right text-gray-500">
-    <thead class="text-xs text-gray-700 uppercase bg-stone-100 border-b">
+  <table class="table-auto w-full text-sm text-left rtl:text-right text-stone-500">
+    <thead class="text-xs text-stone-700 uppercase bg-stone-100 border-b">
       <tr>
         <th scope="col" class="px-3 xl:px-5 py-3">Title</th>
         <th scope="col" class="hidden xl:table-cell px-3 xl:px-5 py-3">Location</th>
@@ -72,7 +72,7 @@
           <td class="px-8 py-20 text-center" colspan="7">
             <div class="text-3xl mb-10">It looks like you haven't created any jobs yet.</div>
 
-            <p class="text-md text-gray-700">
+            <p class="text-md text-stone-700">
               Jobs created by this employer will be listed here. You can create a new job by clicking on the <span class="italic">Add Job</span> button in the top right corner.
             </p>
           </td>
@@ -83,9 +83,9 @@
           <tr class="odd:bg-white even:bg-stone-50/50 border-b">
             {# Title job #}
             <th scope="row"
-                class="px-3 xl:px-5 py-4 font-medium text-gray-900 min-w-[100px] max-w-[200px] xl:max-w-auto">
+                class="px-3 xl:px-5 py-4 font-medium text-stone-900 min-w-[100px] max-w-[200px] xl:max-w-auto">
               <div class="max-w-full truncate">{{ job.title }}</div>
-              <div class="block xl:hidden text-xs text-gray-500 max-w-full truncate">{{ location }}</div>
+              <div class="block xl:hidden text-xs text-stone-500 max-w-full truncate">{{ location }}</div>
             </th>
             {# End title job #}
 
@@ -140,8 +140,8 @@
 
                   {# Dropdown actions #}
                   <div id="dropdown-actions-{{ job.job_id }}"
-                       class="dropdown absolute hidden z-10 end-0 top-8 w-[200px] bg-white divide-y divide-gray-100 rounded-lg shadow border">
-                    <ul class="py-2 text-sm text-gray-700"
+                       class="dropdown absolute hidden z-10 end-0 top-8 w-[200px] bg-white divide-y divide-stone-100 rounded-lg shadow border">
+                    <ul class="py-2 text-sm text-stone-700"
                         aria-labelledby="dropdownDefaultButton">
                       {% if job.status != JobStatus::Published %}
                         <li>

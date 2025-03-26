@@ -5,12 +5,12 @@
 
 <div class="space-y-12">
   <div class="flex justify-between space-x-10">
-    <ul class="flex flex-wrap space-x-2 -mb-px text-sm font-medium text-center border-b border-gray-900/10">
+    <ul class="flex flex-wrap space-x-2 -mb-px text-sm font-medium text-center border-b border-stone-900/10">
       <li>
         <button type="button"
                 data-section="profile"
                 data-active="true"
-                class="w-32 inline-flex items-center justify-center p-4 pt-0 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 active data-[active=true]:text-primary-600 data-[active=true]:border-primary-500 group">
+                class="w-32 inline-flex items-center justify-center p-4 pt-0 border-b-2 border-transparent rounded-t-lg hover:text-stone-600 hover:border-stone-300 active data-[active=true]:text-primary-600 data-[active=true]:border-primary-500 group">
           <div class="svg-icon size-3 me-2 icon-user bg-stone-400 group-hover:bg-stone-500 group-[.active]:bg-primary-500">
           </div>
           Profile
@@ -20,7 +20,7 @@
         <button type="button"
                 data-section="experience"
                 data-active="false"
-                class="w-32 inline-flex items-center justify-center p-4 pt-0 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 data-[active=true]:text-primary-600 data-[active=true]:border-primary-500 group">
+                class="w-32 inline-flex items-center justify-center p-4 pt-0 border-b-2 border-transparent rounded-t-lg hover:text-stone-600 hover:border-stone-300 data-[active=true]:text-primary-600 data-[active=true]:border-primary-500 group">
           <div class="svg-icon size-3 me-2 icon-office_chair bg-stone-400 group-hover:bg-stone-500 group-[.active]:bg-primary-500">
           </div>
           Experience
@@ -30,7 +30,7 @@
         <button type="button"
                 data-section="education"
                 data-active="false"
-                class="w-32 inline-flex items-center justify-center p-4 pt-0 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 data-[active=true]:text-primary-600 data-[active=true]:border-primary-500 group">
+                class="w-32 inline-flex items-center justify-center p-4 pt-0 border-b-2 border-transparent rounded-t-lg hover:text-stone-600 hover:border-stone-300 data-[active=true]:text-primary-600 data-[active=true]:border-primary-500 group">
           <div class="svg-icon size-3 me-2 icon-graduation_cap bg-stone-400 group-hover:bg-stone-500 group-[.active]:bg-primary-500">
           </div>
           Education
@@ -40,7 +40,7 @@
         <button type="button"
                 data-section="projects"
                 data-active="false"
-                class="w-32 inline-flex items-center justify-center p-4 pt-0 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 data-[active=true]:text-primary-600 data-[active=true]:border-primary-500 group">
+                class="w-32 inline-flex items-center justify-center p-4 pt-0 border-b-2 border-transparent rounded-t-lg hover:text-stone-600 hover:border-stone-300 data-[active=true]:text-primary-600 data-[active=true]:border-primary-500 group">
           <div class="svg-icon size-3 me-2 icon-clipboard bg-stone-400 group-hover:bg-stone-500 group-[.active]:bg-primary-500">
           </div>
           Projects
@@ -91,7 +91,7 @@
   <div>
     {# Profile #}
     <div data-content="profile">
-      <p class="mt-1 text-sm/6 text-gray-500">
+      <p class="mt-1 text-sm/6 text-stone-500">
         This information will be accessible to employers when you apply for a job. If you wish, you can also mark your profile as public and it will be displayed in the site profiles list.
       </p>
 
@@ -196,7 +196,7 @@
             <div class="col-span-full">
               <label class="inline-flex items-center cursor-pointer">
                 {% call macros::toggle_checkbox(id = "open_to_relocation", checked = profile.open_to_relocation.unwrap_or(false)) %}
-                <span class="ms-3 text-sm font-medium text-gray-900">Open to relocation</span>
+                <span class="ms-3 text-sm font-medium text-stone-900">Open to relocation</span>
               </label>
             </div>
             {# End open to relocation #}
@@ -205,7 +205,7 @@
             <div class="col-span-full">
               <label class="inline-flex items-center cursor-pointer">
                 {% call macros::toggle_checkbox(id = "open_to_remote", checked = profile.open_to_remote.unwrap_or(false)) %}
-                <span class="ms-3 text-sm font-medium text-gray-900">Open to remote work</span>
+                <span class="ms-3 text-sm font-medium text-stone-900">Open to remote work</span>
               </label>
             </div>
             {# End open to remote #}
@@ -214,12 +214,12 @@
             <div class="col-span-full">
               <label class="inline-flex items-center cursor-pointer">
                 {% call macros::toggle_checkbox(id = "public", checked = profile.public) %}
-                <span class="ms-3 text-sm font-medium text-gray-900">Display profile publicly in the profiles list of the site</span>
+                <span class="ms-3 text-sm font-medium text-stone-900">Display profile publicly in the profiles list of the site</span>
               </label>
             </div>
             {# End Public #}
           </div>
-          <div class="border-t border-gray-900/10 pt-12">
+          <div class="border-t border-stone-900/10 pt-12">
             {% call macros::form_title(title = "Links", description = "Some links where employers can find out more about you and your work.") %}
 
             <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 max-w-5xl">

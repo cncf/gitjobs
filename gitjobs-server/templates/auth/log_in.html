@@ -29,13 +29,13 @@
 
       <div class="inline-flex items-center justify-center w-full relative">
         <hr class="w-full h-0.5 my-8 bg-stone-200 border-0 rounded-sm">
-        <div class="absolute px-4 -translate-x-1/2 bg-white left-1/2 text-xs text-gray-400">OR</div>
+        <div class="absolute px-4 -translate-x-1/2 bg-white left-1/2 text-xs text-stone-400">OR</div>
       </div>
 
       <form action="/log-in{%- if let Some(next_url) = next_url -%}?next_url={{ next_url }}{%- endif -%}"
             method="post">
         <div class="mb-5">
-          <label for="username" class="block mb-2 text-sm font-medium text-gray-900">Username</label>
+          <label for="username" class="block mb-2 text-sm font-medium text-stone-900">Username</label>
           <input type="text"
                  id="username"
                  name="username"
@@ -47,7 +47,7 @@
                  required />
         </div>
         <div>
-          <label for="password" class="block mb-2 text-sm font-medium text-gray-900">Password</label>
+          <label for="password" class="block mb-2 text-sm font-medium text-stone-900">Password</label>
           <input type="password"
                  id="password"
                  name="password"
@@ -59,7 +59,7 @@
         <button type="submit" class="btn-primary w-full mt-10">Submit</button>
         {# End submit button #}
 
-        <div class="mt-5 text-sm text-gray-600">
+        <div class="mt-5 text-sm text-stone-600">
           Don't have an account? <a href="/sign-up{%- if let Some(next_url) = next_url -%}?next_url={{ next_url }}{%- endif -%}"
     class="text-primary-700 hover:text-primary-900">Sign up</a>.
         </div>

@@ -2,7 +2,7 @@
 
 {# Filters #}
 {% macro filters(form, device = "desktop") %}
-  <div class="pt-5 px-6 border-t">{% call filters_title(text = "Type and location") %}</div>
+  <div class="pt-5 px-6">{% call filters_title(text = "Type and location") %}</div>
 
   <div class="p-6 pt-3 flex flex-col space-y-5">
     {# Job type #}
@@ -66,7 +66,7 @@
           <select form="{{ form }}"
                   data-trigger-form="true"
                   name="seniority"
-                  class="select-primary py-0.5 text-[0.8rem]/6 text-gray-500">
+                  class="select-primary py-0.5 text-[0.8rem]/6 text-stone-500">
             {% call macros::select_option(value = "", label = "Any", selected = filters.seniority|display_some) %}
             {% call macros::select_option(value = "entry", label = "Entry", selected = filters.seniority|display_some) %}
             {% call macros::select_option(value = "junior", label = "Junior", selected = filters.seniority|display_some) %}
@@ -85,7 +85,7 @@
           <select form="{{ form }}"
                   name="date_range"
                   data-trigger-form="true"
-                  class="select-primary py-0.5 text-[0.8rem]/6 text-gray-500">
+                  class="select-primary py-0.5 text-[0.8rem]/6 text-stone-500">
             {% call macros::select_option(value = "last-day", label = "Last day", selected = filters.date_range|display_some_or("last30-days")) %}
             {% call macros::select_option(value = "last3-days", label = "Last 3 days", selected = filters.date_range|display_some_or("last30-days")) %}
             {% call macros::select_option(value = "last7-days", label = "Last week", selected = filters.date_range|display_some_or("last30-days")) %}
@@ -98,7 +98,7 @@
   </div>
 
   {# Open source section #}
-  <div class="pt-6 px-6 border-t border-gray-100">{% call filters_title(text = "Open source") %}</div>
+  <div class="pt-6 px-6 border-t border-stone-100">{% call filters_title(text = "Open source") %}</div>
 
   <div class="p-6 pt-3 flex flex-col space-y-5">
     {# Projects #}
@@ -130,7 +130,7 @@
 {# End open source section #}
 
 {# Compensation section #}
-<div class="pt-6 px-6 border-t border-gray-100">{% call filters_title(text = "Compensation") %}</div>
+<div class="pt-6 px-6 border-t border-stone-100">{% call filters_title(text = "Compensation") %}</div>
 
 <div class="p-6 pt-3 flex flex-col space-y-5">
   {# Salary #}
@@ -155,7 +155,7 @@
 
 {# Filters title #}
 {% macro filters_title(text) %}
-  <div class="text-xs/6 text-gray-400 uppercase">{{ text }}</div>
+  <div class="text-xs/6 text-stone-400 uppercase">{{ text }}</div>
 {% endmacro filters_title %}
 {# End filters title #}
 
@@ -189,7 +189,7 @@
            {%- if let Some(active_filters) = active_filters -%} {%- if active_filters.contains(value) -%}checked{%- endif -%} {%- endif %}
            {% if required %}required{% endif %}>
     <label for="{%- if !device.is_empty() -%}{{ device }}-{%- endif -%}{{ name }}-{{ value }}"
-           class="inline-flex items-center justify-center w-full px-2 py-1 text-gray-500 space-x-2 bg-white border rounded-md cursor-pointer select-none peer-checked:border-primary-500 hover:text-gray-600 peer-checked:text-primary-500 hover:bg-stone-50">
+           class="inline-flex items-center justify-center w-full px-2 py-1 text-stone-500 space-x-2 bg-white border rounded-md cursor-pointer select-none peer-checked:border-primary-500 hover:text-stone-600 peer-checked:text-primary-500 hover:bg-stone-50">
       <div class="svg-icon size-3 icon-{{ icon }} bg-stone-500 cursor-pointer group-has-[input:checked]:bg-primary-500">
       </div>
       <div class="text-[0.8rem] text-center text-nowrap">{{ label }}</div>

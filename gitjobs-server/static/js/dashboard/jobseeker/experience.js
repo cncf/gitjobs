@@ -108,7 +108,7 @@ export class ExperienceSection extends LitWrapper {
 
   render() {
     return html`
-      <div class="text-sm/6 text-gray-500">
+      <div class="text-sm/6 text-stone-500">
         Provide your professional experience. You can add additional entries by clicking on the
         <span class="font-semibold">+</span> buttons on the left of the card (
         <div class="inline-block svg-icon size-4 icon-plus_top bg-stone-600 relative -bottom-[2px]"></div>
@@ -236,7 +236,7 @@ class ExperienceRecord extends LitWrapper {
               @input=${(e) => this._onInputChange(e)}
               data-name="start_date"
               name="experience[${this.index}][start_date]"
-              class="input-primary placeholder-gray-300"
+              class="input-primary placeholder-stone-300"
               value="${this.data.start_date}"
               ?required=${!this.isObjectEmpty}
             />

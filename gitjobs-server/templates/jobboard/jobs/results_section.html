@@ -4,8 +4,8 @@
 <div class="flex flex-col mt-5 md:mt-7 space-y-4">
   {% if jobs.len() == 0 %}
     {# Placeholder cards -#}
-    <div class="border-t border-gray-100 border-b p-10 md:p-14">
-      <div class="border border-primary-300 p-10 text-sm text-gray-800 rounded-lg bg-primary-50/20 text-center"
+    <div class="border-t border-stone-100 border-b p-10 md:p-14">
+      <div class="border border-primary-300 p-10 text-sm text-stone-800 rounded-lg bg-primary-50/20 text-center"
            role="alert">
         <div class="text-md lg:text-lg">
           <p class="mb-10">We can't seem to find any jobs that match your search criteria.</p>
@@ -42,7 +42,7 @@
               hx-target="#preview-content"
               hx-trigger="click,open-modal"
               hx-indicator="#spinner-{{ job.job_id }}"
-              class="relative mx-5 md:mx-7 text-start enabled:cursor-pointer border border-2 rounded-lg enabled:hover:outline enabled:hover:-outline-offset-1 p-5 md:p-7 {%- if open_source > 0 %} border-primary-400 bg-primary-50/20 enabled:hover:outline-primary-400{%- else if let Some(member) = job.employer.member %} border-secondary-400 bg-secondary-50/20 enabled:hover:outline-secondary-400{%- else %} enabled:hover:outline-gray-200{%- endif -%}"
+              class="relative mx-5 md:mx-7 text-start enabled:cursor-pointer border border-2 rounded-lg enabled:hover:outline enabled:hover:-outline-offset-1 p-5 md:p-7 {%- if open_source > 0 %} border-primary-400 bg-primary-50/20 enabled:hover:outline-primary-400{%- else if let Some(member) = job.employer.member %} border-secondary-400 bg-secondary-50/20 enabled:hover:outline-secondary-400{%- else %} enabled:hover:outline-stone-200{%- endif -%}"
               hx-disabled-elt="[data-preview-job]"
               hx-boost="true">
         {# Job title #}
@@ -72,7 +72,7 @@
             {# Company and member #}
             <div class="flex justify-between items-center space-x-5">
               {# Company #}
-              <div class="truncate leading-3 text-gray-400 text-xs font-semibold tracking-wide uppercase">
+              <div class="truncate leading-3 text-stone-400 text-xs font-semibold tracking-wide uppercase">
                 {{ job.employer.company }}
               </div>
               {# End company #}
@@ -90,7 +90,7 @@
                              alt="{{ member.foundation }} logo">
                       </div>
 
-                      <div class="leading-3 text-gray-600 text-xs font-semibold tracking-wide uppercase">
+                      <div class="leading-3 text-stone-600 text-xs font-semibold tracking-wide uppercase">
                         {{ member.foundation }} {{ member.level }} member
                       </div>
                     </div>
@@ -109,12 +109,12 @@
             <div class="flex space-x-3 items-center mt-auto">
               <div class="flex items-center space-x-4">
                 {# Title #}
-                <div class="text-base font-stretch-condensed font-medium text-gray-900 truncate">{{ job.title }}</div>
+                <div class="text-base font-stretch-condensed font-medium text-stone-900 truncate">{{ job.title }}</div>
                 {# End title #}
 
                 {# Location #}
                 {% if let Some(location) = job.location %}
-                  <div class="hidden lg:inline-flex border bg-white rounded-md px-2 py-0.5 text-xs text-gray-500 font-normal items-center">
+                  <div class="hidden lg:inline-flex border bg-white rounded-md px-2 py-0.5 text-xs text-stone-500 font-normal items-center">
                     <div class="svg-icon size-2.5 icon-location bg-stone-500 me-1"></div>
                     <div>{{ location.city }}, {{ location.country }}</div>
                   </div>
@@ -128,7 +128,7 @@
 
         <div class="flex justify-between items-end space-x-6 w-full mt-5 ps-16">
           {# Tags #}
-          <div class="flex items-center space-x-6 w-full text-[0.8rem] text-gray-600">
+          <div class="flex items-center space-x-6 w-full text-[0.8rem] text-stone-600">
             {% let kind = job.kind.to_string() %}
             {% let workplace = job.workplace.to_string() %}
 
@@ -169,12 +169,12 @@
           </div>
           {# End tags #}
 
-          <div class="text-sm/6 text-gray-600">
+          <div class="text-sm/6 text-stone-600">
             {% if let Some(salary) = job.salary %}
               {# Salary #}
-              <div class="flex items-baseline space-x-1 border bg-white rounded-md px-2 py-0.5 text-xs text-gray-500 font-normal">
+              <div class="flex items-baseline space-x-1 border bg-white rounded-md px-2 py-0.5 text-xs text-stone-500 font-normal">
                 {% if let Some(salary_currency) = job.salary_currency %}
-                  <div class="text-[0.7rem] text-gray-500">{{ salary_currency }}</div>
+                  <div class="text-[0.7rem] text-stone-500">{{ salary_currency }}</div>
                 {% endif %}
                 <div class="capitalize">{{ salary|humanize_number }}</div>
                 {%- if let Some(salary_period) = job.salary_period -%}
@@ -184,9 +184,9 @@
               {# End salary #}
             {% else if let Some(salary_min) = job.salary_min %}
               {# Salary range #}
-              <div class="flex items-baseline space-x-1 border bg-white rounded-md px-2 py-0.5 text-xs text-gray-500 font-normal">
+              <div class="flex items-baseline space-x-1 border bg-white rounded-md px-2 py-0.5 text-xs text-stone-500 font-normal">
                 {% if let Some(salary_currency) = job.salary_currency %}
-                  <div class="text-[0.7rem] text-gray-500">{{ salary_currency }}</div>
+                  <div class="text-[0.7rem] text-stone-500">{{ salary_currency }}</div>
                 {% endif %}
                 <div class="capitalize text-nowrap">
                   {{ salary_min|humanize_number }}

@@ -22,11 +22,11 @@
 
       <div class="flex flex-col justify-center min-w-0">
         {# Title #}
-        <div class="text-xl font-stretch-condensed font-medium text-gray-900 truncate">{{ job.title }}</div>
+        <div class="text-xl font-stretch-condensed font-medium text-stone-900 truncate">{{ job.title }}</div>
         {# End title #}
 
         {# Company #}
-        <div class="text-sm/6 text-gray-500 italic">{{ employer.company }}</div>
+        <div class="text-sm/6 text-stone-500 italic">{{ employer.company }}</div>
         {# End company #}
       </div>
     </div>
@@ -43,8 +43,8 @@
                class="size-auto">
         </div>
         <div class="flex flex-col justify-start min-w-0">
-          <div class="truncate text-start text-gray-700 font-medium">{{ member.name }}</div>
-          <div class="truncate text-nowrap uppercase max-w-[100%] text-xs/4 font-medium text-gray-400">
+          <div class="truncate text-start text-stone-700 font-medium">{{ member.name }}</div>
+          <div class="truncate text-nowrap uppercase max-w-[100%] text-xs/4 font-medium text-stone-400">
             {{ member.foundation }} {{ member.level }} member
           </div>
         </div>
@@ -61,7 +61,7 @@
       {# Job description #}
       <div>
         {% call content_heading(content = "Job description", margin = 0) %}
-        <div class="text-sm/6 text-gray-600 markdown">{{ job.description|md_to_html|safe }}</div>
+        <div class="text-sm/6 text-stone-600 markdown">{{ job.description|md_to_html|safe }}</div>
       </div>
       {# End job description #}
 
@@ -69,7 +69,7 @@
       {% if let Some(responsibilities) = job.responsibilities %}
         <div>
           {% call content_heading(content = "Responsibilities") %}
-          <div class="text-sm/6 text-gray-600 markdown">{{ responsibilities|md_to_html|safe }}</div>
+          <div class="text-sm/6 text-stone-600 markdown">{{ responsibilities|md_to_html|safe }}</div>
         </div>
       {% endif %}
       {# End job responsibilities #}
@@ -78,7 +78,7 @@
       {% if let Some(qualifications) = job.qualifications %}
         <div>
           {% call content_heading(content = "Qualifications") %}
-          <div class="text-sm/6 text-gray-600 markdown">{{ qualifications|md_to_html|safe }}</div>
+          <div class="text-sm/6 text-stone-600 markdown">{{ qualifications|md_to_html|safe }}</div>
         </div>
       {% endif %}
       {# End job qualifications #}
@@ -113,7 +113,7 @@
       {% if let Some(apply_instructions) = job.apply_instructions %}
         <div>
           {% call content_heading(content = "Apply instructions") %}
-          <div class="text-sm/6 text-gray-600 markdown">{{ apply_instructions|md_to_html|safe }}</div>
+          <div class="text-sm/6 text-stone-600 markdown">{{ apply_instructions|md_to_html|safe }}</div>
         </div>
       {% endif %}
       {# End application #}
@@ -121,7 +121,7 @@
       {# Company information #}
       <div>
         {% call content_heading(content = "About company") %}
-        <div class="text-sm/6 text-gray-600 markdown">{{ employer.description|md_to_html|safe }}</div>
+        <div class="text-sm/6 text-stone-600 markdown">{{ employer.description|md_to_html|safe }}</div>
       </div>
       {# End company information #}
     </div>
@@ -170,7 +170,7 @@
       {# Fixed salary #}
       <div class="flex items-baseline">
         {% if let Some(salary) = job.salary %}
-          <div class="flex items-baseline font-medium text-gray-900 text-sm">
+          <div class="flex items-baseline font-medium text-stone-900 text-sm">
             {% call currency(value = job.salary_currency) %}
             {{ salary|humanize_number }}
           </div>
@@ -178,7 +178,7 @@
           -
         {% endif %}
         {%- if let Some(salary_period) = job.salary_period -%}
-          <div class="text-gray-900 text-xs ms-1">/ year</div>
+          <div class="text-stone-900 text-xs ms-1">/ year</div>
         {%- endif -%}
       </div>
       {# End fixed salary #}
@@ -186,7 +186,7 @@
       {# Range salary #}
       <div class="flex items-baseline">
         {% if let Some(salary_min) = job.salary_min %}
-          <div class="flex items-baseline font-medium text-gray-900 text-sm">
+          <div class="flex items-baseline font-medium text-stone-900 text-sm">
             {% call currency(value = job.salary_currency) %}
             {{ salary_min|humanize_number }}
           </div>
@@ -195,14 +195,14 @@
         {% endif %}
 
         {% if let Some(salary_max) = job.salary_max %}
-          <div class="flex items-baseline text-gray-900 text-sm">
+          <div class="flex items-baseline text-stone-900 text-sm">
             <span class="mx-1">-</span>
             {{ salary_max|humanize_number }}
           </div>
         {% endif %}
 
         {%- if let Some(salary_period) = job.salary_period -%}
-          <div class="text-gray-900 text-xs ms-1">/ year</div>
+          <div class="text-stone-900 text-xs ms-1">/ year</div>
         {%- endif -%}
       </div>
       {# End range salary #}
@@ -283,13 +283,13 @@
 
 {# Content heading #}
 {% macro content_heading(content, margin = 1) %}
-  <div class="text-lg font-semibold text-gray-800 mb-3 mt-{{ margin }}">{{ content }}</div>
+  <div class="text-lg font-semibold text-stone-800 mb-3 mt-{{ margin }}">{{ content }}</div>
 {% endmacro content_heading %}
 {# End content heading #}
 
 {# Job details subheading #}
 {% macro job_details_subheading(content) %}
-  <div class="text-xs/6 text-gray-400 mb-1 mt-4">{{ content }}</div>
+  <div class="text-xs/6 text-stone-400 mb-1 mt-4">{{ content }}</div>
 {% endmacro job_details_subheading %}
 {# End job details subheading #}
 
@@ -306,7 +306,7 @@
 
 {# Currency #}
 {% macro currency(value) %}
-  {% if let Some(value) = value %}<div class="text-xs text-gray-500 me-1">{{ value }}</div>{% endif %}
+  {% if let Some(value) = value %}<div class="text-xs text-stone-500 me-1">{{ value }}</div>{% endif %}
 {% endmacro %}
 {# End currency #}
 
@@ -318,7 +318,7 @@
            style="width: {{ percentage }}%"></div>
     </div>
     <div class="text-xs font-semibold w-[15%] text-end">
-      {{ percentage }}<small class="text-gray-500">%</small>
+      {{ percentage }}<small class="text-stone-500">%</small>
     </div>
   </div>
 {% endmacro %}

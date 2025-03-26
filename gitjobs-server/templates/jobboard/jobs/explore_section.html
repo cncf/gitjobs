@@ -34,7 +34,7 @@
   </form>
 
   {# Header Filters -#}
-  <div class="flex justify-between items-center border-solid border-0 border-b border-gray-100 p-5">
+  <div class="flex justify-between items-center border-solid border-0 border-b border-stone-100 p-5">
     <div class="flex space-x-3 relative">
       <div class="font-semibold text-sm text-black">Filters</div>
       <div id="mobile-jobs-spinner" class="hx-spinner absolute start-10 -top-1">
@@ -78,7 +78,7 @@
       </form>
 
       {# Header #}
-      <div class="flex justify-between items-center border-solid border-0 border-b border-gray-100 p-5">
+      <div class="flex justify-between items-center border-solid border-0 border-b border-stone-100 p-5">
         <div class="font-semibold text-sm text-black">Filters</div>
 
         <div class="flex space-x-3 relative">
@@ -117,7 +117,7 @@
                        name="ts_query"
                        type="text"
                        value='{{ filters.ts_query|display_some_or("") }}'
-                       class="peer w-[100%] rounded-full border border-gray-300 text-gray-900 placeholder-gray-400 focus:ring-transparent focus:border-primary-500 focus:ring block flex-1 min-w-0 w-60 text-md p-2.5 ps-4 pe-14"
+                       class="peer w-[100%] rounded-full border border-stone-300 text-stone-900 placeholder-stone-400 focus:ring-transparent focus:border-primary-500 focus:ring block flex-1 min-w-0 w-60 text-md p-2.5 ps-4 pe-14"
                        placeholder="Search jobs"
                        autocomplete="off"
                        autocorrect="off"
@@ -162,7 +162,7 @@
             </label>
             <select id="sort_by"
                     name="sort_by"
-                    class="block w-24 py-1 px-3 text-[0.8rem] leading-none h-[30px] text-gray-900 bg-white border border-gray-300 rounded-full focus:outline-none focus:ring-0 focus:border-gray-300 hover:border-primary-500 focus:hover:border-primary-500">
+                    class="block w-24 py-1 px-3 text-[0.8rem] leading-none h-[30px] text-stone-900 bg-white border border-stone-300 rounded-full focus:outline-none focus:ring-0 focus:border-stone-300 hover:border-primary-500 focus:hover:border-primary-500">
               <option value="date" selected="">Date</option>
             </select>
           </div>

@@ -197,10 +197,10 @@ export class SearchLocation extends LitWrapper {
   }
 
   _renderOptions() {
-    return html` <div class="bg-white divide-y divide-gray-100 rounded-lg shadow w-full border mt-1">
+    return html` <div class="bg-white divide-y divide-stone-100 rounded-lg shadow w-full border mt-1">
       ${this.options.length === 0
-        ? html`<div class="px-8 py-4 text-sm/6 text-gray-600 italic">No locations found</div>`
-        : html`<ul class="py-2 text-gray-700 overflow-auto max-h-[180px]">
+        ? html`<div class="px-8 py-4 text-sm/6 text-stone-600 italic">No locations found</div>`
+        : html`<ul class="py-2 text-stone-700 overflow-auto max-h-[180px]">
             ${this.options.map(
               (l, index) =>
                 html` <li class="group ${this.activeIndex === index ? "active" : ""}" data-index="${index}">
@@ -239,7 +239,7 @@ export class SearchLocation extends LitWrapper {
           type="text"
           .value=${this.value}
           class="input-primary peer ${this.size === "small"
-            ? "py-0.5 peer px-9 rounded-lg text-xs/6 text-gray-500"
+            ? "py-0.5 peer px-9 rounded-lg text-xs/6 text-stone-500"
             : "px-10"}"
           placeholder="Search location"
           autocomplete="off"
@@ -270,7 +270,7 @@ export class SearchLocation extends LitWrapper {
               <div role="status">
                 <svg
                   aria-hidden="true"
-                  class="inline size-5 text-gray-200 animate-spin fill-primary-600"
+                  class="inline size-5 text-stone-200 animate-spin fill-primary-600"
                   viewBox="0 0 100 101"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
@@ -305,7 +305,7 @@ export class SearchLocation extends LitWrapper {
       ${this.withDistance
         ? html`
             <div class="flex items-center space-x-3 mt-3">
-              <div class="text-xs/6 text-gray-400">Max. distance</div>
+              <div class="text-xs/6 text-stone-400">Max. distance</div>
               <div class="flex-grow">
                 <select
                   form=${this.form}

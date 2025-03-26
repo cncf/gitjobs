@@ -22,7 +22,7 @@
       <a href="mailto:{{ profile.email }}"
          target="_blank"
          rel="noopener noreferrer"
-         class="border rounded-full px-4 flex items-center text-gray-600 text-sm/6 space-x-2 cursor-pointer">
+         class="border rounded-full px-4 flex items-center text-stone-600 text-sm/6 space-x-2 cursor-pointer">
         <div class="svg-icon size-4 icon-email bg-stone-500"></div>
         <div>{{ profile.email }}</div>
       </a>
@@ -85,7 +85,7 @@
     </div>
     {# End social #}
 
-    <hr class="my-10 border-t border-gray-200">
+    <hr class="my-10 border-t border-stone-200">
     <div class="flex flex-col space-y-4">
       {# Remote #}
       {% if let Some(open_to_remote) = profile.open_to_remote %}
@@ -102,11 +102,11 @@
 
     {# Skills #}
     {% if let Some(skills) = profile.skills %}
-      <hr class="my-10 border-t border-gray-200">
+      <hr class="my-10 border-t border-stone-200">
 
       <div>
         {% call title(content = "Skills") %}
-        <div class="text-gray-600 text-xs/6 flex flex-wrap pt-2">
+        <div class="text-stone-600 text-xs/6 flex flex-wrap pt-2">
           {% for skill in skills %}
             <div class="bg-stone-100 px-4 rounded-full inline-block capitalize mb-2 me-2">{{ skill|unnormalize }}</div>
           {% endfor %}
@@ -122,15 +122,15 @@
   <div class="w-3/4">
     {# Summary #}
     {% call title(content = "Profile") %}
-    <div class="text-sm/6 text-gray-600 markdown">{{ profile.summary|md_to_html|safe }}</div>
+    <div class="text-sm/6 text-stone-600 markdown">{{ profile.summary|md_to_html|safe }}</div>
     {# End summary #}
 
     {# Experience #}
     {% if let Some(experience) = profile.experience %}
-      <hr class="my-10 border-t border-gray-200">
+      <hr class="my-10 border-t border-stone-200">
       {% call title(content = "Experience") %}
       <div class="pt-2">
-        <ol class="relative border-s border-gray-200">
+        <ol class="relative border-s border-stone-200">
           {% for exp in experience %}
             {% let end_date = exp.end_date|display_some_date_or(DATE_FORMAT_2, "Present") %}
             {% call timeline_item(title = exp.title, entity = exp.company, description = exp.description, start_date = exp.start_date.format(DATE_FORMAT_2), end_date = end_date) %}
@@ -142,10 +142,10 @@
 
     {# Education #}
     {% if let Some(education) = profile.education %}
-      <hr class="my-10 border-t border-gray-200">
+      <hr class="my-10 border-t border-stone-200">
       {% call title(content = "Education") %}
       <div class="pt-2">
-        <ol class="relative border-s border-gray-200">
+        <ol class="relative border-s border-stone-200">
           {% for ed in education %}
             {% call timeline_item(title = ed.title, entity = ed.educational_institution, description = ed.description, start_date = ed.start_date.format(DATE_FORMAT_2), end_date = ed.end_date.format(DATE_FORMAT_2)) %}
           {% endfor %}
@@ -156,10 +156,10 @@
 
     {# Certifications #}
     {% if let Some(certifications) = profile.certifications %}
-      <hr class="my-10 border-t border-gray-200">
+      <hr class="my-10 border-t border-stone-200">
       {% call title(content = "Certifications") %}
       <div class="pt-2">
-        <ol class="relative border-s border-gray-200">
+        <ol class="relative border-s border-stone-200">
           {% for c in certifications %}
             {% call timeline_item(title = c.title, entity = c.provider, description = c.description, start_date = c.start_date.format(DATE_FORMAT_2), end_date = c.end_date.format(DATE_FORMAT_2)) %}
           {% endfor %}
@@ -170,31 +170,31 @@
 
     {# Projects #}
     {% if let Some(projects) = profile.projects %}
-      <hr class="my-10 border-t border-gray-200">
+      <hr class="my-10 border-t border-stone-200">
       {% call title(content = "Projects") %}
       <div class="pt-2">
-        <ol class="relative border-s border-gray-200">
+        <ol class="relative border-s border-stone-200">
           {% for p in projects %}
             <li class="mb-10 ms-4">
               <div class="absolute size-3 bg-stone-300 rounded-full mt-1 -start-1.5 border border-white"></div>
-              <div class="text-lg font-semibold text-gray-900">{{ p.title }}</div>
-              <div class="text-sm/6 text-gray-500 italic text-nowrap truncate">
-                <span class="text-xs text-gray-400 uppercase">Url:</span>
+              <div class="text-lg font-semibold text-stone-900">{{ p.title }}</div>
+              <div class="text-sm/6 text-stone-500 italic text-nowrap truncate">
+                <span class="text-xs text-stone-400 uppercase">Url:</span>
                 <a href="{{ p.url }}"
                    class="truncate"
                    target="_blank"
                    rel="noopener noreferrer">{{ p.url }}</a>
               </div>
               {% if let Some(source_url) = p.source_url %}
-                <div class="text-sm/6 text-gray-500 italic text-nowrap truncate">
-                  <span class="text-xs text-gray-400 uppercase">Source:</span>
+                <div class="text-sm/6 text-stone-500 italic text-nowrap truncate">
+                  <span class="text-xs text-stone-400 uppercase">Source:</span>
                   <a href="{{ source_url }}"
                      class="truncate"
                      target="_blank"
                      rel="noopener noreferrer">{{ source_url }}</a>
                 </div>
               {% endif %}
-              <div class="text-sm/6 text-gray-600 markdown">{{ p.description|md_to_html|safe }}</div>
+              <div class="text-sm/6 text-stone-600 markdown">{{ p.description|md_to_html|safe }}</div>
             </li>
           {% endfor %}
         </ol>
@@ -206,14 +206,14 @@
 </div>
 
 {% macro main_badge(content, icon) %}
-  <div class="border rounded-full px-4 flex items-center text-gray-600 text-sm/6 space-x-2">
+  <div class="border rounded-full px-4 flex items-center text-stone-600 text-sm/6 space-x-2">
     <div class="svg-icon size-4 icon-{{ icon }} bg-stone-500"></div>
     <div>{{ content }}</div>
   </div>
 {% endmacro main_badge %}
 
 {% macro title(content) %}
-  <div class="uppercase text-gray-800 tracking-[0.25rem] font-semibold mb-3">{{ content }}</div>
+  <div class="uppercase text-stone-800 tracking-[0.25rem] font-semibold mb-3">{{ content }}</div>
 {% endmacro title %}
 
 {% macro social_link(url, icon, is_email = false) %}
@@ -229,10 +229,10 @@
 {% macro timeline_item(title, entity, description, start_date, end_date) %}
   <li class="mb-10 ms-4">
     <div class="absolute size-3 bg-stone-300 rounded-full mt-1 -start-1.5 border border-white"></div>
-    <div class="mb-2 text-sm text-gray-400">{{ start_date }} - {{ end_date }}</div>
-    <div class="text-lg font-semibold text-gray-900">{{ title }}</div>
-    <div class="text-sm/6 text-gray-500 italic mb-3">{{ entity }}</div>
-    <div class="text-sm/6 text-gray-600 markdown">{{ description|md_to_html|safe }}</div>
+    <div class="mb-2 text-sm text-stone-400">{{ start_date }} - {{ end_date }}</div>
+    <div class="text-lg font-semibold text-stone-900">{{ title }}</div>
+    <div class="text-sm/6 text-stone-500 italic mb-3">{{ entity }}</div>
+    <div class="text-sm/6 text-stone-600 markdown">{{ description|md_to_html|safe }}</div>
   </li>
 {% endmacro timeline_item %}
 

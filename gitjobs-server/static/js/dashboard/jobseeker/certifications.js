@@ -108,8 +108,8 @@ export class CertificationsSection extends LitWrapper {
   }
 
   render() {
-    return html`<div class="text-xl lg:text-2xl font-medium text-gray-900">Certifications</div>
-      <div class="mt-2 text-sm/6 text-gray-500">
+    return html`<div class="text-xl lg:text-2xl font-medium text-stone-900">Certifications</div>
+      <div class="mt-2 text-sm/6 text-stone-500">
         Provide certifications you have earned. You can add additional entries by clicking on the
         <span class="font-semibold">+</span> buttons on the left of the card (
         <div class="inline-block svg-icon size-4 icon-plus_top bg-stone-600 relative -bottom-[2px]"></div>

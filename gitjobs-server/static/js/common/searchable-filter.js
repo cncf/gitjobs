@@ -142,10 +142,10 @@ export class SearchableFilter extends LitWrapper {
         <div
           class="${!this.visibleDropdown
             ? "hidden"
-            : ""} bg-white divide-y divide-gray-100 rounded-lg shadow w-full border mt-1"
+            : ""} bg-white divide-y divide-stone-100 rounded-lg shadow w-full border mt-1"
         >
           ${this.visibleOptions.length > 0 && this.visibleDropdown
-            ? html`<ul class="text-sm text-gray-700 overflow-auto max-h-[180px]">
+            ? html`<ul class="text-sm text-stone-700 overflow-auto max-h-[180px]">
                 ${this.visibleOptions.map((option) => {
                   const isProjectsType = this.name === "projects";
                   const name = isProjectsType ? option.name : option;
@@ -172,12 +172,12 @@ export class SearchableFilter extends LitWrapper {
                               />
                             </div>
                             <div class="flex flex-col justify-start min-w-0">
-                              <div class="truncate text-start text-xs/5 text-gray-700 font-medium">
+                              <div class="truncate text-start text-xs/5 text-stone-700 font-medium">
                                 ${name}
                               </div>
                               <div class="inline-flex">
                                 <div
-                                  class="truncate text-nowrap uppercase max-w-[100%] text-[0.65rem] font-medium text-gray-400"
+                                  class="truncate text-nowrap uppercase max-w-[100%] text-[0.65rem] font-medium text-stone-400"
                                 >
                                   ${option.foundation} ${option.maturity}
                                 </div>
@@ -196,7 +196,7 @@ export class SearchableFilter extends LitWrapper {
                   </li>`;
                 })}
               </ul>`
-            : html`<div class="px-8 py-4 text-sm/6 text-gray-600 italic">No ${this.name} found</div>`}
+            : html`<div class="px-8 py-4 text-sm/6 text-stone-600 italic">No ${this.name} found</div>`}
         </div>
       </div>
       ${this.selected.length > 0

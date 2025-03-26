@@ -44,7 +44,7 @@
         </div>
         <div class="flex flex-col justify-start min-w-0">
           <div class="truncate text-start text-stone-700 font-medium">{{ member.name }}</div>
-          <div class="truncate text-nowrap uppercase max-w-[100%] text-xs/4 font-medium text-stone-400">
+          <div class="truncate text-nowrap uppercase max-w-[100%] text-xs/4 font-medium text-stone-500/75">
             {{ member.foundation }} {{ member.level }} member
           </div>
         </div>
@@ -289,7 +289,7 @@
 
 {# Job details subheading #}
 {% macro job_details_subheading(content) %}
-  <div class="text-xs/6 text-stone-400 mb-1 mt-4">{{ content }}</div>
+  <div class="text-xs/6 text-stone-500/75 mb-1 mt-4">{{ content }}</div>
 {% endmacro job_details_subheading %}
 {# End job details subheading #}
 

@@ -46,7 +46,7 @@ export const addCard = (id, name, label, logo_url, elId, onRemove, extra = "", m
         ${
           !mini
             ? `<div class="inline-flex">
-          <div class="truncate text-nowrap uppercase max-w-[100%] text-xs/6 font-medium text-stone-400">
+          <div class="truncate text-nowrap uppercase max-w-[100%] text-xs/6 font-medium text-stone-500/75">
             ${label}
           </div>
         </div>`

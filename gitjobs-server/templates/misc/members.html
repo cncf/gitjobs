@@ -15,7 +15,7 @@
                   data-level="{{ m.level }}"
                   data-foundation="{{ m.foundation }}"
                   data-logo-url="{{ m.logo_url }}"
-                  class="btn-member px-4 py-2 w-full hover:bg-gray-100 group-[.active]:bg-gray-100">
+                  class="btn-member px-4 py-2 w-full hover:bg-stone-100 group-[.active]:bg-stone-100">
             {% let label = &format!("{} {} member", m.foundation, m.level) %}
             {% call macros::dropdown_card(name = m.name, label = label, logo_url = m.logo_url) %}
           </button>

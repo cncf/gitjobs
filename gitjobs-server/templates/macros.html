@@ -27,7 +27,7 @@
 {% macro search_member(member_id = "", member_name = "", member_level = "", member_foundation = "", member_logo_url = "") %}
   <div class="mt-2 relative">
     <div class="absolute top-2.5 start-0 flex items-center ps-3 pointer-events-none">
-      <div class="svg-icon size-4 icon-search bg-gray-300"></div>
+      <div class="svg-icon size-4 icon-search bg-stone-300"></div>
     </div>
     <input id="member"
            name="name"
@@ -68,7 +68,7 @@
     <div id="member-spinner" class="hx-spinner absolute end-10 top-1">{% call spinner(size = 5) %}</div>
     <div class="absolute end-1.5 top-1.5 peer-placeholder-shown:hidden">
       <button id="clean-member" type="button" class="mt-[2px]">
-        <div class="svg-icon size-5 bg-gray-400 hover:bg-gray-700 icon-close"></div>
+        <div class="svg-icon size-5 bg-stone-400 hover:bg-stone-700 icon-close"></div>
       </button>
     </div>
     <div id="search-member" class="absolute z-10 start-0 end-0"></div>
@@ -140,7 +140,7 @@
 {% macro search_project(id = "projects", mini = false) %}
   <div class="mt-2 relative">
     <div class="absolute top-2.5 start-0 flex items-center ps-3 pointer-events-none">
-      <div class="svg-icon size-4 icon-search bg-gray-300"></div>
+      <div class="svg-icon size-4 icon-search bg-stone-300"></div>
     </div>
     <input id="{{ id }}"
            name="name"
@@ -161,7 +161,7 @@
     <div id="{{ id }}-spinner" class="hx-spinner absolute end-10 top-1">{% call spinner(size = 5) %}</div>
     <div class="absolute end-1.5 top-1.5 peer-placeholder-shown:hidden">
       <button id="clean-{{ id }}" type="button" class="mt-[2px]">
-        <div class="svg-icon size-5 bg-gray-400 hover:bg-gray-700 icon-close"></div>
+        <div class="svg-icon size-5 bg-stone-400 hover:bg-stone-700 icon-close"></div>
       </button>
     </div>
     <div id="search-{{ id }}"
@@ -257,7 +257,7 @@
          class="sr-only peer"
          {% if checked %}checked{% endif %}>
   <input type="hidden" id="{{ id }}" name="{{ id }}" value="{{ checked }}">
-  <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600">
+  <div class="relative w-11 h-6 bg-stone-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600">
   </div>
 
   <script>
@@ -278,11 +278,11 @@
 
 {# Badge #}
 {% macro badge(content, content_styles = "", icon = "") %}
-  <div class="inline-flex bg-gray-100 text-gray-800 text-sm/4 font-medium px-2.5 py-1.5 rounded-full border">
+  <div class="inline-flex bg-stone-100 text-gray-800 text-sm/4 font-medium px-2.5 py-1.5 rounded-full border">
     <div class="flex items-center">
       {% if !icon.is_empty() %}
         <div class="me-2">
-          <div class="svg-icon size-4 icon-{{ icon }} bg-gray-500"></div>
+          <div class="svg-icon size-4 icon-{{ icon }} bg-stone-500"></div>
         </div>
       {% endif %}
       <div class="capitalize {{ content_styles }}">{{ content }}</div>
@@ -301,7 +301,7 @@
 {# Radio box #}
 {% macro radio_box(name, value, label, icon, checked = "", required = false) %}
   <div class="flex items-center px-3 py-2 border border-gray-200 rounded-md">
-    <div class="hidden lg:block svg-icon size-4 icon-{{ icon }} bg-gray-600 cursor-pointer"></div>
+    <div class="hidden lg:block svg-icon size-4 icon-{{ icon }} bg-stone-600 cursor-pointer"></div>
     <label for="{{ name }}-{{ value }}"
            class="ms-2 text-xs lg:text-sm text-gray-900 flex-grow cursor-pointer">{{ label }}</label>
     <input id="{{ name }}-{{ value }}"
@@ -329,7 +329,7 @@
         hx-disabled-elt="#clean-image, input[type=file]">
     <label for="{{ name }}" class="form-label">{{ label }}</label>
     <div class="mt-3 flex items-stretch gap-x-5">
-      <div class="relative flex items-center size-24 min-w-24 bg-gray-200 rounded-xl overflow-hidden">
+      <div class="relative flex items-center size-24 min-w-24 bg-stone-200 rounded-xl overflow-hidden">
         <div id="images-spinner" class="hx-spinner absolute z-10 start-5 top-5">
           {% call spinner(size = 14, spinner_type = "4") %}
         </div>

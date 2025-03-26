@@ -49,8 +49,8 @@
                   <button hx-put="/dashboard/employer/employers/{{ employer.employer_id }}/select"
                           hx-trigger="click"
                           hx-target="#dashboard-content"
-                          class="w-full flex items-center px-4 py-2 text-sm/6 hover:bg-gray-100
-                                 {% if is_selected -%}bg-gray-100{%- endif %}"
+                          class="w-full flex items-center px-4 py-2 text-sm/6 hover:bg-stone-100
+                                 {% if is_selected -%}bg-stone-100{%- endif %}"
                           {% if is_selected %}disabled{% endif %}>
                     {% call employer_content_list(company = employer.company, logo_id = employer.logo_id) %}
                   </button>
@@ -146,8 +146,8 @@
            alt="{{ company }} image">
     </div>
   {% else %}
-    <div class="rounded-full size-6 me-3 bg-gray-200 p-1">
-      <div class="svg-icon size-4 icon-company bg-gray-600"></div>
+    <div class="rounded-full size-6 me-3 bg-stone-200 p-1">
+      <div class="svg-icon size-4 icon-company bg-stone-600"></div>
     </div>
   {% endif %}
   <div class="truncate">{{ company }}</div>

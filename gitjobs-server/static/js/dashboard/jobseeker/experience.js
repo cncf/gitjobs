@@ -67,31 +67,31 @@ export class ExperienceSection extends LitWrapper {
             <button
               @click=${() => this._addExperienceRecord(index)}
               type="button"
-              class="p-2 border hover:bg-gray-100 rounded-full"
+              class="p-2 border hover:bg-stone-100 rounded-full"
               title="Add above"
             >
-              <div class="svg-icon size-4 icon-plus_top bg-gray-600"></div>
+              <div class="svg-icon size-4 icon-plus_top bg-stone-600"></div>
             </button>
           </div>
           <div>
             <button
               @click=${() => this._addExperienceRecord(index + 1)}
               type="button"
-              class="p-2 border hover:bg-gray-100 rounded-full"
+              class="p-2 border hover:bg-stone-100 rounded-full"
               title="Add below"
             >
-              <div class="svg-icon size-4 icon-plus_bottom bg-gray-600"></div>
+              <div class="svg-icon size-4 icon-plus_bottom bg-stone-600"></div>
             </button>
           </div>
           <div>
             <button
               @click=${() => this._removeExperienceRecord(index)}
               type="button"
-              class="p-2 border hover:bg-gray-100 rounded-full"
+              class="p-2 border hover:bg-stone-100 rounded-full"
               title="${hasSingleExperienceRecord ? "Clean" : "Delete"}"
             >
               <div
-                class="svg-icon size-4 icon-${hasSingleExperienceRecord ? "eraser" : "trash"} bg-gray-600"
+                class="svg-icon size-4 icon-${hasSingleExperienceRecord ? "eraser" : "trash"} bg-stone-600"
               ></div>
             </button>
           </div>
@@ -111,9 +111,9 @@ export class ExperienceSection extends LitWrapper {
       <div class="text-sm/6 text-gray-500">
         Provide your professional experience. You can add additional entries by clicking on the
         <span class="font-semibold">+</span> buttons on the left of the card (
-        <div class="inline-block svg-icon size-4 icon-plus_top bg-gray-600 relative -bottom-[2px]"></div>
+        <div class="inline-block svg-icon size-4 icon-plus_top bg-stone-600 relative -bottom-[2px]"></div>
         to add the new entry above,
-        <div class="inline-block svg-icon size-4 icon-plus_bottom bg-gray-600 relative -bottom-[2px]"></div>
+        <div class="inline-block svg-icon size-4 icon-plus_bottom bg-stone-600 relative -bottom-[2px]"></div>
         to add it below). Entries will be displayed in the order provided.
       </div>
       <div id="experience-section">
@@ -174,7 +174,7 @@ class ExperienceRecord extends LitWrapper {
   render() {
     return html`
       <div
-        class="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 border border-2 border-dashed p-8 rounded-lg bg-gray-50/25 w-full"
+        class="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 border border-2 border-dashed p-8 rounded-lg bg-stone-50/25 w-full"
       >
         <div class="col-span-3">
           <label class="form-label"> Title <span class="asterisk">*</span> </label>

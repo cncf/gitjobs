@@ -80,17 +80,17 @@ export class MultiSelect extends LitWrapper {
             ${this.selected.map(
               (option) =>
                 html`<span
-                  class="inline-flex items-center text-nowrap max-w-[100%] ps-2 pe-0.5 py-0.5 me-2 text-xs font-medium text-gray-800 bg-gray-100 rounded-full"
+                  class="inline-flex items-center text-nowrap max-w-[100%] ps-2 pe-0.5 py-0.5 me-2 text-xs font-medium text-gray-800 bg-stone-100 rounded-full"
                 >
                   <div class="flex items-center w-full">
                     <div class="truncate capitalize">${unnormalize(option)}</div>
                     <button
                       type="button"
                       @click=${() => this._onRemoveBadge(option)}
-                      class="inline-flex items-center p-1 ms-2 bg-transparent rounded-full hover:bg-gray-200"
+                      class="inline-flex items-center p-1 ms-2 bg-transparent rounded-full hover:bg-stone-200"
                       aria-label="Remove badge"
                     >
-                      <div class="svg-icon size-3 icon-close bg-gray-400 hover:bg-gray-900"></div>
+                      <div class="svg-icon size-3 icon-close bg-stone-400 hover:bg-stone-900"></div>
                       <span class="sr-only">Remove badge</span>
                     </button>
                   </div>
@@ -126,13 +126,13 @@ export class MultiSelect extends LitWrapper {
                   @click=${() => this._onClickOption(option)}
                   type="button"
                   class=${`${
-                    isSelected ? "bg-gray-100 opacity-50" : "cursor-pointer hover:bg-gray-100"
+                    isSelected ? "bg-stone-100 opacity-50" : "cursor-pointer hover:bg-stone-100"
                   } capitalize block w-full text-left px-4 py-2`}
                   ?disabled="${isSelected}"
                 >
                   <div class="flex items-center">
                     <div class="size-3 me-2">
-                      ${isSelected ? html`<div class="svg-icon size-3 icon-check bg-gray-400"></div>` : ""}
+                      ${isSelected ? html`<div class="svg-icon size-3 icon-check bg-stone-400"></div>` : ""}
                     </div>
                     <div class="truncate">${unnormalize(option)}</div>
                   </div>

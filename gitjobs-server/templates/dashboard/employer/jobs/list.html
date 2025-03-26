@@ -7,7 +7,7 @@
     {# Search jobs input #}
     <div class="relative">
       <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
-        <div class="svg-icon size-4 icon-search bg-gray-300"></div>
+        <div class="svg-icon size-4 icon-search bg-stone-300"></div>
       </div>
       <input id="search_jobs"
              name="search_jobs"
@@ -22,7 +22,7 @@
              disabled>
       <div class="absolute end-1.5 top-1.5 peer-placeholder-shown:hidden">
         <button id="clean-search-jobs" type="button" class="mt-[2px]">
-          <div class="svg-icon size-5 bg-gray-400 hover:bg-gray-700 icon-close"></div>
+          <div class="svg-icon size-5 bg-stone-400 hover:bg-stone-700 icon-close"></div>
         </button>
       </div>
     </div>
@@ -55,7 +55,7 @@
 {# Jobs Table -#}
 <div class="relative overflow-visible">
   <table class="table-auto w-full text-sm text-left rtl:text-right text-gray-500">
-    <thead class="text-xs text-gray-700 uppercase bg-gray-100 border-b">
+    <thead class="text-xs text-gray-700 uppercase bg-stone-100 border-b">
       <tr>
         <th scope="col" class="px-3 xl:px-5 py-3">Title</th>
         <th scope="col" class="hidden xl:table-cell px-3 xl:px-5 py-3">Location</th>
@@ -80,7 +80,7 @@
       {% else %}
         {% for job in jobs %}
           {% let location = &self::format_location(job.city.as_deref(), None, job.country.as_deref())|display_some_or("-") %}
-          <tr class="odd:bg-white even:bg-gray-50/50 border-b">
+          <tr class="odd:bg-white even:bg-stone-50/50 border-b">
             {# Title job #}
             <th scope="row"
                 class="px-3 xl:px-5 py-4 font-medium text-gray-900 min-w-[100px] max-w-[200px] xl:max-w-auto">
@@ -134,7 +134,7 @@
 
                 <div class="group relative">
                   <button data-job-id="{{ job.job_id }}"
-                          class="btn-actions btn-tertiary p-2 group-has-[.dropdown:not(.hidden)]:bg-gray-50">
+                          class="btn-actions btn-tertiary p-2 group-has-[.dropdown:not(.hidden)]:bg-stone-50">
                     <div class="svg-icon size-4 icon-vertical_dots"></div>
                   </button>
 
@@ -148,9 +148,9 @@
                           <button hx-put="/dashboard/employer/jobs/{{ job.job_id }}/publish"
                                   hx-target="#dashboard-content"
                                   hx-indicator="#dashboard-spinner"
-                                  class="w-full text-start px-4 py-2 hover:bg-gray-100">
+                                  class="w-full text-start px-4 py-2 hover:bg-stone-100">
                             <div class="flex items-center">
-                              <div class="svg-icon size-4 icon-send bg-gray-600"></div>
+                              <div class="svg-icon size-4 icon-send bg-stone-600"></div>
                               <div class="ms-2">Publish</div>
                             </div>
                           </button>
@@ -161,9 +161,9 @@
                                 hx-target="#dashboard-content"
                                 hx-indicator="#dashboard-spinner"
                                 hx-confirm="Are you sure you wish to delete this job?"
-                                class="w-full text-start px-4 py-2 hover:bg-gray-100">
+                                class="w-full text-start px-4 py-2 hover:bg-stone-100">
                           <div class="flex items-center">
-                            <div class="svg-icon size-4 icon-trash bg-gray-600"></div>
+                            <div class="svg-icon size-4 icon-trash bg-stone-600"></div>
                             <div class="ms-2">Delete</div>
                           </div>
                         </button>
@@ -173,9 +173,9 @@
                           <button hx-put="/dashboard/employer/jobs/{{ job.job_id }}/archive"
                                   hx-target="#dashboard-content"
                                   hx-indicator="#dashboard-spinner"
-                                  class="w-full text-start px-4 py-2 hover:bg-gray-100">
+                                  class="w-full text-start px-4 py-2 hover:bg-stone-100">
                             <div class="flex items-center">
-                              <div class="svg-icon size-4 icon-archive bg-gray-600"></div>
+                              <div class="svg-icon size-4 icon-archive bg-stone-600"></div>
                               <div class="ms-2">Archive</div>
                             </div>
                           </button>

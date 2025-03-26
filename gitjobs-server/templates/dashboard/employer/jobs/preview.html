@@ -13,8 +13,8 @@
                src="{{ logo }}"
                alt="{{ employer.company }} logo">
         {% else %}
-          <div class="rounded-full size-14 bg-gray-200 p-1 flex">
-            <div class="svg-icon size-8 icon-company bg-gray-600 m-auto"></div>
+          <div class="rounded-full size-14 bg-stone-200 p-1 flex">
+            <div class="svg-icon size-8 icon-company bg-stone-600 m-auto"></div>
           </div>
         {% endif %}
       </div>
@@ -34,7 +34,7 @@
 
   {% if let Some(member) = employer.member %}
     <div class="w-1/4 ps-3">
-      <div class="flex gap-x-2 items-center bg-gray-50 border rounded-lg p-2 max-w-full min-w-full">
+      <div class="flex gap-x-2 items-center bg-stone-50 border rounded-lg p-2 max-w-full min-w-full">
         <div class="flex items-center justify-center size-10 shrink-0">
           <img src="/static/images/foundations/{{ member.foundation }}.svg"
                alt="{{ member.foundation }} logo"
@@ -297,7 +297,7 @@
 {% macro job_details_content(text, icon = "", extra_styles = "") %}
   <div class="flex items-center text-xs">
     {% if !icon.is_empty() %}
-      <div class="svg-icon size-3 icon-{{ icon }} bg-gray-500 me-2 shrink-0"></div>
+      <div class="svg-icon size-3 icon-{{ icon }} bg-stone-500 me-2 shrink-0"></div>
     {% endif %}
     <div class="truncate {{ extra_styles }}">{{ text }}</div>
   </div>
@@ -313,7 +313,7 @@
 {# Badge with percentage bar #}
 {% macro badge_percentage_bar(percentage = 0) %}
   <div class="-mt-1 flex space-x-2 items-center w-full">
-    <div class="w-full bg-gray-200 rounded-full h-1.5 my-2">
+    <div class="w-full bg-stone-200 rounded-full h-1.5 my-2">
       <div class="bg-primary-600 h-1.5 rounded-full"
            style="width: {{ percentage }}%"></div>
     </div>

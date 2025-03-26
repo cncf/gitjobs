@@ -68,31 +68,31 @@ export class CertificationsSection extends LitWrapper {
             <button
               @click=${() => this._addCertificationEntry(index)}
               type="button"
-              class="p-2 border hover:bg-gray-100 rounded-full"
+              class="p-2 border hover:bg-stone-100 rounded-full"
               title="Add above"
             >
-              <div class="svg-icon size-4 icon-plus_top bg-gray-600"></div>
+              <div class="svg-icon size-4 icon-plus_top bg-stone-600"></div>
             </button>
           </div>
           <div>
             <button
               @click=${() => this._addCertificationEntry(index + 1)}
               type="button"
-              class="p-2 border hover:bg-gray-100 rounded-full"
+              class="p-2 border hover:bg-stone-100 rounded-full"
               title="Add below"
             >
-              <div class="svg-icon size-4 icon-plus_bottom bg-gray-600"></div>
+              <div class="svg-icon size-4 icon-plus_bottom bg-stone-600"></div>
             </button>
           </div>
           <div>
             <button
               @click=${() => this._removeCertificationEntry(index)}
               type="button"
-              class="p-2 border hover:bg-gray-100 rounded-full"
+              class="p-2 border hover:bg-stone-100 rounded-full"
               title="${hasSingleCertificationEntry ? "Clean" : "Delete"}"
             >
               <div
-                class="svg-icon size-4 icon-${hasSingleCertificationEntry ? "eraser" : "trash"} bg-gray-600"
+                class="svg-icon size-4 icon-${hasSingleCertificationEntry ? "eraser" : "trash"} bg-stone-600"
               ></div>
             </button>
           </div>
@@ -112,9 +112,9 @@ export class CertificationsSection extends LitWrapper {
       <div class="mt-2 text-sm/6 text-gray-500">
         Provide certifications you have earned. You can add additional entries by clicking on the
         <span class="font-semibold">+</span> buttons on the left of the card (
-        <div class="inline-block svg-icon size-4 icon-plus_top bg-gray-600 relative -bottom-[2px]"></div>
+        <div class="inline-block svg-icon size-4 icon-plus_top bg-stone-600 relative -bottom-[2px]"></div>
         to add the new entry above,
-        <div class="inline-block svg-icon size-4 icon-plus_bottom bg-gray-600 relative -bottom-[2px]"></div>
+        <div class="inline-block svg-icon size-4 icon-plus_bottom bg-stone-600 relative -bottom-[2px]"></div>
         to add it below). Entries will be displayed in the order provided.
       </div>
       <div id="certifications-section">
@@ -173,7 +173,7 @@ class CertificationEntry extends LitWrapper {
 
   render() {
     return html`<div
-      class="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 border border-2 border-dashed p-8 rounded-lg bg-gray-50/25 w-full"
+      class="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 border border-2 border-dashed p-8 rounded-lg bg-stone-50/25 w-full"
     >
       <div class="col-span-3">
         <label class="form-label"> Title <span class="asterisk">*</span> </label>

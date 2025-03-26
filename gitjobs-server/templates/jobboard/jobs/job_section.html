@@ -14,8 +14,8 @@
                src="{{ logo }}"
                alt="{{ job.employer.company }} logo">
         {% else %}
-          <div class="rounded-full size-14 bg-gray-200 p-1 flex">
-            <div class="svg-icon size-8 icon-company bg-gray-600 m-auto"></div>
+          <div class="rounded-full size-14 bg-stone-200 p-1 flex">
+            <div class="svg-icon size-8 icon-company bg-stone-600 m-auto"></div>
           </div>
         {% endif %}
       </div>
@@ -35,7 +35,7 @@
 
   {% if let Some(member) = job.employer.member %}
     <div class="flex xl:w-1/4">
-      <div class="flex gap-x-2 items-center bg-gray-50 border rounded-lg p-2 max-w-full xl:min-w-full">
+      <div class="flex gap-x-2 items-center bg-stone-50 border rounded-lg p-2 max-w-full xl:min-w-full">
         <div class="flex items-center justify-center size-10 shrink-0">
           <img src="/static/images/foundations/{{ member.foundation }}.svg"
                alt="{{ member.foundation }} logo"

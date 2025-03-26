@@ -118,7 +118,7 @@ export class SearchableFilter extends LitWrapper {
   render() {
     return html`<div class="mt-2 relative">
       <div class="absolute top-2 start-0 flex items-center ps-3 pointer-events-none">
-        <div class="svg-icon size-3.5 icon-search bg-gray-300"></div>
+        <div class="svg-icon size-3.5 icon-search bg-stone-300"></div>
       </div>
       <input
         type="text"
@@ -135,7 +135,7 @@ export class SearchableFilter extends LitWrapper {
       />
       <div class="absolute end-1.5 top-0.5 peer-placeholder-shown:hidden">
         <button @click=${this._cleanEnteredValue} type="button" class="mt-[2px]">
-          <div class="svg-icon size-5 bg-gray-400 hover:bg-gray-700 icon-close"></div>
+          <div class="svg-icon size-5 bg-stone-400 hover:bg-stone-700 icon-close"></div>
         </button>
       </div>
       <div class="absolute z-10 start-0 end-0">
@@ -155,7 +155,7 @@ export class SearchableFilter extends LitWrapper {
                       type="button"
                       @click=${() => this._onSelect(name)}
                       class=${`${
-                        isSelected ? "bg-gray-100 opacity-50" : "cursor-pointer hover:bg-gray-100"
+                        isSelected ? "bg-stone-100 opacity-50" : "cursor-pointer hover:bg-stone-100"
                       } capitalize block w-full text-left px-${isProjectsType ? "3" : "4"} py-1`}
                       ?disabled="${isSelected}"
                     >
@@ -187,7 +187,7 @@ export class SearchableFilter extends LitWrapper {
                         : html`<div class="flex items-center">
                             <div class="size-3 me-2">
                               ${isSelected
-                                ? html`<div class="svg-icon size-3 icon-check bg-gray-400"></div>`
+                                ? html`<div class="svg-icon size-3 icon-check bg-stone-400"></div>`
                                 : ""}
                             </div>
                             <div class="truncate text-[0.8rem]/6">${unnormalize(name)}</div>
@@ -213,7 +213,7 @@ export class SearchableFilter extends LitWrapper {
                         ${unnormalize(opt)}
                       </div>
                       <div
-                        class="svg-icon size-4 icon-close bg-gray-500 group-hover:bg-gray-800 shrink-0"
+                        class="svg-icon size-4 icon-close bg-stone-500 group-hover:bg-stone-800 shrink-0"
                       ></div>
                     </div>
                   </button>

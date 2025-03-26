@@ -189,8 +189,8 @@
            {%- if let Some(active_filters) = active_filters -%} {%- if active_filters.contains(value) -%}checked{%- endif -%} {%- endif %}
            {% if required %}required{% endif %}>
     <label for="{%- if !device.is_empty() -%}{{ device }}-{%- endif -%}{{ name }}-{{ value }}"
-           class="inline-flex items-center justify-center w-full px-2 py-1 text-gray-500 space-x-2 bg-white border rounded-md cursor-pointer select-none peer-checked:border-primary-500 hover:text-gray-600 peer-checked:text-primary-500 hover:bg-gray-50">
-      <div class="svg-icon size-3 icon-{{ icon }} bg-gray-500 cursor-pointer group-has-[input:checked]:bg-primary-500">
+           class="inline-flex items-center justify-center w-full px-2 py-1 text-gray-500 space-x-2 bg-white border rounded-md cursor-pointer select-none peer-checked:border-primary-500 hover:text-gray-600 peer-checked:text-primary-500 hover:bg-stone-50">
+      <div class="svg-icon size-3 icon-{{ icon }} bg-stone-500 cursor-pointer group-has-[input:checked]:bg-primary-500">
       </div>
       <div class="text-[0.8rem] text-center text-nowrap">{{ label }}</div>
     </label>

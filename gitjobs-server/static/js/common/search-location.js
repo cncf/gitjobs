@@ -208,10 +208,10 @@ export class SearchLocation extends LitWrapper {
                     type="button"
                     @click=${() => this._selectLocation(l)}
                     @mouseover=${() => (this.activeIndex = index)}
-                    class="btn-location flex items-center px-4 py-2 w-full hover:bg-gray-100 group-[.active]:bg-gray-100"
+                    class="btn-location flex items-center px-4 py-2 w-full hover:bg-stone-100 group-[.active]:bg-stone-100"
                   >
                     <div class="me-2">
-                      <div class="svg-icon size-4 icon-location bg-gray-500"></div>
+                      <div class="svg-icon size-4 icon-location bg-stone-500"></div>
                     </div>
                     <div class="location-text truncate">
                       ${this._formatLocation(l.city, l.state, l.country)}
@@ -228,7 +228,7 @@ export class SearchLocation extends LitWrapper {
       <div class="mt-2 relative location-container">
         <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
           <div
-            class="svg-icon bg-gray-300 ${this.size === "small"
+            class="svg-icon bg-stone-300 ${this.size === "small"
               ? " size-3.5 icon-location"
               : "size-4 icon-search"}"
           ></div>
@@ -292,7 +292,7 @@ export class SearchLocation extends LitWrapper {
         <div class="absolute end-1.5 top-1.5 peer-placeholder-shown:hidden">
           <button @click=${this._cleanInput} type="button" class="mt-[2px]">
             <div
-              class="svg-icon bg-gray-400 hover:bg-gray-700 icon-close ${this.size === "small"
+              class="svg-icon bg-stone-400 hover:bg-stone-700 icon-close ${this.size === "small"
                 ? "size-4"
                 : "size-5"}"
             ></div>

@@ -60,8 +60,8 @@
                    src="{{ logo }}"
                    alt="{{ job.employer.company }} image">
             {% else %}
-              <div class="size-12 bg-gray-200 p-1 flex">
-                <div class="svg-icon size-8 icon-company bg-gray-600 m-auto"></div>
+              <div class="size-12 bg-stone-200 p-1 flex">
+                <div class="svg-icon size-8 icon-company bg-stone-600 m-auto"></div>
               </div>
             {% endif %}
           </div>
@@ -115,7 +115,7 @@
                 {# Location #}
                 {% if let Some(location) = job.location %}
                   <div class="hidden lg:inline-flex border bg-white rounded-md px-2 py-0.5 text-xs text-gray-500 font-normal items-center">
-                    <div class="svg-icon size-2.5 icon-location bg-gray-500 me-1"></div>
+                    <div class="svg-icon size-2.5 icon-location bg-stone-500 me-1"></div>
                     <div>{{ location.city }}, {{ location.country }}</div>
                   </div>
                 {% endif %}
@@ -134,14 +134,14 @@
 
             {# Job type #}
             <div class="flex items-baseline space-x-1">
-              <div class="svg-icon size-3 icon-briefcase bg-gray-500"></div>
+              <div class="svg-icon size-3 icon-briefcase bg-stone-500"></div>
               <div class="capitalize">{{ kind|unnormalize }}</div>
             </div>
             {# End job type #}
 
             {# Workplace #}
             <div class="flex items-center space-x-1">
-              <div class="svg-icon size-3 icon-company bg-gray-500"></div>
+              <div class="svg-icon size-3 icon-company bg-stone-500"></div>
               <div class="capitalize">{{ workplace|unnormalize }}</div>
             </div>
             {# Workplace #}
@@ -150,7 +150,7 @@
             {% if let Some(seniority) = job.seniority %}
               {% let seniority = seniority.to_string() %}
               <div class="flex items-center space-x-1">
-                <div class="svg-icon size-3 icon-organigram bg-gray-500"></div>
+                <div class="svg-icon size-3 icon-organigram bg-stone-500"></div>
                 <div class="capitalize">{{ seniority|unnormalize }} level</div>
               </div>
             {% endif %}

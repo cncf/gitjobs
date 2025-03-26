@@ -160,10 +160,10 @@
   {# Dropdown script #}
   <script type="module">
     const dropdownButton = document.getElementById('user-dropdown-button');
-    const dropdown = document.getElementById('dropdown-user');
 
     if (dropdownButton) {
       dropdownButton.addEventListener('click', () => {
+        const dropdown = document.getElementById('dropdown-user');
         const isOpen = dropdown.classList.contains('hidden');
         dropdown.classList.toggle('hidden');
 

@@ -189,7 +189,7 @@
     triggerActionOnForm
   } from '/static/js/jobboard/filters.js';
   import {
-    getParamFromQueryString
+    shouldDisplayJobModal
   } from '/static/js/common/common.js';
 
   const openFiltersBtn = document.getElementById('open-filters');
@@ -231,22 +231,6 @@
   const resetMobileFilters = document.getElementById('reset-mobile-filters');
   resetMobileFilters.addEventListener('click', () => resetForm('mobile-jobs-form'));
 
-  // Detect if the job preview modal should be displayed
-  const shouldDisplayJobModal = () => {
-    // Check if the job_id parameter is present in the URL
-    const job_id = getParamFromQueryString('job_id');
-    if (job_id) {
-      const elId = `job-preview-${job_id}`;
-      // Check if the job preview button exists
-      const jobPreviewBtn = document.getElementById(elId);
-      if (jobPreviewBtn) {
-        // Process the button
-        htmx.process(jobPreviewBtn);
-        // Open the modal
-        htmx.trigger(jobPreviewBtn, "open-modal");
-      }
-    }
-  };
-
+  // Display job modal if the job_id is present in the query string
   shouldDisplayJobModal();
 </script>

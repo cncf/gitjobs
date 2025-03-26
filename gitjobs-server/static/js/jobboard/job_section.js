@@ -8,6 +8,10 @@ import { isSuccessfulXHRStatus } from "/static/js/common/common.js";
 
 export const applyButton = () => {
   const applyButton = document.getElementById("apply-button");
+  if (!applyButton) {
+    return;
+  }
+
   const applyUrl = applyButton.dataset.applyUrl;
   const userButton = document.getElementById("user-dropdown-button");
   const isUserLoggedIn = userButton.dataset.loggedIn;

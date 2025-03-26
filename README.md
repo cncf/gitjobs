@@ -1,6 +1,6 @@
 # GitJobs
 
-**GitJobs** is an open source job board platform.
+**GitJobs** is an open source job board focused on open source job opportunities.
 
 > [!WARNING]
 > This project is currently in the early stages of development and is not yet ready for production use.

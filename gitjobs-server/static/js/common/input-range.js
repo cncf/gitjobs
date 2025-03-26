@@ -108,7 +108,7 @@ export class InputRange extends LitWrapper {
           max="${this.max}"
           step="${this.step}"
           value="${this.value}"
-          class="w-full h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-primary-900"
+          class="w-full h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-primary-300"
           style="background-image: linear-gradient(90deg, var(--primary-color) 0%, var(--primary-color) ${this
             .percentValue}%, rgb(229 231 235 / var(--tw-bg-opacity, 1)) ${this
             .percentValue}%, rgb(229 231 235 / var(--tw-bg-opacity, 1)) 100%);"

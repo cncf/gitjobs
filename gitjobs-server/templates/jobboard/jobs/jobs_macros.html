@@ -47,17 +47,6 @@
     </div>
     {# End workplace #}
 
-    {# Location #}
-    <div>
-      {% call filters_subtitle(text = "Location") %}
-      {% if let Some(location) = filters.location %}
-        <search-location form="{{ form }}" device="{{ device }}" location_id="{{ location.location_id }}" city="{{ location.city }}" state="{{ location.state|display_some }}" country="{{ location.country }}" withDistance="true" distance="{{ filters.max_distance|display_some }}" size="small"></search-location>
-      {% else %}
-        <search-location form="{{ form }}" device="{{ device }}" withDistance="true" distance="{{ filters.max_distance|display_some }}" size="small"></search-location>
-      {% endif %}
-    </div>
-    {# End location #}
-
     <div class="grid grid-cols-2 w-full gap-2">
       {# Seniority #}
       <div>
@@ -95,6 +84,17 @@
       </div>
       {# End published date #}
     </div>
+
+    {# Location #}
+    <div>
+      {% call filters_subtitle(text = "Location") %}
+      {% if let Some(location) = filters.location %}
+        <search-location form="{{ form }}" device="{{ device }}" location_id="{{ location.location_id }}" city="{{ location.city }}" state="{{ location.state|display_some }}" country="{{ location.country }}" withDistance="true" distance="{{ filters.max_distance|display_some }}" size="small"></search-location>
+      {% else %}
+        <search-location form="{{ form }}" device="{{ device }}" withDistance="true" distance="{{ filters.max_distance|display_some }}" size="small"></search-location>
+      {% endif %}
+    </div>
+    {# End location #}
   </div>
 
   {# Open source section #}

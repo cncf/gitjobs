@@ -67,7 +67,7 @@ export class SearchableFilter extends LitWrapper {
   _filterOptions() {
     if (this.enteredValue.length > 0) {
       this.visibleOptions = this.options.filter((option) => {
-        const name = this.name === "projects" ? option.name : option;
+        const name = this.name === "projects" ? option.name : unnormalize(option);
         return name.toLowerCase().includes(this.enteredValue.toLowerCase());
       });
     } else {

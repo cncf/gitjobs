@@ -24,7 +24,7 @@ export const applyButton = () => {
     if (applyUrl !== "") {
       const applyAnchor = document.createElement("a");
       applyAnchor.href = applyUrl;
-      applyAnchor.className = "btn-primary-outline w-full block mt-4 mb-6";
+      applyAnchor.className = "btn-primary w-full block mt-4 mb-6";
       applyAnchor.textContent = "Apply";
       applyAnchor.target = "_blank";
       applyAnchor.rel = "noopener noreferrer";

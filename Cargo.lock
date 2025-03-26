@@ -1515,6 +1515,7 @@ dependencies = [
  "palette",
  "password-auth",
  "postgres-openssl",
+ "rand 0.9.0",
  "regex",
  "reqwest",
  "rust-embed",

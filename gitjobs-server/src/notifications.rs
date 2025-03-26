@@ -3,7 +3,7 @@
 
 use std::{sync::Arc, time::Duration};
 
-use anyhow::Result;
+use anyhow::{Result, anyhow};
 use askama::Template;
 use async_trait::async_trait;
 use lettre::{
@@ -20,7 +20,7 @@ use uuid::Uuid;
 use crate::{config::EmailConfig, db::DynDB, templates::notifications::EmailVerification};
 
 /// Number of workers to deliver notifications.
-const NUM_WORKERS: usize = 2;
+const NUM_WORKERS: usize = 1;
 
 /// Amount of time to sleep when there is an error delivering a notification.
 const PAUSE_ON_ERROR: Duration = Duration::from_secs(30);
@@ -161,19 +161,11 @@ impl Worker {
 
         // Deliver notification (if any)
         let notification_delivered = if let Some(notification) = &notification {
-            // Prepare subject and body based on notification kind
-            let (subject, body) = match notification.kind {
-                NotificationKind::EmailVerification => {
-                    let template_data = notification.template_data.clone().expect("to be some");
-                    let template: EmailVerification = serde_json::from_value(template_data)?;
-                    let subject = "Verify your email address";
-                    let body = template.render()?;
-                    (subject, body)
-                }
-            };
+            // Prepare notification subject and body.
+            let (subject, body) = Self::prepare_content(notification)?;
 
             // Prepare message and send email
-            let err = match self.send_email(&notification.email, subject, body).await {
+            let err = match self.send_email(&notification.email, subject.as_str(), body).await {
                 Ok(()) => None,
                 Err(err) => Some(err.to_string()),
             };
@@ -195,6 +187,25 @@ impl Worker {
         };
 
         Ok(notification_delivered)
+    }
+
+    /// Prepare notification subject and body.
+    fn prepare_content(notification: &Notification) -> Result<(String, String)> {
+        let template_data = notification
+            .template_data
+            .clone()
+            .ok_or_else(|| anyhow!("missing template data"))?;
+
+        let (subject, body) = match notification.kind {
+            NotificationKind::EmailVerification => {
+                let subject = "Verify your email address";
+                let template: EmailVerification = serde_json::from_value(template_data)?;
+                let body = template.render()?;
+                (subject, body)
+            }
+        };
+
+        Ok((subject.to_string(), body))
     }
 
     /// Send email to the given address.

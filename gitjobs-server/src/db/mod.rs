@@ -17,6 +17,7 @@ use tokio::{select, time::sleep};
 use tokio_util::sync::CancellationToken;
 use tracing::instrument;
 use uuid::Uuid;
+use workers::DBWorkers;
 
 pub(crate) mod auth;
 pub(crate) mod dashboard;
@@ -24,6 +25,7 @@ pub(crate) mod img;
 pub(crate) mod jobboard;
 pub(crate) mod misc;
 pub(crate) mod notifications;
+pub(crate) mod workers;
 
 /// Error message when a transaction client is not found.
 const TX_CLIENT_NOT_FOUND: &str = "transaction client not found, it probably timed out";
@@ -37,7 +39,9 @@ const TXS_CLIENT_TIMEOUT: TimeDelta = TimeDelta::seconds(10);
 /// Abstraction layer over the database. Trait that defines some operations a
 /// DB implementation must support.
 #[async_trait]
-pub(crate) trait DB: DBJobBoard + DBDashBoard + DBAuth + DBImage + DBNotifications + DBMisc {
+pub(crate) trait DB:
+    DBJobBoard + DBDashBoard + DBAuth + DBImage + DBNotifications + DBWorkers + DBMisc
+{
     /// Begin transaction.
     async fn tx_begin(&self) -> Result<Uuid>;
 

@@ -28,6 +28,7 @@ mod img;
 mod notifications;
 mod router;
 mod templates;
+mod workers;
 
 #[derive(Debug, Parser)]
 #[clap(author, version, about)]
@@ -80,6 +81,9 @@ async fn main() -> Result<()> {
     // Setup image store
     let image_store = Arc::new(DbImageStore::new(db.clone()));
 
+    // Run some workers
+    workers::run(db.clone(), &tracker, cancellation_token.clone());
+
     // Setup and launch notifications manager
     let notifications_manager = Arc::new(PgNotificationsManager::new(
         db.clone(),
@@ -102,7 +106,7 @@ async fn main() -> Result<()> {
     }
     info!("server stopped");
 
-    // Ask all tasks to stop and wait for them to finish
+    // Ask all workers to stop and wait for them to finish
     tracker.close();
     cancellation_token.cancel();
     tracker.wait().await;

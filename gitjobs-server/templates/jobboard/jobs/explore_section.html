@@ -29,6 +29,7 @@
         hx-include="#searchbar"
         hx-ext="no-empty-vals"
         hx-indicator="#mobile-jobs-spinner"
+        hx-on::after-request="window.scrollTo({top: 0, behavior: 'instant'})"
         hx-boost="true">
   </form>
 
@@ -72,6 +73,7 @@
             hx-include="#searchbar"
             hx-ext="no-empty-vals"
             hx-indicator="#desktop-jobs-spinner"
+            hx-on::after-request="window.scrollTo({top: 0, behavior: 'instant'})"
             hx-boost="true">
       </form>
 

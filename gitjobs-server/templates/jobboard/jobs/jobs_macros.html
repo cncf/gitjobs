@@ -2,7 +2,9 @@
 
 {# Filters #}
 {% macro filters(form, device = "desktop") %}
-  <div class="p-6 pt-5 flex flex-col space-y-5">
+  <div class="pt-5 px-6 border-t">{% call filters_title(text = "Type and location") %}</div>
+
+  <div class="p-6 pt-3 flex flex-col space-y-5">
     {# Job type #}
     <div>
       {% call filters_subtitle(text = "Job type") %}
@@ -159,7 +161,7 @@
 
 {# Filters subtitle #}
 {% macro filters_subtitle(text) %}
-  <div class="font-semibold text-[0.8rem]/6">{{ text }}</div>
+  <div class="font-semibold text-[0.8rem]/8">{{ text }}</div>
 {% endmacro filters_subtitle %}
 {# End filters subtitle #}
 

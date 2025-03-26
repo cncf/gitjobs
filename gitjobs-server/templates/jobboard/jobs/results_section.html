@@ -5,7 +5,7 @@
   {% if jobs.len() == 0 %}
     {# Placeholder cards -#}
     <div class="border-t border-gray-100 border-b p-10 md:p-14">
-      <div class="border border-primary-300 p-10 text-sm text-gray-800 rounded-lg bg-primary-50 text-center"
+      <div class="border border-primary-300 p-10 text-sm text-gray-800 rounded-lg bg-primary-50/20 text-center"
            role="alert">
         <div class="text-md lg:text-lg">
           <p class="mb-10">We can't seem to find any jobs that match your search criteria.</p>
@@ -42,7 +42,7 @@
               hx-target="#preview-content"
               hx-trigger="click,open-modal"
               hx-indicator="#spinner-{{ job.job_id }}"
-              class="relative mx-5 md:mx-7 text-start enabled:cursor-pointer border border-2 rounded-lg enabled:hover:outline enabled:hover:-outline-offset-1 p-5 md:p-7 {%- if open_source > 0 %} border-primary-400 bg-primary-50/20 enabled:hover:outline-primary-400{%- else if let Some(member) = job.employer.member %} border-secondary-400 bg-secondary-50/20 enabled:hover:outline-secondary-400{%- else %} enabled:hover:outline-gray-300{%- endif -%}"
+              class="relative mx-5 md:mx-7 text-start enabled:cursor-pointer border border-2 rounded-lg enabled:hover:outline enabled:hover:-outline-offset-1 p-5 md:p-7 {%- if open_source > 0 %} border-primary-400 bg-primary-50/20 enabled:hover:outline-primary-400{%- else if let Some(member) = job.employer.member %} border-secondary-400 bg-secondary-50/20 enabled:hover:outline-secondary-400{%- else %} enabled:hover:outline-gray-200{%- endif -%}"
               hx-disabled-elt="[data-preview-job]"
               hx-boost="true">
         {# Job title #}

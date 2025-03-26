@@ -159,26 +159,13 @@
   {% endif %}
   {# Dropdown script #}
   <script type="module">
+    import {
+      onClickDropdown
+    } from '/static/js/common/header.js';
     const dropdownButton = document.getElementById('user-dropdown-button');
 
     if (dropdownButton) {
-      dropdownButton.addEventListener('click', () => {
-        const dropdown = document.getElementById('dropdown-user');
-        const isOpen = dropdown.classList.contains('hidden');
-        dropdown.classList.toggle('hidden');
-
-        if (isOpen) {
-          // Close dropdown actions when clicking outside
-          document.addEventListener('click', (event) => {
-            if (!dropdown.contains(event.target) && !dropdownButton.contains(event.target)) {
-              dropdown.classList.add('hidden');
-            }
-          });
-        } else {
-          // Remove event listener when dropdown is closed
-          document.removeEventListener('click', () => {});
-        }
-      });
+      dropdownButton.addEventListener('click', onClickDropdown);
     }
   </script>
   {# End dropdown script #}

@@ -1,4 +1,4 @@
-import { html } from "https://cdn.jsdelivr.net/gh/lit/dist@3/all/lit-all.min.js";
+import { html, createRef, ref } from "https://cdn.jsdelivr.net/gh/lit/dist@3/all/lit-all.min.js";
 import { LitWrapper } from "/static/js/common/litWrapper.js";
 import { triggerActionOnForm } from "/static/js/jobboard/filters.js";
 
@@ -15,6 +15,8 @@ export class InputRange extends LitWrapper {
     legendsNumber: { type: Number },
     visibleTooltip: { type: Boolean },
   };
+
+  inputRef = createRef();
 
   constructor() {
     super();
@@ -89,6 +91,10 @@ export class InputRange extends LitWrapper {
     this.percentValue = 0;
     this.offset = 0;
     this.visibleTooltip = false;
+    const input = this.inputRef.value;
+    if (input) {
+      input.value = 0;
+    }
 
     // Wait for the update to complete
     await this.updateComplete;
@@ -98,6 +104,7 @@ export class InputRange extends LitWrapper {
     return html`
       <div class="relative">
         <input
+          ${ref(this.inputRef)}
           form="${this.form}"
           name="${this.name}"
           type="range"

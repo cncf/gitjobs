@@ -131,10 +131,11 @@
   const employerForm = document.getElementById('employer-form');
 
   employerForm.addEventListener('htmx:afterRequest', (e) => {
-        // Check if the form is the employer form and not the input ts_query requesting locations
-        if (e.detail.elt.id === 'employer-form') {
-          if (!isSuccessfulXHRStatus(e.detail.xhr.status)) {
-            showErrorAlert('Something went wrong adding the profile, please try again later.');
-          }
-        });
+    // Check if the form is the employer form and not the input ts_query requesting locations
+    if (e.detail.elt.id === 'employer-form') {
+      if (!isSuccessfulXHRStatus(e.detail.xhr.status)) {
+        showErrorAlert('Something went wrong adding the profile, please try again later.');
+      }
+    }
+  });
 </script>

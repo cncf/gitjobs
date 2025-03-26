@@ -1,11 +1,11 @@
 // Show or hide the provided modal.
-export const toggleModalVisibility = (modalId) => {
+export const toggleModalVisibility = (modalId, status) => {
   const modal = document.getElementById(modalId);
-  if (modal.classList.contains("hidden")) {
+  if (status === "open") {
     modal.classList.remove("hidden");
     // This is used to hide body scroll when the modal is open
     modal.dataset.open = "true";
-  } else {
+  } else if (status === "close") {
     modal.classList.add("hidden");
     // This is used to show body scroll when the modal is open
     modal.dataset.open = "false";
@@ -59,20 +59,20 @@ export const unnormalize = (text) => {
   return text.replace(/-/g, " ");
 };
 
-export const addParamToQueryString = (param, value) => {
+export const addParamToQueryString = (param, value, state) => {
   const searchParams = new URLSearchParams(window.location.search);
   if (searchParams.has(param)) {
     searchParams.delete(param);
   }
   searchParams.set(param, value);
-  replaceUrl(searchParams.toString());
+  modifyCurrentUrl(searchParams.toString(), state);
 };
 
-export const removeParamFromQueryString = (param) => {
+export const removeParamFromQueryString = (param, state) => {
   const searchParams = new URLSearchParams(window.location.search);
   if (searchParams.has(param)) {
     searchParams.delete(param);
-    replaceUrl(searchParams.toString());
+    modifyCurrentUrl(searchParams.toString(), state);
   }
 };
 
@@ -81,9 +81,9 @@ export const getParamFromQueryString = (param) => {
   return searchParams.get(param);
 };
 
-export const replaceUrl = (params) => {
+export const modifyCurrentUrl = (params, state) => {
   const newUrl = `${window.location.pathname}${params ? `?${params}` : ""}`;
-  window.history.replaceState({}, "new_url", newUrl);
+  history.pushState(state || {}, "new_url", newUrl);
 };
 
 // Detect if the job preview modal should be displayed

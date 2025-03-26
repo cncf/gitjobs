@@ -184,11 +184,26 @@
         }
       });
     </script>
+    <script type="module">
+      import {
+        shouldDisplayJobModal,
+        toggleModalVisibility,
+        getParamFromQueryString
+      } from '/static/js/common/common.js';
+      window.addEventListener("popstate", (event) => {
+        if (event.state && event.state.modal_preview !== undefined) {
+          if (event.state.modal_preview) {
+            toggleModalVisibility('preview-modal', "open");
+          } else {
+            toggleModalVisibility('preview-modal', "close");
+          }
+        }
+      });
+    </script>
   </head>
   <body class="flex flex-col h-screen font-inter bg-stone-100"
         hx-get
         hx-trigger="refresh-body">
-    {# <div class="alert text-primary-800 bg-primary-50 border-b border-primary-500 text-sm/6 py-1 px-10 text-center" role="alert">This is a demo site. The jobs displayed are not real.</div> #}
     {% block content %}
     {% endblock content %}
   </body>

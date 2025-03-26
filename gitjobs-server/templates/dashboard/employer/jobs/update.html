@@ -519,7 +519,7 @@
   const previewButton = document.getElementById('preview-button');
   previewButton.addEventListener('htmx:afterRequest', (e) => {
     if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
-      toggleModalVisibility('preview-modal');
+      toggleModalVisibility('preview-modal', "open");
     } else {
       // When the preview is not available, show an error message
       showErrorAlert('Something went wrong previewing the job, please try again later.');

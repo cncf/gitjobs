@@ -33,10 +33,10 @@
       // Reset the scroll position
       document.getElementById('preview-content').scrollTop = 0;
       // Close the preview modal
-      toggleModalVisibility('preview-modal');
-      {%- if on_close == &"clean_job_id_param" -%}
-        removeParamFromQueryString('job_id');
-      {%- endif -%}
+      {% if on_close == &"clean_job_id_param" -%}
+        removeParamFromQueryString('job_id', { modal_preview: false});
+      {%- endif %}
+      toggleModalVisibility('preview-modal', "close");
     };
 
     // Close the preview modal on backdrop click

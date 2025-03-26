@@ -135,7 +135,7 @@
 <div class="p-6 pt-3 flex flex-col space-y-5">
   {# Salary #}
   <div>
-    {% call filters_subtitle(text = "Minimum salary (annual)") %}
+    {% call filters_subtitle(text = "Minimum salary (USD / year)") %}
     <div class="mt-1">
       <input-range form="{{ form }}" name="salary_min" value="{{ filters.salary_min|display_some_or(0) }}" max="250000" step="5000" unit="K" prefix="$" legendsNumber="6">
     </div>

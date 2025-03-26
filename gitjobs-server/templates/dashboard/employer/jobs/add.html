@@ -293,6 +293,11 @@
             <select id="salary_currency" name="salary_currency" class="select-primary">
               {% call macros::select_option(value = "", label = "") %}
               {% call macros::select_option(value = "USD", label = "USD - United States Dollar") %}
+              {% call macros::select_option(value = "EUR", label = "EUR - Euro") %}
+              {% call macros::select_option(value = "GBP", label = "GBP - British Pound Sterling") %}
+              {% call macros::select_option(value = "CHF", label = "CHF - Swiss Franc") %}
+              {% call macros::select_option(value = "CAD", label = "CAD - Canadian Dollar") %}
+              {% call macros::select_option(value = "JPY", label = "JPY - Japanese Yen") %}
             </select>
           </div>
         </div>
@@ -304,7 +309,11 @@
           <div class="mt-2 grid grid-cols-1">
             <select id="salary_period" name="salary_period" class="select-primary">
               {% call macros::select_option(value = "", label = "") %}
-              {% call macros::select_option(value = "annual", label = "Annual") %}
+              {% call macros::select_option(value = "year", label = "Year") %}
+              {% call macros::select_option(value = "month", label = "Month") %}
+              {% call macros::select_option(value = "week", label = "Week") %}
+              {% call macros::select_option(value = "day", label = "Day") %}
+              {% call macros::select_option(value = "hour", label = "Hour") %}
             </select>
           </div>
         </div>

@@ -85,3 +85,20 @@ export const replaceUrl = (params) => {
   const newUrl = `${window.location.pathname}${params ? `?${params}` : ""}`;
   window.history.replaceState({}, "new_url", newUrl);
 };
+
+// Detect if the job preview modal should be displayed
+export const shouldDisplayJobModal = () => {
+  // Check if the job_id parameter is present in the URL
+  const job_id = getParamFromQueryString("job_id");
+  if (job_id) {
+    const elId = `job-preview-${job_id}`;
+    // Check if the job preview button exists
+    const jobPreviewBtn = document.getElementById(elId);
+    if (jobPreviewBtn) {
+      // Process the button
+      htmx.process(jobPreviewBtn);
+      // Open the modal
+      htmx.trigger(jobPreviewBtn, "open-modal");
+    }
+  }
+};

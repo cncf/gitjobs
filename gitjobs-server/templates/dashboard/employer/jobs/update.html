@@ -323,6 +323,11 @@
             <select id="salary_currency" name="salary_currency" class="select-primary">
               {% call macros::select_option(value = "", label = "", selected = job.salary_currency|display_some) %}
               {% call macros::select_option(value = "USD", label = "USD - United States Dollar", selected = job.salary_currency|display_some) %}
+              {% call macros::select_option(value = "EUR", label = "EUR - Euro", selected = job.salary_currency|display_some) %}
+              {% call macros::select_option(value = "GBP", label = "GBP - British Pound Sterling", selected = job.salary_currency|display_some) %}
+              {% call macros::select_option(value = "CHF", label = "CHF - Swiss Franc", selected = job.salary_currency|display_some) %}
+              {% call macros::select_option(value = "CAD", label = "CAD - Canadian Dollar", selected = job.salary_currency|display_some) %}
+              {% call macros::select_option(value = "JPY", label = "JPY - Japanese Yen", selected = job.salary_currency|display_some) %}
             </select>
           </div>
         </div>
@@ -334,7 +339,11 @@
           <div class="mt-2 grid grid-cols-1">
             <select id="salary_period" name="salary_period" class="select-primary">
               {% call macros::select_option(value = "", label = "", selected = job.salary_period|display_some) %}
-              {% call macros::select_option(value = "annual", label = "Annual", selected = job.salary_period|display_some) %}
+              {% call macros::select_option(value = "year", label = "Year", selected = job.salary_period|display_some) %}
+              {% call macros::select_option(value = "month", label = "Month", selected = job.salary_period|display_some) %}
+              {% call macros::select_option(value = "week", label = "Week", selected = job.salary_period|display_some) %}
+              {% call macros::select_option(value = "day", label = "Day", selected = job.salary_period|display_some) %}
+              {% call macros::select_option(value = "hour", label = "Hour", selected = job.salary_period|display_some) %}
             </select>
           </div>
         </div>

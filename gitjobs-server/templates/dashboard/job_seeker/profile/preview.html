@@ -179,7 +179,7 @@
               <div class="absolute size-3 bg-stone-300 rounded-full mt-1 -start-1.5 border border-white"></div>
               <div class="text-lg font-semibold text-stone-900">{{ p.title }}</div>
               <div class="text-sm/6 text-stone-500 italic text-nowrap truncate">
-                <span class="text-xs text-stone-400 uppercase">Url:</span>
+                <span class="text-xs text-stone-500 uppercase">Url:</span>
                 <a href="{{ p.url }}"
                    class="truncate"
                    target="_blank"
@@ -187,7 +187,7 @@
               </div>
               {% if let Some(source_url) = p.source_url %}
                 <div class="text-sm/6 text-stone-500 italic text-nowrap truncate">
-                  <span class="text-xs text-stone-400 uppercase">Source:</span>
+                  <span class="text-xs text-stone-500 uppercase">Source:</span>
                   <a href="{{ source_url }}"
                      class="truncate"
                      target="_blank"
@@ -229,7 +229,7 @@
 {% macro timeline_item(title, entity, description, start_date, end_date) %}
   <li class="mb-10 ms-4">
     <div class="absolute size-3 bg-stone-300 rounded-full mt-1 -start-1.5 border border-white"></div>
-    <div class="mb-2 text-sm text-stone-400">{{ start_date }} - {{ end_date }}</div>
+    <div class="mb-2 text-sm text-stone-500">{{ start_date }} - {{ end_date }}</div>
     <div class="text-lg font-semibold text-stone-900">{{ title }}</div>
     <div class="text-sm/6 text-stone-500 italic mb-3">{{ entity }}</div>
     <div class="text-sm/6 text-stone-600 markdown">{{ description|md_to_html|safe }}</div>

@@ -177,7 +177,7 @@ export class SearchableFilter extends LitWrapper {
                               </div>
                               <div class="inline-flex">
                                 <div
-                                  class="truncate text-nowrap uppercase max-w-[100%] text-[0.65rem] font-medium text-stone-400"
+                                  class="truncate text-nowrap uppercase max-w-[100%] text-[0.65rem] font-medium text-stone-500"
                                 >
                                   ${option.foundation} ${option.maturity}
                                 </div>

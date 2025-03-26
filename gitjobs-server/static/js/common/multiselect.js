@@ -41,7 +41,7 @@ export class MultiSelect extends LitWrapper {
   _filterOptions() {
     if (this.enteredValue.length > 0) {
       this.visibleOptions = this.options.filter((option) =>
-        option.toLowerCase().includes(this.enteredValue.toLowerCase()),
+        unnormalize(option).toLowerCase().includes(this.enteredValue.toLowerCase()),
       );
     } else {
       this.visibleOptions = this.options;

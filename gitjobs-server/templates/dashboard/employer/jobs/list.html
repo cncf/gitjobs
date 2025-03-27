@@ -157,16 +157,37 @@
                         </li>
                       {% endif %}
                       <li>
-                        <button hx-delete="/dashboard/employer/jobs/{{ job.job_id }}/delete"
+                        <button id="delete-job-{{ job.job_id }}"
+                                hx-delete="/dashboard/employer/jobs/{{ job.job_id }}/delete"
                                 hx-target="#dashboard-content"
                                 hx-indicator="#dashboard-spinner"
-                                hx-confirm="Are you sure you wish to delete this job?"
+                                hx-trigger="confirmed"
                                 class="w-full text-start px-4 py-2 hover:bg-stone-100">
                           <div class="flex items-center">
                             <div class="svg-icon size-4 icon-trash bg-stone-600"></div>
                             <div class="ms-2">Delete</div>
                           </div>
                         </button>
+                        <script type="module">
+                          import {
+                            showConfirmAlert,
+                            showErrorAlert,
+                            showInfoAlertWithHtml,
+                            showSuccessAlert,
+                          } from "/static/js/common/alerts.js";
+                          const deleteJobButton = document.getElementById('delete-job-{{ job.job_id }}');
+                          deleteJobButton.addEventListener('click', (event) => {
+                            showConfirmAlert("Are you sure you wish to delete this job?", "delete-job-{{ job.job_id }}", "Yes");
+                          });
+
+                          deleteJobButton.addEventListener("htmx:afterRequest", (e) => {
+                            if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
+                              showSuccessAlert("You have successfully deleted the job.");
+                            } else {
+                              showErrorAlert("An error occurred deleting this job, please try again later.");
+                            }
+                          });
+                        </script>
                       </li>
                       {% if job.status == JobStatus::Published %}
                         <li>

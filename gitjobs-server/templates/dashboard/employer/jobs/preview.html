@@ -2,7 +2,7 @@
 
 <div class="flex items-center border-b pb-10">
   <div class="flex-grow">
-    <div class="flex-grow flex items-stretch gap-x-5 min-w-0">
+    <div class="flex-grow flex items-stretch gap-x-3 md:gap-x-5 pe-12 md:pe-0 min-w-0">
       {# Image #}
       <div class="flex justify-center items-center size-14 shrink-0">
         {% if let Some(logo_id) = employer.logo_id %}
@@ -87,7 +87,7 @@
       {% if let Some(skills) = job.skills %}
         <div class="mb-5">
           {% call content_heading(content = "Required skills") %}
-          <div class="flex gap-x-5 mt-2">
+          <div class="flex flex-wrap gap-3 md:gap-5 mt-2">
             {% for skill in skills %}
               {% call macros::badge(content = skill|unnormalize) %}
             {% endfor %}
@@ -100,7 +100,7 @@
       {% if let Some(benefits) = job.benefits %}
         <div class="mb-5">
           {% call content_heading(content = "Benefits") %}
-          <div class="flex gap-x-5 mt-2">
+          <div class="flex flex-wrap gap-3 md:gap-5 mt-2">
             {% for benefit in benefits %}
               {% call macros::badge(content = benefit|unnormalize) %}
             {% endfor %}

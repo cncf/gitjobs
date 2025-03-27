@@ -14,6 +14,7 @@ export class SearchableFilter extends LitWrapper {
     visibleOptions: { type: Array },
     visibleDropdown: { type: Boolean },
     form: { type: String },
+    alignment: { type: String },
   };
 
   constructor() {
@@ -26,6 +27,7 @@ export class SearchableFilter extends LitWrapper {
     this.visibleOptions = [];
     this.visibleDropdown = false;
     this.form = "";
+    this.alignment = "bottom";
   }
 
   connectedCallback() {
@@ -138,7 +140,7 @@ export class SearchableFilter extends LitWrapper {
           <div class="svg-icon size-5 bg-stone-400 hover:bg-stone-700 icon-close"></div>
         </button>
       </div>
-      <div class="absolute z-10 start-0 end-0">
+      <div class="absolute z-10 start-0 end-0 ${this.alignment === "top" ? "-top-[193px]" : ""}">
         <div
           class="${!this.visibleDropdown
             ? "hidden"

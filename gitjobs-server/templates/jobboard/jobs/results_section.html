@@ -190,16 +190,12 @@
       <div class="hidden md:flex">{% call salary_badge(job = job) %}</div>
     </div>
 
-    {# Location and salary for mobile devices #}
-    <div class="flex justify-between space-x-3 mt-3 md:mt-0 md:hidden">
-      <div>
-        {% if let Some(location) = job.location %}
-          {%- call location_badge(location) %}
-        {% endif %}
+    {# Location for mobile devices #}
+    {% if let Some(location) = job.location %}
+      <div class="flex justify-between space-x-3 mt-3 md:mt-0 md:hidden">
+        <div class="max-w-full min-w-0">{%- call location_badge(location) %}</div>
       </div>
-
-      {% call salary_badge(job = job) %}
-    </div>
+    {% endif %}
     {# End location and salary for mobile devices #}
 
     {# Spinner #}

@@ -8,15 +8,16 @@
        class="hidden fixed w-full h-full top-0 left-0 z-50 flex items-center justify-center">
     <div id="backdrop-preview-modal"
          class="absolute w-full h-full bg-stone-950 opacity-[.35]"></div>
-    <div class="fixed w-[1200px] max-w-[80%] top-20 bottom-20 bg-white rounded-lg drop-shadow-lg">
+    <div class="fixed w-[1200px] max-w-full md:max-w-[80%] top-0 md:top-20 bottom-0 md:bottom-20 bg-white md:rounded-lg drop-shadow-lg">
       {# Close button -#}
       <button id="close-preview-modal"
-              class="absolute top-0 -right-20 cursor-pointer p-2 rounded-full bg-stone-600/50 hover:bg-stone-600/75">
-        <div class="svg-icon size-8 bg-stone-100 icon-close"></div>
+              class="absolute top-6 md:top-0 right-6 md:-right-20 cursor-pointer p-2 rounded-full bg-stone-600/50 hover:bg-stone-600/75">
+        <div class="svg-icon size-5 md:size-8 bg-stone-100 icon-close"></div>
       </button>
       {# End close button -#}
       {# Modal content -#}
-      <div id="preview-content" class="w-full h-full overflow-x-auto p-10"></div>
+      <div id="preview-content"
+           class="w-full h-full overflow-x-auto p-5 md:p-10"></div>
       {# End modal content -#}
     </div>
   </div>

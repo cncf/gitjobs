@@ -28,7 +28,7 @@
   font-size: inherit;
 }
 
-.markdown p:not(:last-child), .markdown ul:not(:last-child), .markdown ol:not(:last-child), .markdown blockquote:not(:last-child), .markdown pre:not(:last-child), .markdown table:not(:last-child) {
+.markdown p:not(:last-child), .markdown ul:not(:last-child), .markdown ol:not(:last-child), .markdown pre:not(:last-child), .markdown table:not(:last-child) {
   margin-bottom: 0.5rem;
 }
 

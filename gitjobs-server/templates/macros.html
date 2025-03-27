@@ -278,14 +278,14 @@
 
 {# Badge #}
 {% macro badge(content, content_styles = "", icon = "") %}
-  <div class="inline-flex bg-stone-100 text-stone-800 text-sm/4 font-medium px-2.5 py-1.5 rounded-full border">
+  <div class="inline-flex bg-stone-100 text-stone-800 text-xs/4 md:text-sm/4 font-medium px-2.5 py-1.5 rounded-full border">
     <div class="flex items-center">
       {% if !icon.is_empty() %}
         <div class="me-2">
           <div class="svg-icon size-4 icon-{{ icon }} bg-stone-500"></div>
         </div>
       {% endif %}
-      <div class="capitalize {{ content_styles }}">{{ content }}</div>
+      <div class="capitalize text-nowrap {{ content_styles }}">{{ content }}</div>
     </div>
   </div>
 {% endmacro badge %}

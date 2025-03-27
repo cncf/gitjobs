@@ -289,8 +289,8 @@
 {# End content heading #}
 
 {# Job details subheading #}
-{% macro job_details_subheading(content) %}
-  <div class="text-xs/6 text-stone-500/75 my-0 md:mb-1 md:mt-4">{{ content }}</div>
+{% macro job_details_subheading(content, extra_styles = "") %}
+  <div class="text-xs/6 text-stone-500/75 my-0 md:mb-1 md:mt-4 {{ extra_styles }}">{{ content }}</div>
 {% endmacro job_details_subheading %}
 {# End job details subheading #}
 

@@ -1,5 +1,6 @@
 {% import "macros.html" as macros %}
 {% import "jobboard/jobs/jobs_macros.html" as jobs_macros %}
+{% import "dashboard/employer/jobs/preview.html" as macros_preview %}
 
 <div class="flex flex-col mt-5 md:mt-7 space-y-4">
   {% if jobs.len() == 0 %}
@@ -42,7 +43,7 @@
               hx-target="#preview-content"
               hx-trigger="click,open-modal"
               hx-indicator="#spinner-{{ job.job_id }}"
-              class="relative mx-4 md:mx-7 text-start enabled:cursor-pointer border border-2 rounded-lg enabled:hover:outline enabled:hover:outline-1 p-5 md:p-7 {%- if open_source > 0 %} border-primary-400 bg-primary-50/20 enabled:hover:outline-primary-400{%- else if let Some(member) = job.employer.member %} border-secondary-400 bg-secondary-50/20 enabled:hover:outline-secondary-400{%- else %} enabled:hover:outline-stone-200{%- endif -%}"
+              class="relative mx-4 md:mx-7 text-start enabled:cursor-pointer border border-2 rounded-lg enabled:hover:outline enabled:hover:outline-1 p-5 md:p-7 {%- if open_source > 0 %} border-primary-400 bg-primary-50/20 enabled:hover:outline-primary-400{%- else %} enabled:hover:outline-stone-200{%- endif -%}"
               hx-disabled-elt="[data-preview-job]"
               hx-boost="true">
         {# Job title #}
@@ -209,9 +210,27 @@
       {# End salary #}
     </div>
 
+    {% if open_source > 0 %}
+      <div class="hidden md:flex space-x-10 items-center mt-3 md:ps-16">
+        {# Open source #}
+        <div class="block">
+          {% call macros_preview::job_details_subheading(content = "Time working on open source", extra_styles = "text-stone-600") %}
+          {% call macros_preview::badge_percentage_bar(percentage = job.open_source|display_some_or("0")) %}
+        </div>
+        {# End open source #}
+
+        {# Upstream commitment #}
+        <div class="block">
+          {% call macros_preview::job_details_subheading(content = "Time working on upstream projects", extra_styles = "text-stone-600") %}
+          {% call macros_preview::badge_percentage_bar(percentage = job.upstream_commitment|display_some_or("0")) %}
+        </div>
+        {# End Upstream commitment #}
+      </div>
+    {% endif %}
+
     {# Spinner #}
     <div id="spinner-{{ job.job_id }}"
-         class="hx-spinner absolute rounded-lg top-0 left-0 h-full w-full rounded-lg box-animated {%- if open_source > 0 %} box-animated-primary{%- else if let Some(member) = job.employer.member %} box-animated-secondary{%- endif -%}">
+         class="hx-spinner absolute rounded-lg top-0 left-0 h-full w-full rounded-lg box-animated {%- if open_source > 0 %} box-animated-primary{%- endif -%}">
     </div>
     {# End spinner #}
   </button>

@@ -1,10 +1,10 @@
 {% import "macros.html" as macros %}
 
-<div class="flex items-center border-b pb-10">
+<div class="flex flex-col w-full gap-3 md:flex-row md:items-center border-b pb-5 md:pb-10">
   <div class="flex-grow">
     <div class="flex-grow flex items-stretch gap-x-3 md:gap-x-5 pe-12 md:pe-0 min-w-0">
       {# Image #}
-      <div class="flex justify-center items-center size-14 shrink-0">
+      <div class="flex justify-center items-center size-12 md:size-14 shrink-0">
         {% if let Some(logo_id) = employer.logo_id %}
           {% let logo = &self::build_dashboard_image_url(logo_id, "small") %}
           <img class="size-auto"
@@ -20,21 +20,23 @@
       </div>
       {# End image #}
 
-      <div class="flex flex-col justify-center min-w-0">
-        {# Title #}
-        <div class="text-xl font-stretch-condensed font-medium text-stone-900 truncate">{{ job.title }}</div>
-        {# End title #}
-
+      <div class="flex flex-col md:flex-col-reverse justify-center min-w-0">
         {# Company #}
         <div class="text-sm/6 text-stone-500">{{ employer.company }}</div>
         {# End company #}
+
+        {# Title #}
+        <div class="text-normal md:text-xl font-stretch-condensed font-medium text-stone-900 truncate">
+          {{ job.title }}
+        </div>
+        {# End title #}
       </div>
     </div>
   </div>
 
   {% if let Some(member) = employer.member %}
-    <div class="w-1/4 ps-3">
-      <div class="flex gap-x-2 items-center bg-stone-50 border rounded-lg p-2 max-w-full min-w-full">
+    <div class="hidden md:flex xl:w-1/4">
+      <div class="flex gap-x-2 items-center bg-stone-50 border rounded-lg p-2 max-w-full xl:min-w-full">
         <div class="flex items-center justify-center size-10 shrink-0">
           <img src="/static/images/foundations/{{ member.foundation }}.svg"
                alt="{{ member.foundation }} logo"
@@ -53,83 +55,9 @@
   {% endif %}
 </div>
 
-<div class="flex items-stretch">
-  <div class="w-3/4 border-e me-10 pe-10 pt-10">
-
-    {# Content #}
-    <div class="flex flex-col space-y-6">
-      {# Job description #}
-      <div>
-        {% call content_heading(content = "Job description", margin = 0) %}
-        <div class="text-sm/6 text-stone-600 markdown">{{ job.description|md_to_html|safe }}</div>
-      </div>
-      {# End job description #}
-
-      {# Job responsibilities #}
-      {% if let Some(responsibilities) = job.responsibilities %}
-        <div>
-          {% call content_heading(content = "Responsibilities") %}
-          <div class="text-sm/6 text-stone-600 markdown">{{ responsibilities|md_to_html|safe }}</div>
-        </div>
-      {% endif %}
-      {# End job responsibilities #}
-
-      {# Job qualifications #}
-      {% if let Some(qualifications) = job.qualifications %}
-        <div>
-          {% call content_heading(content = "Qualifications") %}
-          <div class="text-sm/6 text-stone-600 markdown">{{ qualifications|md_to_html|safe }}</div>
-        </div>
-      {% endif %}
-      {# End job qualifications #}
-
-      {# Skills #}
-      {% if let Some(skills) = job.skills %}
-        <div class="mb-5">
-          {% call content_heading(content = "Required skills") %}
-          <div class="flex flex-wrap gap-3 md:gap-5 mt-2">
-            {% for skill in skills %}
-              {% call macros::badge(content = skill|unnormalize) %}
-            {% endfor %}
-          </div>
-        </div>
-      {% endif %}
-      {# End skills #}
-
-      {# Benefits #}
-      {% if let Some(benefits) = job.benefits %}
-        <div class="mb-5">
-          {% call content_heading(content = "Benefits") %}
-          <div class="flex flex-wrap gap-3 md:gap-5 mt-2">
-            {% for benefit in benefits %}
-              {% call macros::badge(content = benefit|unnormalize) %}
-            {% endfor %}
-          </div>
-        </div>
-      {% endif %}
-      {# End benefits #}
-
-      {# Application #}
-      {% if let Some(apply_instructions) = job.apply_instructions %}
-        <div>
-          {% call content_heading(content = "Apply instructions") %}
-          <div class="text-sm/6 text-stone-600 markdown">{{ apply_instructions|md_to_html|safe }}</div>
-        </div>
-      {% endif %}
-      {# End application #}
-
-      {# Company information #}
-      <div>
-        {% call content_heading(content = "About company") %}
-        <div class="text-sm/6 text-stone-600 markdown">{{ employer.description|md_to_html|safe }}</div>
-      </div>
-      {# End company information #}
-    </div>
-    {# End content #}
-  </div>
-
-  {# Right column #}
-  <div class="w-1/4 pt-6">
+<div class="flex flex-col md:flex-row-reverse flex-grow md:items-stretch">
+  {# Info #}
+  <div class="border-b md:border-0 mb-5 md:mb-0 md:border md:w-1/4 pt-6">
     {# Apply url #}
     {% if let Some(apply_url) = job.apply_url %}
       <a href="{{ apply_url }}"
@@ -252,7 +180,80 @@
   {# End projects #}
 
 </div>
-{# End right column #}
+{# End info #}
+
+<div class="md:w-3/4 md:border-e md:me-10 md:pe-10 pt-5 md:pt-10">
+  {# Content #}
+  <div class="flex flex-col space-y-6">
+    {# Job description #}
+    <div>
+      {% call content_heading(content = "Job description", margin = 0) %}
+      <div class="text-sm/6 text-stone-600 markdown">{{ job.description|md_to_html|safe }}</div>
+    </div>
+    {# End job description #}
+
+    {# Job responsibilities #}
+    {% if let Some(responsibilities) = job.responsibilities %}
+      <div>
+        {% call content_heading(content = "Responsibilities") %}
+        <div class="text-sm/6 text-stone-600 markdown">{{ responsibilities|md_to_html|safe }}</div>
+      </div>
+    {% endif %}
+    {# End job responsibilities #}
+
+    {# Job qualifications #}
+    {% if let Some(qualifications) = job.qualifications %}
+      <div>
+        {% call content_heading(content = "Qualifications") %}
+        <div class="text-sm/6 text-stone-600 markdown">{{ qualifications|md_to_html|safe }}</div>
+      </div>
+    {% endif %}
+    {# End job qualifications #}
+
+    {# Skills #}
+    {% if let Some(skills) = job.skills %}
+      <div class="mb-5">
+        {% call content_heading(content = "Required skills") %}
+        <div class="flex flex-wrap gap-3 md:gap-5 mt-2">
+          {% for skill in skills %}
+            {% call macros::badge(content = skill|unnormalize) %}
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+    {# End skills #}
+
+    {# Benefits #}
+    {% if let Some(benefits) = job.benefits %}
+      <div class="mb-5">
+        {% call content_heading(content = "Benefits") %}
+        <div class="flex flex-wrap gap-3 md:gap-5 mt-2">
+          {% for benefit in benefits %}
+            {% call macros::badge(content = benefit|unnormalize) %}
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+    {# End benefits #}
+
+    {# Application #}
+    {% if let Some(apply_instructions) = job.apply_instructions %}
+      <div>
+        {% call content_heading(content = "Apply instructions") %}
+        <div class="text-sm/6 text-stone-600 markdown">{{ apply_instructions|md_to_html|safe }}</div>
+      </div>
+    {% endif %}
+    {# End application #}
+
+    {# Company information #}
+    <div>
+      {% call content_heading(content = "About company") %}
+      <div class="text-sm/6 text-stone-600 markdown">{{ employer.description|md_to_html|safe }}</div>
+    </div>
+    {# End company information #}
+  </div>
+  {# End content #}
+</div>
 </div>
 
 {% macro job_kind(kind) %}
@@ -289,7 +290,7 @@
 
 {# Job details subheading #}
 {% macro job_details_subheading(content) %}
-  <div class="text-xs/6 text-stone-500/75 mb-1 mt-4">{{ content }}</div>
+  <div class="text-xs/6 text-stone-500/75 my-0 md:mb-1 md:mt-4">{{ content }}</div>
 {% endmacro job_details_subheading %}
 {# End job details subheading #}
 

@@ -186,15 +186,19 @@
     </script>
     <script type="module">
       import {
-        shouldDisplayJobModal,
-        toggleModalVisibility,
-        getParamFromQueryString
+        toggleModalVisibility
       } from '/static/js/common/common.js';
+
+      // Fix job preview modal visibility on back/forward navigation
       window.addEventListener("popstate", (event) => {
         if (event.state && event.state.modal_preview !== undefined) {
           if (event.state.modal_preview) {
             toggleModalVisibility('preview-modal', "open");
           } else {
+            toggleModalVisibility('preview-modal', "close");
+          }
+        } else {
+          if (document.getElementById('preview-modal').dataset.open === "true") {
             toggleModalVisibility('preview-modal', "close");
           }
         }

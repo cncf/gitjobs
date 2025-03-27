@@ -5,10 +5,10 @@ const getCommonAlertOptions = () => {
     iconColor: "var(--primary-color)",
     backdrop: false,
     customClass: {
-      popup: "pb-10 pt-5 px-0 rounded-2xl max-w-[400px] shadow-lg",
+      popup: "pb-10 pt-5 px-0 rounded-lg max-w-[100%] md:max-w-[400px] shadow-lg",
       title: "text-md",
-      htmlContainer: "text-normal leading-6",
-      icon: "text-[0.5rem]",
+      htmlContainer: "text-base md:text-normal leading-6",
+      icon: "text-[0.4rem] md:text-[0.5rem]",
       confirmButton: "btn-primary me-5",
       denyButton: "btn-primary-outline",
       cancelButton: "btn-primary-outline",

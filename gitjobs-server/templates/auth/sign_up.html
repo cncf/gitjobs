@@ -8,125 +8,134 @@
 
       <div class="flex flex-col items-center space-y-5 mb-2">
         {# Linux Foundation SSO login #}
-        <div class="w-full">
-          <a href="/log-in/oidc/linuxfoundation{%- if let Some(next_url) = next_url -%}?next_url={{ next_url }}{%- endif -%}"
-             class="group btn-primary-outline-anchor flex justify-center items-center space-x-2">
-            <div class="svg-icon size-4 icon-lfx group-hover:bg-white"></div>
-            <div>Linux Foundation SSO</div>
-          </a>
-        </div>
+        {% if login.linuxfoundation %}
+          <div class="w-full">
+            <a href="/log-in/oidc/linuxfoundation{%- if let Some(next_url) = next_url -%}?next_url={{ next_url }}{%- endif -%}"
+               class="group btn-primary-outline-anchor flex justify-center items-center space-x-2">
+              <div class="svg-icon size-4 icon-lfx group-hover:bg-white"></div>
+              <div>Linux Foundation SSO</div>
+            </a>
+          </div>
+        {% endif %}
         {# End Linux Foundation SSO login #}
 
         {# GitHub login #}
-        {# <div class="w-full">
-          <a href="/log-in/oauth2/github{%- if let Some(next_url) = next_url -%}?next_url={{ next_url }}{%- endif -%}" class="group btn-primary-outline-anchor flex justify-center items-center space-x-2">
-            <div class="svg-icon size-4 icon-github group-hover:bg-white"></div>
-            <div>GitHub</div>
-          </a>
-        </div> #}
+        {% if login.github %}
+          <div class="w-full">
+            <a href="/log-in/oauth2/github{%- if let Some(next_url) = next_url -%}?next_url={{ next_url }}{%- endif -%}"
+               class="group btn-primary-outline-anchor flex justify-center items-center space-x-2">
+              <div class="svg-icon size-4 icon-github group-hover:bg-white"></div>
+              <div>GitHub</div>
+            </a>
+          </div>
+        {% endif %}
         {# End GitHub login #}
       </div>
 
-      <div class="inline-flex items-center justify-center w-full relative">
-        <hr class="w-full h-0.5 my-8 bg-stone-200 border-0 rounded-sm">
-        <div class="absolute px-4 -translate-x-1/2 bg-white left-1/2 text-xs text-stone-500/75">OR</div>
-      </div>
-
-      <form id="sign-up-form"
-            action="/sign-up{%- if let Some(next_url) = next_url -%}?next_url={{ next_url }}{%- endif -%}"
-            method="post">
-        <div class="grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-6">
-          {# Name #}
-          <div class="sm:col-span-full">
-            <label for="name" class="form-label">
-              Name <span class="asterisk">*</span>
-            </label>
-            <div class="mt-2">
-              <input id="name"
-                     name="name"
-                     type="text"
-                     class="input-primary"
-                     autocomplete="off"
-                     autocorrect="off"
-                     autocapitalize="off"
-                     spellcheck="false"
-                     required>
-            </div>
+      {% if login.email %}
+        {% if login.linuxfoundation || login.github %}
+          <div class="inline-flex items-center justify-center w-full relative">
+            <hr class="w-full h-0.5 my-8 bg-stone-200 border-0 rounded-sm">
+            <div class="absolute px-4 -translate-x-1/2 bg-white left-1/2 text-xs text-stone-500/75">OR</div>
           </div>
-          {# End name #}
+        {% endif %}
 
-          {# Email #}
-          <div class="sm:col-span-full">
-            <label for="email" class="form-label">
-              Email <span class="asterisk">*</span>
-            </label>
-            <div class="mt-2">
-              <input id="email" name="email" type="email" class="input-primary" required>
+        <form id="sign-up-form"
+              action="/sign-up{%- if let Some(next_url) = next_url -%}?next_url={{ next_url }}{%- endif -%}"
+              method="post">
+          <div class="grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-6">
+            {# Name #}
+            <div class="sm:col-span-full">
+              <label for="name" class="form-label">
+                Name <span class="asterisk">*</span>
+              </label>
+              <div class="mt-2">
+                <input id="name"
+                       name="name"
+                       type="text"
+                       class="input-primary"
+                       autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       spellcheck="false"
+                       required>
+              </div>
             </div>
-          </div>
-          {# End Email #}
+            {# End name #}
 
-          {# Username #}
-          <div class="sm:col-span-full">
-            <label for="username" class="form-label">
-              Username <span class="asterisk">*</span>
-            </label>
-            <div class="mt-2">
-              <input id="username"
-                     name="username"
-                     type="text"
-                     class="input-primary"
-                     autocomplete="off"
-                     autocorrect="off"
-                     autocapitalize="off"
-                     spellcheck="false"
-                     required>
+            {# Email #}
+            <div class="sm:col-span-full">
+              <label for="email" class="form-label">
+                Email <span class="asterisk">*</span>
+              </label>
+              <div class="mt-2">
+                <input id="email" name="email" type="email" class="input-primary" required>
+              </div>
             </div>
-          </div>
-          {# End Username #}
+            {# End Email #}
 
-          {# Password #}
-          <div class="sm:col-span-3">
-            <label for="password" class="form-label">
-              Password <span class="asterisk">*</span>
-            </label>
-            <div class="mt-2">
-              <input type="password"
-                     id="password"
-                     name="password"
-                     class="input-primary"
-                     required>
+            {# Username #}
+            <div class="sm:col-span-full">
+              <label for="username" class="form-label">
+                Username <span class="asterisk">*</span>
+              </label>
+              <div class="mt-2">
+                <input id="username"
+                       name="username"
+                       type="text"
+                       class="input-primary"
+                       autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       spellcheck="false"
+                       required>
+              </div>
             </div>
-          </div>
-          {# End Password #}
+            {# End Username #}
 
-          {# Repeat password #}
-          <div class="sm:col-span-3">
-            <label for="password_confirmation" class="form-label">
-              Repeat password <span class="asterisk">*</span>
-            </label>
-            <div class="mt-2">
-              <input type="password"
-                     id="password_confirmation"
-                     name="password_confirmation"
-                     class="input-primary"
-                     required>
+            {# Password #}
+            <div class="sm:col-span-3">
+              <label for="password" class="form-label">
+                Password <span class="asterisk">*</span>
+              </label>
+              <div class="mt-2">
+                <input type="password"
+                       id="password"
+                       name="password"
+                       class="input-primary"
+                       required>
+              </div>
             </div>
+            {# End Password #}
+
+            {# Repeat password #}
+            <div class="sm:col-span-3">
+              <label for="password_confirmation" class="form-label">
+                Repeat password <span class="asterisk">*</span>
+              </label>
+              <div class="mt-2">
+                <input type="password"
+                       id="password_confirmation"
+                       name="password_confirmation"
+                       class="input-primary"
+                       required>
+              </div>
+            </div>
+            {# End Repeat password #}
           </div>
-          {# End Repeat password #}
-        </div>
 
-        {# Submit button #}
-        <button type="submit" class="btn-primary w-full mt-10">Submit</button>
+          {# Submit button #}
+          <button type="submit" class="btn-primary w-full mt-10">Submit</button>
+        </form>
+      {% endif %}
 
-        {# Log in link #}
-        <div class="mt-5 text-sm text-stone-600">
-          Already have an account? <a hx-boost="true"
+      {# Log in link #}
+      <div class="mt-5 text-sm text-stone-600">
+        Already have an account? <a hx-boost="true"
     href="/log-in{%- if let Some(next_url) = next_url -%}?next_url={{ next_url }}{%- endif -%}"
     class="text-primary-700 hover:text-primary-900">Sign In</a>
-        </div>
-        {# End log in link #}
-      </form>
+      </div>
+      {# End log in link #}
 
       {# Messages #}
       {% if !messages.is_empty() %}

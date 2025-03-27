@@ -8,62 +8,73 @@
 
       <div class="flex flex-col items-center space-y-5 mb-2">
         {# Linux Foundation SSO login #}
-        <div class="w-full">
-          <a href="/log-in/oidc/linuxfoundation{%- if let Some(next_url) = next_url -%}?next_url={{ next_url }}{%- endif -%}"
-             class="group btn-primary-outline-anchor flex justify-center items-center space-x-2">
-            <div class="svg-icon size-4 icon-lfx group-hover:bg-white"></div>
-            <div>Linux Foundation SSO</div>
-          </a>
-        </div>
+        {% if login.linuxfoundation %}
+          <div class="w-full">
+            <a href="/log-in/oidc/linuxfoundation{%- if let Some(next_url) = next_url -%}?next_url={{ next_url }}{%- endif -%}"
+               class="group btn-primary-outline-anchor flex justify-center items-center space-x-2">
+              <div class="svg-icon size-4 icon-lfx group-hover:bg-white"></div>
+              <div>Linux Foundation SSO</div>
+            </a>
+          </div>
+        {% endif %}
         {# End Linux Foundation SSO login #}
 
         {# GitHub login #}
-        {# <div class="w-full">
-          <a href="/log-in/oauth2/github{%- if let Some(next_url) = next_url -%}?next_url={{ next_url }}{%- endif -%}" class="group btn-primary-outline-anchor flex justify-center items-center space-x-2">
-            <div class="svg-icon size-4 icon-github group-hover:bg-white"></div>
-            <div>GitHub</div>
-          </a>
-        </div> #}
+        {% if login.github %}
+          <div class="w-full">
+            <a href="/log-in/oauth2/github{%- if let Some(next_url) = next_url -%}?next_url={{ next_url }}{%- endif -%}"
+               class="group btn-primary-outline-anchor flex justify-center items-center space-x-2">
+              <div class="svg-icon size-4 icon-github group-hover:bg-white"></div>
+              <div>GitHub</div>
+            </a>
+          </div>
+        {% endif %}
         {# End GitHub login #}
       </div>
 
-      <div class="inline-flex items-center justify-center w-full relative">
-        <hr class="w-full h-0.5 my-8 bg-stone-200 border-0 rounded-sm">
-        <div class="absolute px-4 -translate-x-1/2 bg-white left-1/2 text-xs text-stone-500/75">OR</div>
-      </div>
+      {# Email login #}
+      {% if login.email %}
+        {% if login.linuxfoundation || login.github %}
+          <div class="inline-flex items-center justify-center w-full relative">
+            <hr class="w-full h-0.5 my-8 bg-stone-200 border-0 rounded-sm">
+            <div class="absolute px-4 -translate-x-1/2 bg-white left-1/2 text-xs text-stone-500/75">OR</div>
+          </div>
+        {% endif %}
 
-      <form action="/log-in{%- if let Some(next_url) = next_url -%}?next_url={{ next_url }}{%- endif -%}"
-            method="post">
-        <div class="mb-5">
-          <label for="username" class="block mb-2 text-sm font-medium text-stone-900">Username</label>
-          <input type="text"
-                 id="username"
-                 name="username"
-                 class="input-primary"
-                 autocomplete="off"
-                 autocorrect="off"
-                 autocapitalize="off"
-                 spellcheck="false"
-                 required />
-        </div>
-        <div>
-          <label for="password" class="block mb-2 text-sm font-medium text-stone-900">Password</label>
-          <input type="password"
-                 id="password"
-                 name="password"
-                 class="input-primary"
-                 required />
-        </div>
+        <form action="/log-in{%- if let Some(next_url) = next_url -%}?next_url={{ next_url }}{%- endif -%}"
+              method="post">
+          <div class="mb-5">
+            <label for="username" class="block mb-2 text-sm font-medium text-stone-900">Username</label>
+            <input type="text"
+                   id="username"
+                   name="username"
+                   class="input-primary"
+                   autocomplete="off"
+                   autocorrect="off"
+                   autocapitalize="off"
+                   spellcheck="false"
+                   required />
+          </div>
+          <div>
+            <label for="password" class="block mb-2 text-sm font-medium text-stone-900">Password</label>
+            <input type="password"
+                   id="password"
+                   name="password"
+                   class="input-primary"
+                   required />
+          </div>
 
-        {# Submit button #}
-        <button type="submit" class="btn-primary w-full mt-10">Submit</button>
-        {# End submit button #}
+          {# Submit button #}
+          <button type="submit" class="btn-primary w-full mt-10">Submit</button>
+          {# End submit button #}
+        </form>
+      {% endif %}
+      {# End email login #}
 
-        <div class="mt-5 text-sm text-stone-600">
-          Don't have an account? <a href="/sign-up{%- if let Some(next_url) = next_url -%}?next_url={{ next_url }}{%- endif -%}"
+      <div class="mt-5 text-sm text-stone-600">
+        Don't have an account? <a href="/sign-up{%- if let Some(next_url) = next_url -%}?next_url={{ next_url }}{%- endif -%}"
     class="text-primary-700 hover:text-primary-900">Sign up</a>.
-        </div>
-      </form>
+      </div>
 
       {# Messages #}
       {% if !messages.is_empty() %}

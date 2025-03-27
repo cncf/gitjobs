@@ -36,6 +36,9 @@
     {# Cards -#}
     {% for job in jobs %}
       {% let open_source = job.open_source.unwrap_or_default() %}
+      {% let upstream_commitment = job.upstream_commitment.unwrap_or_default() %}
+      {% let is_open_source = open_source > 0 || upstream_commitment > 0 %}
+
       <button id="job-preview-{{ job.job_id }}"
               data-preview-job="true"
               data-job-id="{{ job.job_id }}"
@@ -43,7 +46,7 @@
               hx-target="#preview-content"
               hx-trigger="click,open-modal"
               hx-indicator="#spinner-{{ job.job_id }}"
-              class="relative mx-4 md:mx-7 text-start enabled:cursor-pointer border border-2 rounded-lg enabled:hover:outline enabled:hover:outline-1 p-5 md:p-7 {%- if open_source > 0 %} border-primary-400 bg-primary-50/20 enabled:hover:outline-primary-400{%- else %} enabled:hover:outline-stone-200{%- endif -%}"
+              class="relative mx-4 md:mx-7 text-start enabled:cursor-pointer border border-2 rounded-lg enabled:hover:outline enabled:hover:outline-1 p-5 md:p-7 {%- if is_open_source %} border-primary-400 bg-primary-50/20 enabled:hover:outline-primary-400{%- else %} enabled:hover:outline-stone-200{%- endif -%}"
               hx-disabled-elt="[data-preview-job]"
               hx-boost="true">
         {# Job title #}
@@ -194,7 +197,7 @@
 
         {# Open source #}
         <div class="flex space-x-1 items-center justify-center">
-          {% if open_source > 0 %}
+          {% if is_open_source %}
             <div class="svg-icon size-3 icon-check bg-green-500"></div>
           {% else %}
             <div class="svg-icon size-3.5 icon-close bg-red-500"></div>
@@ -210,19 +213,19 @@
       {# End salary #}
     </div>
 
-    {% if open_source > 0 %}
+    {% if is_open_source %}
       <div class="hidden md:flex space-x-10 items-center mt-3 md:ps-16">
         {# Open source #}
         <div class="block">
           {% call macros_preview::job_details_subheading(content = "Time working on open source", extra_styles = "text-stone-600") %}
-          {% call macros_preview::badge_percentage_bar(percentage = job.open_source|display_some_or("0")) %}
+          {% call macros_preview::badge_percentage_bar(percentage = open_source) %}
         </div>
         {# End open source #}
 
         {# Upstream commitment #}
         <div class="block">
           {% call macros_preview::job_details_subheading(content = "Time working on upstream projects", extra_styles = "text-stone-600") %}
-          {% call macros_preview::badge_percentage_bar(percentage = job.upstream_commitment|display_some_or("0")) %}
+          {% call macros_preview::badge_percentage_bar(percentage = upstream_commitment) %}
         </div>
         {# End Upstream commitment #}
       </div>
@@ -230,7 +233,7 @@
 
     {# Spinner #}
     <div id="spinner-{{ job.job_id }}"
-         class="hx-spinner absolute rounded-lg top-0 left-0 h-full w-full rounded-lg box-animated {%- if open_source > 0 %} box-animated-primary{%- endif -%}">
+         class="hx-spinner absolute rounded-lg top-0 left-0 h-full w-full rounded-lg box-animated {%- if is_open_source %} box-animated-primary{%- endif -%}">
     </div>
     {# End spinner #}
   </button>

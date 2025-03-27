@@ -140,9 +140,9 @@ export class SearchableFilter extends LitWrapper {
           <div class="svg-icon size-5 bg-stone-400 hover:bg-stone-700 icon-close"></div>
         </button>
       </div>
-      <div class="absolute z-10 start-0 end-0 ${this.alignment === "top" ? "-top-[193px]" : ""}">
+      <div class="absolute z-10 start-0 end-0 ${this.alignment === "top" ? "-top-[193px] h-[186px]" : ""}">
         <div
-          class="${!this.visibleDropdown
+          class="${this.alignment === "top" ? "h-full" : ""} ${!this.visibleDropdown
             ? "hidden"
             : ""} bg-white divide-y divide-stone-100 rounded-lg shadow w-full border mt-1"
         >

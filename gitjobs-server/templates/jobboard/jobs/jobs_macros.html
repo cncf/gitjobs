@@ -2,9 +2,9 @@
 
 {# Filters #}
 {% macro filters(form, device = "desktop") %}
-  <div class="pt-5 px-6">{% call filters_title(text = "Type and location") %}</div>
+  <div class="pt-3 md:pt-5 px-6">{% call filters_title(text = "Type and location") %}</div>
 
-  <div class="p-6 pt-3 flex flex-col space-y-5">
+  <div class="p-6 pb-4 md:pb-6 pt-3 flex flex-col space-y-5">
     {# Job type #}
     <div>
       {% call filters_subtitle(text = "Job type") %}
@@ -98,9 +98,11 @@
   </div>
 
   {# Open source section #}
-  <div class="pt-6 mt-2 px-6 border-t border-stone-100">{% call filters_title(text = "Open source") %}</div>
+  <div class="pt-4 md:pt-6 mt-2 px-6 border-t border-stone-100">
+    {% call filters_title(text = "Open source") %}
+  </div>
 
-  <div class="p-6 pt-3 flex flex-col space-y-5">
+  <div class="p-6 pb-4 md:pb-6 pt-3 flex flex-col space-y-5">
     {# Projects #}
     <div>
       {% call filters_subtitle(text = "Projects you'd like to work on") %}
@@ -130,9 +132,11 @@
 {# End open source section #}
 
 {# Compensation section #}
-<div class="pt-6 px-6 border-t border-stone-100">{% call filters_title(text = "Compensation") %}</div>
+<div class="pt-4 md:pt-6 px-6 border-t border-stone-100">
+  {% call filters_title(text = "Compensation") %}
+</div>
 
-<div class="p-6 pt-3 flex flex-col space-y-5">
+<div class="p-6 pb-4 md:pb-6 pt-3 flex flex-col space-y-5">
   {# Salary #}
   <div>
     {% call filters_subtitle(text = "Minimum salary (USD / year)") %}
@@ -161,7 +165,7 @@
 
 {# Filters subtitle #}
 {% macro filters_subtitle(text) %}
-  <div class="font-semibold text-[0.8rem]/8">{{ text }}</div>
+  <div class="font-semibold leading-4 md:leading-8 text-[0.8rem]">{{ text }}</div>
 {% endmacro filters_subtitle %}
 {# End filters subtitle #}
 

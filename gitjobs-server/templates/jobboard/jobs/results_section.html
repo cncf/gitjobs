@@ -42,7 +42,7 @@
               hx-target="#preview-content"
               hx-trigger="click,open-modal"
               hx-indicator="#spinner-{{ job.job_id }}"
-              class="relative mx-5 md:mx-7 text-start enabled:cursor-pointer border border-2 rounded-lg enabled:hover:outline enabled:hover:outline-1 p-5 md:p-7 {%- if open_source > 0 %} border-primary-400 bg-primary-50/20 enabled:hover:outline-primary-400{%- else if let Some(member) = job.employer.member %} border-secondary-400 bg-secondary-50/20 enabled:hover:outline-secondary-400{%- else %} enabled:hover:outline-stone-200{%- endif -%}"
+              class="relative mx-4 md:mx-7 text-start enabled:cursor-pointer border border-2 rounded-lg enabled:hover:outline enabled:hover:outline-1 p-5 md:p-7 {%- if open_source > 0 %} border-primary-400 bg-primary-50/20 enabled:hover:outline-primary-400{%- else if let Some(member) = job.employer.member %} border-secondary-400 bg-secondary-50/20 enabled:hover:outline-secondary-400{%- else %} enabled:hover:outline-stone-200{%- endif -%}"
               hx-disabled-elt="[data-preview-job]"
               hx-boost="true">
         {# Job title #}
@@ -60,8 +60,8 @@
                    src="{{ logo }}"
                    alt="{{ job.employer.company }} image">
             {% else %}
-              <div class="size-12 bg-stone-100 p-1 flex">
-                <div class="svg-icon size-8 icon-company bg-stone-500 m-auto"></div>
+              <div class="size-9 md:size-12 bg-stone-100 p-1 flex">
+                <div class="svg-icon size-6 md:size-8 icon-company bg-stone-500 m-auto"></div>
               </div>
             {% endif %}
           </div>
@@ -72,7 +72,7 @@
             {# Company and member #}
             <div class="flex justify-between items-center space-x-5">
               {# Company #}
-              <div class="truncate leading-3 text-stone-500/75 text-[0.7rem] md:text-xs font-semibold tracking-wide uppercase">
+              <div class="truncate leading-[0.7rem] md:leading-3 text-stone-500/75 text-[0.7rem] md:text-xs font-semibold tracking-wide uppercase">
                 {{ job.employer.company }}
               </div>
               {# End company #}
@@ -99,7 +99,7 @@
                 </div>
 
                 {# Published date #}
-                <div class="truncate leading-3 text-[0.7rem] md:text-xs font-semibold tracking-wide uppercase">
+                <div class="truncate leading-[0.7rem] md:leading-3 text-[0.7rem] md:text-xs font-semibold tracking-wide uppercase">
                   {{ job.published_at.format(DATE_FORMAT_3) }}
                 </div>
                 {# End published date #}
@@ -109,7 +109,7 @@
             <div class="flex space-x-3 items-center mt-auto">
               <div class="flex items-center space-x-4 min-w-0">
                 {# Title #}
-                <div class="text-sm md:text-base font-stretch-condensed font-medium text-stone-900 truncate">
+                <div class="leading-4 md:leading-normal text-[0.8rem] md:text-base font-stretch-condensed font-medium text-stone-900 truncate">
                   {{ job.title }}
                 </div>
                 {# End title #}
@@ -125,9 +125,24 @@
           {# End info #}
         </div>
 
+        {# Location for mobile devices #}
+        <div class="flex justify-between mt-3 md:mt-0 md:hidden ps-[3.25rem]">
+          <div class="max-w-full min-w-0">
+            {% if let Some(location) = job.location %}
+              {%- call location_badge(location) %}
+            {% else %}
+              <div class="flex border bg-white rounded-md px-2 py-0.5 text-xs text-stone-500 font-normal items-center">
+                <div class="text-nowrap truncate">No location provided</div>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+
+        {# End location and salary for mobile devices #}
+
         <div class="flex justify-between items-end space-x-2 md:space-x-6 w-full mt-5 md:ps-16">
           {# Tags #}
-          <div class="flex items-center justify-between md:justify-start space-x-6 w-full text-[0.8rem] text-stone-600">
+          <div class="flex items-center space-x-6 w-full text-[0.8rem] text-stone-600">
             {% let kind = job.kind.to_string() %}
             {% let workplace = job.workplace.to_string() %}
 
@@ -164,11 +179,13 @@
 
         {# Seniority #}
         {% if let Some(seniority) = job.seniority %}
-          {% let seniority = seniority.to_string() %}
-          <div class="flex items-center space-x-1">
-            <div class="svg-icon size-3 icon-organigram bg-stone-500"></div>
-            <div class="capitalize text-nowrap">
-              {{ seniority|unnormalize }} <span class="hidden lg:inline">level</span>
+          <div class="hidden md:flex">
+            {% let seniority = seniority.to_string() %}
+            <div class="flex items-center space-x-1">
+              <div class="svg-icon size-3 icon-organigram bg-stone-500"></div>
+              <div class="capitalize text-nowrap">
+                {{ seniority|unnormalize }} <span class="hidden lg:inline">level</span>
+              </div>
             </div>
           </div>
         {% endif %}
@@ -187,16 +204,10 @@
       </div>
       {# End tags #}
 
+      {# Salary #}
       <div class="hidden md:flex">{% call salary_badge(job = job) %}</div>
+      {# End salary #}
     </div>
-
-    {# Location for mobile devices #}
-    {% if let Some(location) = job.location %}
-      <div class="flex justify-between space-x-3 mt-3 md:mt-0 md:hidden">
-        <div class="max-w-full min-w-0">{%- call location_badge(location) %}</div>
-      </div>
-    {% endif %}
-    {# End location and salary for mobile devices #}
 
     {# Spinner #}
     <div id="spinner-{{ job.job_id }}"

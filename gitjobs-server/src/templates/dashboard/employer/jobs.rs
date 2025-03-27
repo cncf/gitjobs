@@ -10,7 +10,7 @@ use uuid::Uuid;
 use crate::templates::{
     dashboard::employer::employers::Employer,
     filters,
-    helpers::{DATE_FORMAT, build_dashboard_image_url, format_location, normalize},
+    helpers::{DATE_FORMAT, build_dashboard_image_url, format_location, normalize, normalize_salary},
     jobboard::jobs::Seniority,
     misc::{Location, Project},
 };
@@ -83,9 +83,12 @@ pub(crate) struct Job {
     pub qualifications: Option<String>,
     pub responsibilities: Option<String>,
     pub salary: Option<i64>,
+    pub salary_usd_year: Option<i64>,
     pub salary_currency: Option<String>,
     pub salary_min: Option<i64>,
+    pub salary_min_usd_year: Option<i64>,
     pub salary_max: Option<i64>,
+    pub salary_max_usd_year: Option<i64>,
     pub salary_period: Option<String>,
     pub seniority: Option<Seniority>,
     pub skills: Option<Vec<String>>,
@@ -104,6 +107,12 @@ impl Job {
                 *benefit = normalize(benefit);
             }
         }
+
+        // Salary (to USD yearly)
+        let (currency, period) = (self.salary_currency.as_ref(), self.salary_period.as_ref());
+        self.salary_usd_year = normalize_salary(self.salary, currency, period);
+        self.salary_min_usd_year = normalize_salary(self.salary_min, currency, period);
+        self.salary_max_usd_year = normalize_salary(self.salary_max, currency, period);
 
         // Skills
         if let Some(skills) = &mut self.skills {

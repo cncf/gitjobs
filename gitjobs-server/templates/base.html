@@ -190,7 +190,6 @@
         toggleModalVisibility
       } from '/static/js/common/common.js';
 
-      // Fix job preview modal visibility on back/forward navigation
       window.addEventListener("popstate", (event) => {
         if (event.state && event.state.modal_preview !== undefined) {
           if (event.state.modal_preview) {

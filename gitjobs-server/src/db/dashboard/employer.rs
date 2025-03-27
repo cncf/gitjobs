@@ -10,10 +10,13 @@ use uuid::Uuid;
 use crate::{
     PgDB,
     db::misc::Total,
-    templates::dashboard::employer::{
-        applications::{self, Application},
-        employers::{Employer, EmployerSummary},
-        jobs::{Job, JobSummary},
+    templates::{
+        dashboard::employer::{
+            applications::{self, Application},
+            employers::{Employer, EmployerSummary},
+            jobs::{Job, JobSummary},
+        },
+        helpers::normalize_salary,
     },
 };
 
@@ -162,9 +165,12 @@ impl DBDashBoardEmployer for PgDB {
                     qualifications,
                     responsibilities,
                     salary,
+                    salary_usd_year,
                     salary_currency,
                     salary_min,
+                    salary_min_usd_year,
                     salary_max,
+                    salary_max_usd_year,
                     salary_period,
                     seniority,
                     skills,
@@ -188,15 +194,18 @@ impl DBDashBoardEmployer for PgDB {
                     $12::text,
                     $13::text,
                     $14::bigint,
-                    $15::text,
-                    $16::bigint,
+                    $15::bigint,
+                    $16::text,
                     $17::bigint,
-                    $18::text,
-                    $19::text,
-                    $20::text[],
+                    $18::bigint,
+                    $19::bigint,
+                    $20::bigint,
                     $21::text,
                     $22::text,
-                    $23::int,
+                    $23::text[],
+                    $24::text,
+                    $25::text,
+                    $26::int,
                     case when $3::text = 'published' then current_timestamp else null end
                 returning job_id;
                 ",
@@ -215,9 +224,12 @@ impl DBDashBoardEmployer for PgDB {
                     &job.qualifications,
                     &job.responsibilities,
                     &job.salary,
+                    &job.salary_usd_year,
                     &job.salary_currency,
                     &job.salary_min,
+                    &job.salary_min_usd_year,
                     &job.salary_max,
+                    &job.salary_max_usd_year,
                     &job.salary_period,
                     &job.seniority.as_ref().map(ToString::to_string),
                     &job.skills,
@@ -464,9 +476,12 @@ impl DBDashBoardEmployer for PgDB {
             qualifications: row.get("qualifications"),
             responsibilities: row.get("responsibilities"),
             salary: row.get("salary"),
+            salary_usd_year: None,
             salary_currency: row.get("salary_currency"),
             salary_min: row.get("salary_min"),
+            salary_min_usd_year: None,
             salary_max: row.get("salary_max"),
+            salary_max_usd_year: None,
             salary_period: row.get("salary_period"),
             seniority: row
                 .get::<_, Option<String>>("seniority")
@@ -575,6 +590,30 @@ impl DBDashBoardEmployer for PgDB {
         trace!("db: publish job");
 
         let db = self.pool.get().await?;
+
+        // Get current job salary details to refresh the usd/year versions
+        let row = db
+            .query_one(
+                "
+                select
+                    salary,
+                    salary_currency,
+                    salary_min,
+                    salary_max,
+                    salary_period
+                from job
+                where job_id = $1::uuid;
+                ",
+                &[&job_id],
+            )
+            .await?;
+        let salary: Option<i64> = row.get("salary");
+        let salary_min: Option<i64> = row.get("salary_min");
+        let salary_max: Option<i64> = row.get("salary_max");
+        let currency: Option<String> = row.get("salary_currency");
+        let period: Option<String> = row.get("salary_period");
+
+        // Update job
         db.execute(
             "
             update job
@@ -582,11 +621,19 @@ impl DBDashBoardEmployer for PgDB {
                 status = 'published',
                 published_at = current_timestamp,
                 updated_at = current_timestamp,
-                archived_at = null
+                archived_at = null,
+                salary_usd_year = $2::bigint,
+                salary_min_usd_year = $3::bigint,
+                salary_max_usd_year = $4::bigint
             where job_id = $1::uuid
             and status <> 'published';
             ",
-            &[&job_id],
+            &[
+                &job_id,
+                &normalize_salary(salary, currency.as_ref(), period.as_ref()),
+                &normalize_salary(salary_min, currency.as_ref(), period.as_ref()),
+                &normalize_salary(salary_max, currency.as_ref(), period.as_ref()),
+            ],
         )
         .await?;
 
@@ -681,15 +728,18 @@ impl DBDashBoardEmployer for PgDB {
                 qualifications = $12::text,
                 responsibilities = $13::text,
                 salary = $14::bigint,
-                salary_currency = $15::text,
-                salary_min = $16::bigint,
-                salary_max = $17::bigint,
-                salary_period = $18::text,
-                seniority = $19::text,
-                skills = $20::text[],
-                tz_end = $21::text,
-                tz_start = $22::text,
-                upstream_commitment = $23::int,
+                salary_usd_year = $15::bigint,
+                salary_currency = $16::text,
+                salary_min = $17::bigint,
+                salary_min_usd_year = $18::bigint,
+                salary_max = $19::bigint,
+                salary_max_usd_year = $20::bigint,
+                salary_period = $21::text,
+                seniority = $22::text,
+                skills = $23::text[],
+                tz_end = $24::text,
+                tz_start = $25::text,
+                upstream_commitment = $26::int,
                 updated_at = current_timestamp
             where job_id = $1::uuid;
             ",
@@ -708,9 +758,12 @@ impl DBDashBoardEmployer for PgDB {
                 &job.qualifications,
                 &job.responsibilities,
                 &job.salary,
+                &job.salary_usd_year,
                 &job.salary_currency,
                 &job.salary_min,
+                &job.salary_min_usd_year,
                 &job.salary_max,
+                &job.salary_max_usd_year,
                 &job.salary_period,
                 &job.seniority.as_ref().map(ToString::to_string),
                 &job.skills,

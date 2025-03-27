@@ -76,6 +76,15 @@ server:
   cookie:
     secure: false
 
+  # Login options enabled
+  login:
+      # Enable email login
+    email: true
+    # Enable GitHub login
+    github: false
+    # Enable Linux Foundation login
+    linuxfoundation: false
+
   # OAuth2 configuration
   oauth2:
     # GitHub provider configuration

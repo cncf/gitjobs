@@ -58,6 +58,7 @@ pub(crate) const SIGN_UP_URL: &str = "/sign-up";
 pub(crate) async fn log_in_page(
     auth_session: AuthSession,
     messages: Messages,
+    State(cfg): State<HttpServerConfig>,
     Query(query): Query<HashMap<String, String>>,
 ) -> Result<impl IntoResponse, HandlerError> {
     // Check if the user is already logged in
@@ -67,6 +68,7 @@ pub(crate) async fn log_in_page(
 
     // Prepare template
     let template = templates::auth::LogInPage {
+        login: cfg.login.clone(),
         messages: messages.into_iter().collect(),
         next_url: query.get("next_url").cloned(),
         page_id: PageId::LogIn,
@@ -81,6 +83,7 @@ pub(crate) async fn log_in_page(
 pub(crate) async fn sign_up_page(
     auth_session: AuthSession,
     messages: Messages,
+    State(cfg): State<HttpServerConfig>,
     Query(query): Query<HashMap<String, String>>,
 ) -> Result<impl IntoResponse, HandlerError> {
     // Check if the user is already logged in
@@ -90,6 +93,7 @@ pub(crate) async fn sign_up_page(
 
     // Prepare template
     let template = templates::auth::SignUpPage {
+        login: cfg.login.clone(),
         messages: messages.into_iter().collect(),
         next_url: query.get("next_url").cloned(),
         page_id: PageId::SignUp,

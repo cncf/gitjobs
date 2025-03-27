@@ -63,6 +63,7 @@ pub(crate) struct HttpServerConfig {
     pub base_url: String,
     pub basic_auth: Option<BasicAuth>,
     pub cookie: Option<CookieConfig>,
+    pub login: LoginOptions,
     pub oauth2: OAuth2Config,
     pub oidc: OidcConfig,
 }
@@ -93,6 +94,15 @@ pub(crate) struct LogConfig {
 pub(crate) enum LogFormat {
     Json,
     Pretty,
+}
+
+/// Login options enabled.
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub(crate) struct LoginOptions {
+    pub email: bool,
+    pub github: bool,
+    pub linuxfoundation: bool,
 }
 
 /// Type alias for the `OAuth2` configuration section.

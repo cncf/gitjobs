@@ -6,6 +6,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     auth::{AuthSession, UserSummary},
+    config::LoginOptions,
     templates::{PageId, filters},
 };
 
@@ -15,6 +16,7 @@ use crate::{
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
 #[template(path = "auth/log_in.html")]
 pub(crate) struct LogInPage {
+    pub login: LoginOptions,
     pub page_id: PageId,
     pub messages: Vec<Message>,
     pub user: User,
@@ -26,6 +28,7 @@ pub(crate) struct LogInPage {
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
 #[template(path = "auth/sign_up.html")]
 pub(crate) struct SignUpPage {
+    pub login: LoginOptions,
     pub page_id: PageId,
     pub messages: Vec<Message>,
     pub user: User,

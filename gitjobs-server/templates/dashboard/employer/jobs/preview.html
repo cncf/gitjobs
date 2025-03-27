@@ -162,7 +162,7 @@
 
   {# Upstream commitment #}
   {% call job_details_subheading(content = "Time working on upstream projects") %}
-  {% call badge_percentage_bar(percentage = job.upstream_commitment|display_some_or("0")) %}
+  {% call badge_percentage_bar(percentage = job.upstream_commitment|display_some_or("0"), type = "upstream_commitment") %}
   {# End Upstream commitment #}
 
   {# Projects #}
@@ -312,11 +312,13 @@
 {# End currency #}
 
 {# Badge with percentage bar #}
-{% macro badge_percentage_bar(percentage = 0) %}
+{% macro badge_percentage_bar(percentage = 0, type = &"open_source") %}
   <div class="-mt-1 flex space-x-2 items-center w-full">
     <div class="w-full bg-stone-200 rounded-full h-1.5 my-2">
-      <div class="bg-primary-600 h-1.5 rounded-full"
+      {# djlint:off H008 #}
+      <div class='bg-lime-{%- if type == &"open_source" -%}400{%- else -%}500{%- endif %} h-1.5 rounded-full'
            style="width: {{ percentage }}%"></div>
+      {# djlint:on H008 #}
     </div>
     <div class="text-xs font-semibold w-[15%] text-end">
       {{ percentage }}<small class="text-stone-500">%</small>

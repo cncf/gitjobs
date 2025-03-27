@@ -1,6 +1,7 @@
 :root {
   --primary-color: #fd4d12;
-  --secondary-color: #2a71ff;
+  --lime-color: #84cc16;
+  --lime-light-color: #a3e635;
 }
 
 .bg-jobboard {
@@ -454,8 +455,12 @@ select.aligned-right option {
   box-shadow: 0 0 0 var(--primary-color);
 }
 
-.box-animated-secondary {
-  box-shadow: 0 0 0 var(--secondary-color);
+.box-animated-lime {
+  box-shadow: 0 0 0 var(--lime-color);
+}
+
+.box-animated-lime-light {
+  box-shadow: 0 0 0 var(--lime-light-color);
 }
 
 @-webkit-keyframes pulse-shadow {

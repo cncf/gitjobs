@@ -186,7 +186,7 @@
       {# Upstream commitment #}
       <div class="block mb-3 md:mb-0">
         {% call macros_preview::job_details_subheading(content = "Time working on upstream projects") %}
-        {% call macros_preview::badge_percentage_bar(percentage = job.upstream_commitment|display_some_or("0")) %}
+        {% call macros_preview::badge_percentage_bar(percentage = job.upstream_commitment|display_some_or("0"), type = "upstream_commitment") %}
       </div>
       {# End Upstream commitment #}
 

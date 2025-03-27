@@ -18,10 +18,13 @@ pub(crate) fn run(db: DynDB, tracker: &TaskTracker, cancellation_token: Cancella
 
 /// This worker archives expired jobs periodically.
 pub(crate) async fn archiver(db: DynDB, cancellation_token: CancellationToken) {
-    loop {
-        // Random sleep to avoid multiple workers running at the same time
-        sleep(Duration::from_secs(rand::random_range(60..300))).await;
+    // Random sleep to avoid multiple workers running at the same time
+    tokio::select! {
+        () = sleep(Duration::from_secs(rand::random_range(60..300))) => {},
+        () = cancellation_token.cancelled() => return,
+    }
 
+    loop {
         // Archive expired jobs
         debug!("archiving expired jobs");
         if let Err(err) = db.archive_expired_jobs().await {

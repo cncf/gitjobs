@@ -84,3 +84,46 @@ pub(crate) fn normalize(s: &str) -> String {
     let normalized = MULTIPLE_HYPHENS.replace(&normalized, "-").to_string();
     normalized
 }
+
+/// Convert salary to USD yearly.
+/// TODO(tegioz): refresh exchange rates automatically.
+pub(crate) fn normalize_salary(
+    salary: Option<i64>,
+    currency: Option<&String>,
+    period: Option<&String>,
+) -> Option<i64> {
+    // Currency and period must be provided to convert the salary.
+    let (Some(salary), Some(currency), Some(period)) = (salary, currency, period) else {
+        return None;
+    };
+
+    // Convert to USD.
+    let conversion_rate = match currency.to_lowercase().as_str() {
+        "usd" => 1.0,
+        "eur" => 1.08,
+        "gbp" => 1.29,
+        "cad" => 0.7,
+        "chf" => 1.13,
+        "jpy" => 0.0066,
+        _ => {
+            return None; // Unsupported currency.
+        }
+    };
+    #[allow(clippy::cast_precision_loss)]
+    let salary_usd = salary as f64 * conversion_rate;
+
+    // Convert to yearly salary.
+    let salary_usd_year = match period.as_str() {
+        "year" => salary_usd,
+        "month" => salary_usd * 12.0,
+        "week" => salary_usd * 52.0,
+        "day" => salary_usd * 5.0 * 52.0,
+        "hour" => salary_usd * 40.0 * 52.0,
+        _ => {
+            return None; // Unsupported period.
+        }
+    };
+
+    #[allow(clippy::cast_possible_truncation)]
+    Some(salary_usd_year as i64)
+}

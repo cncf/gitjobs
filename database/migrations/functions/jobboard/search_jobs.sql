@@ -162,8 +162,8 @@ begin
         and
             case when v_salary_min is not null then
                 case
-                    when j.salary is not null then j.salary >= v_salary_min
-                    when j.salary_min is not null then j.salary_min >= v_salary_min
+                    when j.salary_usd_year is not null then j.salary_usd_year >= v_salary_min
+                    when j.salary_min_usd_year is not null then j.salary_min_usd_year >= v_salary_min
                     else false
                 end
             else true end

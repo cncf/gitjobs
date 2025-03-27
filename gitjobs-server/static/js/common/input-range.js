@@ -103,23 +103,40 @@ export class InputRange extends LitWrapper {
   render() {
     return html`
       <div class="relative">
-        <input
-          ${ref(this.inputRef)}
-          form="${this.form}"
-          name="${this.name}"
-          type="range"
-          @input=${this._onInputChange}
-          @mousedown=${() => this._updateTooltipVisibility(true)}
-          @mouseup=${this._mouseup}
-          min="${this.min}"
-          max="${this.max}"
-          step="${this.step}"
-          value="${this.value}"
-          class="w-full h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-primary-300"
-          style="background-image: linear-gradient(90deg, var(--primary-color) 0%, var(--primary-color) ${this
-            .percentValue}%, rgb(231 229 228 / var(--tw-bg-opacity, 1)) ${this
-            .percentValue}%, rgb(231 229 228 / var(--tw-bg-opacity, 1)) 100%);"
-        />
+        ${this.form !== ""
+          ? html`<input
+              ${ref(this.inputRef)}
+              form="${this.form}"
+              name="${this.name}"
+              type="range"
+              @input=${this._onInputChange}
+              @mousedown=${() => this._updateTooltipVisibility(true)}
+              @mouseup=${this._mouseup}
+              min="${this.min}"
+              max="${this.max}"
+              step="${this.step}"
+              value="${this.value}"
+              class="w-full h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-primary-300"
+              style="background-image: linear-gradient(90deg, var(--primary-color) 0%, var(--primary-color) ${this
+                .percentValue}%, rgb(231 229 228 / var(--tw-bg-opacity, 1)) ${this
+                .percentValue}%, rgb(231 229 228 / var(--tw-bg-opacity, 1)) 100%);"
+            />`
+          : html`<input
+              ${ref(this.inputRef)}
+              name="${this.name}"
+              type="range"
+              @input=${this._onInputChange}
+              @mousedown=${() => this._updateTooltipVisibility(true)}
+              @mouseup=${this._mouseup}
+              min="${this.min}"
+              max="${this.max}"
+              step="${this.step}"
+              value="${this.value}"
+              class="w-full h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-primary-300"
+              style="background-image: linear-gradient(90deg, var(--primary-color) 0%, var(--primary-color) ${this
+                .percentValue}%, rgb(231 229 228 / var(--tw-bg-opacity, 1)) ${this
+                .percentValue}%, rgb(231 229 228 / var(--tw-bg-opacity, 1)) 100%);"
+            />`}
         <div
           role="tooltip"
           class="duration-100 transition-opacity ${this.visibleTooltip

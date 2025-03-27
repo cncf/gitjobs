@@ -1,11 +1,11 @@
 {% import "macros.html" as macros %}
 {% import "dashboard/employer/jobs/preview.html" as macros_preview %}
 
-<div class="flex flex-col w-full gap-3 md:flex-row md:items-center border-b pb-5 md:pb-10">
+<div class="flex flex-col w-full gap-3 md:flex-row md:items-center border-b pb-7 md:pb-10">
   <div class="flex-grow">
-    <div class="flex-grow flex items-stretch gap-x-3 md:gap-x-5 pe-12 md:pe-0 min-w-0">
+    <div class="flex-grow flex items-stretch gap-x-4 md:gap-x-5 pe-12 md:pe-0 min-w-0">
       {# Image #}
-      <div class="flex justify-center items-center size-12 md:size-14 shrink-0">
+      <div class="flex justify-center items-center size-9 md:size-14 shrink-0">
         {% if let Some(logo_id) = job.employer.logo_id %}
           {% let logo = &self::build_jobboard_image_url(logo_id, "small") %}
           <img class="size-auto"
@@ -14,25 +14,36 @@
                src="{{ logo }}"
                alt="{{ job.employer.company }} logo">
         {% else %}
-          <div class="rounded-full size-14 bg-stone-100 p-1 flex">
-            <div class="svg-icon size-8 icon-company bg-stone-500 m-auto"></div>
+          <div class="rounded-full size-9 md:size-14 bg-stone-100 p-1 flex">
+            <div class="svg-icon size-5 md:size-8 icon-company bg-stone-500 m-auto"></div>
           </div>
         {% endif %}
       </div>
       {# End image #}
 
-      <div class="flex flex-col md:flex-col-reverse justify-center min-w-0">
+      <div class="flex flex-col md:flex-col-reverse justify-between md:justify-center min-w-0">
         {# Company #}
-        <div class="text-sm/6 text-stone-500">{{ job.employer.company }}</div>
+        <div class="text-xs/4 md:text-sm/6 text-stone-500">{{ job.employer.company }}</div>
         {# End company #}
 
         {# Title #}
-        <div class="text-normal md:text-xl font-stretch-condensed font-medium text-stone-900 truncate">
+        <div class="text-[0.85rem] leading-[0.9rem] md:text-xl md:leading-base font-stretch-condensed font-medium text-stone-900 truncate">
           {{ job.title }}
         </div>
         {# End title #}
       </div>
     </div>
+
+    {% if let Some(location) = job.location %}
+      <div class="flex md:hidden ps-12 mt-3">
+        <div>
+          <div class="flex border bg-white rounded-md px-2 py-0.5 text-xs text-stone-500 font-normal items-center">
+            <div class="svg-icon size-2.5 icon-location bg-stone-500 me-1 shrink-0"></div>
+            <div class="text-nowrap truncate">{{ location.city }}, {{ location.country }}</div>
+          </div>
+        </div>
+      </div>
+    {% endif %}
   </div>
 
   {% if let Some(member) = job.employer.member %}
@@ -61,35 +72,37 @@
   <div class="border-b pb-1 md:pb-0 md:border-0 md:border md:w-1/4 pt-6">
     <div class="flex flex-col md:flex-col-reverse">
       <div>
-        {# Published date #}
-        <div class="flex items-baseline gap-x-3 mb-3 md:mb-0 md:block">
-          {% call macros_preview::job_details_subheading(content = "Published") %}
-          {% call macros_preview::job_details_content(text = job.published_at|display_some_datetime_or(DATE_FORMAT, "-")) %}
-        </div>
-        {# End published date #}
-
-        {# Last update #}
-        {% if let Some(updated_at) = job.updated_at %}
-          <div class="hidden md:block">
-            {% call macros_preview::job_details_subheading(content = "Last updated") %}
-            {% call macros_preview::job_details_content(text = job.updated_at|display_some_datetime(DATE_FORMAT)) %}
+        <div class="flex flex-row justify-between mb-4 md:mb-0 md:flex-col md:justify-start">
+          {# Published date #}
+          <div class="block">
+            {% call macros_preview::job_details_subheading(content = "Published") %}
+            {% call macros_preview::job_details_content(text = job.published_at|display_some_datetime_or(DATE_FORMAT, "-")) %}
           </div>
-        {% endif %}
-        {# End last update #}
+          {# End published date #}
 
-        {# Type #}
-        <div class="flex items-baseline gap-x-3 mb-3 md:mb-0 md:block">
-          {% call macros_preview::job_details_subheading(content = "Job type") %}
-          {% call macros_preview::job_kind(kind = job.kind) %}
-        </div>
-        {# End type #}
+          {# Last update #}
+          {% if let Some(updated_at) = job.updated_at %}
+            <div class="hidden md:block">
+              {% call macros_preview::job_details_subheading(content = "Last updated") %}
+              {% call macros_preview::job_details_content(text = job.updated_at|display_some_datetime(DATE_FORMAT)) %}
+            </div>
+          {% endif %}
+          {# End last update #}
 
-        {# Seniority level #}
-        <div class="flex items-baseline gap-x-3 mb-3 md:mb-0 md:block">
-          {% call macros_preview::job_details_subheading(content = "Seniority level") %}
-          {% call macros_preview::job_details_content(text = job.seniority|display_some_or("-"), extra_styles = "capitalize") %}
+          {# Type #}
+          <div class="block">
+            {% call macros_preview::job_details_subheading(content = "Job type") %}
+            {% call macros_preview::job_kind(kind = job.kind) %}
+          </div>
+          {# End type #}
+
+          {# Seniority level #}
+          <div class="block">
+            {% call macros_preview::job_details_subheading(content = "Seniority level") %}
+            {% call macros_preview::job_details_content(text = job.seniority|display_some_or("-"), extra_styles = "capitalize") %}
+          </div>
+          {# End seniority level #}
         </div>
-        {# End seniority level #}
 
         {# Salary #}
         <div class="flex items-baseline gap-x-3 mb-3 md:mb-0 md:block">
@@ -143,7 +156,7 @@
       {# End salary #}
 
       {# Location #}
-      <div class="block mb-3 md:mb-0">
+      <div class="hidden md:block">
         {% call macros_preview::job_details_subheading(content = "Location") %}
         {% call macros_preview::job_workplace(workplace = job.workplace, location = job.location|display_some_or("-")) %}
       </div>

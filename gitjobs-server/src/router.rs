@@ -173,7 +173,7 @@ fn setup_employer_dashboard_router(state: &State) -> Router<State> {
         )
         .route(
             "/applications/profile/{profile_id}/preview",
-            post(dashboard::employer::applications::profile_preview_page)
+            get(dashboard::employer::applications::profile_preview_page)
                 .layer(check_user_has_profile_access.clone()),
         )
         .route(

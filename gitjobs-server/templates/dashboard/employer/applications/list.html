@@ -1,1 +1,139 @@
-<h1>Applications list page</h1>
+{% import "macros.html" as macros %}
+{% import "misc/preview_modal.html" as preview %}
+
+{% call macros::form_title(title = "Applicants") %}
+
+<div class="my-10">{# TODO - dropdown jobs #}</div>
+
+{# Applicants Table -#}
+<div class="relative overflow-visible">
+  <table class="table-auto w-full text-sm text-left rtl:text-right text-stone-500">
+    <thead class="text-xs text-stone-700 uppercase bg-stone-100 border-b">
+      <tr>
+        <th scope="col" class="px-3 xl:px-5 py-3">Applicant</th>
+        <th scope="col" class="px-3 xl:px-5 py-3">Position</th>
+        <th scope="col" class="px-3 xl:px-5 py-3">Applied</th>
+        <th scope="col" class="p-4"></th>
+      </tr>
+    </thead>
+    <tbody id="applications-list">
+      {% if applications.is_empty() %}
+        <tr class="bg-white border-b">
+          <td class="px-8 py-20 text-center" colspan="7">
+            <div class="text-2xl mb-10">
+              {# TODO - display correct message #}
+              <div id="full-list">It looks like no one has applied yet to any of the jobs you have posted.</div>
+              <div id="job-list" class="hidden">It looks like no one has applied yet to this job.</div>
+            </div>
+            <p class="text-xl text-stone-700">Hold on a bit, they will start applying soon :)</p>
+          </td>
+        </tr>
+      {% else %}
+        {% for application in applications %}
+          <tr class="odd:bg-white even:bg-stone-50/50 border-b">
+            {# Applicant #}
+            <th scope="row"
+                class="px-3 xl:px-5 py-4 font-medium text-stone-900 min-w-[100px] max-w-[200px] xl:max-w-auto">
+              <button hx-get="/dashboard/employer/applications/profile/{{ application.job_seeker_profile_id }}/preview"
+                      hx-target="#preview-content"
+                      hx-disabled-elt="this"
+                      class="flex items-stretch preview-button">
+                {# Photo #}
+                <div class="flex justify-center items-center size-12 md:size-14 shrink-0">
+                  {% if let Some(photo_id) = application.photo_id %}
+                    {% let photo = &self::build_dashboard_image_url(photo_id, "small") %}
+                    <img class="size-auto"
+                         height="auto"
+                         width="auto"
+                         src="{{ photo }}"
+                         alt="{{ application.name }} photo">
+                  {% else %}
+                    <div class="rounded-full size-14 bg-stone-100 p-1 flex">
+                      <div class="svg-icon size-8 icon-user bg-stone-500 m-auto"></div>
+                    </div>
+                  {% endif %}
+                </div>
+                {# End photo #}
+
+                <div class="flex flex-col justify-between">
+                  {# Name #}
+                  <div class="max-w-full truncate">{{ application.name }}</div>
+                  {# End name #}
+
+                  {# Last position #}
+                  <div class="text-xs text-stone-500 max-w-full truncate">
+                    {{ application.last_position|display_some_or("-") }}
+                  </div>
+                  {# End last position #}
+                </div>
+              </button>
+            </th>
+            {# End applicant #}
+
+            {# Position #}
+            <td class="px-3 xl:px-5 py-4 whitespace-nowrap w-32">
+              <button hx-post="/dashboard/employer/jobs/{{ application.job_id }}/preview"
+                      hx-target="#preview-content"
+                      hx-disabled-elt="this"
+                      class="flex flex-col preview-button">
+                <div>{{ application.job_title }}</div>
+                <div class="text-xs text-stone-500 max-w-full truncate">
+                  {{ application.job_location|display_some_or("-") }}
+                </div>
+              </button>
+            </td>
+            {# End postion #}
+
+            {# Applied date #}
+            <td class="hidden lg:table-cell px-3 xl:px-5 py-4 whitespace-nowrap w-32">
+              {{ application.applied_at.format(DATE_FORMAT) }}
+            </td>
+            {# End applied date #}
+
+            {# Actions #}
+            <td class="px-3 xl:px-5 py-4 w-24">
+              <div class="flex items-center gap-x-2 xl:gap-x-3">
+                <button hx-get="/dashboard/employer/applications/profile/{{ application.job_seeker_profile_id }}/preview"
+                        hx-target="#preview-content"
+                        hx-disabled-elt="this"
+                        class="btn-tertiary p-2 preview-button">
+                  <div class="svg-icon size-4 icon-eye"></div>
+                </button>
+              </div>
+            </td>
+            {# End actions #}
+          </tr>
+        {% endfor %}
+      {% endif %}
+    </tbody>
+  </table>
+</div>
+{# End applicants Table #}
+
+{# Pagination -#}
+{% if applications.len() > 0 %}{{ navigation_links|safe }}{% endif %}
+{# End pagination -#}
+
+{# Preview modal -#}
+{% call preview::modal() %}
+{# End preview modal -#}
+
+<script type="module">
+  import {
+    toggleModalVisibility,
+    isSuccessfulXHRStatus
+  } from '/static/js/common/common.js';
+
+  // On preview button click, show the preview modal
+  const previewButtons = document.querySelectorAll('.preview-button');
+  previewButtons.forEach((button) => {
+    button.addEventListener('htmx:afterRequest', (e) => {
+      if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
+        toggleModalVisibility('preview-modal', "open");
+      } else {
+        // When the preview is not available, show an error message
+        showErrorAlert('Something went wrong previewing the data, please try again later.');
+      }
+    });
+  });
+</script>

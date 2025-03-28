@@ -9,6 +9,8 @@ use uuid::Uuid;
 
 use crate::templates::{
     dashboard::employer::jobs::JobSummary,
+    filters,
+    helpers::{DATE_FORMAT, build_dashboard_image_url},
     misc::Location,
     pagination::{NavigationLinks, Pagination},
 };

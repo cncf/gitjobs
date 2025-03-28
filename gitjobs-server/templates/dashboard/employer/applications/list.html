@@ -4,13 +4,21 @@
 {% call macros::form_title(title = "Applicantions") %}
 
 <div class="my-10">
+  {# Job button to open dropdown #}
   {% if filters_options.jobs.is_empty() %}
-    No jobs
+    <button class="w-full flex items-center px-4 py-2 text-sm/6 hover:bg-stone-100"
+            disabled>Any jobs</button>
   {% else %}
     <div class="relative w-96">
       {# Jobs button to open dropdown #}
       <button id="jobs-btn" class="select select-primary flex items-center">
-        <div class="flex items-center relative">Job</div>
+        <div class="flex items-center relative">
+          {% if let Some(selected_job) = filters.job_id %}
+            selected job
+          {% else %}
+            All jobs
+          {% endif %}
+        </div>
       </button>
       {# End jobs button to open dropdown #}
 
@@ -18,22 +26,48 @@
       <div id="dropdown-jobs"
            class="hidden absolute top-10 start-0 w-full z-10 bg-white rounded-lg shadow-sm border">
         <ul class="max-h-48 overflow-y-auto text-stone-700">
+          <li>
+            {% let is_selected = filters.job_id.is_none() %}
+            <button hx-get="/dashboard/employer/applications/list"
+                    hx-trigger="click"
+                    hx-target="#dashboard-content"
+                    class="w-full flex items-center px-4 py-2 text-sm/6 hover:bg-stone-100
+                           {% if is_selected -%}bg-stone-100{%- endif %}"
+                    {% if is_selected %}disabled{% endif %}>All jobs</button>
+          </li>
           {% for job in filters_options.jobs %}
             {% let is_selected = job.job_id == filters.job_id.clone().unwrap_or_default() %}
+            {# {% let is_selected = false %} #}
             <li>
-              <button hx-get="/dashboard/employer/applications/list"
+              <button hx-get="/dashboard/employer/applications/list?job_id={{ job.job_id }}"
                       hx-trigger="click"
-                      hx-include="input[name=job_id]"
-                      hx-target="#dashboard_content"
+                      hx-target="#dashboard-content"
                       class="w-full flex items-center px-4 py-2 text-sm/6 hover:bg-stone-100
                              {% if is_selected -%}bg-stone-100{%- endif %}"
-                      {% if is_selected %}disabled{% endif %}>xxx</button>
+                      {% if is_selected %}disabled{% endif %}>
+                <div class="flex flex-col items-start gap-y-2 w-full">
+                  <div class="max-w-full text-lg font-semibold truncate">{{ job.title }}</div>
+                  <div class="flex items-center gap-x-2 justify-between">
+                    {# Location #}
+                    <div class="text-xs/4 text-stone-500 max-w-full truncate">
+                      {% if let Some(city) = job.city %}
+                        {{ city }}
+                        {% if let Some (country) = job.country %}, {{ country }}{% endif %}
+                      {% endif %}
+                    </div>
+                    {# End location #}
+
+                    {# Created date #}
+                    <div class="text-xs/4 text-stone-500 uppercase max-w-full truncate">
+                      {{ job.created_at.format(DATE_FORMAT) }}
+                    </div>
+                    {# End created date #}
+                  </div>
+                </div>
+              </button>
             </li>
           {% endfor %}
         </ul>
-        <input type="hidden"
-               name="job_id"
-               value="e1c8b151-8bbb-490f-96c6-77c621ab2ee4">
       </div>
       {# End dropdown jobs #}
     </div>
@@ -56,9 +90,12 @@
         <tr class="bg-white border-b">
           <td class="px-8 py-20 text-center" colspan="7">
             <div class="text-2xl mb-10">
-              {# TODO - display correct message #}
-              <div id="full-list">It looks like no one has applied yet to any of the jobs you have posted.</div>
-              <div id="job-list" class="hidden">It looks like no one has applied yet to this job.</div>
+              {# TODO - no jobs #}
+              {% if filters.job_id.is_none() %}
+                <div>It looks like no one has applied yet to any of the jobs you have posted.</div>
+              {% else %}
+                <div>It looks like no one has applied yet to this job.</div>
+              {% endif %}
             </div>
             <p class="text-xl text-stone-700">Hold on a bit, they will start applying soon :)</p>
           </td>

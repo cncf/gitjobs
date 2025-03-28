@@ -20,6 +20,7 @@ use crate::{
     templates::{
         PageId, auth,
         dashboard::job_seeker::{
+            applications,
             home::{self, Content, Tab},
             profile,
         },
@@ -47,6 +48,10 @@ pub(crate) async fn page(
         Tab::Account => {
             let user_summary = user.clone().into();
             Content::Account(auth::UpdateUserPage { user_summary })
+        }
+        Tab::Applications => {
+            let applications = db.list_job_seeker_applications(&user.user_id).await?;
+            Content::Applications(applications::ApplicationsPage { applications })
         }
         Tab::Profile => {
             let profile = db.get_job_seeker_profile(&user.user_id).await?;

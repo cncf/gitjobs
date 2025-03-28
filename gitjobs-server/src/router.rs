@@ -227,6 +227,14 @@ fn setup_job_seeker_dashboard_router() -> Router<State> {
     Router::new()
         .route("/", get(dashboard::job_seeker::home::page))
         .route(
+            "/applications/list",
+            get(dashboard::job_seeker::applications::list_page),
+        )
+        .route(
+            "/applications/{application_id}/cancel",
+            put(dashboard::job_seeker::applications::cancel),
+        )
+        .route(
             "/profile/preview",
             post(dashboard::job_seeker::profile::preview_page),
         )

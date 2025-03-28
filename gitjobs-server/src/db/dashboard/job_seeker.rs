@@ -6,14 +6,23 @@ use async_trait::async_trait;
 use tracing::{instrument, trace};
 use uuid::Uuid;
 
-use crate::{PgDB, templates::dashboard::job_seeker::profile::JobSeekerProfile};
+use crate::{
+    PgDB,
+    templates::dashboard::job_seeker::{applications::Application, profile::JobSeekerProfile},
+};
 
 /// Trait that defines some database operations used in the job seeker
 /// dashboard.
 #[async_trait]
 pub(crate) trait DBDashBoardJobSeeker {
+    /// Cancel application.
+    async fn cancel_application(&self, application_id: &Uuid, user_id: &Uuid) -> Result<()>;
+
     /// Get job seeker profile.
     async fn get_job_seeker_profile(&self, user_id: &Uuid) -> Result<Option<JobSeekerProfile>>;
+
+    /// List job seeker applications.
+    async fn list_job_seeker_applications(&self, user_id: &Uuid) -> Result<Vec<Application>>;
 
     /// Update job seeker profile.
     async fn update_job_seeker_profile(&self, user_id: &Uuid, profile: &JobSeekerProfile) -> Result<()>;
@@ -21,6 +30,29 @@ pub(crate) trait DBDashBoardJobSeeker {
 
 #[async_trait]
 impl DBDashBoardJobSeeker for PgDB {
+    #[instrument(skip(self), err)]
+    async fn cancel_application(&self, application_id: &Uuid, user_id: &Uuid) -> Result<()> {
+        trace!("db: cancel application");
+
+        let db = self.pool.get().await?;
+        db.execute(
+            "
+            delete from job_seeker_application
+            where application_id in (
+                select application_id
+                from application a
+                join job_seeker_profile p using (job_seeker_profile_id)
+                where application_id = $1::uuid
+                and user_id = $2::uuid
+            );
+            ",
+            &[&application_id, &user_id],
+        )
+        .await?;
+
+        Ok(())
+    }
+
     #[instrument(skip(self), err)]
     async fn get_job_seeker_profile(&self, user_id: &Uuid) -> Result<Option<JobSeekerProfile>> {
         trace!("db: get job seeker profile");
@@ -99,7 +131,53 @@ impl DBDashBoardJobSeeker for PgDB {
         Ok(profile)
     }
 
-    #[instrument(skip(self, profile), err)]
+    #[instrument(skip(self), err)]
+    async fn list_job_seeker_applications(&self, user_id: &Uuid) -> Result<Vec<Application>> {
+        trace!("db: list job seeker applications");
+
+        let db = self.pool.get().await?;
+        let applications = db
+            .query(
+                "
+                select
+                    a.application_id,
+                    a.created_at as applied_at,
+                    a.job_id,
+                    j.title as job_title,
+                    (
+                        select nullif(jsonb_strip_nulls(jsonb_build_object(
+                            'location_id', l.location_id,
+                            'city', l.city,
+                            'country', l.country,
+                            'state', l.state
+                        )), '{}'::jsonb)
+                    ) as job_location
+                from application a
+                join job j on a.job_id = j.job_id
+                join job_seeker_profile p on a.job_seeker_profile_id = p.job_seeker_profile_id
+                left join location l on j.location_id = l.location_id
+                where p.user_id = $1::uuid
+                order by applied_at desc;
+                ",
+                &[&user_id],
+            )
+            .await?
+            .iter()
+            .map(|row| Application {
+                application_id: row.get("application_id"),
+                applied_at: row.get("applied_at"),
+                job_id: row.get("job_id"),
+                job_title: row.get("job_title"),
+                job_location: row
+                    .get::<_, Option<serde_json::Value>>("job_location")
+                    .map(|v| serde_json::from_value(v).expect("job location should be valid json")),
+            })
+            .collect();
+
+        Ok(applications)
+    }
+
+    #[instrument(skip(self), err)]
     async fn update_job_seeker_profile(&self, user_id: &Uuid, profile: &JobSeekerProfile) -> Result<()> {
         trace!("db: update job seeker profile");
 

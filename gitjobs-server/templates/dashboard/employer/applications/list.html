@@ -19,18 +19,21 @@
            class="hidden absolute top-10 start-0 w-full z-10 bg-white rounded-lg shadow-sm border">
         <ul class="max-h-48 overflow-y-auto text-stone-700">
           {% for job in filters_options.jobs %}
-            {# {% let is_selected = job.job_id == filters.job_id %} #}
-            {% let is_selected = false %}
+            {% let is_selected = job.job_id == filters.job_id.clone().unwrap_or_default() %}
             <li>
-              <button hx-put="/dashboard/employer/applications/list?job_id={{ job.job_id }}"
+              <button hx-get="/dashboard/employer/applications/list"
                       hx-trigger="click"
-                      hx-target="body"
+                      hx-include="input[name=job_id]"
+                      hx-target="#dashboard_content"
                       class="w-full flex items-center px-4 py-2 text-sm/6 hover:bg-stone-100
                              {% if is_selected -%}bg-stone-100{%- endif %}"
                       {% if is_selected %}disabled{% endif %}>xxx</button>
             </li>
           {% endfor %}
         </ul>
+        <input type="hidden"
+               name="job_id"
+               value="e1c8b151-8bbb-490f-96c6-77c621ab2ee4">
       </div>
       {# End dropdown jobs #}
     </div>

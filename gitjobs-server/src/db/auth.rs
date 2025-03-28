@@ -425,7 +425,7 @@ impl DBAuth for PgDB {
         db.execute(
             r#"
             update "user" set
-                name = $2::text,
+                name = $2::text
             where user_id = $1::uuid;
             "#,
             &[&user_id, &user_summary.name],

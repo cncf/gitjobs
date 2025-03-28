@@ -3,6 +3,7 @@ FROM rust:1-alpine3.21 AS builder
 RUN apk --no-cache add musl-dev perl make
 WORKDIR /gitjobs
 COPY Cargo.* ./
+COPY docs/about.md docs/about.md
 COPY gitjobs-server gitjobs-server
 WORKDIR /gitjobs/gitjobs-server
 RUN cargo build --release

@@ -14,9 +14,9 @@ Posting your job listing is free.
 
 ### What do the "Upstream Commitment" and "Open Source" bars mean?
 
-- The *Upstream Commitment* bar indicates how much time the employer provides to work on upstream open source projects the company depends on.
+The *Upstream Commitment* bar indicates how much time the employer provides to work on upstream open source projects the company depends on.
 
-- The *Open Source* bar indicates how much time of the job is allocated to developing open source code.
+The *Open Source* bar indicates how much time of the job is allocated to developing open source code.
 
 Jobs postings that include "Upstream Commitment" or "Open Source" development time are featured on the site.
 

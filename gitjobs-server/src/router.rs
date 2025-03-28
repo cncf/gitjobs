@@ -103,30 +103,45 @@ pub(crate) async fn setup(
         .route("/health-check", get(health_check))
         .nest("/jobboard/images", jobboard_images_router)
         .route("/locations/search", get(search_locations))
-        .route("/log-in", get(auth::log_in_page).post(auth::log_in))
-        .route("/log-in/oauth2/{provider}", get(auth::oauth2_redirect))
-        .route("/log-in/oauth2/{provider}/callback", get(auth::oauth2_callback))
-        .route("/log-in/oidc/{provider}", get(auth::oidc_redirect))
-        .route("/log-in/oidc/{provider}/callback", get(auth::oidc_callback))
+        .route("/log-in", get(auth::log_in_page));
+
+    // Setup some routes based on the login options enabled
+    if cfg.login.email {
+        router = router
+            .route("/log-in", post(auth::log_in))
+            .route("/sign-up", post(auth::sign_up))
+            .route("/verify-email/{code}", get(auth::verify_email));
+    }
+    if cfg.login.github {
+        router = router
+            .route("/log-in/oauth2/{provider}", get(auth::oauth2_redirect))
+            .route("/log-in/oauth2/{provider}/callback", get(auth::oauth2_callback));
+    }
+    if cfg.login.linuxfoundation {
+        router = router
+            .route("/log-in/oidc/{provider}", get(auth::oidc_redirect))
+            .route("/log-in/oidc/{provider}/callback", get(auth::oidc_callback));
+    }
+
+    // Resume router setup.
+    router = router
         .route("/log-out", get(auth::log_out))
         .route("/section/jobs/{job_id}", get(jobboard::jobs::job_section))
         .route("/section/jobs/results", get(jobboard::jobs::results_section))
         .route("/section/user-menu", get(user_menu_section))
-        .route("/sign-up", get(auth::sign_up_page).post(auth::sign_up))
-        .route("/verify-email/{code}", get(auth::verify_email))
+        .route("/sign-up", get(auth::sign_up_page))
         .route_layer(MessagesManagerLayer)
         .route_layer(auth_layer)
         .route_layer(ServiceBuilder::new().layer(TraceLayer::new_for_http()))
-        .route("/static/{*file}", get(static_handler))
-        .fallback(not_found)
-        .layer(Extension(QsQueryConfig::new(3, false).error_handler(|err| {
+        .route_layer(Extension(QsQueryConfig::new(3, false).error_handler(|err| {
             QsQueryRejection::new(err, StatusCode::UNPROCESSABLE_ENTITY)
         })))
+        .route("/static/{*file}", get(static_handler))
+        .fallback(not_found)
         .layer(SetResponseHeaderLayer::if_not_present(
             CACHE_CONTROL,
             HeaderValue::from_static("max-age=0"),
-        ))
-        .with_state(state);
+        ));
 
     // Setup basic auth
     if let Some(basic_auth) = &cfg.basic_auth {
@@ -138,7 +153,7 @@ pub(crate) async fn setup(
         }
     }
 
-    Ok(router)
+    Ok(router.with_state(state))
 }
 
 /// Setup employer dashboard router.

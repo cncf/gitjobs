@@ -7,18 +7,27 @@ use axum::{
     response::{Html, IntoResponse},
 };
 use cached::proc_macro::cached;
+use chrono::Duration;
 use tracing::instrument;
 
-use crate::{db::DynDB, handlers::error::HandlerError, templates::jobboard::about::Page};
+use crate::{
+    db::DynDB,
+    handlers::{error::HandlerError, prepare_headers},
+    templates::jobboard::about::Page,
+};
 
 /// Handler that returns the about page.
 #[instrument(skip_all, err)]
 pub(crate) async fn page(State(_db): State<DynDB>) -> Result<impl IntoResponse, HandlerError> {
+    // Prepare template
     let template = Page {
         content: prepare_content()?,
     };
 
-    Ok(Html(template.render()?))
+    // Prepare response headers
+    let headers = prepare_headers(Duration::hours(1), &[])?;
+
+    Ok((headers, Html(template.render()?)))
 }
 
 /// Prepare about page content.

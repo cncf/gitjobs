@@ -104,7 +104,7 @@ impl DBAuth for PgDB {
         Ok(())
     }
 
-    #[instrument(skip(self), err)]
+    #[instrument(skip(self, session_id), err)]
     async fn delete_session(&self, session_id: &session::Id) -> Result<()> {
         trace!("db: delete session");
 
@@ -118,7 +118,7 @@ impl DBAuth for PgDB {
         Ok(())
     }
 
-    #[instrument(skip(self), err)]
+    #[instrument(skip(self, session_id), err)]
     async fn get_session(&self, session_id: &session::Id) -> Result<Option<session::Record>> {
         trace!("db: get session");
 
@@ -142,7 +142,7 @@ impl DBAuth for PgDB {
         Ok(None)
     }
 
-    #[instrument(skip(self), err)]
+    #[instrument(skip(self, email), err)]
     async fn get_user_by_email(&self, email: &str) -> Result<Option<User>> {
         trace!("db: get user (by email)");
 
@@ -313,7 +313,7 @@ impl DBAuth for PgDB {
         inner(db, image_id).await
     }
 
-    #[instrument(skip(self), err)]
+    #[instrument(skip(self, user_summary, email_verified), err)]
     async fn sign_up_user(
         &self,
         user_summary: &UserSummary,
@@ -417,7 +417,7 @@ impl DBAuth for PgDB {
         Ok(())
     }
 
-    #[instrument(skip(self), err)]
+    #[instrument(skip(self, user_summary), err)]
     async fn update_user_details(&self, user_id: &Uuid, user_summary: &UserSummary) -> Result<()> {
         trace!("db: update user details");
 
@@ -442,7 +442,7 @@ impl DBAuth for PgDB {
         Ok(())
     }
 
-    #[instrument(skip(self), err)]
+    #[instrument(skip(self, new_password), err)]
     async fn update_user_password(&self, user_id: &Uuid, new_password: &str) -> Result<()> {
         trace!("db: update user password");
 
@@ -546,7 +546,7 @@ impl DBAuth for PgDB {
         Ok(row.get("owns_job"))
     }
 
-    #[instrument(skip(self), err)]
+    #[instrument(skip(self, code), err)]
     async fn verify_email(&self, code: &Uuid) -> Result<()> {
         trace!("db: verify email");
 

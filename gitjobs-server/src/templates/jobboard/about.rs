@@ -8,4 +8,6 @@ use serde::{Deserialize, Serialize};
 /// About page template.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
 #[template(path = "jobboard/about/page.html")]
-pub(crate) struct Page {}
+pub(crate) struct Page {
+    pub content: String,
+}

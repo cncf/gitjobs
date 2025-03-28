@@ -75,7 +75,7 @@ pub(crate) trait DBDashBoardEmployer {
 
 #[async_trait]
 impl DBDashBoardEmployer for PgDB {
-    #[instrument(skip(self), err)]
+    #[instrument(skip(self, employer), err)]
     async fn add_employer(&self, user_id: &Uuid, employer: &Employer) -> Result<Uuid> {
         trace!("db: add employer");
 
@@ -138,7 +138,7 @@ impl DBDashBoardEmployer for PgDB {
         Ok(employer_id)
     }
 
-    #[instrument(skip(self), err)]
+    #[instrument(skip(self, job), err)]
     async fn add_job(&self, employer_id: &Uuid, job: &Job) -> Result<()> {
         trace!("db: add job");
 
@@ -667,7 +667,7 @@ impl DBDashBoardEmployer for PgDB {
         Ok(output)
     }
 
-    #[instrument(skip(self), err)]
+    #[instrument(skip(self, employer), err)]
     async fn update_employer(&self, employer_id: &Uuid, employer: &Employer) -> Result<()> {
         trace!("db: update employer");
 
@@ -702,7 +702,7 @@ impl DBDashBoardEmployer for PgDB {
         Ok(())
     }
 
-    #[instrument(skip(self), err)]
+    #[instrument(skip(self, job), err)]
     async fn update_job(&self, job_id: &Uuid, job: &Job) -> Result<()> {
         trace!("db: update job");
 

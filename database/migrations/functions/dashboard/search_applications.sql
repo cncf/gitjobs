@@ -6,7 +6,7 @@ create or replace function search_applications(
 returns table(applications json, total bigint) as $$
 declare
     v_job_id uuid := (p_filters->>'job_id')::uuid;
-    v_limit int := coalesce((p_filters->>'limit')::int, 10);
+    v_limit int := coalesce((p_filters->>'limit')::int, 20);
     v_offset int := coalesce((p_filters->>'offset')::int, 0);
 begin
     return query

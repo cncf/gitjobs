@@ -99,7 +99,7 @@ impl DBDashBoardJobSeeker for PgDB {
         Ok(profile)
     }
 
-    #[instrument(skip(self), err)]
+    #[instrument(skip(self, profile), err)]
     async fn update_job_seeker_profile(&self, user_id: &Uuid, profile: &JobSeekerProfile) -> Result<()> {
         trace!("db: update job seeker profile");
 

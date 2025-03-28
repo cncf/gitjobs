@@ -32,7 +32,7 @@ pub(crate) trait DBNotifications {
 
 #[async_trait]
 impl DBNotifications for PgDB {
-    #[instrument(skip(self), err)]
+    #[instrument(skip(self, notification), err)]
     async fn enqueue_notification(&self, notification: &NewNotification) -> Result<()> {
         trace!("db: enqueue notification");
 
@@ -94,7 +94,7 @@ impl DBNotifications for PgDB {
         Ok(notification)
     }
 
-    #[instrument(skip(self), err)]
+    #[instrument(skip(self, notification), err)]
     async fn update_notification(
         &self,
         client_id: Uuid,

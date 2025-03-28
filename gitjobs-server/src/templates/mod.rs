@@ -16,6 +16,7 @@ pub(crate) mod pagination;
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub(crate) enum PageId {
+    About,
     EmployerDashboard,
     JobBoard,
     JobSeekerDashboard,

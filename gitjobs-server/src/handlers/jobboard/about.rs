@@ -2,26 +2,25 @@
 
 use anyhow::{Result, anyhow};
 use askama::Template;
-use axum::{
-    extract::State,
-    response::{Html, IntoResponse},
-};
+use axum::response::{Html, IntoResponse};
 use cached::proc_macro::cached;
 use chrono::Duration;
 use tracing::instrument;
 
 use crate::{
-    db::DynDB,
+    auth::AuthSession,
     handlers::{error::HandlerError, prepare_headers},
-    templates::jobboard::about::Page,
+    templates::{PageId, jobboard::about::Page},
 };
 
 /// Handler that returns the about page.
 #[instrument(skip_all, err)]
-pub(crate) async fn page(State(_db): State<DynDB>) -> Result<impl IntoResponse, HandlerError> {
+pub(crate) async fn page(auth_session: AuthSession) -> Result<impl IntoResponse, HandlerError> {
     // Prepare template
     let template = Page {
         content: prepare_content()?,
+        page_id: PageId::About,
+        user: auth_session.into(),
     };
 
     // Prepare response headers

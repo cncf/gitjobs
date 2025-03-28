@@ -1,9 +1,41 @@
 {% import "macros.html" as macros %}
 {% import "misc/preview_modal.html" as preview %}
 
-{% call macros::form_title(title = "Applicants") %}
+{% call macros::form_title(title = "Applicantions") %}
 
-<div class="my-10">{# TODO - dropdown jobs #}</div>
+<div class="my-10">
+  {% if filters_options.jobs.is_empty() %}
+    No jobs
+  {% else %}
+    <div class="relative w-96">
+      {# Jobs button to open dropdown #}
+      <button id="jobs-btn" class="select select-primary flex items-center">
+        <div class="flex items-center relative">Job</div>
+      </button>
+      {# End jobs button to open dropdown #}
+
+      {# Dropdown jobs #}
+      <div id="dropdown-jobs"
+           class="hidden absolute top-10 start-0 w-full z-10 bg-white rounded-lg shadow-sm border">
+        <ul class="max-h-48 overflow-y-auto text-stone-700">
+          {% for job in filters_options.jobs %}
+            {# {% let is_selected = job.job_id == filters.job_id %} #}
+            {% let is_selected = false %}
+            <li>
+              <button hx-put="/dashboard/employer/applications/list?job_id={{ job.job_id }}"
+                      hx-trigger="click"
+                      hx-target="body"
+                      class="w-full flex items-center px-4 py-2 text-sm/6 hover:bg-stone-100
+                             {% if is_selected -%}bg-stone-100{%- endif %}"
+                      {% if is_selected %}disabled{% endif %}>xxx</button>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+      {# End dropdown jobs #}
+    </div>
+  {% endif %}
+</div>
 
 {# Applicants Table -#}
 <div class="relative overflow-visible">
@@ -32,12 +64,11 @@
         {% for application in applications %}
           <tr class="odd:bg-white even:bg-stone-50/50 border-b">
             {# Applicant #}
-            <th scope="row"
-                class="px-3 xl:px-5 py-4 font-medium text-stone-900 min-w-[100px] max-w-[200px] xl:max-w-auto">
+            <td class="px-3 xl:px-5 py-4 font-medium text-stone-900">
               <button hx-get="/dashboard/employer/applications/profile/{{ application.job_seeker_profile_id }}/preview"
                       hx-target="#preview-content"
                       hx-disabled-elt="this"
-                      class="flex items-stretch preview-button">
+                      class="flex items-stretch gap-x-6 preview-button">
                 {# Photo #}
                 <div class="flex justify-center items-center size-12 md:size-14 shrink-0">
                   {% if let Some(photo_id) = application.photo_id %}
@@ -55,29 +86,29 @@
                 </div>
                 {# End photo #}
 
-                <div class="flex flex-col justify-between">
+                <div class="flex flex-col justify-between items-start">
                   {# Name #}
-                  <div class="max-w-full truncate">{{ application.name }}</div>
+                  <div class="max-w-full text-xl truncate">{{ application.name }}</div>
                   {# End name #}
 
                   {# Last position #}
-                  <div class="text-xs text-stone-500 max-w-full truncate">
+                  <div class="text-sm/4 text-stone-500 max-w-full truncate">
                     {{ application.last_position|display_some_or("-") }}
                   </div>
                   {# End last position #}
                 </div>
               </button>
-            </th>
+            </td>
             {# End applicant #}
 
             {# Position #}
-            <td class="px-3 xl:px-5 py-4 whitespace-nowrap w-32">
+            <td class="px-3 xl:px-5 py-4 font-medium text-stone-900">
               <button hx-post="/dashboard/employer/jobs/{{ application.job_id }}/preview"
                       hx-target="#preview-content"
                       hx-disabled-elt="this"
-                      class="flex flex-col preview-button">
-                <div>{{ application.job_title }}</div>
-                <div class="text-xs text-stone-500 max-w-full truncate">
+                      class="flex flex-col justify-between h-[56px] preview-button">
+                <div class="max-w-full text-xl text-black truncate">{{ application.job_title }}</div>
+                <div class="text-sm/4 text-stone-500 max-w-full truncate">
                   {{ application.job_location|display_some_or("-") }}
                 </div>
               </button>
@@ -91,7 +122,7 @@
             {# End applied date #}
 
             {# Actions #}
-            <td class="px-3 xl:px-5 py-4 w-24">
+            <td class="px-3 xl:px-5 py-4 w-12">
               <div class="flex items-center gap-x-2 xl:gap-x-3">
                 <button hx-get="/dashboard/employer/applications/profile/{{ application.job_seeker_profile_id }}/preview"
                         hx-target="#preview-content"
@@ -123,6 +154,27 @@
     toggleModalVisibility,
     isSuccessfulXHRStatus
   } from '/static/js/common/common.js';
+
+  const jobsBtn = document.getElementById('jobs-btn');
+  const dropdownJobs = document.getElementById('dropdown-jobs');
+  if (jobsBtn) {
+    jobsBtn.addEventListener('click', () => {
+      const isOpen = dropdownJobs.classList.contains('hidden');
+      dropdownJobs.classList.toggle('hidden');
+
+      // Close dropdown jobs when clicking outside
+      if (isOpen) {
+        document.addEventListener('click', (event) => {
+          if (!dropdownJobs.contains(event.target) && !jobsBtn.contains(event.target)) {
+            dropdownJobs.classList.add('hidden');
+          }
+        });
+      } else {
+        // Remove event listener when dropdown is closed
+        document.removeEventListener('click', () => {});
+      }
+    });
+  }
 
   // On preview button click, show the preview modal
   const previewButtons = document.querySelectorAll('.preview-button');

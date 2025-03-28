@@ -49,7 +49,6 @@ impl Content {
     }
 
     /// Check if the content is the applications page.
-    #[allow(dead_code)]
     fn is_applications(&self) -> bool {
         matches!(self, Content::Applications(_))
     }

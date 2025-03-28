@@ -32,6 +32,7 @@ pub(crate) struct Page {
 #[allow(clippy::large_enum_variant)]
 pub(crate) enum Content {
     Account(auth::UpdateUserPage),
+    Applications(job_seeker::applications::ApplicationsPage),
     Profile(job_seeker::profile::UpdatePage),
 }
 
@@ -39,6 +40,12 @@ impl Content {
     /// Check if the content is the account page.
     fn is_account(&self) -> bool {
         matches!(self, Content::Account(_))
+    }
+
+    /// Check if the content is the applications page.
+    #[allow(dead_code)]
+    fn is_applications(&self) -> bool {
+        matches!(self, Content::Applications(_))
     }
 
     /// Check if the content is the profile page.
@@ -51,6 +58,7 @@ impl std::fmt::Display for Content {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Content::Account(template) => write!(f, "{}", template.render()?),
+            Content::Applications(template) => write!(f, "{}", template.render()?),
             Content::Profile(template) => write!(f, "{}", template.render()?),
         }
     }
@@ -61,6 +69,7 @@ impl std::fmt::Display for Content {
 #[strum(serialize_all = "kebab-case")]
 pub(crate) enum Tab {
     Account,
+    Applications,
     #[default]
     Profile,
 }

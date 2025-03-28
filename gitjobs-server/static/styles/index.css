@@ -1,7 +1,7 @@
 :root {
   --primary-color: #fd4d12;
   --lime-color: #84cc16;
-  --lime-light-color: #a3e635;
+  --lime-light-color: #bef264;
 }
 
 .bg-jobboard {
@@ -16,17 +16,18 @@
 .markdown ul li {
   list-style-type: disc;
   list-style-position: outside;
-  margin-left: 1rem;
+  margin-left: 1.5rem;
 }
 
 .markdown ol li {
   list-style-type: decimal;
   list-style-position: outside;
-  margin-left: 1rem;
+  margin-left: 1.5rem;
 }
 
 .markdown h1, .markdown h2, .markdown h3, .markdown h4, .markdown h5, .markdown h6 {
   font-size: inherit;
+  font-weight: 600;
 }
 
 .markdown p:not(:last-child), .markdown ul:not(:last-child), .markdown ol:not(:last-child), .markdown pre:not(:last-child), .markdown table:not(:last-child) {
@@ -54,13 +55,49 @@
 
 .markdown a {
   text-decoration: underline;
-  font-weight: 600;
 }
 
 .markdown hr {
   margin: 1rem 0;
 }
 /* End markdown */
+
+/* About page */
+.about h1 {
+  font-size: 3rem;
+  line-height: 3rem;
+  margin-bottom: 2rem;
+  font-weight: 300;
+  letter-spacing: 0.25rem;
+}
+
+.about h2 {
+  font-size: 1.5rem;
+  margin-top: 2.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.about h3 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  margin-top: 2rem;
+}
+
+.about a {
+  color: var(--primary-color);
+}
+
+@media screen and (max-width: 768px) {
+  .about h1 {
+    font-size: 2rem;
+    line-height: 2rem;
+  }
+
+  .about {
+    font-size: 0.9rem;
+  }
+}
+/* End about page */
 
 select.aligned-right {
   text-align-last: right;

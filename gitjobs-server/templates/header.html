@@ -26,7 +26,7 @@
   {# Desktop links #}
   <div class="hidden xl:flex xl:gap-x-6 -mb-2">
     {% call header_link(text = "Jobs", href = "/", active = page_id == PageId::JobBoard) %}
-    {% call disabled_header_link(text = "About") %}
+    {% call header_link(text = "About", href = "/about", active = page_id == PageId::About) %}
   </div>
   {# End desktop links #}
 </div>

@@ -3,7 +3,7 @@
 use askama::Template;
 use serde::{Deserialize, Serialize};
 
-use crate::templates::{PageId, auth::User};
+use crate::templates::{PageId, auth::User, filters};
 
 // Pages templates.
 

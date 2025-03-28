@@ -58,14 +58,9 @@
 <div class="flex flex-col md:flex-row-reverse flex-grow md:items-stretch">
   {# Info #}
   <div class="border-b md:border-0 mb-5 md:mb-0 md:border md:w-1/4 pt-6">
-    {# Apply url #}
-    {% if let Some(apply_url) = job.apply_url %}
-      <a href="{{ apply_url }}"
-         class="btn-primary-outline w-full block mt-4 mb-6"
-         target="_blank"
-         rel="noopener noreferrer">Apply</a>
-    {% endif %}
-    {# End apply url #}
+    {# Apply button #}
+    <button class="btn-primary w-full block my-6" disabled>Apply</button>
+    {# End apply button #}
 
     {# Published date #}
     {% call job_details_subheading(content = "Published") %}
@@ -316,7 +311,7 @@
   <div class="-mt-1 flex space-x-2 items-center w-full">
     <div class="w-full bg-stone-200 rounded-full h-1.5 my-2">
       {# djlint:off H008 #}
-      <div class='bg-lime-{%- if type == &"open_source" -%}400{%- else -%}500{%- endif %} h-1.5 rounded-full'
+      <div class='bg-lime-{%- if type == &"open_source" -%}300{%- else -%}500{%- endif %} h-1.5 rounded-full'
            style="width: {{ percentage }}%"></div>
       {# djlint:on H008 #}
     </div>

@@ -32,7 +32,7 @@
 </div>
 
 <div class="relative flex">
-  {% if page_id == PageId::JobBoard %}
+  {% if page_id == PageId::JobBoard || page_id == PageId::About %}
     <div hx-get="/section/user-menu" hx-trigger="load" hx-target="this">
       <button class="relative group rounded-full bg-white border text-xl border-primary-500 text-primary-600 size-[38px] p-0.5 overflow-hidden"
               disabled>

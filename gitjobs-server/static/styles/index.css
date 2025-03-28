@@ -87,6 +87,14 @@
   color: var(--primary-color);
 }
 
+.about ul {
+  margin-top: 1rem;
+}
+
+.about ul li {
+  line-height: 2rem;
+}
+
 @media screen and (max-width: 768px) {
   .about h1 {
     font-size: 2rem;

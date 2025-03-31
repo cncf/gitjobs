@@ -1,7 +1,7 @@
-import { html } from "/static/vendor/js/lit-all.v3.min.js";
+import { html } from "/static/vendor/js/it-all.v3.2.1.min.js";
 import { unnormalize } from "/static/js/common/common.js";
 import { triggerActionOnForm } from "/static/js/jobboard/filters.js";
-import { LitWrapper } from "/static/js/common/litWrapper.js";
+import { LitWrapper } from "/static/js/common/lit-wrapper.js";
 import { getBenefits } from "/static/js/common/data.js";
 
 export class SearchableFilter extends LitWrapper {

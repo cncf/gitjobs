@@ -1,5 +1,5 @@
-import { html, createRef, ref } from "/static/vendor/js/lit-all.v3.min.js";
-import { LitWrapper } from "/static/js/common/litWrapper.js";
+import { html, createRef, ref } from "/static/vendor/js/it-all.v3.2.1.min.js";
+import { LitWrapper } from "/static/js/common/lit-wrapper.js";
 
 export class MarkdownEditor extends LitWrapper {
   static properties = {

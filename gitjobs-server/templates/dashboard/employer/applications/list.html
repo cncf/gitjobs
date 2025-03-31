@@ -1,179 +1,180 @@
 {% import "macros.html" as macros %}
 {% import "misc/preview_modal.html" as preview %}
 
-{% call macros::form_title(title = "Applicantions") %}
+{% call macros::form_title(title = "Applications") %}
 
 <div class="my-10">
-  {# Job button to open dropdown #}
-  {% if filters_options.jobs.is_empty() %}
-    <button class="w-full flex items-center px-4 py-2 text-sm/6 hover:bg-stone-100"
-            disabled>Any jobs</button>
-  {% else %}
-    <div class="relative w-96">
-      {# Jobs button to open dropdown #}
-      <button id="jobs-btn" class="select select-primary flex items-center">
-        <div class="flex items-center relative">
-          {% if let Some(selected_job) = self.selected_job() %}
-            {{ selected_job.title }}
-          {% else %}
-            All jobs
-          {% endif %}
-        </div>
-      </button>
-      {# End jobs button to open dropdown #}
+  <div class="relative w-1/2">
+    {# Jobs button to open dropdown #}
+    <button id="jobs-btn"
+            class="select select-primary flex items-center"
+            {% if filters_options.jobs.is_empty() -%}
+            disabled
+            {%- endif -%}>
+      {# Icon #}
+      <div class="flex items-baseline relative">
+        {% if let Some(selected_job) = self.selected_job() %}
+          {{ selected_job.title }} <span class="text-xs text-stone-500 ms-2">
+          {% if let Some(city) = selected_job.city %}
+            ({{ city }}
+            {%- if let Some (country) = selected_job.country -%}, {{ country }}{%- endif -%}
+              )
+            {% endif %}
+          </span>
+        {% else %}
+          All jobs
+        {% endif %}
+      </div>
+    </button>
+    {# End jobs button to open dropdown #}
 
-      {# Dropdown jobs #}
-      <div id="dropdown-jobs"
-           class="hidden absolute top-10 start-0 w-full z-10 bg-white rounded-lg shadow-sm border">
-        <ul class="max-h-48 overflow-y-auto text-stone-700">
+    {# Dropdown jobs #}
+    <div id="dropdown-jobs"
+         class="hidden absolute top-10 start-0 w-full z-10 bg-white rounded-lg shadow-sm border">
+      <ul class="max-h-48 overflow-y-auto text-stone-700">
+        <li>
+          <button hx-get="/dashboard/employer/applications/list"
+                  hx-trigger="click"
+                  hx-target="#dashboard-content"
+                  class="w-full flex items-center px-4 py-2 text-sm/6 hover:bg-stone-100 disabled:bg-stone-100"
+                  {% if filters.job_id.is_none() %}disabled{% endif %}>All jobs</button>
+        </li>
+        {% for job in filters_options.jobs %}
           <li>
-            {% let is_selected = filters.job_id.is_none() %}
-            <button hx-get="/dashboard/employer/applications/list"
+            <button hx-get="/dashboard/employer/applications/list?job_id={{ job.job_id }}"
                     hx-trigger="click"
                     hx-target="#dashboard-content"
-                    class="w-full flex items-center px-4 py-2 text-sm/6 hover:bg-stone-100
-                           {% if is_selected -%}bg-stone-100{%- endif %}"
-                    {% if is_selected %}disabled{% endif %}>All jobs</button>
+                    class="w-full flex items-center px-4 py-2 text-sm/6 hover:bg-stone-100 disabled:bg-stone-100"
+                    {% if let Some(job_id) = filters.job_id -%}
+                    {%- if job_id == &job.job_id -%}
+                    disabled
+                    {%- endif -%}
+                    {%- endif -%}>
+              <div class="flex items-baseline relative">
+                {{ job.title }} <span class="text-xs text-stone-500 ms-2">
+                {% if let Some(city) = job.city %}
+                  ({{ city }}
+                  {%- if let Some (country) = job.country -%}, {{ country }}{%- endif -%}
+                    )
+                  {% endif %}
+                </span>
+              </div>
+            </button>
           </li>
-          {% for job in filters_options.jobs %}
-            {% let is_selected = job.job_id == filters.job_id.clone().unwrap_or_default() %}
-            <li>
-              <button hx-get="/dashboard/employer/applications/list?job_id={{ job.job_id }}"
-                      hx-trigger="click"
-                      hx-target="#dashboard-content"
-                      class="w-full flex items-center px-4 py-2 text-sm/6 hover:bg-stone-100
-                             {% if is_selected -%}bg-stone-100{%- endif %}"
-                      {% if is_selected %}disabled{% endif %}>
-                <div class="flex flex-col items-start gap-y-2 w-full">
-                  <div class="max-w-full text-lg font-semibold truncate">{{ job.title }}</div>
-                  <div class="flex items-center gap-x-2 justify-between">
-                    {# Location #}
-                    <div class="text-xs/4 text-stone-500 max-w-full truncate">
-                      {% if let Some(city) = job.city %}
-                        {{ city }}
-                        {% if let Some (country) = job.country %}, {{ country }}{% endif %}
-                      {% endif %}
-                    </div>
-                    {# End location #}
-
-                    {# Created date #}
-                    <div class="text-xs/4 text-stone-500 uppercase max-w-full truncate">
-                      {{ job.created_at.format(DATE_FORMAT) }}
-                    </div>
-                    {# End created date #}
-                  </div>
-                </div>
-              </button>
-            </li>
-          {% endfor %}
-        </ul>
-      </div>
-      {# End dropdown jobs #}
+        {% endfor %}
+      </ul>
     </div>
-  {% endif %}
+    {# End dropdown jobs #}
+  </div>
 </div>
 
 {# Applicants Table -#}
 <div class="relative overflow-visible">
-  <table class="table-auto w-full text-sm text-left rtl:text-right text-stone-500">
+  <table class="table-fixed w-full text-sm text-left rtl:text-right text-stone-500">
     <thead class="text-xs text-stone-700 uppercase bg-stone-100 border-b">
       <tr>
         <th scope="col" class="px-3 xl:px-5 py-3">Applicant</th>
         <th scope="col" class="px-3 xl:px-5 py-3">Position</th>
-        <th scope="col" class="px-3 xl:px-5 py-3">Applied</th>
-        <th scope="col" class="p-4"></th>
+        <th scope="col" class="px-3 xl:px-5 py-3 w-32">Applied</th>
       </tr>
     </thead>
     <tbody id="applications-list">
-      {% if applications.is_empty() %}
+      {% if filters_options.jobs.is_empty() %}
         <tr class="bg-white border-b">
-          <td class="px-8 py-20 text-center" colspan="7">
+          <td class="px-8 py-20 text-center" colspan="3">
             <div class="text-2xl mb-10">
-              {# TODO - no jobs #}
-              {% if filters.job_id.is_none() %}
-                <div>It looks like no one has applied yet to any of the jobs you have posted.</div>
-              {% else %}
-                <div>It looks like no one has applied yet to this job.</div>
-              {% endif %}
+              It looks like you have not posted any job yet. Once you do, you will be able to explore the applications received within GitJobs here.
             </div>
-            <p class="text-xl text-stone-700">Hold on a bit, they will start applying soon :)</p>
+            <p class="text-stone-700">
+              Please note that applicants for externally tracked job opportunities (e.g. when you use an external apply url in your postings) won't appear here.
+            </p>
           </td>
         </tr>
       {% else %}
-        {% for application in applications %}
-          <tr class="odd:bg-white even:bg-stone-50/50 border-b">
-            {# Applicant #}
-            <td class="px-3 xl:px-5 py-4 font-medium text-stone-900">
-              <button hx-get="/dashboard/employer/applications/profile/{{ application.job_seeker_profile_id }}/preview"
-                      hx-target="#preview-content"
-                      hx-disabled-elt="this"
-                      class="flex items-stretch gap-x-6 preview-button">
-                {# Photo #}
-                <div class="flex justify-center items-center size-12 md:size-14 shrink-0">
-                  {% if let Some(photo_id) = application.photo_id %}
-                    {% let photo = &self::build_dashboard_image_url(photo_id, "small") %}
-                    <img class="size-auto"
-                         height="auto"
-                         width="auto"
-                         src="{{ photo }}"
-                         alt="{{ application.name }} photo">
-                  {% else %}
-                    <div class="rounded-full size-14 bg-stone-100 p-1 flex">
-                      <div class="svg-icon size-8 icon-user bg-stone-500 m-auto"></div>
-                    </div>
-                  {% endif %}
-                </div>
-                {# End photo #}
-
-                <div class="flex flex-col justify-between items-start">
-                  {# Name #}
-                  <div class="max-w-full text-xl truncate">{{ application.name }}</div>
-                  {# End name #}
-
-                  {# Last position #}
-                  <div class="text-sm/4 text-stone-500 max-w-full truncate">
-                    {{ application.last_position|display_some_or("-") }}
-                  </div>
-                  {# End last position #}
-                </div>
-              </button>
+        {% if applications.is_empty() %}
+          <tr class="bg-white border-b">
+            <td class="px-8 py-20 text-center" colspan="3">
+              <div class="text-2xl mb-10">
+                {# TODO - no jobs #}
+                {% if filters.job_id.is_none() %}
+                  <div>It looks like no one has applied yet to any of the jobs you have posted.</div>
+                {% else %}
+                  <div>It looks like no one has applied yet to this job.</div>
+                {% endif %}
+              </div>
+              <p class="text-xl text-stone-700 mb-10">Hold on a bit, they will start applying soon :)</p>
+              <p class="text-stone-700">
+                Please note that applicants for externally tracked job opportunities (e.g. when you use an external apply url in your postings) won't appear here.
+              </p>
             </td>
-            {# End applicant #}
-
-            {# Position #}
-            <td class="px-3 xl:px-5 py-4 font-medium text-stone-900">
-              <button hx-post="/dashboard/employer/jobs/{{ application.job_id }}/preview"
-                      hx-target="#preview-content"
-                      hx-disabled-elt="this"
-                      class="flex flex-col justify-between h-[56px] preview-button">
-                <div class="max-w-full text-xl text-black truncate">{{ application.job_title }}</div>
-                <div class="text-sm/4 text-stone-500 max-w-full truncate">
-                  {{ application.job_location|display_some_or("-") }}
-                </div>
-              </button>
-            </td>
-            {# End postion #}
-
-            {# Applied date #}
-            <td class="hidden lg:table-cell px-3 xl:px-5 py-4 whitespace-nowrap w-32">
-              {{ application.applied_at.format(DATE_FORMAT) }}
-            </td>
-            {# End applied date #}
-
-            {# Actions #}
-            <td class="px-3 xl:px-5 py-4 w-12">
-              <div class="flex items-center gap-x-2 xl:gap-x-3">
+          </tr>
+        {% else %}
+          {% for application in applications %}
+            <tr class="odd:bg-white even:bg-stone-50/50 border-b">
+              {# Applicant #}
+              <td class="px-3 xl:px-5 py-4 font-medium text-stone-900">
                 <button hx-get="/dashboard/employer/applications/profile/{{ application.job_seeker_profile_id }}/preview"
                         hx-target="#preview-content"
                         hx-disabled-elt="this"
-                        class="btn-tertiary p-2 preview-button">
-                  <div class="svg-icon size-4 icon-eye"></div>
+                        class="flex items-stretch gap-x-6 preview-button">
+                  {# Photo #}
+                  <div class="flex justify-center items-center size-8 md:size-10 shrink-0">
+                    {% if let Some(photo_id) = application.photo_id %}
+                      {% let photo = &self::build_dashboard_image_url(photo_id, "small") %}
+                      <img class="size-auto"
+                           height="auto"
+                           width="auto"
+                           src="{{ photo }}"
+                           alt="{{ application.name }} photo">
+                    {% else %}
+                      <div class="rounded-full size-8 md:size-10 bg-stone-100 p-1 flex">
+                        <div class="svg-icon size-4 md:size-6 icon-user bg-stone-500 m-auto"></div>
+                      </div>
+                    {% endif %}
+                  </div>
+                  {# End photo #}
+
+                  <div class="flex flex-col justify-between items-start">
+                    {# Name #}
+                    <div class="max-w-full truncate">{{ application.name }}</div>
+                    {# End name #}
+
+                    {# Last position #}
+                    <div class="text-xs/4 text-stone-500 max-w-full truncate">
+                      {{ application.last_position|display_some_or("-") }}
+                    </div>
+                    {# End last position #}
+                  </div>
                 </button>
-              </div>
-            </td>
-            {# End actions #}
-          </tr>
-        {% endfor %}
+              </td>
+              {# End applicant #}
+
+              {# Position #}
+              <td class="px-3 xl:px-5 py-4 font-medium text-stone-900">
+                <button hx-post="/dashboard/employer/jobs/{{ application.job_id }}/preview"
+                        hx-target="#preview-content"
+                        hx-disabled-elt="this"
+                        class="flex flex-col justify-between h-[32px] md:h-[40px] preview-button">
+                  <div class="max-w-full text-black truncate">{{ application.job_title }}</div>
+                  <div class="text-xs/4 text-stone-500 max-w-full truncate">
+                    {% if let Some(job_location) = application.job_location %}
+                      {{ job_location.city }}, {{ job_location.country }}
+                    {% else %}
+                      -
+                    {% endif %}
+                  </div>
+                </button>
+              </td>
+              {# End postion #}
+
+              {# Applied date #}
+              <td class="hidden lg:table-cell px-3 xl:px-5 py-4 whitespace-nowrap">
+                {{ application.applied_at.format(DATE_FORMAT) }}
+              </td>
+              {# End applied date #}
+            </tr>
+          {% endfor %}
+        {% endif %}
       {% endif %}
     </tbody>
   </table>

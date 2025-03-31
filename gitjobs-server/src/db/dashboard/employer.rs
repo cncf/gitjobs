@@ -310,8 +310,11 @@ impl DBDashBoardEmployer for PgDB {
                     j.job_id,
                     j.created_at,
                     j.title,
-                    j.status
+                    j.status,
+                    l.city,
+                    l.country
                 from job j
+                left join location l using (location_id)
                 where employer_id = $1::uuid
                 order by created_at desc;
                 ",
@@ -324,6 +327,8 @@ impl DBDashBoardEmployer for PgDB {
         for row in rows {
             let job = JobSummary {
                 job_id: row.get("job_id"),
+                city: row.get("city"),
+                country: row.get("country"),
                 created_at: row.get("created_at"),
                 title: row.get("title"),
                 status: row.get::<_, String>("status").parse().expect("valid job status"),

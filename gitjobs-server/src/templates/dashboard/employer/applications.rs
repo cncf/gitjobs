@@ -27,6 +27,16 @@ pub(crate) struct ApplicationsPage {
     pub navigation_links: NavigationLinks,
 }
 
+impl ApplicationsPage {
+    /// Get selected job.
+    pub(crate) fn selected_job(&self) -> Option<&JobSummary> {
+        if let Some(job_id) = self.filters.job_id {
+            return self.filters_options.jobs.iter().find(|j| j.job_id == job_id);
+        }
+        None
+    }
+}
+
 // Types.
 
 /// Application information.

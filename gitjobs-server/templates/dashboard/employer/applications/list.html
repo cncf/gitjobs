@@ -13,8 +13,8 @@
       {# Jobs button to open dropdown #}
       <button id="jobs-btn" class="select select-primary flex items-center">
         <div class="flex items-center relative">
-          {% if let Some(selected_job) = filters.job_id %}
-            selected job
+          {% if let Some(selected_job) = self.selected_job() %}
+            {{ selected_job.title }}
           {% else %}
             All jobs
           {% endif %}
@@ -37,7 +37,6 @@
           </li>
           {% for job in filters_options.jobs %}
             {% let is_selected = job.job_id == filters.job_id.clone().unwrap_or_default() %}
-            {# {% let is_selected = false %} #}
             <li>
               <button hx-get="/dashboard/employer/applications/list?job_id={{ job.job_id }}"
                       hx-trigger="click"

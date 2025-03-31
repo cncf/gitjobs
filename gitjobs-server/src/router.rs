@@ -279,7 +279,7 @@ async fn static_handler(uri: Uri) -> impl IntoResponse {
     let cache_max_age = if path.starts_with("images/") {
         60 * 60 * 24 * 7 // 1 week
     } else if path.starts_with("vendor/") {
-        60 * 60 * 24 * 7 * 30 // 1 month
+        60 * 60 * 24 * 30 // 1 month
     } else {
         // Default cache duration for other static resources
         60 * 60 // 1 hour

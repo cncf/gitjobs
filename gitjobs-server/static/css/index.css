@@ -1,3 +1,107 @@
+@import "tailwindcss";
+
+@plugin "@tailwindcss/forms";
+
+@theme {
+  --font-inter: Inter, sans-serif;
+  --font-sans:
+    "Clarity City", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica,
+    Arial, sans-serif, Roboto, Ubuntu, "Apple Color Emoji", "Segoe UI Emoji",
+    "Segoe UI Symbol";
+  --color-primary-50: #fff4ed;
+  --color-primary-100: #ffe6d4;
+  --color-primary-200: #ffcaa9;
+  --color-primary-300: #ffa472;
+  --color-primary-400: #fe6728;
+  --color-primary-500: #fd4d12;
+  --color-primary-600: #ee3308;
+  --color-primary-700: #c52309;
+  --color-primary-800: #9c1d10;
+  --color-primary-900: #7e1b10;
+  --color-primary-950: #440906;
+}
+
+@layer components {
+  .btn-primary {
+    @apply enabled:cursor-pointer rounded-full text-center bg-primary-600 border border-primary-600 px-5 py-2 text-sm text-white hover:enabled:bg-primary-900 hover:enabled:border-primary-900 focus:ring-0 focus:outline-none focus:ring-transparent relative overflow-hidden;
+  }
+
+  .btn-primary-anchor {
+    @apply cursor-pointer rounded-full text-center bg-primary-600 border border-primary-600 px-5 py-2 text-sm text-white hover:bg-primary-900 hover:border-primary-900 focus:ring-0 focus:outline-none focus:ring-transparent relative overflow-hidden;
+  }
+
+  .btn-primary .svg-icon,
+  .btn-primary-anchor .svg-icon {
+    @apply bg-white;
+  }
+
+  .btn-secondary {
+    @apply enabled:cursor-pointer rounded-full text-center bg-primary-50 border border-primary-900 px-5 py-2 text-sm text-primary-900 hover:enabled:bg-primary-100 hover:enabled:border-primary-900 focus:ring-0 focus:outline-none focus:ring-transparent relative overflow-hidden;
+  }
+
+  .btn-secondary .svg-icon {
+    @apply bg-primary-900;
+  }
+
+  .btn-tertiary {
+    @apply enabled:cursor-pointer text-center text-sm/6 text-stone-900 px-5 py-2 border-transparent rounded-full focus:ring-0 focus:outline-none focus:ring-transparent hover:enabled:bg-stone-50 hover:enabled:border-stone-50 relative overflow-hidden;
+  }
+
+  .btn-tertiary-anchor {
+    @apply cursor-pointer text-center text-sm/6 text-stone-900 px-5 py-2 border-transparent rounded-full focus:ring-0 focus:outline-none focus:ring-transparent hover:bg-stone-50 hover:border-stone-50 relative overflow-hidden;
+  }
+
+  .btn-tertiary .svg-icon,
+  .btn-tertiary-anchor .svg-icon {
+    @apply bg-stone-900;
+  }
+
+  .btn-primary-outline {
+    @apply enabled:cursor-pointer text-center text-primary-600 border border-primary-600 bg-white rounded-full hover:enabled:text-white hover:enabled:bg-primary-900 hover:enabled:border-primary-900 focus:ring-0 focus:outline-none focus:ring-transparent text-sm px-5 py-2 relative overflow-hidden;
+  }
+
+  .btn-primary-outline-anchor {
+    @apply cursor-pointer text-center text-primary-600 border border-primary-600 bg-white rounded-full hover:text-white hover:bg-primary-900 hover:border-primary-900 focus:ring-0 focus:outline-none focus:ring-transparent text-sm px-5 py-2 relative overflow-hidden;
+  }
+
+  .btn-primary-outline .svg-icon,
+  .btn-primary-outline-anchor .svg-icon {
+    @apply bg-primary-600;
+  }
+
+  .btn-mini {
+    @apply text-xs/6 py-0 px-3;
+  }
+
+  .input-primary {
+    @apply block w-full rounded-md bg-white px-3 py-1.5 text-base text-stone-900 border border-stone-200 placeholder:text-stone-500/75 focus:outline-2 focus:-outline-offset-2 focus:outline-primary-600 focus:ring-primary-600 sm:text-sm/6;
+  }
+
+  .select-primary {
+    @apply col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-stone-900 border border-stone-200 focus:outline-2 focus:-outline-offset-2 focus:outline-primary-600 focus:ring-primary-600 sm:text-sm/6;
+  }
+
+  .radio-primary {
+    @apply w-4 h-4 text-primary-600 border border-stone-200 bg-stone-50 cursor-pointer focus:ring-primary-500 focus:ring-2;
+  }
+
+  .checkbox-primary {
+    @apply w-4 h-4 rounded-sm text-primary-600 border border-stone-200 bg-stone-50 cursor-pointer focus:ring-primary-500 focus:ring-2;
+  }
+
+  .asterisk {
+    @apply font-bold text-stone-900 text-lg/4;
+  }
+
+  .form-label {
+    @apply block text-sm/6 font-medium text-stone-900;
+  }
+
+  .form-legend {
+    @apply mt-1 text-xs/6 text-stone-600;
+  }
+}
+
 :root {
   --primary-color: #fd4d12;
   --lime-color: #84cc16;
@@ -6,26 +110,32 @@
 
 /* latin-ext */
 @font-face {
-  font-family: 'Inter';
+  font-family: "Inter";
   font-style: normal;
   font-weight: 300 800;
   font-display: fallback;
-  src: url(/static/vendor/fonts/inter-latin-ext.woff2) format('woff2');
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+  src: url(/static/vendor/fonts/inter-latin-ext.woff2) format("woff2");
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304,
+    U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB,
+    U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 
 /* latin */
 @font-face {
-  font-family: 'Inter';
+  font-family: "Inter";
   font-style: normal;
   font-weight: 300 800;
   font-display: fallback;
-  src: url(/static/vendor/fonts/inter-latin.woff2) format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  src: url(/static/vendor/fonts/inter-latin.woff2) format("woff2");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212,
+    U+2215, U+FEFF, U+FFFD;
 }
 
 .bg-jobboard {
-  background-image: url('/static/images/background.jpg');
+  background-image: url("/static/images/background.jpg");
   background-size: cover;
   background-position: center;
   background-repeat: repeat;
@@ -33,6 +143,7 @@
 }
 
 /* Markdown */
+
 .markdown ul li {
   list-style-type: disc;
   list-style-position: outside;
@@ -45,12 +156,21 @@
   margin-left: 1.5rem;
 }
 
-.markdown h1, .markdown h2, .markdown h3, .markdown h4, .markdown h5, .markdown h6 {
+.markdown h1,
+.markdown h2,
+.markdown h3,
+.markdown h4,
+.markdown h5,
+.markdown h6 {
   font-size: inherit;
   font-weight: 600;
 }
 
-.markdown p:not(:last-child), .markdown ul:not(:last-child), .markdown ol:not(:last-child), .markdown pre:not(:last-child), .markdown table:not(:last-child) {
+.markdown p:not(:last-child),
+.markdown ul:not(:last-child),
+.markdown ol:not(:last-child),
+.markdown pre:not(:last-child),
+.markdown table:not(:last-child) {
   margin-bottom: 0.5rem;
 }
 
@@ -68,7 +188,8 @@
   margin: 1rem 0;
 }
 
-.markdown table td, .markdown table th {
+.markdown table td,
+.markdown table th {
   border: 1px solid #e2e8f0;
   padding: 0.5rem;
 }
@@ -153,293 +274,293 @@ select.aligned-right option {
 }
 
 .icon-applications {
-  mask-image: url('/static/images/icons/applications.svg');
-  -webkit-mask-image: url('/static/images/icons/applications.svg')
+  mask-image: url("/static/images/icons/applications.svg");
+  -webkit-mask-image: url("/static/images/icons/applications.svg");
 }
 
 .icon-archive {
-  mask-image: url('/static/images/icons/archive.svg');
-  -webkit-mask-image: url('/static/images/icons/archive.svg')
+  mask-image: url("/static/images/icons/archive.svg");
+  -webkit-mask-image: url("/static/images/icons/archive.svg");
 }
 
 .icon-arrow_left_double {
-  mask-image: url('/static/images/icons/arrow_left_double.svg');
-  -webkit-mask-image: url('/static/images/icons/arrow_left_double.svg')
+  mask-image: url("/static/images/icons/arrow_left_double.svg");
+  -webkit-mask-image: url("/static/images/icons/arrow_left_double.svg");
 }
 
 .icon-arrow_left {
-  mask-image: url('/static/images/icons/arrow_left.svg');
-  -webkit-mask-image: url('/static/images/icons/arrow_left.svg')
+  mask-image: url("/static/images/icons/arrow_left.svg");
+  -webkit-mask-image: url("/static/images/icons/arrow_left.svg");
 }
 
 .icon-arrow_right_double {
-  mask-image: url('/static/images/icons/arrow_right_double.svg');
-  -webkit-mask-image: url('/static/images/icons/arrow_right_double.svg')
+  mask-image: url("/static/images/icons/arrow_right_double.svg");
+  -webkit-mask-image: url("/static/images/icons/arrow_right_double.svg");
 }
 
 .icon-arrow_right {
-  mask-image: url('/static/images/icons/arrow_right.svg');
-  -webkit-mask-image: url('/static/images/icons/arrow_right.svg')
+  mask-image: url("/static/images/icons/arrow_right.svg");
+  -webkit-mask-image: url("/static/images/icons/arrow_right.svg");
 }
 
 .icon-briefcase {
-  mask-image: url('/static/images/icons/briefcase.svg');
-  -webkit-mask-image: url('/static/images/icons/briefcase.svg')
+  mask-image: url("/static/images/icons/briefcase.svg");
+  -webkit-mask-image: url("/static/images/icons/briefcase.svg");
 }
 
 .icon-buildings {
-  mask-image: url('/static/images/icons/buildings.svg');
-  -webkit-mask-image: url('/static/images/icons/buildings.svg')
+  mask-image: url("/static/images/icons/buildings.svg");
+  -webkit-mask-image: url("/static/images/icons/buildings.svg");
 }
 
 .icon-calendar {
-  mask-image: url('/static/images/icons/calendar.svg');
-  -webkit-mask-image: url('/static/images/icons/calendar.svg')
+  mask-image: url("/static/images/icons/calendar.svg");
+  -webkit-mask-image: url("/static/images/icons/calendar.svg");
 }
 
 .icon-caret_down {
-  mask-image: url('/static/images/icons/caret_down.svg');
-  -webkit-mask-image: url('/static/images/icons/caret_down.svg')
+  mask-image: url("/static/images/icons/caret_down.svg");
+  -webkit-mask-image: url("/static/images/icons/caret_down.svg");
 }
 
 .icon-caret_up {
-  mask-image: url('/static/images/icons/caret_up.svg');
-  -webkit-mask-image: url('/static/images/icons/caret_up.svg')
+  mask-image: url("/static/images/icons/caret_up.svg");
+  -webkit-mask-image: url("/static/images/icons/caret_up.svg");
 }
 
 .icon-check {
-  mask-image: url('/static/images/icons/check.svg');
-  -webkit-mask-image: url('/static/images/icons/check.svg')
+  mask-image: url("/static/images/icons/check.svg");
+  -webkit-mask-image: url("/static/images/icons/check.svg");
 }
 
 .icon-clipboard {
-  mask-image: url('/static/images/icons/clipboard.svg');
-  -webkit-mask-image: url('/static/images/icons/clipboard.svg')
+  mask-image: url("/static/images/icons/clipboard.svg");
+  -webkit-mask-image: url("/static/images/icons/clipboard.svg");
 }
 
 .icon-close {
-  mask-image: url('/static/images/icons/close.svg');
-  -webkit-mask-image: url('/static/images/icons/close.svg')
+  mask-image: url("/static/images/icons/close.svg");
+  -webkit-mask-image: url("/static/images/icons/close.svg");
 }
 
 .icon-company {
-  mask-image: url('/static/images/icons/company.svg');
-  -webkit-mask-image: url('/static/images/icons/company.svg')
+  mask-image: url("/static/images/icons/company.svg");
+  -webkit-mask-image: url("/static/images/icons/company.svg");
 }
 
 .icon-draft {
-  mask-image: url('/static/images/icons/draft.svg');
-  -webkit-mask-image: url('/static/images/icons/draft.svg')
+  mask-image: url("/static/images/icons/draft.svg");
+  -webkit-mask-image: url("/static/images/icons/draft.svg");
 }
 
 .icon-email {
-  mask-image: url('/static/images/icons/email.svg');
-  -webkit-mask-image: url('/static/images/icons/email.svg')
+  mask-image: url("/static/images/icons/email.svg");
+  -webkit-mask-image: url("/static/images/icons/email.svg");
 }
 
 .icon-eraser {
-  mask-image: url('/static/images/icons/eraser.svg');
-  -webkit-mask-image: url('/static/images/icons/eraser.svg')
+  mask-image: url("/static/images/icons/eraser.svg");
+  -webkit-mask-image: url("/static/images/icons/eraser.svg");
 }
 
 .icon-eye {
-  mask-image: url('/static/images/icons/eye.svg');
-  -webkit-mask-image: url('/static/images/icons/eye.svg')
+  mask-image: url("/static/images/icons/eye.svg");
+  -webkit-mask-image: url("/static/images/icons/eye.svg");
 }
 
 .icon-facebook {
-  mask-image: url('/static/images/icons/facebook.svg');
-  -webkit-mask-image: url('/static/images/icons/facebook.svg')
+  mask-image: url("/static/images/icons/facebook.svg");
+  -webkit-mask-image: url("/static/images/icons/facebook.svg");
 }
 
 .icon-file_badge {
-  mask-image: url('/static/images/icons/file_badge.svg');
-  -webkit-mask-image: url('/static/images/icons/file_badge.svg')
+  mask-image: url("/static/images/icons/file_badge.svg");
+  -webkit-mask-image: url("/static/images/icons/file_badge.svg");
 }
 
 .icon-filter {
-  mask-image: url('/static/images/icons/filter.svg');
-  -webkit-mask-image: url('/static/images/icons/filter.svg')
+  mask-image: url("/static/images/icons/filter.svg");
+  -webkit-mask-image: url("/static/images/icons/filter.svg");
 }
 
 .icon-gear {
-  mask-image: url('/static/images/icons/gear.svg');
-  -webkit-mask-image: url('/static/images/icons/gear.svg')
+  mask-image: url("/static/images/icons/gear.svg");
+  -webkit-mask-image: url("/static/images/icons/gear.svg");
 }
 
 .icon-github {
-  mask-image: url('/static/images/icons/github.svg');
-  -webkit-mask-image: url('/static/images/icons/github.svg')
+  mask-image: url("/static/images/icons/github.svg");
+  -webkit-mask-image: url("/static/images/icons/github.svg");
 }
 
 .icon-graduation_cap {
-  mask-image: url('/static/images/icons/graduation_cap.svg');
-  -webkit-mask-image: url('/static/images/icons/graduation_cap.svg')
+  mask-image: url("/static/images/icons/graduation_cap.svg");
+  -webkit-mask-image: url("/static/images/icons/graduation_cap.svg");
 }
 
 .icon-hour_glass {
-  mask-image: url('/static/images/icons/hour_glass.svg');
-  -webkit-mask-image: url('/static/images/icons/hour_glass.svg')
+  mask-image: url("/static/images/icons/hour_glass.svg");
+  -webkit-mask-image: url("/static/images/icons/hour_glass.svg");
 }
 
 .icon-image {
-  mask-image: url('/static/images/icons/image.svg');
-  -webkit-mask-image: url('/static/images/icons/image.svg')
+  mask-image: url("/static/images/icons/image.svg");
+  -webkit-mask-image: url("/static/images/icons/image.svg");
 }
 
 .icon-lfx {
-  mask-image: url('/static/images/icons/lfx.svg');
-  -webkit-mask-image: url('/static/images/icons/lfx.svg')
+  mask-image: url("/static/images/icons/lfx.svg");
+  -webkit-mask-image: url("/static/images/icons/lfx.svg");
 }
 
 .icon-link {
-  mask-image: url('/static/images/icons/link.svg');
-  -webkit-mask-image: url('/static/images/icons/link.svg')
+  mask-image: url("/static/images/icons/link.svg");
+  -webkit-mask-image: url("/static/images/icons/link.svg");
 }
 
 .icon-linkedin {
-  mask-image: url('/static/images/icons/linkedin.svg');
-  -webkit-mask-image: url('/static/images/icons/linkedin.svg')
+  mask-image: url("/static/images/icons/linkedin.svg");
+  -webkit-mask-image: url("/static/images/icons/linkedin.svg");
 }
 
 .icon-list {
-  mask-image: url('/static/images/icons/list.svg');
-  -webkit-mask-image: url('/static/images/icons/list.svg')
+  mask-image: url("/static/images/icons/list.svg");
+  -webkit-mask-image: url("/static/images/icons/list.svg");
 }
 
 .icon-location {
-  mask-image: url('/static/images/icons/location.svg');
-  -webkit-mask-image: url('/static/images/icons/location.svg')
+  mask-image: url("/static/images/icons/location.svg");
+  -webkit-mask-image: url("/static/images/icons/location.svg");
 }
 
 .icon-login {
-  mask-image: url('/static/images/icons/login.svg');
-  -webkit-mask-image: url('/static/images/icons/login.svg')
+  mask-image: url("/static/images/icons/login.svg");
+  -webkit-mask-image: url("/static/images/icons/login.svg");
 }
 
 .icon-logout {
-  mask-image: url('/static/images/icons/logout.svg');
-  -webkit-mask-image: url('/static/images/icons/logout.svg')
+  mask-image: url("/static/images/icons/logout.svg");
+  -webkit-mask-image: url("/static/images/icons/logout.svg");
 }
 
 .icon-medal {
-  mask-image: url('/static/images/icons/medal.svg');
-  -webkit-mask-image: url('/static/images/icons/medal.svg')
+  mask-image: url("/static/images/icons/medal.svg");
+  -webkit-mask-image: url("/static/images/icons/medal.svg");
 }
 
 .icon-menu {
-  mask-image: url('/static/images/icons/menu.svg');
-  -webkit-mask-image: url('/static/images/icons/menu.svg')
+  mask-image: url("/static/images/icons/menu.svg");
+  -webkit-mask-image: url("/static/images/icons/menu.svg");
 }
 
 .icon-office_chair {
-  mask-image: url('/static/images/icons/office_chair.svg');
-  -webkit-mask-image: url('/static/images/icons/office_chair.svg')
+  mask-image: url("/static/images/icons/office_chair.svg");
+  -webkit-mask-image: url("/static/images/icons/office_chair.svg");
 }
 
 .icon-office {
-  mask-image: url('/static/images/icons/office.svg');
-  -webkit-mask-image: url('/static/images/icons/office.svg')
+  mask-image: url("/static/images/icons/office.svg");
+  -webkit-mask-image: url("/static/images/icons/office.svg");
 }
 
 .icon-organigram {
-  mask-image: url('/static/images/icons/organigram.svg');
-  -webkit-mask-image: url('/static/images/icons/organigram.svg')
+  mask-image: url("/static/images/icons/organigram.svg");
+  -webkit-mask-image: url("/static/images/icons/organigram.svg");
 }
 
 .icon-outline_clipboard {
-  mask-image: url('/static/images/icons/outline_clipboard.svg');
-  -webkit-mask-image: url('/static/images/icons/outline_clipboard.svg')
+  mask-image: url("/static/images/icons/outline_clipboard.svg");
+  -webkit-mask-image: url("/static/images/icons/outline_clipboard.svg");
 }
 
 .icon-pencil {
-  mask-image: url('/static/images/icons/pencil.svg');
-  -webkit-mask-image: url('/static/images/icons/pencil.svg')
+  mask-image: url("/static/images/icons/pencil.svg");
+  -webkit-mask-image: url("/static/images/icons/pencil.svg");
 }
 
 .icon-phone {
-  mask-image: url('/static/images/icons/phone.svg');
-  -webkit-mask-image: url('/static/images/icons/phone.svg')
+  mask-image: url("/static/images/icons/phone.svg");
+  -webkit-mask-image: url("/static/images/icons/phone.svg");
 }
 
 .icon-plus {
-  mask-image: url('/static/images/icons/plus.svg');
-  -webkit-mask-image: url('/static/images/icons/plus.svg')
+  mask-image: url("/static/images/icons/plus.svg");
+  -webkit-mask-image: url("/static/images/icons/plus.svg");
 }
 
 .icon-plus_bottom {
-  mask-image: url('/static/images/icons/plus_bottom.svg');
-  -webkit-mask-image: url('/static/images/icons/plus_bottom.svg')
+  mask-image: url("/static/images/icons/plus_bottom.svg");
+  -webkit-mask-image: url("/static/images/icons/plus_bottom.svg");
 }
 
 .icon-plus_top {
-  mask-image: url('/static/images/icons/plus_top.svg');
-  -webkit-mask-image: url('/static/images/icons/plus_top.svg')
+  mask-image: url("/static/images/icons/plus_top.svg");
+  -webkit-mask-image: url("/static/images/icons/plus_top.svg");
 }
 
 .icon-project {
-  mask-image: url('/static/images/icons/project.svg');
-  -webkit-mask-image: url('/static/images/icons/project.svg')
+  mask-image: url("/static/images/icons/project.svg");
+  -webkit-mask-image: url("/static/images/icons/project.svg");
 }
 
 .icon-remote {
-  mask-image: url('/static/images/icons/remote.svg');
-  -webkit-mask-image: url('/static/images/icons/remote.svg')
+  mask-image: url("/static/images/icons/remote.svg");
+  -webkit-mask-image: url("/static/images/icons/remote.svg");
 }
 
 .icon-save {
-  mask-image: url('/static/images/icons/save.svg');
-  -webkit-mask-image: url('/static/images/icons/save.svg')
+  mask-image: url("/static/images/icons/save.svg");
+  -webkit-mask-image: url("/static/images/icons/save.svg");
 }
 
 .icon-search {
-  mask-image: url('/static/images/icons/search.svg');
-  -webkit-mask-image: url('/static/images/icons/search.svg')
+  mask-image: url("/static/images/icons/search.svg");
+  -webkit-mask-image: url("/static/images/icons/search.svg");
 }
 
 .icon-send {
-  mask-image: url('/static/images/icons/send.svg');
-  -webkit-mask-image: url('/static/images/icons/send.svg')
+  mask-image: url("/static/images/icons/send.svg");
+  -webkit-mask-image: url("/static/images/icons/send.svg");
 }
 
 .icon-signature {
-  mask-image: url('/static/images/icons/signature.svg');
-  -webkit-mask-image: url('/static/images/icons/signature.svg')
+  mask-image: url("/static/images/icons/signature.svg");
+  -webkit-mask-image: url("/static/images/icons/signature.svg");
 }
 
 .icon-team {
-  mask-image: url('/static/images/icons/team.svg');
-  -webkit-mask-image: url('/static/images/icons/team.svg')
+  mask-image: url("/static/images/icons/team.svg");
+  -webkit-mask-image: url("/static/images/icons/team.svg");
 }
 
 .icon-trash {
-  mask-image: url('/static/images/icons/trash.svg');
-  -webkit-mask-image: url('/static/images/icons/trash.svg')
+  mask-image: url("/static/images/icons/trash.svg");
+  -webkit-mask-image: url("/static/images/icons/trash.svg");
 }
 
 .icon-twitter {
-  mask-image: url('/static/images/icons/twitter.svg');
-  -webkit-mask-image: url('/static/images/icons/twitter.svg')
+  mask-image: url("/static/images/icons/twitter.svg");
+  -webkit-mask-image: url("/static/images/icons/twitter.svg");
 }
 
 .icon-user {
-  mask-image: url('/static/images/icons/user.svg');
-  -webkit-mask-image: url('/static/images/icons/user.svg')
+  mask-image: url("/static/images/icons/user.svg");
+  -webkit-mask-image: url("/static/images/icons/user.svg");
 }
 
 .icon-user_plus {
-  mask-image: url('/static/images/icons/user_plus.svg');
-  -webkit-mask-image: url('/static/images/icons/user_plus.svg')
+  mask-image: url("/static/images/icons/user_plus.svg");
+  -webkit-mask-image: url("/static/images/icons/user_plus.svg");
 }
 
 .icon-vertical_dots {
-  mask-image: url('/static/images/icons/vertical_dots.svg');
-  -webkit-mask-image: url('/static/images/icons/vertical_dots.svg')
+  mask-image: url("/static/images/icons/vertical_dots.svg");
+  -webkit-mask-image: url("/static/images/icons/vertical_dots.svg");
 }
 
 .icon-warning {
-  mask-image: url('/static/images/icons/warning.svg');
-  -webkit-mask-image: url('/static/images/icons/warning.svg')
+  mask-image: url("/static/images/icons/warning.svg");
+  -webkit-mask-image: url("/static/images/icons/warning.svg");
 }
 /* End icons */
 
@@ -491,11 +612,13 @@ select.aligned-right option {
   background-color: rgb(249 250 251 / var(--tw-bg-opacity, 1));
 }
 
-.EasyMDEContainer .editor-toolbar button.active, .EasyMDEContainer .editor-toolbar button:hover {
+.EasyMDEContainer .editor-toolbar button.active,
+.EasyMDEContainer .editor-toolbar button:hover {
   background-color: white;
 }
 
-.EasyMDEContainer .cm-spell-error:not(.cm-url):not(.cm-comment):not(.cm-tag):not(.cm-word) {
+.EasyMDEContainer
+  .cm-spell-error:not(.cm-url):not(.cm-comment):not(.cm-tag):not(.cm-word) {
   background: transparent;
 }
 
@@ -533,10 +656,10 @@ select.aligned-right option {
     -webkit-box-shadow: 0 0 0 0 inherit;
   }
   70% {
-      -webkit-box-shadow: 0 0 0 6px transparent;
+    -webkit-box-shadow: 0 0 0 6px transparent;
   }
   100% {
-      -webkit-box-shadow: 0 0 0 0 transparent;
+    -webkit-box-shadow: 0 0 0 0 transparent;
   }
 }
 @keyframes pulse-shadow {
@@ -545,12 +668,12 @@ select.aligned-right option {
     box-shadow: 0 0 0 0 inherit;
   }
   70% {
-      -moz-box-shadow: 0 0 0 6px transparent;
-      box-shadow: 0 0 0 6px transparent;
+    -moz-box-shadow: 0 0 0 6px transparent;
+    box-shadow: 0 0 0 6px transparent;
   }
   100% {
-      -moz-box-shadow: 0 0 0 0 transparent;
-      box-shadow: 0 0 0 0 transparent;
+    -moz-box-shadow: 0 0 0 0 transparent;
+    box-shadow: 0 0 0 0 transparent;
   }
 }
 /* End animation */

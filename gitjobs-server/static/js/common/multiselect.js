@@ -74,7 +74,7 @@ export class MultiSelect extends LitWrapper {
       <label for="${this.name}" class="form-label">${this.label}</label>
       <div class="mt-2 relative">
         <div
-          class="input-primary px-1.5 flex flex-wrap focus-within:outline focus-within:outline-[3px] focus-within:-outline-offset-2 focus-within:outline-primary-600"
+          class="input-primary px-1.5 flex flex-wrap focus-within:outline-[3px] focus-within:-outline-offset-2 focus-within:outline-primary-600"
         >
           <div class="flex flex-items flex-wrap w-full">
             ${this.selected.map(

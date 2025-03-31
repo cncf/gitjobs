@@ -332,6 +332,8 @@ impl DBDashBoardEmployer for PgDB {
                 created_at: row.get("created_at"),
                 title: row.get("title"),
                 status: row.get::<_, String>("status").parse().expect("valid job status"),
+                city: row.get("city"),
+                country: row.get("country"),
                 ..Default::default()
             };
             jobs.push(job);

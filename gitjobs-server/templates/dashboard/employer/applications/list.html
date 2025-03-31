@@ -35,6 +35,7 @@
         <li>
           <button hx-get="/dashboard/employer/applications/list"
                   hx-trigger="click"
+                  hx-include="[name=limit]"
                   hx-target="#dashboard-content"
                   class="w-full flex items-center px-4 py-2 text-sm/6 hover:bg-stone-100 disabled:bg-stone-100"
                   {% if filters.job_id.is_none() %}disabled{% endif %}>All jobs</button>
@@ -43,6 +44,7 @@
           <li>
             <button hx-get="/dashboard/employer/applications/list?job_id={{ job.job_id }}"
                     hx-trigger="click"
+                    hx-include="[name=limit]"
                     hx-target="#dashboard-content"
                     class="w-full flex items-center px-4 py-2 text-sm/6 hover:bg-stone-100 disabled:bg-stone-100"
                     {% if let Some(job_id) = filters.job_id -%}
@@ -63,6 +65,7 @@
           </li>
         {% endfor %}
       </ul>
+      <input type="hidden" name="limit" value="25">
     </div>
     {# End dropdown jobs #}
   </div>

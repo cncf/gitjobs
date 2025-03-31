@@ -1,4 +1,4 @@
-import { html, repeat } from "/static/vendor/js/it-all.v3.2.1.min.js";
+import { html, repeat } from "/static/vendor/js/lit-all.v3.2.1.min.js";
 import { isObjectEmpty } from "/static/js/common/common.js";
 import { LitWrapper } from "/static/js/common/lit-wrapper.js";
 

@@ -1,4 +1,4 @@
-import { LitWrapper } from "/static/vendor/js/lit-all.v3.min.js";
+import { LitElement } from "/static/vendor/js/lit-all.v3.min.js";
 
 export class LitWrapper extends LitElement {
   createRenderRoot() {

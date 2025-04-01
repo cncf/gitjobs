@@ -5,7 +5,9 @@
 {% block menu %}
   <div class="flex justify-between items-center mt-3 mb-6 px-3 lg:px-5">
     <div class="font-semibold text-stone-900 text-2xl">Dashboard</div>
-    <div id="dashboard-spinner" class="hx-spinner -mt-1.5 relative">{% call macros::spinner(size = 5) %}</div>
+    <div id="dashboard-spinner" class="hx-spinner -mt-1.5 relative">
+      {% call macros::spinner(size = "size-5") %}
+    </div>
   </div>
 
   <div class="max-h-full w-full flex flex-col space-y-5 mb-5 overflow-y-auto px-3 lg:px-5">
@@ -80,7 +82,7 @@
 
     <div class="leading-10 pt-6 border-t border-stone-200 grid gap-y-0.5">
       {% call dashboard_macros::menu_title(text = "Account", extra_styles = "py-1.5") %}
-      {% call dashboard_macros::menu_item(name = "Account", icon = "user", is_active = content.is_account(), href = "/dashboard/employer?tab=account", icon_size = 3.5) %}
+      {% call dashboard_macros::menu_item(name = "Account", icon = "user", is_active = content.is_account(), href = "/dashboard/employer?tab=account", icon_size = "size-3.5") %}
     </div>
   </div>
 {% endblock menu %}

@@ -74,7 +74,7 @@
 {# Applicants Table -#}
 <div class="relative overflow-visible">
   <table class="table-fixed w-full text-sm text-left rtl:text-right text-stone-500">
-    <thead class="text-xs text-stone-700 uppercase bg-stone-100 border-b">
+    <thead class="text-xs text-stone-700 uppercase bg-stone-100 border-b border-stone-200">
       <tr>
         <th scope="col" class="px-3 xl:px-5 py-3">Applicant</th>
         <th scope="col" class="px-3 xl:px-5 py-3">Position</th>
@@ -83,7 +83,7 @@
     </thead>
     <tbody id="applications-list">
       {% if filters_options.jobs.is_empty() %}
-        <tr class="bg-white border-b">
+        <tr class="bg-white border-b border-stone-200">
           <td class="px-8 py-20 text-center" colspan="3">
             <div class="text-2xl mb-10">It looks like you have not posted any job yet.</div>
             <p class="text-xl text-stone-700 mb-10">
@@ -96,7 +96,8 @@
         </tr>
       {% else %}
         {% if applications.is_empty() %}
-          <tr class="bg-white border-b">
+          <tr class="bg-white border-b border-stone-200">
+            {# No applications #}
             <td class="px-8 py-20 text-center" colspan="3">
               <div class="text-2xl mb-10">
                 {# TODO - no jobs #}
@@ -114,7 +115,7 @@
           </tr>
         {% else %}
           {% for application in applications %}
-            <tr class="odd:bg-white even:bg-stone-50/50 border-b">
+            <tr class="odd:bg-white even:bg-stone-50/50 border-b border-stone-200">
               {# Applicant #}
               <td class="px-3 xl:px-5 py-4 font-medium text-stone-900">
                 <button hx-get="/dashboard/employer/applications/profile/{{ application.job_seeker_profile_id }}/preview"
@@ -138,16 +139,17 @@
                   </div>
                   {# End photo #}
 
-                  <div class="flex flex-col justify-between items-start">
+                  <div class="flex flex-col justify-center items-start">
                     {# Name #}
                     <div class="max-w-full truncate">{{ application.name }}</div>
                     {# End name #}
 
-                    {# Last position #}
-                    <div class="text-xs/4 text-stone-500 max-w-full truncate">
-                      {{ application.last_position|display_some_or("-") }}
-                    </div>
-                    {# End last position #}
+                    {% if let Some(last_position) = application.last_position %}
+                      {# Last position #}
+                      <div class="text-xs/4 text-stone-500 max-w-full truncate mt-1">{{ last_position }}</div>
+                      {# End last position #}
+                    {% endif %}
+
                   </div>
                 </button>
               </td>
@@ -158,7 +160,7 @@
                 <button hx-post="/dashboard/employer/jobs/{{ application.job_id }}/preview"
                         hx-target="#preview-content"
                         hx-disabled-elt="this"
-                        class="flex flex-col justify-between h-[32px] md:h-[40px] preview-button">
+                        class="flex flex-col justify-between items-start h-[32px] md:h-[40px] preview-button">
                   <div class="max-w-full text-black truncate">{{ application.job_title }}</div>
                   <div class="text-xs/4 text-stone-500 max-w-full truncate">
                     {% if let Some(job_location) = application.job_location %}

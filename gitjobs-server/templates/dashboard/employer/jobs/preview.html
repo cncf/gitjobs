@@ -182,7 +182,7 @@
   <div class="flex flex-col space-y-6">
     {# Job description #}
     <div>
-      {% call content_heading(content = "Job description", margin = 0) %}
+      {% call content_heading(content = "Job description", margin = "mt-0") %}
       <div class="text-sm/6 text-stone-600 markdown">{{ job.description|md_to_html|safe }}</div>
     </div>
     {# End job description #}
@@ -278,8 +278,8 @@
 {% endmacro job_workplace %}
 
 {# Content heading #}
-{% macro content_heading(content, margin = 1) %}
-  <div class="text-lg font-semibold text-stone-800 mb-3 mt-{{ margin }}">{{ content }}</div>
+{% macro content_heading(content, margin = "mt-1") %}
+  <div class="text-lg font-semibold text-stone-800 mb-3 {{ margin }}">{{ content }}</div>
 {% endmacro content_heading %}
 {# End content heading #}
 

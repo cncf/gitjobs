@@ -38,7 +38,7 @@
     <div class="flex space-x-3 relative">
       <div class="font-semibold text-sm text-black">Filters</div>
       <div id="mobile-jobs-spinner" class="hx-spinner absolute start-10 top-0">
-        {% call macros::spinner(size = 5) %}
+        {% call macros::spinner(size = "size-5") %}
       </div>
     </div>
   </div>
@@ -83,7 +83,7 @@
 
         <div class="flex space-x-3 relative">
           <div id="desktop-jobs-spinner" class="hx-spinner absolute -start-6 top-0">
-            {% call macros::spinner(size = 5) %}
+            {% call macros::spinner(size = "size-5") %}
           </div>
 
           <button id="reset-desktop-filters" class="btn-primary-outline btn-mini">Reset</button>

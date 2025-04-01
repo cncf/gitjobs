@@ -46,7 +46,7 @@
               hx-target="#preview-content"
               hx-trigger="click,open-modal"
               hx-indicator="#spinner-{{ job.job_id }}"
-              class="relative mx-4 md:mx-7 text-start enabled:cursor-pointer border-2 border-stone-200 rounded-lg enabled:hover:outline enabled:hover:outline-1 p-5 md:p-7 {%- if upstream_commitment > 0 %} border-lime-500 bg-lime-50/20 enabled:hover:outline-lime-500{%- else if open_source > 0 %} border-lime-300 bg-lime-50/20 enabled:hover:outline-lime-300{%- else %} enabled:hover:outline-stone-200{%- endif -%}"
+              class="relative mx-4 md:mx-7 text-start enabled:cursor-pointer border-2 rounded-lg enabled:hover:outline enabled:hover:outline-1 p-5 md:p-7 {%- if upstream_commitment > 0 %} border-lime-500 bg-lime-50/20 enabled:hover:outline-lime-500{%- else if open_source > 0 %} border-lime-300 bg-lime-50/20 enabled:hover:outline-lime-300{%- else %} border-stone-200 enabled:hover:outline-stone-200{%- endif -%}"
               hx-disabled-elt="[data-preview-job]"
               hx-boost="true">
         {# Job title #}

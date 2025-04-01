@@ -1294,6 +1294,9 @@
   .bg-lime-50\/20 {
     background-color: color-mix(in oklab, var(--color-lime-50) 20%, transparent);
   }
+  .bg-lime-300 {
+    background-color: var(--color-lime-300);
+  }
   .bg-lime-500 {
     background-color: var(--color-lime-500);
   }
@@ -3489,11 +3492,6 @@
     color: var(--color-stone-600);
   }
 }
-:root {
-  --primary-color: #fd4d12;
-  --lime-color: #84cc16;
-  --lime-light-color: #bef264;
-}
 @font-face {
   font-family: "Inter";
   font-style: normal;
@@ -3567,7 +3565,7 @@
   margin-top: 2rem;
 }
 .about a {
-  color: var(--primary-color);
+  color: var(--color-primary-500);
 }
 .about ul {
   margin-top: 1rem;
@@ -3890,13 +3888,13 @@ select.aligned-right option {
   animation: pulse-shadow 1s infinite;
 }
 .box-animated-primary {
-  box-shadow: 0 0 0 var(--primary-color);
+  box-shadow: 0 0 0 var(--color-primary-500);
 }
 .box-animated-lime {
-  box-shadow: 0 0 0 var(--lime-color);
+  box-shadow: 0 0 0 var(--color-lime-500);
 }
 .box-animated-lime-light {
-  box-shadow: 0 0 0 var(--lime-light-color);
+  box-shadow: 0 0 0 var(--color-lime-300);
 }
 @-webkit-keyframes pulse-shadow {
   0% {

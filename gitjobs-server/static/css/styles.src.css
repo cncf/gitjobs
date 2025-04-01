@@ -102,11 +102,6 @@
   }
 }
 
-:root {
-  --primary-color: #fd4d12;
-  --lime-color: #84cc16;
-  --lime-light-color: #bef264;
-}
 
 /* Font family */
 
@@ -223,7 +218,7 @@
 }
 
 .about a {
-  color: var(--primary-color);
+  color: var(--color-primary-500);
 }
 
 .about ul {
@@ -654,15 +649,15 @@ select.aligned-right option {
 }
 
 .box-animated-primary {
-  box-shadow: 0 0 0 var(--primary-color);
+  box-shadow: 0 0 0 var(--color-primary-500);
 }
 
 .box-animated-lime {
-  box-shadow: 0 0 0 var(--lime-color);
+  box-shadow: 0 0 0 var(--color-lime-500);
 }
 
 .box-animated-lime-light {
-  box-shadow: 0 0 0 var(--lime-light-color);
+  box-shadow: 0 0 0 var(--color-lime-300);
 }
 
 @-webkit-keyframes pulse-shadow {

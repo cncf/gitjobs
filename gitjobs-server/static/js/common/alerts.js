@@ -2,7 +2,7 @@ const getCommonAlertOptions = () => {
   return {
     position: "top-end",
     buttonsStyling: false,
-    iconColor: "var(--primary-color)",
+    iconColor: "var(--color-primary-500)",
     backdrop: false,
     customClass: {
       popup: "pb-10 pt-5 px-0 rounded-lg max-w-[100%] md:max-w-[400px] shadow-lg",

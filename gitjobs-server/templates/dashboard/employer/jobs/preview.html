@@ -311,7 +311,7 @@
   <div class="-mt-1 flex space-x-2 items-center w-full">
     <div class="w-full bg-stone-200 rounded-full h-1.5 my-2">
       {# djlint:off H008 #}
-      <div class='bg-lime-{%- if type == &"open_source" -%}300{%- else -%}500{%- endif %} h-1.5 rounded-full'
+      <div class='{%- if type == &"open_source" -%}bg-lime-300{%- else -%}bg-lime-500{%- endif %} h-1.5 rounded-full'
            style="width: {{ percentage }}%"></div>
       {# djlint:on H008 #}
     </div>

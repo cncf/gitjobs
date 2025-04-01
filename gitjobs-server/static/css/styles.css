@@ -3385,7 +3385,7 @@
       color: color-mix(in oklab, var(--color-stone-500) 75%, transparent);
     }
     &:focus {
-      --tw-ring-color: var(--color-primary-600);
+      --tw-ring-color: transparent;
     }
     &:focus {
       outline-style: var(--tw-outline-style);

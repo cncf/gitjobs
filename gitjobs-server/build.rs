@@ -16,7 +16,7 @@ fn main() -> Result<()> {
     // Build styles
     run(
         "tailwindcss",
-        &["-i", "static/css/index.css", "-o", "static/css/styles.css"],
+        &["-i", "static/css/styles.src.css", "-o", "static/css/styles.css"],
     )?;
 
     Ok(())

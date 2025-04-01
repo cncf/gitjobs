@@ -61,7 +61,7 @@ export class EducationSection extends LitWrapper {
     const hasSingleEducationItem = this.education.length === 1;
 
     return html`<div class="mt-10">
-      <div class="flex w-3/4 lg:w-2/3">
+      <div class="flex w-full lg:w-4/5 xl:w-2/3">
         <div class="flex flex-col space-y-3 me-3">
           <div>
             <button

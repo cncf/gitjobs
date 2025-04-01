@@ -635,9 +635,8 @@ select.aligned-right option {
   background-color: white;
 }
 
-.EasyMDEContainer .CodeMirror
-  .cm-spell-error:not(.cm-url):not(.cm-comment):not(.cm-tag):not(.cm-word) {
-  background: transparent;
+.EasyMDEContainer .CodeMirror .cm-spell-error:not(.cm-url):not(.cm-comment):not(.cm-tag):not(.cm-word) {
+  background: transparent !important;
 }
 
 .EasyMDEContainer .editor-preview-active {

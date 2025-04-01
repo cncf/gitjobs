@@ -2,4 +2,5 @@
 .vscode
 Chart.lock
 chart/charts
+gitjobs-server/static/css/styles.css
 /target

@@ -58,3 +58,7 @@ unicode-segmentation = { workspace = true }
 uuid = { workspace = true }
 
 [dev-dependencies]
+
+[build-dependencies]
+anyhow = { workspace = true }
+which = { workspace = true }

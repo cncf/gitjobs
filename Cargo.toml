@@ -71,3 +71,4 @@ tracing = "0.1.41"
 tracing-subscriber = { version = "0.3.19", features = ["env-filter", "json"] }
 unicode-segmentation = "1.12.0"
 uuid = { version = "1.16.0", features = ["serde", "v4"] }
+which = "7.0.2"

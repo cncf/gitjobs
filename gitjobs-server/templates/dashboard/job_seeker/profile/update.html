@@ -4,13 +4,13 @@
 {% let profile = profile.clone().unwrap_or_default() %}
 
 <div class="space-y-12">
-  <div class="flex justify-between space-x-10">
-    <ul class="flex flex-wrap space-x-2 -mb-px text-sm font-medium text-center border-b border-stone-900/10">
+  <div class="flex flex-col xl:flex-row xl:justify-between xl:space-x-10">
+    <ul class="flex flex-wrap space-x-2 -mb-px text-sm font-medium text-center border-b border-stone-900/10 w-full xl:w-auto">
       <li>
         <button type="button"
                 data-section="profile"
                 data-active="true"
-                class="w-32 inline-flex items-center justify-center p-4 pt-0 border-b-2 border-transparent rounded-t-lg hover:text-stone-600 hover:border-stone-300 active data-[active=true]:text-primary-600 data-[active=true]:border-primary-500 group">
+                class="lg:w-32 cursor-pointer inline-flex items-center justify-center p-4 pt-0 border-b-2 border-transparent rounded-t-lg hover:text-stone-600 hover:border-stone-300 active data-[active=true]:text-primary-600 data-[active=true]:border-primary-500 group">
           <div class="svg-icon size-3 me-2 icon-user bg-stone-400 group-hover:bg-stone-500 group-[.active]:bg-primary-500">
           </div>
           Profile
@@ -20,7 +20,7 @@
         <button type="button"
                 data-section="experience"
                 data-active="false"
-                class="w-32 inline-flex items-center justify-center p-4 pt-0 border-b-2 border-transparent rounded-t-lg hover:text-stone-600 hover:border-stone-300 data-[active=true]:text-primary-600 data-[active=true]:border-primary-500 group">
+                class="lg:w-32 cursor-pointer inline-flex items-center justify-center p-4 pt-0 border-b-2 border-transparent rounded-t-lg hover:text-stone-600 hover:border-stone-300 data-[active=true]:text-primary-600 data-[active=true]:border-primary-500 group">
           <div class="svg-icon size-3 me-2 icon-office_chair bg-stone-400 group-hover:bg-stone-500 group-[.active]:bg-primary-500">
           </div>
           Experience
@@ -30,7 +30,7 @@
         <button type="button"
                 data-section="education"
                 data-active="false"
-                class="w-32 inline-flex items-center justify-center p-4 pt-0 border-b-2 border-transparent rounded-t-lg hover:text-stone-600 hover:border-stone-300 data-[active=true]:text-primary-600 data-[active=true]:border-primary-500 group">
+                class="lg:w-32 cursor-pointer inline-flex items-center justify-center p-4 pt-0 border-b-2 border-transparent rounded-t-lg hover:text-stone-600 hover:border-stone-300 data-[active=true]:text-primary-600 data-[active=true]:border-primary-500 group">
           <div class="svg-icon size-3 me-2 icon-graduation_cap bg-stone-400 group-hover:bg-stone-500 group-[.active]:bg-primary-500">
           </div>
           Education
@@ -40,15 +40,15 @@
         <button type="button"
                 data-section="projects"
                 data-active="false"
-                class="w-32 inline-flex items-center justify-center p-4 pt-0 border-b-2 border-transparent rounded-t-lg hover:text-stone-600 hover:border-stone-300 data-[active=true]:text-primary-600 data-[active=true]:border-primary-500 group">
-          <div class="svg-icon size-3 me-2 icon-clipboard bg-stone-400 group-hover:bg-stone-500 group-[.active]:bg-primary-500">
+                class="lg:w-32 cursor-pointer inline-flex items-center justify-center p-4 pt-0 border-b-2 border-transparent rounded-t-lg hover:text-stone-600 hover:border-stone-300 data-[active=true]:text-primary-600 data-[active=true]:border-primary-500 group">
+          <div class="svg-icon size-3 me-2 icon-clipboard bg-stone-400 group-hover:bg-stone-500 group-[.active]:bg-primary-500 shrink-0">
           </div>
           Projects
         </button>
       </li>
     </ul>
 
-    <div class="flex items-center space-x-5">
+    <div class="flex items-center justify-end space-x-5 mt-6 xl:mt-0">
       {# Preview #}
       <div>
         {# Preview button #}

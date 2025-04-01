@@ -7,7 +7,7 @@
   <div class="relative w-1/2">
     {# Jobs button to open dropdown #}
     <button id="jobs-btn"
-            class="select select-primary flex items-center"
+            class="select select-primary flex items-center enabled:cursor-pointer"
             {% if filters_options.jobs.is_empty() -%}
             disabled
             {%- endif -%}>
@@ -37,7 +37,7 @@
                   hx-trigger="click"
                   hx-include="[name=limit]"
                   hx-target="#dashboard-content"
-                  class="w-full flex items-center px-4 py-2 text-sm/6 hover:bg-stone-100 disabled:bg-stone-100"
+                  class="w-full flex items-center px-4 py-2 text-sm/6 hover:bg-stone-100 disabled:bg-stone-100 enabled:cursor-pointer"
                   {% if filters.job_id.is_none() %}disabled{% endif %}>All jobs</button>
         </li>
         {% for job in filters_options.jobs %}
@@ -46,7 +46,7 @@
                     hx-trigger="click"
                     hx-include="[name=limit]"
                     hx-target="#dashboard-content"
-                    class="w-full flex items-center px-4 py-2 text-sm/6 hover:bg-stone-100 disabled:bg-stone-100"
+                    class="w-full flex items-center px-4 py-2 text-sm/6 hover:bg-stone-100 disabled:bg-stone-100 enabled:cursor-pointer"
                     {% if let Some(job_id) = filters.job_id -%}
                     {%- if job_id == &job.job_id -%}
                     disabled
@@ -121,7 +121,7 @@
                 <button hx-get="/dashboard/employer/applications/profile/{{ application.job_seeker_profile_id }}/preview"
                         hx-target="#preview-content"
                         hx-disabled-elt="this"
-                        class="flex items-stretch gap-x-6 preview-button">
+                        class="flex items-stretch gap-x-6 cursor-pointer preview-button">
                   {# Photo #}
                   <div class="flex justify-center items-center size-8 md:size-10 shrink-0">
                     {% if let Some(photo_id) = application.photo_id %}
@@ -160,7 +160,7 @@
                 <button hx-post="/dashboard/employer/jobs/{{ application.job_id }}/preview"
                         hx-target="#preview-content"
                         hx-disabled-elt="this"
-                        class="flex flex-col justify-between items-start h-[32px] md:h-[40px] preview-button">
+                        class="flex flex-col justify-between items-start h-[32px] md:h-[40px] cursor-pointer preview-button">
                   <div class="max-w-full text-black truncate">{{ application.job_title }}</div>
                   <div class="text-xs/4 text-stone-500 max-w-full truncate">
                     {% if let Some(job_location) = application.job_location %}

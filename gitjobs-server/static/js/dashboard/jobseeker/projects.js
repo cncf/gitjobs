@@ -66,7 +66,7 @@ export class ProjectsSection extends LitWrapper {
             <button
               @click=${() => this._addProject(index)}
               type="button"
-              class="p-2 border border-stone-200 hover:bg-stone-100 rounded-full"
+              class="cursor-pointer p-2 border border-stone-200 hover:bg-stone-100 rounded-full"
               title="Add above"
             >
               <div class="svg-icon size-4 icon-plus_top bg-stone-600"></div>
@@ -75,7 +75,7 @@ export class ProjectsSection extends LitWrapper {
           <div>
             <button
               @click=${() => this._addProject(index + 1)}
-              type="button"
+              type="cursor-pointer button"
               class="p-2 border border-stone-200 hover:bg-stone-100 rounded-full"
               title="Add below"
             >
@@ -85,7 +85,7 @@ export class ProjectsSection extends LitWrapper {
           <div>
             <button
               @click=${() => this._removeProject(index)}
-              type="button"
+              type="cursor-pointer button"
               class="p-2 border border-stone-200 hover:bg-stone-100 rounded-full"
               title="${hasSingleProject ? "Clean" : "Delete"}"
             >

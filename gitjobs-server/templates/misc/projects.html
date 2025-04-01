@@ -15,7 +15,7 @@
                   data-maturity="{{ p.maturity }}"
                   data-foundation="{{ p.foundation }}"
                   data-logo-url="{{ p.logo_url }}"
-                  class="btn-project px-4 py-2 w-full hover:bg-stone-100 group-[.active]:bg-stone-100">
+                  class="cursor-pointer btn-project px-4 py-2 w-full hover:bg-stone-100 group-[.active]:bg-stone-100">
             {% let label = &format!("{} {}", p.foundation, p.maturity) %}
             {% call macros::dropdown_card(name = p.name, label = label, logo_url = p.logo_url) %}
           </button>

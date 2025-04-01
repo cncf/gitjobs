@@ -67,7 +67,7 @@
            value="{{ member_logo_url }}">
     <div id="member-spinner" class="hx-spinner absolute end-10 top-1">{% call spinner(size = "size-5") %}</div>
     <div class="absolute end-1.5 top-1.5 peer-placeholder-shown:hidden">
-      <button id="clean-member" type="button" class="mt-[2px]">
+      <button id="clean-member" type="button" class="cursor-pointer mt-[2px]">
         <div class="svg-icon size-5 bg-stone-400 hover:bg-stone-700 icon-close"></div>
       </button>
     </div>
@@ -160,7 +160,7 @@
            autocomplete="off">
     <div id="{{ id }}-spinner" class="hx-spinner absolute end-10 top-1">{% call spinner(size = "size-5") %}</div>
     <div class="absolute end-1.5 top-1.5 peer-placeholder-shown:hidden">
-      <button id="clean-{{ id }}" type="button" class="mt-[2px]">
+      <button id="clean-{{ id }}" type="button" class="cursor-pointer mt-[2px]">
         <div class="svg-icon size-5 bg-stone-400 hover:bg-stone-700 icon-close"></div>
       </button>
     </div>
@@ -366,7 +366,7 @@
 
           <button id="clean-image"
                   type="button"
-                  class="group btn-primary-outline btn-mini whitespace-nowrap"
+                  class="group btn-primary-outline btn-mini whitespace-nowrap enabled:cursor-pointer"
                   {% if empty_image -%}
                   disabled
                   {%- endif -%}>Remove image</button>
@@ -423,7 +423,7 @@
 {# End form image #}
 
 {# Dropdown card #}
-{% macro dropdown_card(name, label, logo_url, line_height = 6) %}
+{% macro dropdown_card(name, label, logo_url, font_size = "text-xs/6") %}
   <div class="flex items-center space-x-3">
     <div class="flex justify-center items-center shrink-0 size-8 lg:size-10 shrink-0">
       <img loading="lazy"
@@ -436,7 +436,7 @@
     <div class="flex flex-col justify-start min-w-0">
       <div class="truncate text-start text-stone-700 font-medium">{{ name }}</div>
       <div class="inline-flex">
-        <div class="truncate text-nowrap uppercase max-w-[100%] text-xs/{{ line_height }} font-medium text-stone-500/75">
+        <div class="truncate text-nowrap uppercase max-w-[100%] {{ font_size }} font-medium text-stone-500/75">
           {{ label }}
         </div>
       </div>

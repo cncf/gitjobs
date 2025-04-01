@@ -21,7 +21,7 @@
              spellcheck="false"
              disabled>
       <div class="absolute end-1.5 top-1.5 peer-placeholder-shown:hidden">
-        <button id="clean-search-jobs" type="button" class="mt-[2px]">
+        <button id="clean-search-jobs" type="button" class="cursor-pointer mt-[2px]">
           <div class="svg-icon size-5 bg-stone-400 hover:bg-stone-700 icon-close"></div>
         </button>
       </div>
@@ -149,7 +149,7 @@
                           <button hx-put="/dashboard/employer/jobs/{{ job.job_id }}/publish"
                                   hx-target="#dashboard-content"
                                   hx-indicator="#dashboard-spinner"
-                                  class="w-full text-start px-4 py-2 hover:bg-stone-100">
+                                  class="cursor-pointer w-full text-start px-4 py-2 hover:bg-stone-100">
                             <div class="flex items-center">
                               <div class="svg-icon size-4 icon-send bg-stone-600"></div>
                               <div class="ms-2">Publish</div>
@@ -163,7 +163,7 @@
                                 hx-target="#dashboard-content"
                                 hx-indicator="#dashboard-spinner"
                                 hx-trigger="confirmed"
-                                class="w-full text-start px-4 py-2 hover:bg-stone-100">
+                                class="cursor-pointer w-full text-start px-4 py-2 hover:bg-stone-100">
                           <div class="flex items-center">
                             <div class="svg-icon size-4 icon-trash bg-stone-600"></div>
                             <div class="ms-2">Delete</div>
@@ -195,7 +195,7 @@
                           <button hx-put="/dashboard/employer/jobs/{{ job.job_id }}/archive"
                                   hx-target="#dashboard-content"
                                   hx-indicator="#dashboard-spinner"
-                                  class="w-full text-start px-4 py-2 hover:bg-stone-100">
+                                  class="cursor-pointer w-full text-start px-4 py-2 hover:bg-stone-100">
                             <div class="flex items-center">
                               <div class="svg-icon size-4 icon-archive bg-stone-600"></div>
                               <div class="ms-2">Archive</div>

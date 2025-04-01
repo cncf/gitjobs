@@ -87,7 +87,7 @@ export class MultiSelect extends LitWrapper {
                     <button
                       type="button"
                       @click=${() => this._onRemoveBadge(option)}
-                      class="inline-flex items-center p-1 ms-2 bg-transparent rounded-full hover:bg-stone-200"
+                      class="inline-flex items-center cursor-pointer p-1 ms-2 bg-transparent rounded-full hover:bg-stone-200"
                       aria-label="Remove badge"
                     >
                       <div class="svg-icon size-3 icon-close bg-stone-400 hover:bg-stone-900"></div>

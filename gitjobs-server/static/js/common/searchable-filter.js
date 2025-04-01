@@ -136,7 +136,7 @@ export class SearchableFilter extends LitWrapper {
         autocomplete="off"
       />
       <div class="absolute end-1.5 top-0.5 peer-placeholder-shown:hidden">
-        <button @click=${this._cleanEnteredValue} type="button" class="mt-[2px]">
+        <button @click=${this._cleanEnteredValue} type="button" class="cursor-pointer mt-[2px]">
           <div class="svg-icon size-5 bg-stone-400 hover:bg-stone-700 icon-close"></div>
         </button>
       </div>

@@ -167,7 +167,7 @@
       {% for p in projects %}
         <div class="border border-stone-200 rounded-lg p-2 text-sm/5 bg-white w-full">
           {% let label = &format!("{} {}", p.foundation, p.maturity) %}
-          {% call macros::dropdown_card(name = p.name, label = label, logo_url = p.logo_url, line_height = 5) %}
+          {% call macros::dropdown_card(name = p.name, label = label, logo_url = p.logo_url, font_size = "text-[0.75rem]/5 text-xs/5") %}
         </div>
       {% endfor %}
     </div>

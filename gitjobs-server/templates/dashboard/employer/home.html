@@ -34,7 +34,7 @@
 
         {% if let Some(selected_employer) = selected_employer %}
           {# Employer button to open dropdown #}
-          <button id="employer-btn" class="select select-primary">
+          <button id="employer-btn" class="cursor-pointer select select-primary">
             <div class="flex items-center relative">
               {% call employer_content_list(company = selected_employer.company, logo_id = selected_employer.logo_id) %}
             </div>
@@ -51,7 +51,7 @@
                   <button hx-put="/dashboard/employer/employers/{{ employer.employer_id }}/select"
                           hx-trigger="click"
                           hx-target="#dashboard-content"
-                          class="w-full flex items-center px-4 py-2 text-sm/6 hover:bg-stone-100
+                          class="cursor-pointer w-full flex items-center px-4 py-2 text-sm/6 hover:bg-stone-100
                                  {% if is_selected -%}bg-stone-100{%- endif %}"
                           {% if is_selected %}disabled{% endif %}>
                     {% call employer_content_list(company = employer.company, logo_id = employer.logo_id) %}

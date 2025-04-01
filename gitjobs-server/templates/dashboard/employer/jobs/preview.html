@@ -151,12 +151,12 @@
   {# End timezone #}
 
   {# Open source #}
-  {% call job_details_subheading(content = "Time working on open source") %}
+  {% call job_details_subheading(content = "Time working on open source", content_short = "Open source time") %}
   {% call badge_percentage_bar(percentage = job.open_source|display_some_or("0")) %}
   {# End open source #}
 
   {# Upstream commitment #}
-  {% call job_details_subheading(content = "Time working on upstream projects") %}
+  {% call job_details_subheading(content = "Time working on upstream projects", content_short = "Upstream projects time") %}
   {% call badge_percentage_bar(percentage = job.upstream_commitment|display_some_or("0"), type = "upstream_commitment") %}
   {# End Upstream commitment #}
 
@@ -284,8 +284,15 @@
 {# End content heading #}
 
 {# Job details subheading #}
-{% macro job_details_subheading(content, extra_styles = "") %}
-  <div class="text-xs/6 text-stone-500/75 my-0 md:mb-1 md:mt-4 {{ extra_styles }}">{{ content }}</div>
+{% macro job_details_subheading(content, content_short = "", extra_styles = "") %}
+  <div class="text-xs/6 text-stone-500/75 my-0 md:mb-1 md:mt-4 {{ extra_styles }}">
+    {% if content_short.is_empty() %}
+      {{ content }}
+    {% else %}
+      <span class="hidden md:inline-flex xl:hidden">{{ content_short }}</span>
+      <span class="inline-flex md:hidden xl:inline-flex">{{ content }}</span>
+    {% endif %}
+  </div>
 {% endmacro job_details_subheading %}
 {# End job details subheading #}
 

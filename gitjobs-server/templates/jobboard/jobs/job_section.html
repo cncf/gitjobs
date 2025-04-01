@@ -178,14 +178,14 @@
 
       {# Open source #}
       <div class="block mb-3 md:mb-0">
-        {% call macros_preview::job_details_subheading(content = "Time working on open source") %}
+        {% call macros_preview::job_details_subheading(content = "Time working on open source", content_short = "Open source time") %}
         {% call macros_preview::badge_percentage_bar(percentage = job.open_source|display_some_or("0")) %}
       </div>
       {# End open source #}
 
       {# Upstream commitment #}
       <div class="block mb-3 md:mb-0">
-        {% call macros_preview::job_details_subheading(content = "Time working on upstream projects") %}
+        {% call macros_preview::job_details_subheading(content = "Time working on upstream projects", content_short = "Upstream projects time") %}
         {% call macros_preview::badge_percentage_bar(percentage = job.upstream_commitment|display_some_or("0"), type = "upstream_commitment") %}
       </div>
       {# End Upstream commitment #}

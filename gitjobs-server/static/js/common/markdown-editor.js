@@ -31,6 +31,27 @@ export class MarkdownEditor extends LitWrapper {
       return;
     }
 
+    if (window.EasyMDE) {
+      this.initEditor(textarea);
+    } else {
+      // Load LeafletJS library
+      const script = document.createElement("script");
+      script.type = "text/javascript";
+      script.src = "/static/vendor/js/easymde.v2.20.0.min.js";
+      document.getElementsByTagName("head")[0].appendChild(script);
+
+      const link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = "/static/vendor/css/easymde.v2.20.0.min.css";
+      document.getElementsByTagName("head")[0].appendChild(link);
+
+      script.onload = () => {
+        this.initEditor(textarea);
+      };
+    }
+  }
+
+  initEditor(textarea) {
     const easyMDE = new EasyMDE({
       element: textarea,
       forceSync: true,

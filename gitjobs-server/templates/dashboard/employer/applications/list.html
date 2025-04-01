@@ -35,7 +35,6 @@
         <li>
           <button hx-get="/dashboard/employer/applications/list"
                   hx-trigger="click"
-                  hx-include="[name=limit]"
                   hx-target="#dashboard-content"
                   class="w-full flex items-center px-4 py-2 text-sm/6 hover:bg-stone-100 disabled:bg-stone-100 enabled:cursor-pointer"
                   {% if filters.job_id.is_none() %}disabled{% endif %}>All jobs</button>
@@ -44,7 +43,6 @@
           <li>
             <button hx-get="/dashboard/employer/applications/list?job_id={{ job.job_id }}"
                     hx-trigger="click"
-                    hx-include="[name=limit]"
                     hx-target="#dashboard-content"
                     class="w-full flex items-center px-4 py-2 text-sm/6 hover:bg-stone-100 disabled:bg-stone-100 enabled:cursor-pointer"
                     {% if let Some(job_id) = filters.job_id -%}
@@ -65,7 +63,6 @@
           </li>
         {% endfor %}
       </ul>
-      <input type="hidden" name="limit" value="25">
     </div>
     {# End dropdown jobs #}
   </div>
@@ -100,7 +97,6 @@
             {# No applications #}
             <td class="px-8 py-20 text-center" colspan="3">
               <div class="text-2xl mb-10">
-                {# TODO - no jobs #}
                 {% if filters.job_id.is_none() %}
                   <div>It looks like no one has applied yet to any of the jobs you have posted.</div>
                 {% else %}
@@ -139,17 +135,20 @@
                   </div>
                   {# End photo #}
 
-                  <div class="flex flex-col justify-center items-start">
+                  <div class="flex flex-col justify-between items-start">
                     {# Name #}
                     <div class="max-w-full truncate">{{ application.name }}</div>
                     {# End name #}
 
-                    {% if let Some(last_position) = application.last_position %}
-                      {# Last position #}
-                      <div class="text-xs/4 text-stone-500 max-w-full truncate mt-1">{{ last_position }}</div>
-                      {# End last position #}
-                    {% endif %}
-
+                    {# Last position #}
+                    <div class="text-xs/4 text-stone-500 max-w-full truncate">
+                      {%- if let Some(last_position) = application.last_position -%}
+                        {{ last_position }}
+                      {%- else -%}
+                        Last position not available
+                      {%- endif -%}
+                    </div>
+                    {# End last position #}
                   </div>
                 </button>
               </td>
@@ -163,11 +162,17 @@
                         class="flex flex-col justify-between items-start h-[32px] md:h-[40px] cursor-pointer preview-button">
                   <div class="max-w-full text-black truncate">{{ application.job_title }}</div>
                   <div class="text-xs/4 text-stone-500 max-w-full truncate">
-                    {% if let Some(job_location) = application.job_location %}
-                      {{ job_location.city }}, {{ job_location.country }}
+                    {# Workplace #}
+                    {% if application.job_workplace == Workplace::Remote %}
+                      Remote
                     {% else %}
-                      -
+                      {% if let Some(job_location) = application.job_location %}
+                        {{ job_location.city }}, {{ job_location.country }}
+                      {% else %}
+                        No location provided
+                      {% endif %}
                     {% endif %}
+                    {# End workplace #}
                   </div>
                 </button>
               </td>

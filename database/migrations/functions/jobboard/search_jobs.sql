@@ -132,7 +132,7 @@ begin
             else true end
         and
             case when v_date_from is not null and v_date_to is not null then
-                j.published_at >= v_date_from and j.published_at <= v_date_to
+                j.published_at::date >= v_date_from and j.published_at::date <= v_date_to
             else true end
         and
             case when cardinality(v_kind) > 0 then

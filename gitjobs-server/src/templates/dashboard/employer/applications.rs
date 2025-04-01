@@ -8,7 +8,7 @@ use serde_with::skip_serializing_none;
 use uuid::Uuid;
 
 use crate::templates::{
-    dashboard::employer::jobs::JobSummary,
+    dashboard::employer::jobs::{JobSummary, Workplace},
     helpers::{DATE_FORMAT, build_dashboard_image_url},
     misc::Location,
     pagination::{NavigationLinks, Pagination},
@@ -48,6 +48,7 @@ pub(crate) struct Application {
     job_id: Uuid,
     job_title: String,
     job_seeker_profile_id: Uuid,
+    job_workplace: Workplace,
 
     job_location: Option<Location>,
     last_position: Option<String>,

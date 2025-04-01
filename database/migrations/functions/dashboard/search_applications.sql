@@ -24,6 +24,7 @@ begin
                     'state', l.state
                 )), '{}'::jsonb)
             ) as job_location,
+            j.workplace as job_workplace,
             p.job_seeker_profile_id,
             p.photo_id,
             p.name,
@@ -55,6 +56,7 @@ begin
                 'job_title', job_title,
                 'job_location', job_location,
                 'job_seeker_profile_id', job_seeker_profile_id,
+                'job_workplace', job_workplace,
                 'photo_id', photo_id,
                 'name', name,
                 'last_position', last_position

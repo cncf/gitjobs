@@ -7,7 +7,7 @@
 
 {# Mobile filters -#}
 <div id="drawer-filters"
-     class="fixed top-0 left-0 z-[1100] h-dvh overflow-y-auto -translate-x-full bg-white w-80 border border-r shadow-lg"
+     class="fixed top-0 left-0 z-[1100] h-dvh overflow-y-auto -translate-x-full bg-white w-80 border border-rborder-stone-200  shadow-lg"
      role="dialog"
      data-open="false"
      tabindex="-1"
@@ -65,7 +65,7 @@
   <div class="flex items-start w-full h-full">
 
     {# Filters #}
-    <div class="relative hidden w-[28%] max-w-[28%] xl:w-1/4 xl:max-w-1/4 lg:block bg-white border rounded-lg pb-5">
+    <div class="relative hidden w-[28%] max-w-[28%] xl:w-1/4 xl:max-w-1/4 lg:block bg-white border border-stone-200 rounded-lg pb-5">
       <form id="desktop-jobs-form"
             hx-get='/section/jobs/results'
             hx-trigger="submit"
@@ -98,7 +98,7 @@
 
     {# Content #}
     <div class="relative w-full h-full lg:w-[72%] xl:w-3/4 lg:pl-6 xl:pl-10 self-stretch">
-      <div class="relative flex flex-col bg-white border rounded-lg pt-5 md:pt-7 h-full w-full">
+      <div class="relative flex flex-col bg-white border border-stone-200 rounded-lg pt-5 md:pt-7 h-full w-full">
         <div class="flex lg:items-center mb-6 md:mb-10 px-4 md:px-7">
           <div class="flex items-center w-full">
             {# Mobile filters button -#}
@@ -157,7 +157,7 @@
           {# Sort by #}
           <div class="flex flex-1 flex-row items-center justify-end">
             <label for="sort_by"
-                   class="font-semibold text-filterTitle text-nowrap font-semibold leading-6 me-2 xl:me-3">
+                   class="font-semibold text-[0.8rem] text-nowrap font-semibold leading-6 me-2 xl:me-3">
               Sort by
             </label>
             <select id="sort_by"

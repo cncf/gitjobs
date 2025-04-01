@@ -1,6 +1,6 @@
 {% import "macros.html" as macros %}
 
-<div class="flex flex-col w-full gap-3 md:flex-row md:items-center border-b pb-5 md:pb-10">
+<div class="flex flex-col w-full gap-3 md:flex-row md:items-center border-b border-stone-200 pb-5 md:pb-10">
   <div class="flex-grow">
     <div class="flex-grow flex items-stretch gap-x-4 md:gap-x-5 pe-12 md:pe-0 min-w-0">
       {# Image #}
@@ -36,7 +36,7 @@
 
   {% if let Some(member) = employer.member %}
     <div class="hidden md:flex xl:w-1/4">
-      <div class="flex gap-x-2 items-center bg-stone-50 border rounded-lg p-2 max-w-full xl:min-w-full">
+      <div class="flex gap-x-2 items-center bg-stone-50 border border-stone-200 rounded-lg p-2 max-w-full xl:min-w-full">
         <div class="flex items-center justify-center size-10 shrink-0">
           <img src="/static/images/foundations/{{ member.foundation }}.svg"
                alt="{{ member.foundation }} logo"
@@ -57,7 +57,7 @@
 
 <div class="flex flex-col md:flex-row-reverse flex-grow md:items-stretch">
   {# Info #}
-  <div class="border-b md:border-0 mb-5 md:mb-0 md:border md:w-1/4 pt-6">
+  <div class="border-b md:border-0 mb-5 md:mb-0 md:border border-stone-200 md:w-1/4 pt-6">
     {# Apply button #}
     <button class="btn-primary w-full block my-6" disabled>Apply</button>
     {# End apply button #}
@@ -165,7 +165,7 @@
     {% call job_details_subheading(content = "Projects you'd work on") %}
     <div class="flex flex-col space-y-3 mt-2">
       {% for p in projects %}
-        <div class="border rounded-lg p-2 text-sm/5 bg-white w-full">
+        <div class="border border-stone-200 rounded-lg p-2 text-sm/5 bg-white w-full">
           {% let label = &format!("{} {}", p.foundation, p.maturity) %}
           {% call macros::dropdown_card(name = p.name, label = label, logo_url = p.logo_url, line_height = 5) %}
         </div>
@@ -177,7 +177,7 @@
 </div>
 {# End info #}
 
-<div class="md:w-3/4 md:border-e md:me-10 md:pe-10 pt-5 md:pt-10">
+<div class="md:w-3/4 md:border-e border-stone-200 md:me-10 md:pe-10 pt-5 md:pt-10">
   {# Content #}
   <div class="flex flex-col space-y-6">
     {# Job description #}

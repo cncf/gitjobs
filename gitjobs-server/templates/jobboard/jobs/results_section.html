@@ -46,7 +46,7 @@
               hx-target="#preview-content"
               hx-trigger="click,open-modal"
               hx-indicator="#spinner-{{ job.job_id }}"
-              class="relative mx-4 md:mx-7 text-start enabled:cursor-pointer border border-2 rounded-lg enabled:hover:outline enabled:hover:outline-1 p-5 md:p-7 {%- if upstream_commitment > 0 %} border-lime-500 bg-lime-50/20 enabled:hover:outline-lime-500{%- else if open_source > 0 %} border-lime-300 bg-lime-50/20 enabled:hover:outline-lime-300{%- else %} enabled:hover:outline-stone-200{%- endif -%}"
+              class="relative mx-4 md:mx-7 text-start enabled:cursor-pointer border-2 border-stone-200 rounded-lg enabled:hover:outline enabled:hover:outline-1 p-5 md:p-7 {%- if upstream_commitment > 0 %} border-lime-500 bg-lime-50/20 enabled:hover:outline-lime-500{%- else if open_source > 0 %} border-lime-300 bg-lime-50/20 enabled:hover:outline-lime-300{%- else %} enabled:hover:outline-stone-200{%- endif -%}"
               hx-disabled-elt="[data-preview-job]"
               hx-boost="true">
         {# Job title #}
@@ -135,7 +135,7 @@
             {% if let Some(location) = job.location %}
               {%- call location_badge(location) %}
             {% else %}
-              <div class="flex border bg-white rounded-md px-2 py-0.5 text-xs text-stone-500 font-normal items-center">
+              <div class="flex border border-stone-200 bg-white rounded-md px-2 py-0.5 text-xs text-stone-500 font-normal items-center">
                 <div class="text-nowrap truncate">No location provided</div>
               </div>
             {% endif %}
@@ -144,9 +144,9 @@
 
         {# End location and salary for mobile devices #}
 
-        <div class="flex justify-between items-end space-x-2 md:space-x-6 w-full mt-5 md:ps-16">
+        <div class="flex justify-between items-end gap-x-2 md:gap-x-6 w-full mt-5 md:ps-16">
           {# Tags #}
-          <div class="flex items-center space-x-6 w-full text-[0.8rem] text-stone-600">
+          <div class="flex items-center gap-x-6 w-full text-[0.8rem] text-stone-600">
             {% let kind = job.kind.to_string() %}
             {% let workplace = job.workplace.to_string() %}
 
@@ -285,7 +285,7 @@
   <div class="text-sm/6 text-stone-600">
     {% if let Some(salary) = job.salary %}
       {# Salary #}
-      <div class="flex items-baseline space-x-1 border bg-white rounded-md px-2 py-0.5 text-xs text-stone-500 font-normal">
+      <div class="flex items-baseline space-x-1 border border-stone-200 bg-white rounded-md px-2 py-0.5 text-xs text-stone-500 font-normal">
         {% if let Some(salary_currency) = job.salary_currency %}
           <div class="text-[0.7rem] text-stone-500">{{ salary_currency }}</div>
         {% endif %}
@@ -297,7 +297,7 @@
       {# End salary #}
     {% else if let Some(salary_min) = job.salary_min %}
       {# Salary range #}
-      <div class="flex items-baseline space-x-1 border bg-white rounded-md px-2 py-0.5 text-xs text-stone-500 font-normal">
+      <div class="flex items-baseline space-x-1 border border-stone-200 bg-white rounded-md px-2 py-0.5 text-xs text-stone-500 font-normal">
         {% if let Some(salary_currency) = job.salary_currency %}
           <div class="text-[0.7rem] text-stone-500">{{ salary_currency }}</div>
         {% endif %}
@@ -318,7 +318,7 @@
 {% endmacro salary_badge %}
 
 {% macro location_badge(location) %}
-  <div class="flex border bg-white rounded-md px-2 py-0.5 text-xs text-stone-500 font-normal items-center">
+  <div class="flex border border-stone-200 bg-white rounded-md px-2 py-0.5 text-xs text-stone-500 font-normal items-center">
     <div class="svg-icon size-2.5 icon-location bg-stone-500 me-1 shrink-0"></div>
     <div class="text-nowrap truncate">{{ location.city }}, {{ location.country }}</div>
   </div>

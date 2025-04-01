@@ -7,7 +7,7 @@
 {# Menu item #}
 {% macro menu_item(name, icon, is_active, href, disabled = false, extra_styles = "", icon_size = 4 ) %}
   {% if is_active %}
-    <div class="relative bg-white border px-3 rounded-lg {{ extra_styles }}">
+    <div class="relative bg-white border border-stone-200 px-3 rounded-lg {{ extra_styles }}">
       <a hx-get="{{ href }}"
          hx-target="body"
          hx-indicator="#dashboard-spinner"

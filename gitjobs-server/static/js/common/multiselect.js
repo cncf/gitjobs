@@ -114,7 +114,7 @@ export class MultiSelect extends LitWrapper {
         <div
           class=${`${
             !this.visibleDropdown ? "hidden" : ""
-          } absolute start-0 z-10 bg-white divide-y divide-stone-100 rounded-lg shadow w-full border mt-1 ${
+          } absolute start-0 z-10 bg-white divide-y divide-stone-100 rounded-lg shadow w-full border border-stone-200 mt-1 ${
             this.legend ? "top-10" : ""
           }`}
         >

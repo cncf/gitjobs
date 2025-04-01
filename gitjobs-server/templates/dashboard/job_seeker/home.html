@@ -15,7 +15,7 @@
       {% call dashboard_macros::menu_item(name = "My applications", icon = "applications", is_active = false, href = "", disabled = true) %}
     </div>
 
-    <div class="leading-10 pt-6 border-t grid gap-y-0.5">
+    <div class="leading-10 pt-6 border-t border-stone-200 grid gap-y-0.5">
       {% call dashboard_macros::menu_title(text = "Account", extra_styles = "py-1.5") %}
       {% call dashboard_macros::menu_item(name = "Account", icon = "user", is_active = content.is_account(), href = "/dashboard/job-seeker?tab=account", icon_size = 3.5) %}
     </div>

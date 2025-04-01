@@ -1,7 +1,7 @@
 {% import "macros.html" as macros %}
 {% import "dashboard/employer/jobs/preview.html" as macros_preview %}
 
-<div class="flex flex-col w-full gap-3 md:flex-row md:items-center border-b pb-7 md:pb-10">
+<div class="flex flex-col w-full gap-3 md:flex-row md:items-center border-b border-stone-200 pb-7 md:pb-10">
   <div class="flex-grow">
     <div class="flex-grow flex items-stretch gap-x-4 md:gap-x-5 pe-12 md:pe-0 min-w-0">
       {# Image #}
@@ -37,7 +37,7 @@
     {% if let Some(location) = job.location %}
       <div class="flex md:hidden ps-12 mt-3">
         <div>
-          <div class="flex border bg-white rounded-md px-2 py-0.5 text-xs text-stone-500 font-normal items-center">
+          <div class="flex border border-stone-200 bg-white rounded-md px-2 py-0.5 text-xs text-stone-500 font-normal items-center">
             <div class="svg-icon size-2.5 icon-location bg-stone-500 me-1 shrink-0"></div>
             <div class="text-nowrap truncate">{{ location.city }}, {{ location.country }}</div>
           </div>
@@ -48,7 +48,7 @@
 
   {% if let Some(member) = job.employer.member %}
     <div class="hidden md:flex xl:w-1/4">
-      <div class="flex gap-x-2 items-center bg-stone-50 border rounded-lg p-2 max-w-full xl:min-w-full">
+      <div class="flex gap-x-2 items-center bg-stone-50 border border-stone-200 rounded-lg p-2 max-w-full xl:min-w-full">
         <div class="flex items-center justify-center size-10 shrink-0">
           <img src="/static/images/foundations/{{ member.foundation }}.svg"
                alt="{{ member.foundation }} logo"
@@ -69,7 +69,7 @@
 
 <div class="flex flex-col md:flex-row-reverse flex-grow md:items-stretch">
   {# Info #}
-  <div class="border-b pb-1 md:pb-0 md:border-0 md:border md:w-1/4 pt-6">
+  <div class="border-b pb-1 md:pb-0 md:border-0 md:border border-stone-200 md:w-1/4 pt-6">
     <div class="flex flex-col md:flex-col-reverse">
       <div>
         <div class="flex flex-row justify-between mb-4 md:mb-0 md:flex-col md:justify-start">
@@ -196,7 +196,7 @@
           {% call macros_preview::job_details_subheading(content = "Projects you'd work on") %}
           <div class="flex flex-col gap-3 mt-2">
             {% for p in projects %}
-              <div class="border rounded-lg p-2 text-sm/5 bg-white w-full">
+              <div class="border border-stone-200 rounded-lg p-2 text-sm/5 bg-white w-full">
                 {% let label = &format!("{} {}", p.foundation, p.maturity) %}
                 {% call macros::dropdown_card(name = p.name, label = label, logo_url = p.logo_url, line_height = 5) %}
               </div>
@@ -226,7 +226,7 @@
 </div>
 {# End info #}
 
-<div class="md:w-3/4 md:border-e md:me-10 md:pe-10 pt-5 md:pt-10">
+<div class="md:w-3/4 md:border-e border-stone-200 md:me-10 md:pe-10 pt-5 md:pt-10">
   {# Content #}
   <div class="flex flex-col space-y-6">
     {# Job description #}

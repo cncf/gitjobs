@@ -1095,13 +1095,6 @@
       margin-inline-end: calc(calc(var(--spacing) * 5) * calc(1 - var(--tw-space-x-reverse)));
     }
   }
-  .space-x-6 {
-    :where(& > :not(:last-child)) {
-      --tw-space-x-reverse: 0;
-      margin-inline-start: calc(calc(var(--spacing) * 6) * var(--tw-space-x-reverse));
-      margin-inline-end: calc(calc(var(--spacing) * 6) * calc(1 - var(--tw-space-x-reverse)));
-    }
-  }
   .space-x-8 {
     :where(& > :not(:last-child)) {
       --tw-space-x-reverse: 0;
@@ -1220,10 +1213,6 @@
   .border-t {
     border-top-style: var(--tw-border-style);
     border-top-width: 1px;
-  }
-  .border-r {
-    border-right-style: var(--tw-border-style);
-    border-right-width: 1px;
   }
   .border-b {
     border-bottom-style: var(--tw-border-style);
@@ -2025,6 +2014,12 @@
       border-width: 1px;
     }
   }
+  .after\:border-stone-200 {
+    &::after {
+      content: var(--tw-content);
+      border-color: var(--color-stone-200);
+    }
+  }
   .after\:border-stone-300 {
     &::after {
       content: var(--tw-content);
@@ -2594,13 +2589,9 @@
       column-gap: calc(var(--spacing) * 5);
     }
   }
-  .md\:space-x-6 {
+  .md\:gap-x-6 {
     @media (width >= 48rem) {
-      :where(& > :not(:last-child)) {
-        --tw-space-x-reverse: 0;
-        margin-inline-start: calc(calc(var(--spacing) * 6) * var(--tw-space-x-reverse));
-        margin-inline-end: calc(calc(var(--spacing) * 6) * calc(1 - var(--tw-space-x-reverse)));
-      }
+      column-gap: calc(var(--spacing) * 6);
     }
   }
   .md\:space-x-16 {
@@ -3492,13 +3483,6 @@
   font-display: fallback;
   src: url(/static/vendor/fonts/inter-latin.woff2) format("woff2");
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-.bg-jobboard {
-  background-image: url("/static/images/background.jpg");
-  background-size: cover;
-  background-position: center;
-  background-repeat: repeat;
-  opacity: 0.075;
 }
 .markdown ul li {
   list-style-type: disc;

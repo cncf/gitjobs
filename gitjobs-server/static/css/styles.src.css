@@ -108,7 +108,8 @@
   --lime-light-color: #bef264;
 }
 
-/* latin-ext */
+/* Font family */
+
 @font-face {
   font-family: "Inter";
   font-style: normal;
@@ -121,7 +122,6 @@
     U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 
-/* latin */
 @font-face {
   font-family: "Inter";
   font-style: normal;
@@ -134,13 +134,8 @@
     U+2215, U+FEFF, U+FFFD;
 }
 
-.bg-jobboard {
-  background-image: url("/static/images/background.jpg");
-  background-size: cover;
-  background-position: center;
-  background-repeat: repeat;
-  opacity: 0.075;
-}
+/* End font family */
+
 
 /* Markdown */
 
@@ -201,9 +196,12 @@
 .markdown hr {
   margin: 1rem 0;
 }
+
 /* End markdown */
 
+
 /* About page */
+
 .about h1 {
   font-size: 3rem;
   line-height: 3rem;
@@ -246,7 +244,11 @@
     font-size: 0.9rem;
   }
 }
+
 /* End about page */
+
+
+/* Select styles */
 
 select.aligned-right {
   text-align-last: right;
@@ -256,7 +258,6 @@ select.aligned-right option {
   direction: rtl;
 }
 
-/* Select styles */
 .select {
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
   background-position: right 0.5rem center;
@@ -264,7 +265,11 @@ select.aligned-right option {
   background-size: 21px 21px;
 }
 
+/* End select styles */
+
+
 /* Icons */
+
 .svg-icon {
   mask-size: contain;
   -webkit-mask-size: contain;
@@ -562,9 +567,12 @@ select.aligned-right option {
   mask-image: url("/static/images/icons/warning.svg");
   -webkit-mask-image: url("/static/images/icons/warning.svg");
 }
+
 /* End icons */
 
+
 /* Spinner */
+
 .hx-spinner {
   display: none;
 }
@@ -574,9 +582,12 @@ select.aligned-right option {
 .htmx-request.hx-spinner {
   display: inline;
 }
+
 /* End spinner */
 
+
 /* EasyMD Editor */
+
 .EasyMDEContainer .editor-toolbar {
   border-top-left-radius: 0.375rem;
   border-top-right-radius: 0.375rem;
@@ -631,9 +642,12 @@ select.aligned-right option {
 .EasyMDEContainer .editor-toolbar .separator + .separator {
   display: none;
 }
+
 /* End EasyMD Editor */
 
+
 /* Animation */
+
 .box-animated {
   box-shadow: 0 0 0 rgb(209 213 219);
   animation: pulse-shadow 1s infinite;
@@ -676,4 +690,5 @@ select.aligned-right option {
     box-shadow: 0 0 0 0 transparent;
   }
 }
+
 /* End animation */

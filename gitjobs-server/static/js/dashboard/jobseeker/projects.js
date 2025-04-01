@@ -66,7 +66,7 @@ export class ProjectsSection extends LitWrapper {
             <button
               @click=${() => this._addProject(index)}
               type="button"
-              class="p-2 border hover:bg-stone-100 rounded-full"
+              class="p-2 border border-stone-200 hover:bg-stone-100 rounded-full"
               title="Add above"
             >
               <div class="svg-icon size-4 icon-plus_top bg-stone-600"></div>
@@ -76,7 +76,7 @@ export class ProjectsSection extends LitWrapper {
             <button
               @click=${() => this._addProject(index + 1)}
               type="button"
-              class="p-2 border hover:bg-stone-100 rounded-full"
+              class="p-2 border border-stone-200 hover:bg-stone-100 rounded-full"
               title="Add below"
             >
               <div class="svg-icon size-4 icon-plus_bottom bg-stone-600"></div>
@@ -86,7 +86,7 @@ export class ProjectsSection extends LitWrapper {
             <button
               @click=${() => this._removeProject(index)}
               type="button"
-              class="p-2 border hover:bg-stone-100 rounded-full"
+              class="p-2 border border-stone-200 hover:bg-stone-100 rounded-full"
               title="${hasSingleProject ? "Clean" : "Delete"}"
             >
               <div class="svg-icon size-4 icon-${hasSingleProject ? "eraser" : "trash"} bg-stone-600"></div>
@@ -169,7 +169,7 @@ class Project extends LitWrapper {
 
   render() {
     return html`<div
-      class="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 border border-2 border-dashed p-8 rounded-lg bg-stone-50/25 w-full"
+      class="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 border-2 border-stone-200 border-dashed p-8 rounded-lg bg-stone-50/25 w-full"
     >
       <div class="col-span-3">
         <label class="form-label"> Title <span class="asterisk">*</span> </label>

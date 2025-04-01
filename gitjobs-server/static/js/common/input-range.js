@@ -117,7 +117,7 @@ export class InputRange extends LitWrapper {
               step="${this.step}"
               value="${this.value}"
               class="w-full h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-primary-300"
-              style="background-image: linear-gradient(90deg, var(--primary-color) 0%, var(--primary-color) ${this
+              style="background-image: linear-gradient(90deg, var(--color-primary-500) 0%, var(--color-primary-500) ${this
                 .percentValue}%, rgb(231 229 228 / var(--tw-bg-opacity, 1)) ${this
                 .percentValue}%, rgb(231 229 228 / var(--tw-bg-opacity, 1)) 100%);"
             />`
@@ -133,7 +133,7 @@ export class InputRange extends LitWrapper {
               step="${this.step}"
               value="${this.value}"
               class="w-full h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-primary-300"
-              style="background-image: linear-gradient(90deg, var(--primary-color) 0%, var(--primary-color) ${this
+              style="background-image: linear-gradient(90deg, var(--color-primary-500) 0%, var(--color-primary-500) ${this
                 .percentValue}%, rgb(231 229 228 / var(--tw-bg-opacity, 1)) ${this
                 .percentValue}%, rgb(231 229 228 / var(--tw-bg-opacity, 1)) 100%);"
             />`}

@@ -1,7 +1,7 @@
 {% import "macros.html" as macros %}
 
 {# Navbar #}
-<div class="flex items-center space-x-6">
+<div class="flex items-center gap-x-6">
   {# Logo #}
   <div class="me-3">
     <a hx-boost="true" href="/">
@@ -75,7 +75,7 @@
 
     {# Dropdown user #}
     <div id="dropdown-user"
-         class="dropdown absolute hidden z-10 end-0 top-10 w-[250px] bg-white divide-y divide-stone-100 rounded-lg shadow border">
+         class="dropdown absolute hidden z-10 end-0 top-10 w-[250px] bg-white divide-y divide-stone-100 rounded-lg shadow border border-stone-200">
       <ul class="text-stone-700 my-2">
         <li>
           <div class="flex flex-col px-4 py-2">
@@ -83,7 +83,7 @@
             <div class="text-xs/4 truncate">{{ name }}</div>
           </div>
         </li>
-        <li class="border-t mt-2 pt-2 hidden md:block">
+        <li class="border-t border-stone-200 mt-2 pt-2 hidden md:block">
           <a hx-boost="true"
              href="/dashboard/employer"
              hx-target="body"
@@ -105,7 +105,7 @@
             </div>
           </a>
         </li>
-        <li class="border-t mt-2 pt-2">
+        <li class="border-t border-stone-200 mt-2 pt-2">
           <a href="/log-out"
              class="inline-block w-full text-start px-4 py-2 hover:bg-stone-100">
             <div class="flex items-center">
@@ -126,7 +126,7 @@
     </button>
     {# Dropdown user #}
     <div id="dropdown-user"
-         class="dropdown absolute hidden z-10 end-0 top-10 w-[250px] bg-white divide-y divide-stone-100 rounded-lg shadow border">
+         class="dropdown absolute hidden z-10 end-0 top-10 w-[250px] bg-white divide-y divide-stone-100 rounded-lg shadow border border-stone-200">
       <ul class="text-stone-700 my-2">
         {# Sign up #}
         <li>

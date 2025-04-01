@@ -1,4 +1,4 @@
-<div class="flex space-x-5 items-center mb-10 pb-10 border-b">
+<div class="flex space-x-5 items-center mb-10 pb-10 border-b border-stone-200">
   {# Photo #}
   {% if let Some(photo_id) = profile.photo_id %}
     {% let photo = &self::build_dashboard_image_url(photo_id, "small") %}
@@ -22,7 +22,7 @@
       <a href="mailto:{{ profile.email }}"
          target="_blank"
          rel="noopener noreferrer"
-         class="border rounded-full px-4 flex items-center text-stone-600 text-sm/6 space-x-2 cursor-pointer">
+         class="border border-stone-200 rounded-full px-4 flex items-center text-stone-600 text-sm/6 space-x-2 cursor-pointer">
         <div class="svg-icon size-4 icon-email bg-stone-500"></div>
         <div>{{ profile.email }}</div>
       </a>
@@ -45,7 +45,7 @@
 
 <div class="flex items-stretch">
   {# Left column #}
-  <div class="w-1/4 pe-10 me-10 border-e flex space-y-10 flex-col">
+  <div class="w-1/4 pe-10 me-10 border-e border-stone-200 flex space-y-10 flex-col">
 
     {# Social #}
     <div class="flex flex-col space-y-3">
@@ -206,7 +206,7 @@
 </div>
 
 {% macro main_badge(content, icon) %}
-  <div class="border rounded-full px-4 flex items-center text-stone-600 text-sm/6 space-x-2">
+  <div class="border border-stone-200 rounded-full px-4 flex items-center text-stone-600 text-sm/6 space-x-2">
     <div class="svg-icon size-4 icon-{{ icon }} bg-stone-500"></div>
     <div>{{ content }}</div>
   </div>
@@ -218,7 +218,7 @@
 
 {% macro social_link(url, icon, is_email = false) %}
   <a href="{%- if is_email -%}mailto:{%- endif -%}{{ url }}"
-     class="btn-tertiary-anchor border btn-mini flex items-center space-x-2"
+     class="btn-tertiary-anchor border border-stone-200 btn-mini flex items-center space-x-2"
      target="_blank"
      rel="noopener noreferrer">
     <div class="svg-icon size-3 bg-stone-300 icon-{{ icon }}"></div>

@@ -197,7 +197,9 @@ export class SearchLocation extends LitWrapper {
   }
 
   _renderOptions() {
-    return html` <div class="bg-white divide-y divide-stone-100 rounded-lg shadow w-full border mt-1">
+    return html` <div
+      class="bg-white divide-y divide-stone-100 rounded-lg shadow w-full border border-stone-200 mt-1"
+    >
       ${this.options.length === 0
         ? html`<div class="px-8 py-4 text-sm/6 text-stone-600 italic">No locations found</div>`
         : html`<ul class="py-2 text-stone-700 overflow-auto max-h-[180px]">

@@ -144,7 +144,7 @@ export class SearchableFilter extends LitWrapper {
         <div
           class="${this.alignment === "top" ? "h-full" : ""} ${!this.visibleDropdown
             ? "hidden"
-            : ""} bg-white divide-y divide-stone-100 rounded-lg shadow w-full border mt-1"
+            : ""} bg-white divide-y divide-stone-100 rounded-lg shadow w-full border border-stone-200 mt-1"
         >
           ${this.visibleOptions.length > 0 && this.visibleDropdown
             ? html`<ul class="text-sm text-stone-700 overflow-auto max-h-[180px]">

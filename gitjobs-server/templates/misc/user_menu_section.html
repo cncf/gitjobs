@@ -7,10 +7,13 @@
          href="/dashboard/employer"
          hx-target="body"
          class="btn-primary-outline-anchor w-[140px]">Post a job</a>
-      <a hx-boost="true"
-         href="/dashboard/job-seeker"
-         hx-target="body"
-         class="btn-primary-outline-anchor w-[140px]">Create profile</a>
+
+      {% if !user.has_profile %}
+        <a hx-boost="true"
+           href="/dashboard/job-seeker"
+           hx-target="body"
+           class="btn-primary-outline-anchor w-[140px]">Create profile</a>
+      {% endif %}
     </div>
   {% endif %}
   <div class="ms-10">{% call macros_header::user_menu(user) %}</div>

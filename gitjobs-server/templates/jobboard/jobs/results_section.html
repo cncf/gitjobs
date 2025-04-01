@@ -53,7 +53,7 @@
         {# Job title #}
         <div class="flex flex-1 flex-row items-stretch space-x-4 w-full">
           {# Company logo #}
-          <div class="flex justify-center items-center shrink-0 size-9 md:size-12 bg-white">
+          <div class="hidden sm:flex justify-center items-center shrink-0 size-9 md:size-12 bg-white">
             {% if let Some(logo_id) = job.employer.logo_id %}
               {% let logo = &self::build_jobboard_image_url(logo_id, "medium") %}
               {% let logo_small = &self::build_jobboard_image_url(logo_id, "small") %}
@@ -73,7 +73,7 @@
           {# End company logo #}
 
           {# Info #}
-          <div class="flex-grow min-w-0 flex flex-col content-between">
+          <div class="flex-grow min-w-0 flex flex-col content-between min-h-9">
             {# Company and member #}
             <div class="flex justify-between items-center space-x-5">
               {# Company #}
@@ -114,7 +114,7 @@
             <div class="flex space-x-3 items-center mt-auto lg:pe-12 xl:pe-16">
               <div class="flex items-center space-x-4 min-w-0">
                 {# Title #}
-                <div class="leading-4 md:leading-normal text-[0.8rem] md:text-base font-stretch-condensed font-medium text-stone-900 truncate">
+                <div class="leading-4 md:leading-normal text-[0.8rem] md:text-base font-stretch-condensed font-medium text-stone-900 truncate mt-1 md:mt-0">
                   {{ job.title }}
                 </div>
                 {# End title #}
@@ -131,21 +131,23 @@
         </div>
 
         {# Location for mobile devices #}
-        <div class="flex justify-between mt-3 md:mt-0 md:hidden ps-[3.25rem]">
+        <div class="flex justify-between mt-3 md:mt-0 md:hidden sm:ps-[3.25rem]">
           <div class="max-w-full min-w-0">
-            {% if let Some(location) = job.location %}
-              {%- call location_badge(location) %}
+            {% if job.workplace == Workplace::Remote %}
+              {%- call badge(content = "Remote") -%}
             {% else %}
-              <div class="flex border border-stone-200 bg-white rounded-md px-2 py-0.5 text-xs text-stone-500 font-normal items-center">
-                <div class="text-nowrap truncate">No location provided</div>
-              </div>
+              {% if let Some(location) = job.location %}
+                {%- call location_badge(location) -%}
+              {% else %}
+                {%- call badge(content = "No location provided") -%}
+              {% endif %}
             {% endif %}
           </div>
         </div>
 
         {# End location and salary for mobile devices #}
 
-        <div class="flex justify-between items-end gap-x-2 md:gap-x-6 w-full mt-5 md:ps-16">
+        <div class="flex justify-between items-end gap-x-2 md:gap-x-6 w-full mt-3 md:mt-5 md:ps-16">
           {# Tags #}
           <div class="flex items-center gap-x-6 w-full text-[0.8rem] text-stone-600">
             {% let kind = job.kind.to_string() %}
@@ -323,3 +325,9 @@
     <div class="text-nowrap truncate">{{ location.city }}, {{ location.country }}</div>
   </div>
 {% endmacro location_badge %}
+
+{% macro badge(content) %}
+  <div class="flex border border-stone-200 bg-white rounded-md px-2 py-0.5 text-xs text-stone-500 font-normal items-center">
+    <div class="text-nowrap truncate">{{ content }}</div>
+  </div>
+{% endmacro badge %}

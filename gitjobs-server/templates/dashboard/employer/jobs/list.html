@@ -86,7 +86,9 @@
             <th scope="row"
                 class="px-3 xl:px-5 py-4 font-medium text-stone-900 min-w-[100px] max-w-[200px] xl:max-w-auto">
               <div class="max-w-full truncate">{{ job.title }}</div>
-              <div class="block xl:hidden text-xs text-stone-500 max-w-full truncate">{{ location }}</div>
+              {% if let Some(city) = job.city %}
+                <div class="block xl:hidden text-xs text-stone-500 max-w-full truncate">{{ location }}</div>
+              {% endif %}
             </th>
             {# End title job #}
 

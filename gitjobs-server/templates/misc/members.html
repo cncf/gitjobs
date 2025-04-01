@@ -1,13 +1,13 @@
 {% import "macros.html" as macros %}
 
-<div class="bg-white divide-y divide-stone-100 rounded-lg shadow w-full border border-stone-200 mt-1">
+<div class="bg-white rounded-lg shadow w-full border border-stone-200 mt-1">
   {% if members.is_empty() %}
     <div class="px-8 py-4 text-sm/6 text-stone-600 italic">No members found</div>
   {% else %}
     <ul class="text-sm text-stone-700 overflow-auto max-h-[180px]">
       {% for m in members %}
         <li class="group
-                   {% if loop.index != 1 -%}border-t{%- endif %}"
+                   {% if loop.index != 1 -%}border-t border-stone-200{%- endif %}"
             data-index="{{ loop.index }}">
           <button type="button"
                   data-member-id="{{ m.member_id }}"

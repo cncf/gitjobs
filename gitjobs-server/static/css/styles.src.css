@@ -2,6 +2,9 @@
 
 @plugin "@tailwindcss/forms";
 
+@source "static/js";
+@source "templates";
+
 @theme {
   --font-inter: Inter, sans-serif;
   --font-sans:
@@ -74,19 +77,19 @@
   }
 
   .input-primary {
-    @apply block w-full rounded-md bg-white px-3 py-1.5 text-base text-stone-900 border border-stone-200 placeholder:text-stone-500/75 focus:outline-2 focus:-outline-offset-2 focus:outline-primary-600 focus:ring-primary-600 sm:text-sm/6;
+    @apply block w-full rounded-md bg-white px-3 py-1.5 text-base text-stone-900 border border-stone-200 placeholder:text-stone-500/75 focus:outline-2 focus:-outline-offset-2 focus:outline-primary-600 focus:ring-transparent sm:text-sm/6;
   }
 
   .select-primary {
-    @apply col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-stone-900 border border-stone-200 focus:outline-2 focus:-outline-offset-2 focus:outline-primary-600 focus:ring-primary-600 sm:text-sm/6;
+    @apply col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-stone-900 border border-stone-200 focus:outline-2 focus:-outline-offset-2 focus:outline-primary-600 focus:ring-transparent sm:text-sm/6;
   }
 
   .radio-primary {
-    @apply w-4 h-4 text-primary-600 border border-stone-200 bg-stone-50 cursor-pointer focus:ring-primary-500 focus:ring-2;
+    @apply size-4 text-primary-600 border border-stone-200 bg-stone-50 checked:border-primary-500 checked:bg-primary-500 cursor-pointer focus:ring-0 focus:ring-transparent;
   }
 
   .checkbox-primary {
-    @apply w-4 h-4 rounded-sm text-primary-600 border border-stone-200 bg-stone-50 cursor-pointer focus:ring-primary-500 focus:ring-2;
+    @apply size-4 rounded-sm text-primary-600 border border-stone-200 bg-stone-50 checked:border-primary-500 checked:bg-primary-500 cursor-pointer focus:ring-0 focus:ring-transparent;
   }
 
   .asterisk {
@@ -623,7 +626,7 @@ select.aligned-right option {
   background-color: white;
 }
 
-.EasyMDEContainer
+.EasyMDEContainer .CodeMirror
   .cm-spell-error:not(.cm-url):not(.cm-comment):not(.cm-tag):not(.cm-word) {
   background: transparent;
 }

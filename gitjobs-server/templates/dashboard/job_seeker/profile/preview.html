@@ -17,12 +17,12 @@
     <div class="capitalize text-2xl font-semibold">{{ profile.name }}</div>
     {# End name #}
 
-    <div class="flex flex-wrap space-x-5 space-y-2">
+    <div class="flex flex-wrap gap-3 xl:gap-5">
       {# Email #}
       <a href="mailto:{{ profile.email }}"
          target="_blank"
          rel="noopener noreferrer"
-         class="border border-stone-200 rounded-full px-4 flex items-center text-stone-600 text-xs/6 lg:text-sm/6 space-x-2 cursor-pointer">
+         class="border border-stone-200 rounded-full px-4 flex items-center text-stone-600 text-xs/6 xl:text-sm/6 space-x-2 cursor-pointer">
         <div class="svg-icon size-4 icon-email bg-stone-500"></div>
         <div>{{ profile.email }}</div>
       </a>
@@ -206,7 +206,7 @@
 </div>
 
 {% macro main_badge(content, icon) %}
-  <div class="border border-stone-200 rounded-full px-4 flex items-center text-stone-600 text-xs/6 lg:text-sm/6 space-x-2">
+  <div class="border border-stone-200 rounded-full px-4 flex items-center text-stone-600 text-xs/6 xl:text-sm/6 space-x-2">
     <div class="svg-icon size-4 icon-{{ icon }} bg-stone-500"></div>
     <div>{{ content }}</div>
   </div>

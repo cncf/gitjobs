@@ -166,7 +166,7 @@ export class SearchableFilter extends LitWrapper {
                             <div class="size-8 shrink-0 flex items-center justify-center">
                               <img
                                 loading="lazy"
-                                class="size-auto"
+                                class="size-8 object-contain"
                                 height="auto"
                                 width="auto"
                                 src="${option.logo_url}"

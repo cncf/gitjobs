@@ -57,7 +57,7 @@
               {% let logo = &self::build_jobboard_image_url(logo_id, "medium") %}
               {% let logo_small = &self::build_jobboard_image_url(logo_id, "small") %}
               <img loading="lazy"
-                   class="size-auto flex"
+                   class="size-9 md:size-12 object-contain flex"
                    height="auto"
                    width="auto"
                    srcset="{{ logo_small }}, {{ logo }} 2x"
@@ -87,7 +87,7 @@
                   {% if let Some(member) = job.employer.member %}
                     <div class="flex items-center space-x-1 rounded-md uppercase">
                       <div class="shrink-0 size-3 flex items-center justify-center">
-                        <img class="size-auto"
+                        <img class="size-3 object-contain"
                              height="auto"
                              width="auto"
                              src="/static/images/foundations/{{ member.foundation }}.svg"
@@ -183,7 +183,7 @@
 
         {# Seniority #}
         {% if let Some(seniority) = job.seniority %}
-          <div class="hidden md:flex">
+          <div class="hidden md:flex lg:hidden xl:flex">
             {% let seniority = seniority.to_string() %}
             <div class="flex items-center space-x-1">
               <div class="svg-icon size-3 icon-organigram bg-stone-500"></div>

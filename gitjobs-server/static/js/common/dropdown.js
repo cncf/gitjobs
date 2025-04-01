@@ -35,7 +35,7 @@ export const addCard = (id, name, label, logo_url, elId, onRemove, extra = "", m
     </button>
     <div class="flex items-center space-x-3">
       <div class="size-${mini ? "5" : "10"} shrink-0 flex items-center justify-center">
-        <img class="size-auto"
+        <img class="size-${mini ? "5" : "10"} object-contain"
             height="auto"
             width="auto"
             src="${logo_url}"

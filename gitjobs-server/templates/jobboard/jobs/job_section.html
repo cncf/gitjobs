@@ -1,14 +1,14 @@
 {% import "macros.html" as macros %}
 {% import "dashboard/employer/jobs/preview.html" as macros_preview %}
 
-<div class="flex flex-col w-full gap-3 md:flex-row md:items-center border-b border-stone-200 pb-7 md:pb-10">
+<div class="flex flex-col w-full gap-3 md:flex-row md:items-center border-b border-stone-200 pb-7 xl:pb-10">
   <div class="flex-grow">
     <div class="flex-grow flex items-stretch gap-x-4 md:gap-x-5 pe-12 md:pe-0 min-w-0">
       {# Image #}
       <div class="flex justify-center items-center size-9 md:size-14 shrink-0">
         {% if let Some(logo_id) = job.employer.logo_id %}
           {% let logo = &self::build_jobboard_image_url(logo_id, "small") %}
-          <img class="size-auto"
+          <img class="size-9 md:size-14 object-contain"
                height="auto"
                width="auto"
                src="{{ logo }}"
@@ -54,7 +54,7 @@
                alt="{{ member.foundation }} logo"
                height="auto"
                width="auto"
-               class="size-auto">
+               class="size-10 object-contain">
         </div>
         <div class="flex flex-col justify-start min-w-0">
           <div class="truncate text-start text-stone-700 font-medium">{{ member.name }}</div>
@@ -69,7 +69,7 @@
 
 <div class="flex flex-col md:flex-row-reverse flex-grow md:items-stretch">
   {# Info #}
-  <div class="border-b pb-1 md:pb-0 md:border-0 md:border border-stone-200 md:w-1/4 pt-6">
+  <div class="border-b pb-1 md:pb-0 md:border-0 md:border border-stone-200 md:w-1/4 pt-3 xl:pt-6">
     <div class="flex flex-col md:flex-col-reverse">
       <div>
         <div class="flex flex-row justify-between mb-4 md:mb-0 md:flex-col md:justify-start">
@@ -226,7 +226,7 @@
 </div>
 {# End info #}
 
-<div class="md:w-3/4 md:border-e border-stone-200 md:me-10 md:pe-10 pt-5 md:pt-10">
+<div class="md:w-3/4 md:border-e botrder-stone-200 md:me-6 xl:me-10 md:pe-6 xl:pe-10 pt-5 xl:pt-10">
   {# Content #}
   <div class="flex flex-col space-y-6">
     {# Job description #}

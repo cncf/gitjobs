@@ -7,7 +7,7 @@
       <div class="flex justify-center items-center size-12 md:size-14 shrink-0">
         {% if let Some(logo_id) = employer.logo_id %}
           {% let logo = &self::build_dashboard_image_url(logo_id, "small") %}
-          <img class="size-auto"
+          <img class="size-12 md:size-14 object-contain"
                height="auto"
                width="auto"
                src="{{ logo }}"
@@ -42,7 +42,7 @@
                alt="{{ member.foundation }} logo"
                height="auto"
                width="auto"
-               class="size-auto">
+               class="size-10 object-contain">
         </div>
         <div class="flex flex-col justify-start min-w-0">
           <div class="truncate text-start text-stone-700 font-medium">{{ member.name }}</div>

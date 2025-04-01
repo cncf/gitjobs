@@ -126,7 +126,7 @@
                   <div class="flex justify-center items-center size-8 md:size-10 shrink-0">
                     {% if let Some(photo_id) = application.photo_id %}
                       {% let photo = &self::build_dashboard_image_url(photo_id, "small") %}
-                      <img class="size-auto"
+                      <img class="size-8 md:size-10 object-contain"
                            height="auto"
                            width="auto"
                            src="{{ photo }}"

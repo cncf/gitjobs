@@ -5,7 +5,10 @@ use askama::Template;
 use serde::{Deserialize, Serialize};
 
 /// Default pagination limit.
+#[cfg(test)]
 const DEFAULT_PAGINATION_LIMIT: usize = 10;
+#[cfg(not(test))]
+const DEFAULT_PAGINATION_LIMIT: usize = 20;
 
 /// Trait to get and set some pagination values.
 pub(crate) trait Pagination {

@@ -14,7 +14,7 @@
     <div class="leading-10 grid gap-y-0.5">
       {% call dashboard_macros::menu_title(text = "Job seeker", extra_styles = "py-1.5") %}
       {% call dashboard_macros::menu_item(name = "Profile", icon = "briefcase", is_active = content.is_profile(), href = "/dashboard/job-seeker?tab=profile") %}
-      {% call dashboard_macros::menu_item(name = "My applications", icon = "applications", is_active = false, href = "", disabled = true) %}
+      {% call dashboard_macros::menu_item(name = "My applications", icon = "applications", is_active = content.is_applications(), href = "/dashboard/job-seeker?tab=applications") %}
     </div>
 
     <div class="leading-10 pt-6 border-t border-stone-200 grid gap-y-0.5">

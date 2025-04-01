@@ -5,7 +5,7 @@ use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::templates::misc::Location;
+use crate::templates::{helpers::DATE_FORMAT, misc::Location};
 
 // Pages templates.
 

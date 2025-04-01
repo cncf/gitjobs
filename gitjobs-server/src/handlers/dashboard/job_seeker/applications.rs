@@ -45,11 +45,18 @@ pub(crate) async fn cancel(
 ) -> Result<impl IntoResponse, HandlerError> {
     // Get user from session
     let Some(user) = auth_session.user else {
-        return Ok(StatusCode::FORBIDDEN);
+        return Ok((StatusCode::FORBIDDEN).into_response());
     };
 
     // Cancel application
     db.cancel_application(&application_id, &user.user_id).await?;
 
-    Ok(StatusCode::NO_CONTENT)
+    Ok((
+        StatusCode::NO_CONTENT,
+        [(
+            "HX-Location",
+            r#"{"path":"/dashboard/job-seeker?tab=applications", "target":"body"}"#,
+        )],
+    )
+        .into_response())
 }

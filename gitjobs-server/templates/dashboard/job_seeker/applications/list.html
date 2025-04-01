@@ -1,1 +1,116 @@
-<h1>Applications list page</h1>
+{% import "macros.html" as macros %}
+{% import "misc/preview_modal.html" as preview %}
+
+{% call macros::form_title(title = "My applications") %}
+
+{# Applicants Table -#}
+<div class="relative overflow-visible mt-10">
+  <table class="table-fixed w-full text-xs lg:text-sm text-left rtl:text-right text-stone-500">
+    <thead class="text-xs text-stone-700 uppercase bg-stone-100 border-b border-stone-200">
+      <tr>
+        <th scope="col" class="px-3 xl:px-5 py-3">Position</th>
+        <th scope="col" class="px-3 xl:px-5 py-3 w-32">Applied</th>
+        <th scope="col" class="p-4 w-12"></th>
+      </tr>
+    </thead>
+    <tbody id="applications-list">
+      {% if applications.is_empty() %}
+        <tr class="bg-white border-b border-stone-200">
+          {# No applications #}
+          <td class="px-8 py-20 text-center" colspan="3">
+            <div class="text-xl lg:text-2xl mb-10">
+              <div>You have not applied yet to any jobs within GitJobs.</div>
+            </div>
+            <p class="text-stone-700 mb-10">
+              Please note that jobs that use an external apply url won’t be displayed here.
+            </p>
+          </td>
+        </tr>
+      {% else %}
+        {% for application in applications %}
+          <tr class="odd:bg-white even:bg-stone-50/50 border-b border-stone-200">
+            {# Position #}
+            <td class="px-3 xl:px-5 py-4 font-medium text-stone-900">
+              <button hx-post="/dashboard/employer/jobs/{{ application.job_id }}/preview"
+                      hx-target="#preview-content"
+                      hx-disabled-elt="this"
+                      class="flex flex-col justify-between items-start cursor-pointer preview-button max-w-full min-w-0">
+                <div class="max-w-full text-black truncate">{{ application.job_title }}</div>
+              </button>
+            </td>
+            {# End postion #}
+
+            {# Applied date #}
+            <td class="px-3 xl:px-5 py-4 whitespace-nowrap">{{ application.applied_at.format(DATE_FORMAT) }}</td>
+            {# End applied date #}
+
+            {# Actions #}
+            <td>
+              <div>
+                <button id="cancel-application-{{ application.application_id }}"
+                        hx-put="/dashboard/job-seeker/applications/{{ application.application_id }}/cancel"
+                        hx-disabled-elt="this"
+                        hx-trigger="confirmed"
+                        class="btn-tertiary p-2">
+                  <div class="svg-icon size-4 icon-trash"></div>
+                </button>
+                <script type="module">
+                  import {
+                    showConfirmAlert,
+                    showErrorAlert,
+                    showInfoAlertWithHtml,
+                    showSuccessAlert,
+                  } from "/static/js/common/alerts.js";
+                  import {
+                    isSuccessfulXHRStatus
+                  } from "/static/js/common/common.js";
+                  const cancelApplicationButton = document.getElementById('cancel-application-{{ application.application_id }}');
+                  cancelApplicationButton.addEventListener('click', (event) => {
+                    showConfirmAlert("Are you sure you wish to cancel this application?", "cancel-application-{{ application.application_id }}", "Yes");
+                  });
+
+                  cancelApplicationButton.addEventListener("htmx:afterRequest", (e) => {
+                    if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
+                      showSuccessAlert("You have successfully canceled the application.");
+                    } else {
+                      showErrorAlert("An error occurred canceling this application, please try again later.");
+                    }
+                  });
+                </script>
+              </div>
+            </td>
+            {# End actions #}
+          </tr>
+        {% endfor %}
+      {% endif %}
+    </tbody>
+  </table>
+</div>
+{# End applicants Table #}
+
+{# Preview modal -#}
+{% call preview::modal() %}
+{# End preview modal -#}
+
+<script type="module">
+  import {
+    toggleModalVisibility,
+    isSuccessfulXHRStatus
+  } from '/static/js/common/common.js';
+  import {
+    showErrorAlert,
+  } from "/static/js/common/alerts.js";
+
+  // On preview button click, show the preview modal
+  const previewButtons = document.querySelectorAll('.preview-button');
+  previewButtons.forEach((button) => {
+    button.addEventListener('htmx:afterRequest', (e) => {
+      if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
+        toggleModalVisibility('preview-modal', "open");
+      } else {
+        // When the preview is not available, show an error message
+        showErrorAlert('Something went wrong previewing the data, please try again later.');
+      }
+    });
+  });
+</script>

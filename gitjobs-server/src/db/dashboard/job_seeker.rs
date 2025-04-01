@@ -37,7 +37,7 @@ impl DBDashBoardJobSeeker for PgDB {
         let db = self.pool.get().await?;
         db.execute(
             "
-            delete from job_seeker_application
+            delete from application
             where application_id in (
                 select application_id
                 from application a

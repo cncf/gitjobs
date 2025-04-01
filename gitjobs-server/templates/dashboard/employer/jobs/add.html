@@ -50,7 +50,7 @@
             {# Timezone start #}
             <div class="col-span-3">
               <div class="mt-2 grid grid-cols-1 relative">
-                <div class="absolute top-3 start-3 text-xs text-stone-500">Start</div>
+                <div class="absolute pointer-events-none top-3 start-3 text-xs text-stone-500">Start</div>
                 <select id="tz_start"
                         name="tz_start"
                         class="select-primary ps-10 aligned-right">
@@ -67,7 +67,7 @@
             {# Timezone end #}
             <div class="col-span-3">
               <div class="mt-2 grid grid-cols-1 relative">
-                <div class="absolute top-3 start-3 text-xs text-stone-500">End</div>
+                <div class="absolute pointer-events-none top-3 start-3 text-xs text-stone-500">End</div>
                 <select id="tz_end" name="tz_end" class="select-primary ps-10 aligned-right">
                   {% call macros::select_option(value = "", label = "") %}
                   {% for i in 0..25 %}

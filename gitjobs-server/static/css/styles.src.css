@@ -135,6 +135,15 @@
 /* End font family */
 
 
+.bg-jobboard {
+  background-image: url('/static/images/background.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: repeat;
+  opacity: 0.075;
+}
+
+
 /* Markdown */
 
 .markdown ul li {

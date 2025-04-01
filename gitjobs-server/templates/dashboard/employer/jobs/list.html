@@ -54,7 +54,7 @@
 
 {# Jobs Table -#}
 <div class="relative overflow-visible">
-  <table class="table-auto w-full text-sm text-left rtl:text-right text-stone-500">
+  <table class="table-auto w-full text-xs lg:text-sm text-left rtl:text-right text-stone-500">
     <thead class="text-xs text-stone-700 uppercase bg-stone-100 border-b border-stone-200">
       {# Header #}
       <tr>
@@ -71,9 +71,9 @@
       {% if jobs.is_empty() %}
         <tr class="bg-white border-b border-stone-200">
           <td class="px-8 py-20 text-center" colspan="7">
-            <div class="text-3xl mb-10">It looks like you haven't created any jobs yet.</div>
+            <div class="text-xl lg:text-2xl mb-10">It looks like you haven't created any jobs yet.</div>
 
-            <p class="text-md text-stone-700">
+            <p class="text-sm lg:text-md text-stone-700">
               Jobs created by this employer will be listed here. You can create a new job by clicking on the <span class="italic">Add Job</span> button in the top right corner.
             </p>
           </td>
@@ -178,6 +178,9 @@
                             showInfoAlertWithHtml,
                             showSuccessAlert,
                           } from "/static/js/common/alerts.js";
+                          import {
+                            isSuccessfulXHRStatus
+                          } from "/static/js/common/common.js";
                           const deleteJobButton = document.getElementById('delete-job-{{ job.job_id }}');
                           deleteJobButton.addEventListener('click', (event) => {
                             showConfirmAlert("Are you sure you wish to delete this job?", "delete-job-{{ job.job_id }}", "Yes");

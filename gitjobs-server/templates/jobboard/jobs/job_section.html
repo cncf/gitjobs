@@ -96,6 +96,13 @@
           </div>
           {# End type #}
 
+          {# Workplace #}
+          <div class="block">
+            {% call macros_preview::job_details_subheading(content = "Workplace") %}
+            {% call macros_preview::job_workplace(workplace = job.workplace) %}
+          </div>
+          {# End workplace #}
+
           {# Seniority level #}
           <div class="block">
             {% call macros_preview::job_details_subheading(content = "Seniority level") %}
@@ -156,10 +163,12 @@
       {# End salary #}
 
       {# Location #}
-      <div class="hidden md:block">
-        {% call macros_preview::job_details_subheading(content = "Location") %}
-        {% call macros_preview::job_workplace(workplace = job.workplace, location = job.location|display_some_or("-")) %}
-      </div>
+      {% if let Some(location) = job.location %}
+        <div class="block mb-3 md:mb-0">
+          {% call macros_preview::job_details_subheading(content = "Location") %}
+          {% call macros_preview::job_details_content(text = location) %}
+        </div>
+      {% endif %}
       {# End location #}
 
       {# Timezone #}

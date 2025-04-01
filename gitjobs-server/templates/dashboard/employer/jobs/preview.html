@@ -79,6 +79,13 @@
     {% call job_kind(kind = job.kind) %}
     {# End type #}
 
+    {# Workplace #}
+    <div class="block">
+      {% call job_details_subheading(content = "Workplace") %}
+      {% call job_workplace(workplace = job.workplace) %}
+    </div>
+    {# End workplace #}
+
     {# Seniority level #}
     {% call job_details_subheading(content = "Seniority level") %}
     {% call job_details_content(text = job.seniority|display_some_or("-"), extra_styles = "capitalize") %}
@@ -134,8 +141,12 @@
   {# End salary #}
 
   {# Location #}
-  {% call job_details_subheading(content = "Location") %}
-  {% call job_workplace(workplace = job.workplace, location = job.location|display_some_or("-")) %}
+  {% if let Some(location) = job.location %}
+    <div class="block mb-3 md:mb-0">
+      {% call job_details_subheading(content = "Location") %}
+      {% call job_details_content(text = location) %}
+    </div>
+  {% endif %}
   {# End location #}
 
   {# Timezone #}
@@ -251,6 +262,7 @@
 </div>
 </div>
 
+{# Job kind #}
 {% macro job_kind(kind) %}
   {% let job_kind = kind.to_string().as_str()|unnormalize %}
 
@@ -265,17 +277,22 @@
   {% call job_details_content(text = job_kind, icon = "graduation_cap", extra_styles = "capitalize") %}
 {% endmatch %}
 {% endmacro job_kind %}
+{# End job kind #}
 
-{% macro job_workplace(workplace, location) %}
+{# Job workplace #}
+{% macro job_workplace(workplace) %}
+  {% let job_workplace = workplace.to_string().as_str()|unnormalize %}
+
   {% match workplace %}
-  {% when Workplace::Remote %}
-  {% call job_details_content(text = "Remote", icon = "location") %}
-  {% when Workplace::Hybrid %}
-  {% call job_details_content(text = "{} (hybrid)"|format(location), icon = "location") %}
   {% when Workplace::OnSite %}
-  {% call job_details_content(text = location, icon = "location") %}
+  {% call job_details_content(text = job_workplace, icon = "office_chair", extra_styles = "capitalize") %}
+  {% when Workplace::Remote %}
+  {% call job_details_content(text = job_workplace, icon = "remote", extra_styles = "capitalize") %}
+  {% when Workplace::Hybrid %}
+  {% call job_details_content(text = job_workplace, icon = "buildings", extra_styles = "capitalize") %}
 {% endmatch %}
 {% endmacro job_workplace %}
+{# End job workplace #}
 
 {# Content heading #}
 {% macro content_heading(content, margin = "mt-1") %}

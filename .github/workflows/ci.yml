@@ -17,6 +17,10 @@ jobs:
         with:
           toolchain: 1.85.0
           components: clippy, rustfmt
+      - name: Install Tailwind CSS
+        run: |
+          wget -O /usr/local/bin/tailwindcss https://github.com/tailwindlabs/tailwindcss/releases/download/v4.0.17/tailwindcss-linux-x64
+          chmod +x /usr/local/bin/tailwindcss
       - name: Run clippy
         run: cargo clippy --all-targets --all-features -- --deny warnings
       - name: Run rustfmt

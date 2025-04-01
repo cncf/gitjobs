@@ -193,7 +193,7 @@ class Project extends LitWrapper {
       <div class="col-span-3"></div>
 
       <div class="col-span-3">
-        <label class="form-label"> Url <span class="asterisk">*</span> </label>
+        <label class="form-label"> URL <span class="asterisk">*</span> </label>
         <div class="mt-2">
           <input
             @input=${(e) => this._onInputChange(e)}
@@ -212,7 +212,7 @@ class Project extends LitWrapper {
       </div>
 
       <div class="col-span-3">
-        <label class="form-label"> Source url </label>
+        <label class="form-label"> Source URL </label>
         <div class="mt-2">
           <input
             @input=${(e) => this._onInputChange(e)}

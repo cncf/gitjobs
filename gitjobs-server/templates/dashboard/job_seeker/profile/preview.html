@@ -53,7 +53,7 @@
       {% call social_link(url = profile.email, icon = "email", is_email = true) %}
       {# End email #}
 
-      {# Website url #}
+      {# Website URL #}
       {% if let Some(website_url) = profile.website_url %}
         {% call social_link(url = website_url, icon = "link") %}
       {% endif %}

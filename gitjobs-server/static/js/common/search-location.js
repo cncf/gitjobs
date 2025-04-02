@@ -47,8 +47,8 @@ export class SearchLocation extends LitWrapper {
   }
 
   disconnectedCallback() {
-    window.removeEventListener("mousedown", this._handleClickOutside);
     super.disconnectedCallback();
+    window.removeEventListener("mousedown", this._handleClickOutside);
   }
 
   async cleanLocation() {

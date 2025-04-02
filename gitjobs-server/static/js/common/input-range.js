@@ -1,11 +1,11 @@
-import { html, createRef, ref } from "/static/vendor/js/lit-all.v3.2.1.min.js";
+import { html, createRef, ref, nothing } from "/static/vendor/js/lit-all.v3.2.1.min.js";
 import { LitWrapper } from "/static/js/common/lit-wrapper.js";
 import { triggerActionOnForm } from "/static/js/jobboard/filters.js";
 
 export class InputRange extends LitWrapper {
   static properties = {
-    form: { type: String },
-    name: { type: String },
+    form: { type: String | undefined },
+    name: { type: String | undefined },
     min: { type: Number },
     max: { type: Number },
     step: { type: Number },
@@ -20,7 +20,7 @@ export class InputRange extends LitWrapper {
 
   constructor() {
     super();
-    this.form = "";
+    this.form = undefined;
     this.name = undefined;
     this.min = 0;
     this.max = 100;
@@ -103,40 +103,23 @@ export class InputRange extends LitWrapper {
   render() {
     return html`
       <div class="relative">
-        ${this.form !== ""
-          ? html`<input
-              ${ref(this.inputRef)}
-              form="${this.form}"
-              name="${this.name}"
-              type="range"
-              @input=${this._onInputChange}
-              @mousedown=${() => this._updateTooltipVisibility(true)}
-              @mouseup=${this._mouseup}
-              min="${this.min}"
-              max="${this.max}"
-              step="${this.step}"
-              value="${this.value}"
-              class="w-full h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-primary-300"
-              style="background-image: linear-gradient(90deg, var(--color-primary-500) 0%, var(--color-primary-500) ${this
-                .percentValue}%, rgb(231 229 228 / var(--tw-bg-opacity, 1)) ${this
-                .percentValue}%, rgb(231 229 228 / var(--tw-bg-opacity, 1)) 100%);"
-            />`
-          : html`<input
-              ${ref(this.inputRef)}
-              name="${this.name}"
-              type="range"
-              @input=${this._onInputChange}
-              @mousedown=${() => this._updateTooltipVisibility(true)}
-              @mouseup=${this._mouseup}
-              min="${this.min}"
-              max="${this.max}"
-              step="${this.step}"
-              value="${this.value}"
-              class="w-full h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-primary-300"
-              style="background-image: linear-gradient(90deg, var(--color-primary-500) 0%, var(--color-primary-500) ${this
-                .percentValue}%, rgb(231 229 228 / var(--tw-bg-opacity, 1)) ${this
-                .percentValue}%, rgb(231 229 228 / var(--tw-bg-opacity, 1)) 100%);"
-            />`}
+        <input
+          ${ref(this.inputRef)}
+          form="${this.form || nothing}"
+          name="${this.name}"
+          type="range"
+          @input=${this._onInputChange}
+          @mousedown=${() => this._updateTooltipVisibility(true)}
+          @mouseup=${this._mouseup}
+          min="${this.min}"
+          max="${this.max}"
+          step="${this.step}"
+          value="${this.value}"
+          class="w-full h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-primary-300"
+          style="background-image: linear-gradient(90deg, var(--color-primary-500) 0%, var(--color-primary-500) ${this
+            .percentValue}%, rgb(231 229 228 / var(--tw-bg-opacity, 1)) ${this
+            .percentValue}%, rgb(231 229 228 / var(--tw-bg-opacity, 1)) 100%);"
+        />
         <div
           role="tooltip"
           class="duration-100 transition-opacity ${this.visibleTooltip

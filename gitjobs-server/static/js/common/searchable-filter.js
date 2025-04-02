@@ -37,8 +37,8 @@ export class SearchableFilter extends LitWrapper {
   }
 
   disconnectedCallback() {
-    window.addEventListener("mousedown", this._handleClickOutside);
     super.disconnectedCallback();
+    window.addEventListener("mousedown", this._handleClickOutside);
   }
 
   async cleanSelected() {

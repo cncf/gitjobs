@@ -475,7 +475,8 @@
 
 <script type="module">
   import {
-    triggerActionOnForm
+    triggerActionOnForm,
+    checkSalaryBeforeSubmit
   } from '/static/js/dashboard/employer/jobs.js';
   import {
     toggleModalVisibility,
@@ -489,16 +490,8 @@
   const jobsForm = document.getElementById('jobs-form');
 
   // Before the form is submitted, check the salary option selected
-  jobsForm.addEventListener('htmx:beforeRequest', (e) => {
-    const selectedSalaryOption = document.querySelector('input[name="salary_kind"]:checked');
-    // If the salary option is range, remove the salary value
-    if (selectedSalaryOption.id === 'range') {
-      document.querySelector('input[name="salary"]').value = '';
-      // If the salary option is exact, remove the salary min and max values
-    } else {
-      document.querySelector('input[name="salary_min"]').value = '';
-      document.querySelector('input[name="salary_max"]').value = '';
-    }
+  jobsForm.addEventListener('htmx:trigger', () => {
+    checkSalaryBeforeSubmit();
   });
 
   jobsForm.addEventListener('htmx:afterRequest', (e) => {

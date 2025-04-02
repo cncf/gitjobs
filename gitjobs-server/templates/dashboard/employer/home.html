@@ -51,6 +51,7 @@
                   <button hx-put="/dashboard/employer/employers/{{ employer.employer_id }}/select"
                           hx-trigger="click"
                           hx-target="#dashboard-content"
+                          hx-indicator="#dashboard-spinner"
                           class="cursor-pointer w-full flex items-center px-4 py-2 text-sm/6 hover:bg-stone-100
                                  {% if is_selected -%}bg-stone-100{%- endif %}"
                           {% if is_selected %}disabled{% endif %}>

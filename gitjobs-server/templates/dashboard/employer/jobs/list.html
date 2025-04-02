@@ -61,7 +61,7 @@
         <th scope="col" class="px-3 xl:px-5 py-3">Title</th>
         <th scope="col" class="hidden xl:table-cell px-3 xl:px-5 py-3">Location</th>
         <th scope="col" class="px-3 xl:px-5 py-3">Status</th>
-        <th scope="col" class="hidden lg:table-cell px-3 xl:px-5 py-3">Created</th>
+        <th scope="col" class="hidden xl:table-cell px-3 xl:px-5 py-3">Created</th>
         <th scope="col" class="px-3 xl:px-5 py-3">Published</th>
         <th scope="col" class="hidden xl:table-cell px-5 py-3">Archived</th>
         <th scope="col" class="p-4"></th>
@@ -105,7 +105,7 @@
             {# End status #}
 
             {# Created date #}
-            <td class="hidden lg:table-cell px-3 xl:px-5 py-4 whitespace-nowrap w-32">
+            <td class="hidden xl:table-cell px-3 xl:px-5 py-4 whitespace-nowrap w-32">
               {{ job.created_at.format(DATE_FORMAT) }}
             </td>
             {# End created date #}

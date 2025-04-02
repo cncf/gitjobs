@@ -61,7 +61,7 @@ export class ExperienceSection extends LitWrapper {
     const hasSingleExperienceRecord = this.experience.length === 1;
 
     return html`<div class="mt-10">
-      <div class="flex w-full lg:w-4/5 xl:w-2/3">
+      <div class="flex w-full xl:w-2/3">
         <div class="flex flex-col space-y-3 me-3">
           <div>
             <button

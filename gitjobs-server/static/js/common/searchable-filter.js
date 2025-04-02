@@ -15,6 +15,7 @@ export class SearchableFilter extends LitWrapper {
     visibleDropdown: { type: Boolean },
     form: { type: String },
     alignment: { type: String },
+    activeIndex: { type: Number | null },
   };
 
   constructor() {
@@ -28,6 +29,7 @@ export class SearchableFilter extends LitWrapper {
     this.visibleDropdown = false;
     this.form = "";
     this.alignment = "bottom";
+    this.activeIndex = null;
   }
 
   connectedCallback() {
@@ -95,6 +97,51 @@ export class SearchableFilter extends LitWrapper {
     }
   };
 
+  _handleKeyDown(event) {
+    console.log("key down", event.key);
+    switch (event.key) {
+      // Highlight the next item in the list
+      case "ArrowDown":
+        this._highlightItem("down");
+        break;
+      // Highlight the previous item in the list
+      case "ArrowUp":
+        this._highlightItem("up");
+        break;
+      // Select the highlighted item
+      case "Enter":
+        event.preventDefault();
+        if (this.activeIndex && this.options) {
+          const activeItem = this.options[this.activeIndex];
+          if (activeItem) {
+            const activeItem = this.options[this.activeIndex];
+            const name = this.name === "projects" ? activeItem.name : activeItem;
+            this._onSelect(name);
+          }
+        }
+        break;
+      default:
+        break;
+    }
+  }
+
+  _highlightItem(direction) {
+    if (this.options && this.options.length > 0) {
+      if (this.activeIndex === null) {
+        this.activeIndex = direction === "down" ? 0 : this.options.length - 1;
+      } else {
+        let newIndex = direction === "down" ? this.activeIndex + 1 : this.activeIndex - 1;
+        if (newIndex >= this.options.length) {
+          newIndex = 0;
+        }
+        if (newIndex < 0) {
+          newIndex = this.options.length - 1;
+        }
+        this.activeIndex = newIndex;
+      }
+    }
+  }
+
   async _onSelect(value) {
     this.selected.push(value);
     this.enteredValue = "";
@@ -125,6 +172,7 @@ export class SearchableFilter extends LitWrapper {
       </div>
       <input
         type="text"
+        @keydown="${this._handleKeyDown}"
         @input=${this._onInputChange}
         @focus=${() => (this.visibleDropdown = true)}
         .value="${this.enteredValue}"
@@ -149,17 +197,21 @@ export class SearchableFilter extends LitWrapper {
         >
           ${this.visibleOptions.length > 0 && this.visibleDropdown
             ? html`<ul class="text-sm text-stone-700 overflow-auto max-h-[180px]">
-                ${this.visibleOptions.map((option) => {
+                ${this.visibleOptions.map((option, index) => {
                   const isProjectsType = this.name === "projects";
                   const name = isProjectsType ? option.name : option;
                   const isSelected = this.selected.includes(name);
-                  return html`<li class="group" data-index="{{ loop.index }}">
+                  return html`<li
+                    class="group ${this.activeIndex === index ? "active" : ""}"
+                    data-index="${index}"
+                  >
                     <button
                       type="button"
                       @click=${() => this._onSelect(name)}
-                      class=${`${
+                      @mouseover=${() => (this.activeIndex = index)}
+                      class=${`group-[.active]:bg-stone-100 ${
                         isSelected ? "bg-stone-100 opacity-50" : "cursor-pointer hover:bg-stone-100"
-                      } capitalize block w-full text-left px-${isProjectsType ? "3" : "4"} py-1`}
+                      } capitalize block w-full text-left ${isProjectsType ? "px-3" : "px-4"} py-1`}
                       ?disabled="${isSelected}"
                     >
                       ${isProjectsType

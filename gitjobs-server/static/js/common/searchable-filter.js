@@ -32,12 +32,12 @@ export class SearchableFilter extends LitWrapper {
 
   connectedCallback() {
     super.connectedCallback();
-    window.addEventListener("mousedown", this.handleClickOutside);
+    window.addEventListener("mousedown", this._handleClickOutside);
     this._getOptions();
   }
 
   disconnectedCallback() {
-    window.addEventListener("mousedown", this.handleClickOutside);
+    window.addEventListener("mousedown", this._handleClickOutside);
     super.disconnectedCallback();
   }
 
@@ -88,9 +88,10 @@ export class SearchableFilter extends LitWrapper {
     this._filterOptions();
   }
 
-  handleClickOutside = (e) => {
+  // Check if the clicked element is outside the component
+  _handleClickOutside = (e) => {
     if (!this.contains(e.target)) {
-      this.visibleDropdown = false;
+      this._cleanEnteredValue();
     }
   };
 

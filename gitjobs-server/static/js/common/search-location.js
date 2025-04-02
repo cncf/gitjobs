@@ -71,6 +71,11 @@ export class SearchLocation extends LitWrapper {
 
   _handleClickOutside = (e) => {
     if (!this.contains(e.target)) {
+      if (this.location_id !== "") {
+        this.value = this._formatLocation(this.city, this.state, this.country);
+      } else {
+        this.value = "";
+      }
       this.options = null;
     }
   };
@@ -96,6 +101,7 @@ export class SearchLocation extends LitWrapper {
   _onInputChange(event) {
     this._isLoading = true;
     const value = event.target.value;
+    this.value = value;
     if (value.length > 2) {
       debounce(this._fetchData(value), 300);
     }

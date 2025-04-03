@@ -1,20 +1,20 @@
-{% extends "dashboard/dashboard_base.html" %}
-{% import "macros.html" as macros %}
-{% import "dashboard/dashboard_macros.html" as dashboard_macros %}
+{% extends "dashboard/dashboard_base.html" -%}
+{% import "macros.html" as macros -%}
+{% import "dashboard/dashboard_macros.html" as dashboard_macros -%}
 
 {% block menu %}
   <div class="flex justify-between items-center mt-3 mb-6 px-3 lg:px-5">
     <div class="font-semibold text-stone-900 text-2xl">Dashboard</div>
     <div id="dashboard-spinner" class="hx-spinner -mt-1.5 relative">
-      {% call macros::spinner(size = "size-5") %}
+      {% call macros::spinner(size = "size-5") -%}
     </div>
   </div>
 
   <div class="max-h-full w-full flex flex-col space-y-5 mb-5 overflow-y-auto px-3 lg:px-5">
-    {# Employer #}
+    {# Employer -#}
     <div>
       <div class="flex justify-between items-end">
-        {% call dashboard_macros::menu_title(text = "Employer") %}
+        {% call dashboard_macros::menu_title(text = "Employer") -%}
         <div>
           <button id="add-employer-button"
                   hx-get="/dashboard/employer/employers/add"
@@ -30,23 +30,22 @@
         </div>
       </div>
       <div class="mt-2 relative">
-        {% let selected_employer = &self::find_employer(selected_employer_id.as_ref(), employers) %}
-
-        {% if let Some(selected_employer) = selected_employer %}
-          {# Employer button to open dropdown #}
+        {% let selected_employer = &self::find_employer(selected_employer_id.as_ref(), employers) -%}
+        {% if let Some(selected_employer) = selected_employer -%}
+          {# Employer button to open dropdown -#}
           <button id="employer-btn" class="cursor-pointer select select-primary">
             <div class="flex items-center relative">
-              {% call employer_content_list(company = selected_employer.company, logo_id = selected_employer.logo_id) %}
+              {% call employer_content_list(company = selected_employer.company, logo_id = selected_employer.logo_id) -%}
             </div>
           </button>
-          {# End employer button to open dropdown #}
+          {# End employer button to open dropdown -#}
 
-          {# Dropdown employers #}
+          {# Dropdown employers -#}
           <div id="dropdown-employers"
                class="hidden absolute top-10 start-0 w-full z-10 bg-white rounded-lg shadow-sm border border-stone-200">
             <ul class="max-h-48 overflow-y-auto text-stone-700">
-              {% for employer in employers %}
-                {% let is_selected = selected_employer.employer_id == employer.employer_id %}
+              {% for employer in employers -%}
+                {% let is_selected = selected_employer.employer_id == employer.employer_id -%}
                 <li>
                   <button hx-put="/dashboard/employer/employers/{{ employer.employer_id }}/select"
                           hx-trigger="click"
@@ -56,35 +55,35 @@
                           class="employer-button cursor-pointer w-full flex items-center px-4 py-2 text-sm/6 hover:bg-stone-100
                                  {% if is_selected -%}bg-stone-100{%- endif %}"
                           {% if is_selected %}disabled{% endif %}>
-                    {% call employer_content_list(company = employer.company, logo_id = employer.logo_id) %}
+                    {% call employer_content_list(company = employer.company, logo_id = employer.logo_id) -%}
                   </button>
                 </li>
-              {% endfor %}
+              {% endfor -%}
             </ul>
           </div>
-          {# End dropdown employers #}
-        {% endif %}
+          {# End dropdown employers -#}
+        {% endif -%}
       </div>
-      {% if !employers.is_empty() %}
+      {% if !employers.is_empty() -%}
         <div class="mt-3">
-          {% call dashboard_macros::menu_item(name = "Profile", icon = "office", is_active = content.is_profile(), href = "/dashboard/employer?tab=profile") %}
-          {% call dashboard_macros::menu_item(name = "Team", icon = "team", is_active = false, href = "", disabled = true) %}
+          {% call dashboard_macros::menu_item(name = "Profile", icon = "office", is_active = content.is_profile(), href = "/dashboard/employer?tab=profile") -%}
+          {% call dashboard_macros::menu_item(name = "Team", icon = "team", is_active = false, href = "", disabled = true) -%}
         </div>
-      {% endif %}
+      {% endif -%}
     </div>
-    {# End employer #}
+    {# End employer -#}
 
-    {% if !employers.is_empty() %}
+    {% if !employers.is_empty() -%}
       <div class="leading-10 pt-6 border-t border-stone-200 grid gap-y-0.5">
-        {% call dashboard_macros::menu_title(text = "Jobs", extra_styles = "py-1.5") %}
-        {% call dashboard_macros::menu_item(name = "Jobs", icon = "list", is_active = content.is_jobs(), href = "/dashboard/employer?tab=jobs") %}
-        {% call dashboard_macros::menu_item(name = "Applications", icon = "outline_clipboard", is_active = content.is_applications(), href = "/dashboard/employer?tab=applications") %}
+        {% call dashboard_macros::menu_title(text = "Jobs", extra_styles = "py-1.5") -%}
+        {% call dashboard_macros::menu_item(name = "Jobs", icon = "list", is_active = content.is_jobs(), href = "/dashboard/employer?tab=jobs") -%}
+        {% call dashboard_macros::menu_item(name = "Applications", icon = "outline_clipboard", is_active = content.is_applications(), href = "/dashboard/employer?tab=applications") -%}
       </div>
-    {% endif %}
+    {% endif -%}
 
     <div class="leading-10 pt-6 border-t border-stone-200 grid gap-y-0.5">
-      {% call dashboard_macros::menu_title(text = "Account", extra_styles = "py-1.5") %}
-      {% call dashboard_macros::menu_item(name = "Account", icon = "user", is_active = content.is_account(), href = "/dashboard/employer?tab=account", icon_size = "size-3.5") %}
+      {% call dashboard_macros::menu_title(text = "Account", extra_styles = "py-1.5") -%}
+      {% call dashboard_macros::menu_item(name = "Account", icon = "user", is_active = content.is_account(), href = "/dashboard/employer?tab=account", icon_size = "size-3.5") -%}
     </div>
   </div>
 {% endblock menu %}
@@ -96,7 +95,7 @@
        class="p-4 sm:p-6 lg:p-12">
     {# Content -#}
     {{ content|safe }}
-    {# End Content #}
+    {# End Content -#}
   </div>
 
   <script type="module">
@@ -125,15 +124,12 @@
       });
     }
 
-
     const dropdownEmployerBtns = document.querySelectorAll('button.employer-button');
     dropdownEmployerBtns.forEach((btn) => {
       btn.addEventListener("htmx:beforeRequest", () => {
         dropdownEmployers.classList.add('hidden');
       });
     })
-
-
 
     const addEmployerButton = document.getElementById('add-employer-button');
     if (addEmployerButton) {
@@ -142,16 +138,16 @@
       });
     }
   </script>
-  {# Messages #}
-  {% if !messages.is_empty() %}
-    {% call macros::alerts(messages) %}
-  {% endif %}
-  {# End messages #}
+  {# Messages -#}
+  {% if !messages.is_empty() -%}
+    {% call macros::alerts(messages) -%}
+  {% endif -%}
+  {# End messages -#}
 {% endblock dashboard_main %}
 
 {% macro employer_content_list(company, logo_id) %}
-  {% if let Some(logo_id) = logo_id %}
-    {% let logo = &self::build_dashboard_image_url(logo_id, "small") %}
+  {% if let Some(logo_id) = logo_id -%}
+    {% let logo = &self::build_dashboard_image_url(logo_id, "small") -%}
     <div class="flex items-center justify-center size-6 me-3">
       <img class="size-6 object-contain"
            height="auto"
@@ -159,10 +155,10 @@
            src="{{ logo }}"
            alt="{{ company }} image">
     </div>
-  {% else %}
+  {% else -%}
     <div class="rounded-full size-6 me-3 bg-stone-200 p-1">
       <div class="svg-icon size-4 icon-company bg-stone-600"></div>
     </div>
-  {% endif %}
+  {% endif -%}
   <div class="truncate">{{ company }}</div>
 {% endmacro employer_content_list %}

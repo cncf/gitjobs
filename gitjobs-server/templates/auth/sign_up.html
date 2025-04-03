@@ -1,14 +1,14 @@
-{% extends "common_base.html" %}
-{% import "macros.html" as macros %}
+{% extends "common_base.html" -%}
+{% import "macros.html" as macros -%}
 
 {% block main %}
   <div class="container max-w-md m-auto px-4 py-8 md:px-2 md:py-12">
     <div class="bg-white p-10 border border-stone-200 rounded-lg">
-      <div class="mb-8">{% call macros::form_title(title = "Sign Up") %}</div>
+      <div class="mb-8">{% call macros::form_title(title = "Sign Up") -%}</div>
 
       <div class="flex flex-col items-center space-y-5 mb-2">
-        {# Linux Foundation SSO login #}
-        {% if login.linuxfoundation %}
+        {# Linux Foundation SSO login -#}
+        {% if login.linuxfoundation -%}
           <div class="w-full">
             <a href="/log-in/oidc/linuxfoundation{%- if let Some(next_url) = next_url -%}?next_url={{ next_url }}{%- endif -%}"
                class="group btn-primary-outline-anchor flex justify-center items-center space-x-2">
@@ -16,11 +16,11 @@
               <div>Linux Foundation SSO</div>
             </a>
           </div>
-        {% endif %}
-        {# End Linux Foundation SSO login #}
+        {% endif -%}
+        {# End Linux Foundation SSO login -#}
 
-        {# GitHub login #}
-        {% if login.github %}
+        {# GitHub login -#}
+        {% if login.github -%}
           <div class="w-full">
             <a href="/log-in/oauth2/github{%- if let Some(next_url) = next_url -%}?next_url={{ next_url }}{%- endif -%}"
                class="group btn-primary-outline-anchor flex justify-center items-center space-x-2">
@@ -28,23 +28,23 @@
               <div>GitHub</div>
             </a>
           </div>
-        {% endif %}
-        {# End GitHub login #}
+        {% endif -%}
+        {# End GitHub login -#}
       </div>
 
-      {% if login.email %}
-        {% if login.linuxfoundation || login.github %}
+      {% if login.email -%}
+        {% if login.linuxfoundation || login.github -%}
           <div class="inline-flex items-center justify-center w-full relative">
             <hr class="w-full h-0.5 my-8 bg-stone-200 border-0 rounded-sm">
             <div class="absolute px-4 -translate-x-1/2 bg-white left-1/2 text-xs text-stone-500/75">OR</div>
           </div>
-        {% endif %}
+        {% endif -%}
 
         <form id="sign-up-form"
               action="/sign-up{%- if let Some(next_url) = next_url -%}?next_url={{ next_url }}{%- endif -%}"
               method="post">
           <div class="grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-6">
-            {# Name #}
+            {# Name -#}
             <div class="sm:col-span-full">
               <label for="name" class="form-label">
                 Name <span class="asterisk">*</span>
@@ -61,9 +61,9 @@
                        required>
               </div>
             </div>
-            {# End name #}
+            {# End name -#}
 
-            {# Email #}
+            {# Email -#}
             <div class="sm:col-span-full">
               <label for="email" class="form-label">
                 Email <span class="asterisk">*</span>
@@ -72,9 +72,9 @@
                 <input id="email" name="email" type="email" class="input-primary" required>
               </div>
             </div>
-            {# End Email #}
+            {# End Email -#}
 
-            {# Username #}
+            {# Username -#}
             <div class="sm:col-span-full">
               <label for="username" class="form-label">
                 Username <span class="asterisk">*</span>
@@ -91,9 +91,9 @@
                        required>
               </div>
             </div>
-            {# End Username #}
+            {# End Username -#}
 
-            {# Password #}
+            {# Password -#}
             <div class="sm:col-span-3">
               <label for="password" class="form-label">
                 Password <span class="asterisk">*</span>
@@ -106,9 +106,9 @@
                        required>
               </div>
             </div>
-            {# End Password #}
+            {# End Password -#}
 
-            {# Repeat password #}
+            {# Repeat password -#}
             <div class="sm:col-span-3">
               <label for="password_confirmation" class="form-label">
                 Repeat password <span class="asterisk">*</span>
@@ -121,27 +121,27 @@
                        required>
               </div>
             </div>
-            {# End Repeat password #}
+            {# End Repeat password -#}
           </div>
 
-          {# Submit button #}
+          {# Submit button -#}
           <button type="submit" class="btn-primary w-full mt-10">Submit</button>
         </form>
-      {% endif %}
+      {% endif -%}
 
-      {# Log in link #}
+      {# Log in link -#}
       <div class="mt-5 text-sm text-stone-600">
         Already have an account? <a hx-boost="true"
     href="/log-in{%- if let Some(next_url) = next_url -%}?next_url={{ next_url }}{%- endif -%}"
     class="text-primary-700 hover:text-primary-900">Sign In</a>
       </div>
-      {# End log in link #}
+      {# End log in link -#}
 
-      {# Messages #}
-      {% if !messages.is_empty() %}
-        {% call macros::alerts(messages) %}
-      {% endif %}
-      {# End messages #}
+      {# Messages -#}
+      {% if !messages.is_empty() -%}
+        {% call macros::alerts(messages) -%}
+      {% endif -%}
+      {# End messages -#}
     </div>
   </div>
   <script type="module">

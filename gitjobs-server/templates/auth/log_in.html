@@ -1,14 +1,14 @@
-{% extends "common_base.html" %}
-{% import "macros.html" as macros %}
+{% extends "common_base.html" -%}
+{% import "macros.html" as macros -%}
 
 {% block main %}
   <div class="container max-w-md m-auto px-4 py-8 md:px-2 md:py-12">
     <div class="bg-white p-10 border border-stone-200 rounded-lg">
-      <div class="mb-8">{% call macros::form_title(title = "Log In") %}</div>
+      <div class="mb-8">{% call macros::form_title(title = "Log In") -%}</div>
 
       <div class="flex flex-col items-center space-y-5 mb-2">
-        {# Linux Foundation SSO login #}
-        {% if login.linuxfoundation %}
+        {# Linux Foundation SSO login -#}
+        {% if login.linuxfoundation -%}
           <div class="w-full">
             <a href="/log-in/oidc/linuxfoundation{%- if let Some(next_url) = next_url -%}?next_url={{ next_url }}{%- endif -%}"
                class="group btn-primary-outline-anchor flex justify-center items-center space-x-2">
@@ -16,11 +16,11 @@
               <div>Linux Foundation SSO</div>
             </a>
           </div>
-        {% endif %}
-        {# End Linux Foundation SSO login #}
+        {% endif -%}
+        {# End Linux Foundation SSO login -#}
 
-        {# GitHub login #}
-        {% if login.github %}
+        {# GitHub login -#}
+        {% if login.github -%}
           <div class="w-full">
             <a href="/log-in/oauth2/github{%- if let Some(next_url) = next_url -%}?next_url={{ next_url }}{%- endif -%}"
                class="group btn-primary-outline-anchor flex justify-center items-center space-x-2">
@@ -28,18 +28,18 @@
               <div>GitHub</div>
             </a>
           </div>
-        {% endif %}
-        {# End GitHub login #}
+        {% endif -%}
+        {# End GitHub login -#}
       </div>
 
-      {# Email login #}
-      {% if login.email %}
-        {% if login.linuxfoundation || login.github %}
+      {# Email login -#}
+      {% if login.email -%}
+        {% if login.linuxfoundation || login.github -%}
           <div class="inline-flex items-center justify-center w-full relative">
             <hr class="w-full h-0.5 my-8 bg-stone-200 border-0 rounded-sm">
             <div class="absolute px-4 -translate-x-1/2 bg-white left-1/2 text-xs text-stone-500/75">OR</div>
           </div>
-        {% endif %}
+        {% endif -%}
 
         <form action="/log-in{%- if let Some(next_url) = next_url -%}?next_url={{ next_url }}{%- endif -%}"
               method="post">
@@ -64,23 +64,23 @@
                    required />
           </div>
 
-          {# Submit button #}
+          {# Submit button -#}
           <button type="submit" class="btn-primary w-full mt-10">Submit</button>
-          {# End submit button #}
+          {# End submit button -#}
         </form>
-      {% endif %}
-      {# End email login #}
+      {% endif -%}
+      {# End email login -#}
 
       <div class="mt-5 text-sm text-stone-600">
         Don't have an account? <a href="/sign-up{%- if let Some(next_url) = next_url -%}?next_url={{ next_url }}{%- endif -%}"
     class="text-primary-700 hover:text-primary-900">Sign up</a>.
       </div>
 
-      {# Messages #}
-      {% if !messages.is_empty() %}
-        {% call macros::alerts(messages) %}
-      {% endif %}
-      {# End messages #}
+      {# Messages -#}
+      {% if !messages.is_empty() -%}
+        {% call macros::alerts(messages) -%}
+      {% endif -%}
+      {# End messages -#}
     </div>
   </div>
 {% endblock main %}

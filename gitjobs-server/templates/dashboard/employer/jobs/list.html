@@ -1,10 +1,10 @@
-{% import "macros.html" as macros %}
+{% import "macros.html" as macros -%}
 
-{% call macros::form_title(title = "Jobs") %}
+{% call macros::form_title(title = "Jobs") -%}
 
 <div class="flex justify-between my-10">
   <div class="flex items-center gap-x-6">
-    {# Search jobs input #}
+    {# Search jobs input -#}
     <div class="relative">
       <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
         <div class="svg-icon size-4 icon-search bg-stone-300"></div>
@@ -26,10 +26,10 @@
         </button>
       </div>
     </div>
-    {# End search jobs input #}
+    {# End search jobs input -#}
   </div>
 
-  {# Add job button #}
+  {# Add job button -#}
   <div>
     <button id="add-job-button"
             hx-get="/dashboard/employer/jobs/add"
@@ -37,7 +37,7 @@
             hx-indicator="#dashboard-spinner"
             class="btn-primary">Add Job</button>
   </div>
-  {# End add job button #}
+  {# End add job button -#}
 
   <script type="module">
     const addJobButton = document.getElementById('add-job-button');
@@ -56,7 +56,7 @@
 <div class="relative overflow-visible">
   <table class="table-auto w-full text-xs lg:text-sm text-left rtl:text-right text-stone-500">
     <thead class="text-xs text-stone-700 uppercase bg-stone-100 border-b border-stone-200">
-      {# Header #}
+      {# Header -#}
       <tr>
         <th scope="col" class="px-3 xl:px-5 py-3">Title</th>
         <th scope="col" class="hidden xl:table-cell px-3 xl:px-5 py-3">Location</th>
@@ -68,7 +68,7 @@
       </tr>
     </thead>
     <tbody id="jobs-list">
-      {% if jobs.is_empty() %}
+      {% if jobs.is_empty() -%}
         <tr class="bg-white border-b border-stone-200">
           <td class="px-8 py-20 text-center" colspan="7">
             <div class="text-xl lg:text-2xl mb-10">It looks like you haven't created any jobs yet.</div>
@@ -78,65 +78,65 @@
             </p>
           </td>
         </tr>
-      {% else %}
-        {% for job in jobs %}
-          {% let location = &self::format_location(job.city.as_deref(), None, job.country.as_deref())|display_some_or("No location provided") %}
+      {% else -%}
+        {% for job in jobs -%}
+          {% let location = &self::format_location(job.city.as_deref(), None, job.country.as_deref())|display_some_or("No location provided") -%}
           <tr class="odd:bg-white even:bg-stone-50/50 border-b border-stone-200">
-            {# Title job #}
+            {# Title job -#}
             <th scope="row"
                 class="px-3 xl:px-5 py-4 font-medium text-stone-900 min-w-[100px] max-w-[200px] xl:max-w-auto">
               <div class="max-w-full truncate">{{ job.title }}</div>
-              {# Workplace #}
+              {# Workplace -#}
               <div class="block xl:hidden text-xs text-stone-500 max-w-full truncate">
-                {% if job.workplace == Workplace::Remote %}
+                {% if job.workplace == Workplace::Remote -%}
                   Remote
-                {% else %}
+                {% else -%}
                   {{ location }}
-                {% endif %}
+                {% endif -%}
               </div>
-              {# End workplace #}
+              {# End workplace -#}
             </th>
-            {# End title job #}
+            {# End title job -#}
 
-            {# Location #}
+            {# Location -#}
             <td class="hidden xl:table-cell px-3 xl:px-5 py-4 whitespace-nowrap min-w-[100px] max-w-[100px] xl:max-w-[200px]">
               <div class="max-w-full truncate">
-                {# Workplace #}
-                {% if job.workplace == Workplace::Remote %}
+                {# Workplace -#}
+                {% if job.workplace == Workplace::Remote -%}
                   Remote
-                {% else %}
+                {% else -%}
                   {{ location }}
-                {% endif %}
-                {# End workplace #}
+                {% endif -%}
+                {# End workplace -#}
               </div>
             </td>
-            {# End location #}
+            {# End location -#}
 
-            {# Status #}
+            {# Status -#}
             <td class="px-3 xl:px-5 py-4 whitespace-nowrap w-32">
-              {% call macros::job_status_badge(status = job.status) %}
+              {% call macros::job_status_badge(status = job.status) -%}
             </td>
-            {# End status #}
+            {# End status -#}
 
-            {# Created date #}
+            {# Created date -#}
             <td class="hidden 2xl:table-cell px-3 xl:px-5 py-4 whitespace-nowrap w-32">
               {{ job.created_at.format(DATE_FORMAT) }}
             </td>
-            {# End created date #}
+            {# End created date -#}
 
-            {# Published date #}
+            {# Published date -#}
             <td class="px-3 xl:px-5 py-4 whitespace-nowrap w-32">
               {{ job.published_at|display_some_datetime_or(DATE_FORMAT, "-") }}
             </td>
-            {# End published date #}
+            {# End published date -#}
 
-            {# Archived date #}
+            {# Archived date -#}
             <td class="hidden xl:table-cell px-3 xl:px-5 py-4 whitespace-nowrap w-32">
               {{ job.archived_at|display_some_datetime_or(DATE_FORMAT, "-") }}
             </td>
-            {# End archived date #}
+            {# End archived date -#}
 
-            {# Actions #}
+            {# Actions -#}
             <td class="px-3 xl:px-5 py-4 w-24">
               <div class="flex items-center gap-x-2 xl:gap-x-3">
                 <div>
@@ -155,12 +155,12 @@
                     <div class="svg-icon size-4 icon-vertical_dots"></div>
                   </button>
 
-                  {# Dropdown actions #}
+                  {# Dropdown actions -#}
                   <div id="dropdown-actions-{{ job.job_id }}"
                        class="dropdown absolute hidden z-10 end-0 top-8 w-[200px] bg-white divide-y divide-stone-100 rounded-lg shadow border border-stone-200">
                     <ul class="py-2 text-sm text-stone-700"
                         aria-labelledby="dropdownDefaultButton">
-                      {% if job.status != JobStatus::Published %}
+                      {% if job.status != JobStatus::Published -%}
                         <li>
                           <button hx-put="/dashboard/employer/jobs/{{ job.job_id }}/publish"
                                   hx-target="#dashboard-content"
@@ -172,7 +172,7 @@
                             </div>
                           </button>
                         </li>
-                      {% endif %}
+                      {% endif -%}
                       <li>
                         <button id="delete-job-{{ job.job_id }}"
                                 hx-delete="/dashboard/employer/jobs/{{ job.job_id }}/delete"
@@ -209,7 +209,7 @@
                           });
                         </script>
                       </li>
-                      {% if job.status == JobStatus::Published %}
+                      {% if job.status == JobStatus::Published -%}
                         <li>
                           <button hx-put="/dashboard/employer/jobs/{{ job.job_id }}/archive"
                                   hx-target="#dashboard-content"
@@ -221,17 +221,17 @@
                             </div>
                           </button>
                         </li>
-                      {% endif %}
+                      {% endif -%}
                     </ul>
                   </div>
-                  {# End dropdown actions #}
+                  {# End dropdown actions -#}
                 </div>
               </div>
             </td>
-            {# End actions #}
+            {# End actions -#}
           </tr>
-        {% endfor %}
-      {% endif %}
+        {% endfor -%}
+      {% endif -%}
     </tbody>
 
     <script type="module">
@@ -261,4 +261,4 @@
     </script>
   </table>
 </div>
-{# End Jobs Table #}
+{# End Jobs Table -#}

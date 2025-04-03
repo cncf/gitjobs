@@ -1,24 +1,24 @@
-{% import "macros.html" as macros %}
+{% import "macros.html" as macros -%}
 
 <div class="space-y-12">
   <div>
-    {% call macros::form_title(title = "Employer profile", description = "This information will be displayed in your jobs postings. You can update it at anytime.") %}
+    {% call macros::form_title(title = "Employer profile", description = "This information will be displayed in your jobs postings. You can update it at anytime.") -%}
   </div>
 
   <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 max-w-4xl">
-    {# Form image #}
+    {# Form image -#}
     <div class="col-span-full">
-      {% if let Some(logo_id) = employer.logo_id %}
-        {% let image = &self::build_dashboard_image_url(logo_id, "small") %}
-        {% call macros::images_form(label = "Company logo", name = "logo_id", value = logo_id.to_string(), url_image = image) %}
-      {% else %}
-        {% call macros::images_form(label = "Company logo", name = "logo_id") %}
-      {% endif %}
+      {% if let Some(logo_id) = employer.logo_id -%}
+        {% let image = &self::build_dashboard_image_url(logo_id, "small") -%}
+        {% call macros::images_form(label = "Company logo", name = "logo_id", value = logo_id.to_string(), url_image = image) -%}
+      {% else -%}
+        {% call macros::images_form(label = "Company logo", name = "logo_id") -%}
+      {% endif -%}
     </div>
-    {# End form image #}
+    {# End form image -#}
   </div>
 
-  {# Employer form #}
+  {# Employer form -#}
   <form id="employer-form"
         hx-put="/dashboard/employer/employers/update"
         hx-ext="no-empty-vals"
@@ -27,7 +27,7 @@
         hx-indicator="#dashboard-spinner, #save-spinner"
         hx-disabled-elt="button[type=submit], #cancel-button">
     <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 max-w-4xl">
-      {# Company name #}
+      {# Company name -#}
       <div class="col-span-3">
         <label for="company" class="form-label">
           Company name <span class="asterisk">*</span>
@@ -46,23 +46,23 @@
         </div>
         <p class="form-legend">Your company's trade name.</p>
       </div>
-      {# End Company name #}
+      {# End Company name -#}
 
       <div class="col-span-3"></div>
 
-      {# Member #}
+      {# Member -#}
       <div class="col-span-full">
         <label for="member" class="form-label">Foundation member</label>
-        {% if let Some(member) = employer.member %}
-          {% call macros::search_member(member_id = member.member_id, member_name = member.name, member_level = member.level, member_foundation = member.foundation, member_logo_url = member.logo_url) %}
-        {% else %}
-          {% call macros::search_member() %}
-        {% endif %}
+        {% if let Some(member) = employer.member -%}
+          {% call macros::search_member(member_id = member.member_id, member_name = member.name, member_level = member.level, member_foundation = member.foundation, member_logo_url = member.logo_url) -%}
+        {% else -%}
+          {% call macros::search_member() -%}
+        {% endif -%}
         <p class="form-legend">
           If your company is a member of any of the supported foundations please select the corresponding member entry. Jobs posted by members will be featured across the site. False membership claims may lead to the suspension of the employer and associated user accounts.
         </p>
         <div id="selected-member" class="flex space-x-5 mt-4">
-          {% if let Some(member) = employer.member %}
+          {% if let Some(member) = employer.member -%}
             <div class="relative border border-stone-200 rounded-lg p-4 pe-10 bg-white min-w-64">
               <button id="remove-{{ member.member_id }}"
                       data-id="{{ member.member_id }}"
@@ -70,8 +70,8 @@
                       class="rounded-full bg-stone-100 cursor-pointer hover:bg-stone-200 absolute top-1 end-1">
                 <div class="svg-icon size-5 bg-stone-400 hover:bg-stone-700 icon-close"></div>
               </button>
-              {% let label = &format!("{} {} member", member.foundation, member.level) %}
-              {% call macros::dropdown_card(name = member.name, label = label, logo_url = member.logo_url) %}
+              {% let label = &format!("{} {} member", member.foundation, member.level) -%}
+              {% call macros::dropdown_card(name = member.name, label = label, logo_url = member.logo_url) -%}
             </div>
             <script type="module">
               import {
@@ -85,24 +85,24 @@
                 });
               }
             </script>
-          {% endif %}
+          {% endif -%}
         </div>
       </div>
-      {# End member #}
+      {# End member -#}
 
-      {# Location #}
+      {# Location -#}
       <div class="col-span-full lg:col-span-3">
         <label for="ts_query" class="form-label">Location</label>
-        {% if let Some(location) = employer.location %}
+        {% if let Some(location) = employer.location -%}
           <search-location location_id="{{ location.location_id }}" city="{{ location.city }}" state="{{ location.state|display_some }}" country="{{ location.country }}"></search-location>
-        {% else %}
+        {% else -%}
           <search-location></search-location>
-        {% endif %}
+        {% endif -%}
         <p class="form-legend">Location of the headquarters of your company.</p>
       </div>
-      {# End location #}
+      {# End location -#}
 
-      {# Website URL #}
+      {# Website URL -#}
       <div class="sm:col-span-3">
         <label for="website_url" class="form-label">Website URL</label>
         <div class="mt-2">
@@ -114,9 +114,9 @@
         </div>
         <p class="form-legend">URL of your company's website.</p>
       </div>
-      {# End Website URL #}
+      {# End Website URL -#}
 
-      {# Description #}
+      {# Description -#}
       <div class="col-span-full">
         <label for="description" class="form-label">
           Description <span class="asterisk">*</span>
@@ -126,43 +126,43 @@
         </div>
         <p class="form-legend">A short introduction of your company. You can use markdown to format the text.</p>
       </div>
-      {# End Description #}
+      {# End Description -#}
 
-      {# Public #}
+      {# Public -#}
       <div class="col-span-full">
         <div class="form-label">Public</div>
         <label class="mt-2 inline-flex items-center cursor-pointer">
-          {% call macros::toggle_checkbox(id = "public", checked = employer.public) %}
+          {% call macros::toggle_checkbox(id = "public", checked = employer.public) -%}
           <span class="ms-3 text-sm font-medium text-stone-900">Display in employers listing</span>
         </label>
         <p class="form-legend">
           Your company will be listed in the employers section of the site. This may help attracting more applicants to your jobs.
         </p>
       </div>
-      {# End Public #}
+      {# End Public -#}
     </div>
 
     <div class="mt-12 flex items-center justify-end gap-x-6 border-t border-stone-900/10 pt-12">
-      {# Cancel button #}
+      {# Cancel button -#}
       <button id="cancel-button"
               hx-get="/dashboard/employer"
               hx-target="body"
               hx-indicator="#dashboard-spinner"
               hx-push-url="true"
               class="btn-primary-outline">Cancel</button>
-      {# End cancel button #}
+      {# End cancel button -#}
 
       <div class="relative">
-        {# Submit employer form button #}
+        {# Submit employer form button -#}
         <button type="submit" class="btn-primary">
-          {% call macros::btn_spinner(id = "publish-spinner", spinner_type = "2") %}
+          {% call macros::btn_spinner(id = "publish-spinner", spinner_type = "2") -%}
           Save
         </button>
-        {# End submit employer form button #}
+        {# End submit employer form button -#}
       </div>
     </div>
   </form>
-  {# End employer form #}
+  {# End employer form -#}
 </div>
 <script type="module">
   import {

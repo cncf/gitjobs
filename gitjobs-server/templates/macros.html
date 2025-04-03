@@ -12,14 +12,13 @@
 {# End spinner -#}
 
 {# Button spinner #}
-{% macro btn_spinner(id, size = "size-5", spinner_type = "1", htmx = true) %}
+{% macro btn_spinner(id, size = "size-5", spinner_type = "1", htmx = true) -%}
   <div id="{{ id }}"
        class="top-0 start-0 bottom-0 end-0 bg-inherit absolute {%- if htmx %} hx-spinner{%- endif -%}">
     <div class="flex items-center justify-center h-full w-full">
-      {% call spinner(size = size, spinner_type = spinner_type) %}
+      {% call spinner(size = size, spinner_type = spinner_type) -%}
     </div>
   </div>
-
 {% endmacro btn_spinner %}
 {# End button spinner #}
 
@@ -65,7 +64,7 @@
            name="member[logo_url]"
            id="member_logo_url"
            value="{{ member_logo_url }}">
-    <div id="member-spinner" class="hx-spinner absolute end-10 top-1">{% call spinner(size = "size-5") %}</div>
+    <div id="member-spinner" class="hx-spinner absolute end-10 top-1">{% call spinner(size = "size-5") -%}</div>
     <div class="absolute end-1.5 top-1.5 peer-placeholder-shown:hidden">
       <button id="clean-member" type="button" class="cursor-pointer mt-[2px]">
         <div class="svg-icon size-5 bg-stone-400 hover:bg-stone-700 icon-close"></div>
@@ -158,7 +157,9 @@
            autocapitalize="off"
            spellcheck="false"
            autocomplete="off">
-    <div id="{{ id }}-spinner" class="hx-spinner absolute end-10 top-1">{% call spinner(size = "size-5") %}</div>
+    <div id="{{ id }}-spinner" class="hx-spinner absolute end-10 top-1">
+      {% call spinner(size = "size-5") -%}
+    </div>
     <div class="absolute end-1.5 top-1.5 peer-placeholder-shown:hidden">
       <button id="clean-{{ id }}" type="button" class="cursor-pointer mt-[2px]">
         <div class="svg-icon size-5 bg-stone-400 hover:bg-stone-700 icon-close"></div>
@@ -236,14 +237,14 @@
 {# Job status badge -#}
 {% macro job_status_badge(status, size = "text-xs") %}
   {# djlint:off H008 #}
-  {% match status %}
-  {% when JobStatus::Archived %}
+  {% match status -%}
+  {% when JobStatus::Archived -%}
   <span class='bg-orange-100 text-orange-800 {{ size }} {%- if size == "xs" %} px-2.5 py-0.5 {%- else %} px-3 py-1 {%- endif %} rounded-full capitalize tracking-wide'>{{ status }}</span>
-  {% when JobStatus::Draft %}
+  {% when JobStatus::Draft -%}
   <span class='bg-blue-100 text-blue-800 {{ size }} {%- if size == "xs" %} px-2.5 py-0.5 {%- else %} px-3 py-1 {%- endif %} rounded-full capitalize tracking-wide'>{{ status }}</span>
-  {% when JobStatus::Published %}
+  {% when JobStatus::Published -%}
   <span class='bg-green-100 text-green-800 {{ size }} {%- if size == "xs" %} px-2.5 py-0.5 {%- else %} px-3 py-1 {%- endif %} rounded-full capitalize tracking-wide'>{{ status }}</span>
-{% endmatch %}
+{% endmatch -%}
 {# djlint:on H008 #}
 {% endmacro job_status_badge %}
 {# End job status badge -#}
@@ -280,11 +281,11 @@
 {% macro badge(content, content_styles = "", icon = "") %}
   <div class="inline-flex bg-stone-100 text-stone-800 text-xs/4 md:text-sm/4 font-medium px-2.5 py-1.5 rounded-full border border-stone-200">
     <div class="flex items-center">
-      {% if !icon.is_empty() %}
+      {% if !icon.is_empty() -%}
         <div class="me-2">
           <div class="svg-icon size-4 icon-{{ icon }} bg-stone-500"></div>
         </div>
-      {% endif %}
+      {% endif -%}
       <div class="capitalize text-nowrap {{ content_styles }}">{{ content }}</div>
     </div>
   </div>
@@ -294,7 +295,9 @@
 {# Form title #}
 {% macro form_title(title, description = "") %}
   <div class="text-xl lg:text-2xl font-medium text-stone-900">{{ title }}</div>
-  {% if !description.is_empty() %}<p class="mt-1 text-sm/6 text-stone-500">{{ description }}</p>{% endif %}
+  {% if !description.is_empty() -%}
+    <p class="mt-1 text-sm/6 text-stone-500">{{ description }}</p>
+  {% endif -%}
 {% endmacro form_title %}
 {# End form title #}
 
@@ -317,8 +320,7 @@
 
 {# Form image #}
 {% macro images_form(label, name, icon = "company", value = "", url_image = "") %}
-  {% let empty_image = value.is_empty() %}
-
+  {% let empty_image = value.is_empty() -%}
   {# Images form #}
   <form id="images-form"
         hx-post="/dashboard/images"
@@ -331,22 +333,22 @@
     <div class="mt-3 flex items-stretch gap-x-5">
       <div class="relative flex items-center size-24 min-w-24 bg-stone-200/50 rounded-xl overflow-hidden">
         <div id="images-spinner" class="hx-spinner absolute z-10 start-5 top-5">
-          {% call spinner(size = "size-14", spinner_type = "4") %}
+          {% call spinner(size = "size-14", spinner_type = "4") -%}
         </div>
         <div id="image-container" class="relative w-100 h-100 flex mx-auto">
-          {# Image #}
+          {# Image -#}
           <img id="image"
                src="{{ url_image }}"
                alt="Image"
                height="auto"
                width="auto"
                class="size-[86px] object-contain rounded-lg m-auto {%- if empty_image %} hidden{%- endif -%}">
-          {# End image #}
-          {# Placeholder image #}
+          {# End image -#}
+          {# Placeholder image -#}
           <div id="placeholder-image"
                class="svg-icon size-20 icon-{{ icon }} bg-gray-500 m-auto {%- if !empty_image %} hidden{%- endif -%}">
           </div>
-          {# End placeholder image #}
+          {# End placeholder image -#}
         </div>
       </div>
 
@@ -374,11 +376,11 @@
       </div>
     </div>
   </form>
-  {# End images form #}
+  {# End images form -#}
 
-  {# Input hidden #}
+  {# Input hidden -#}
   <input id="{{ name }}" type="hidden" name="{{ name }}" value="{{ value }}">
-  {# End input hidden #}
+  {# End input hidden -#}
 
   <script type="module">
     import {
@@ -463,16 +465,16 @@
   <script type="module">
     import { showErrorAlert, showSuccessAlert } from '/static/js/common/alerts.js';
 
-    {% for message in messages %}
-      {% match message.level %}
-        {% when Level::Success %}
+    {% for message in messages -%}
+      {% match message.level -%}
+        {% when Level::Success -%}
           showSuccessAlert('{{ message }}');
-        {% when Level::Error %}
+        {% when Level::Error -%}
           showErrorAlert('{{ message }}');
-        {% when _ %}
+        {% when _ -%}
           {# Do nothing #}
-      {% endmatch %}
-    {% endfor %}
+      {% endmatch -%}
+    {% endfor -%}
 </script>
 {% endmacro alerts %}
 {# djlint:on #}

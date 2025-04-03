@@ -1,175 +1,175 @@
-{% import "macros.html" as macros %}
+{% import "macros.html" as macros -%}
 
-{# Filters #}
+{# Filters -#}
 {% macro filters(form, device = "desktop") %}
-  <div class="pt-3 md:pt-5 px-6">{% call filters_title(text = "Type and location") %}</div>
+  <div class="pt-3 md:pt-5 px-6">{% call filters_title(text = "Type and location") -%}</div>
 
   <div class="p-6 pb-4 md:pb-6 pt-3 flex flex-col space-y-5">
-    {# Job type #}
+    {# Job type -#}
     <div>
-      {% call filters_subtitle(text = "Job type") %}
+      {% call filters_subtitle(text = "Job type") -%}
       <div class="grid grid-cols-2 w-full gap-2 mt-3">
-        {# Full time #}
-        {% call checkbox(form = form, name = "kind[]", value = JobKind::FullTime, label = "Full Time", icon = "signature", active_filters = filters.kind, required = false, device = device) %}
-        {# End Full time #}
+        {# Full time -#}
+        {% call checkbox(form = form, name = "kind[]", value = JobKind::FullTime, label = "Full Time", icon = "signature", active_filters = filters.kind, required = false, device = device) -%}
+        {# End Full time -#}
 
-        {# Part time #}
-        {% call checkbox(form = form, name = "kind[]", value = JobKind::PartTime, label = "Part Time", icon = "hour_glass", active_filters = filters.kind, required = false, device = device) %}
-        {# End Part time #}
+        {# Part time -#}
+        {% call checkbox(form = form, name = "kind[]", value = JobKind::PartTime, label = "Part Time", icon = "hour_glass", active_filters = filters.kind, required = false, device = device) -%}
+        {# End Part time -#}
 
-        {# Contractor #}
-        {% call checkbox(form = form, name = "kind[]", value = JobKind::Contractor, label = "Contractor", icon = "clipboard", active_filters = filters.kind, required = false, device = device) %}
-        {# End Contractor #}
+        {# Contractor -#}
+        {% call checkbox(form = form, name = "kind[]", value = JobKind::Contractor, label = "Contractor", icon = "clipboard", active_filters = filters.kind, required = false, device = device) -%}
+        {# End Contractor -#}
 
-        {# Internship #}
-        {% call checkbox(form = form, name = "kind[]", value = JobKind::Internship, label = "Internship", icon = "graduation_cap", active_filters = filters.kind, required = false, device = device) %}
-        {# End Internship #}
+        {# Internship -#}
+        {% call checkbox(form = form, name = "kind[]", value = JobKind::Internship, label = "Internship", icon = "graduation_cap", active_filters = filters.kind, required = false, device = device) -%}
+        {# End Internship -#}
       </div>
     </div>
-    {# End job type #}
+    {# End job type -#}
 
-    {# Workplace #}
+    {# Workplace -#}
     <div>
-      {% call filters_subtitle(text = "Workplace") %}
+      {% call filters_subtitle(text = "Workplace") -%}
       <div class="grid grid-cols-2 w-full gap-2 mt-3">
-        {# On site #}
-        {% call checkbox(form = form, name = "workplace[]", value = Workplace::OnSite, label = "On Site", icon = "office_chair", active_filters = filters.workplace, required = false, device = device) %}
-        {# End On site #}
+        {# On site -#}
+        {% call checkbox(form = form, name = "workplace[]", value = Workplace::OnSite, label = "On Site", icon = "office_chair", active_filters = filters.workplace, required = false, device = device) -%}
+        {# End On site -#}
 
-        {# Remote #}
-        {% call checkbox(form = form, name = "workplace[]", value = Workplace::Remote, label = "Remote", icon = "remote", active_filters = filters.workplace, required = false, device = device) %}
-        {# End Remote #}
+        {# Remote -#}
+        {% call checkbox(form = form, name = "workplace[]", value = Workplace::Remote, label = "Remote", icon = "remote", active_filters = filters.workplace, required = false, device = device) -%}
+        {# End Remote -#}
 
-        {# Hybrid #}
-        {% call checkbox(form = form, name = "workplace[]", value = Workplace::Hybrid, label = "Hybrid", icon = "buildings", active_filters = filters.workplace, required = false, device = device) %}
-        {# End Hybrid #}
+        {# Hybrid -#}
+        {% call checkbox(form = form, name = "workplace[]", value = Workplace::Hybrid, label = "Hybrid", icon = "buildings", active_filters = filters.workplace, required = false, device = device) -%}
+        {# End Hybrid -#}
       </div>
     </div>
-    {# End workplace #}
+    {# End workplace -#}
 
     <div class="grid grid-cols-2 w-full gap-2">
-      {# Seniority #}
+      {# Seniority -#}
       <div>
-        {% call filters_subtitle(text = "Seniority level") %}
+        {% call filters_subtitle(text = "Seniority level") -%}
         <div class="mt-2">
           <select form="{{ form }}"
                   data-trigger-form="true"
                   name="seniority"
                   class="select-primary py-0.5 text-[0.8rem]/6 text-stone-500">
-            {% call macros::select_option(value = "", label = "Any", selected = filters.seniority|display_some) %}
-            {% call macros::select_option(value = "entry", label = "Entry", selected = filters.seniority|display_some) %}
-            {% call macros::select_option(value = "junior", label = "Junior", selected = filters.seniority|display_some) %}
-            {% call macros::select_option(value = "mid", label = "Mid-level", selected = filters.seniority|display_some) %}
-            {% call macros::select_option(value = "senior", label = "Senior", selected = filters.seniority|display_some) %}
-            {% call macros::select_option(value = "lead", label = "Lead", selected = filters.seniority|display_some) %}
+            {% call macros::select_option(value = "", label = "Any", selected = filters.seniority|display_some) -%}
+            {% call macros::select_option(value = "entry", label = "Entry", selected = filters.seniority|display_some) -%}
+            {% call macros::select_option(value = "junior", label = "Junior", selected = filters.seniority|display_some) -%}
+            {% call macros::select_option(value = "mid", label = "Mid-level", selected = filters.seniority|display_some) -%}
+            {% call macros::select_option(value = "senior", label = "Senior", selected = filters.seniority|display_some) -%}
+            {% call macros::select_option(value = "lead", label = "Lead", selected = filters.seniority|display_some) -%}
           </select>
         </div>
       </div>
-      {# End seniority #}
+      {# End seniority -#}
 
-      {# Published date #}
+      {# Published date -#}
       <div>
-        {% call filters_subtitle(text = "Published") %}
+        {% call filters_subtitle(text = "Published") -%}
         <div class="mt-2 relative">
           <select form="{{ form }}"
                   name="date_range"
                   data-trigger-form="true"
                   class="select-primary py-0.5 text-[0.8rem]/6 text-stone-500">
-            {% call macros::select_option(value = "last-day", label = "Last day", selected = filters.date_range|display_some_or("last30-days")) %}
-            {% call macros::select_option(value = "last3-days", label = "Last 3 days", selected = filters.date_range|display_some_or("last30-days")) %}
-            {% call macros::select_option(value = "last7-days", label = "Last week", selected = filters.date_range|display_some_or("last30-days")) %}
-            {% call macros::select_option(value = "last30-days", label = "Last month", selected = filters.date_range|display_some_or("last30-days")) %}
+            {% call macros::select_option(value = "last-day", label = "Last day", selected = filters.date_range|display_some_or("last30-days")) -%}
+            {% call macros::select_option(value = "last3-days", label = "Last 3 days", selected = filters.date_range|display_some_or("last30-days")) -%}
+            {% call macros::select_option(value = "last7-days", label = "Last week", selected = filters.date_range|display_some_or("last30-days")) -%}
+            {% call macros::select_option(value = "last30-days", label = "Last month", selected = filters.date_range|display_some_or("last30-days")) -%}
           </select>
         </div>
       </div>
-      {# End published date #}
+      {# End published date -#}
     </div>
 
-    {# Location #}
+    {# Location -#}
     <div>
-      {% call filters_subtitle(text = "Location") %}
-      {% if let Some(location) = filters.location %}
+      {% call filters_subtitle(text = "Location") -%}
+      {% if let Some(location) = filters.location -%}
         <search-location form="{{ form }}" device="{{ device }}" location_id="{{ location.location_id }}" city="{{ location.city }}" state="{{ location.state|display_some }}" country="{{ location.country }}" withDistance="true" distance="{{ filters.max_distance|display_some }}" size="small"></search-location>
-      {% else %}
+      {% else -%}
         <search-location form="{{ form }}" device="{{ device }}" withDistance="true" distance="{{ filters.max_distance|display_some }}" size="small"></search-location>
-      {% endif %}
+      {% endif -%}
     </div>
-    {# End location #}
+    {# End location -#}
   </div>
 
-  {# Open source section #}
+  {# Open source section -#}
   <div class="pt-4 md:pt-6 mt-2 px-6 border-t border-stone-100">
-    {% call filters_title(text = "Open source") %}
+    {% call filters_title(text = "Open source") -%}
   </div>
 
   <div class="p-6 pb-4 md:pb-6 pt-3 flex flex-col space-y-5">
-    {# Projects #}
+    {# Projects -#}
     <div>
-      {% call filters_subtitle(text = "Projects you'd like to work on") %}
+      {% call filters_subtitle(text = "Projects you'd like to work on") -%}
       <searchable-filter name="projects" form="{{ device }}-jobs-form" {%- if let Some(filters_projects) = filters.projects %}selected="{{ filters_projects|json }}"{%- endif -%}></searchable-filter>
     </div>
-    {# End projects #}
+    {# End projects -#}
 
-    {# Open source #}
+    {# Open source -#}
     <div>
-      {% call filters_subtitle(text = "Time working on open source") %}
+      {% call filters_subtitle(text = "Time working on open source") -%}
       <div class="mt-1">
         <input-range form="{{ form }}" name="open_source" value="{{ filters.open_source|display_some_or(0) }}" type="type-3">
       </input-range>
     </div>
   </div>
-  {# End open source #}
+  {# End open source -#}
 
-  {# Upstream commitment #}
+  {# Upstream commitment -#}
   <div>
-    {% call filters_subtitle(text = "Time working on upstream projects") %}
+    {% call filters_subtitle(text = "Time working on upstream projects") -%}
     <div class="mt-1">
       <input-range form="{{ form }}" name="upstream_commitment" value="{{ filters.upstream_commitment|display_some_or(0) }}" type="type-2">
     </div>
   </div>
-  {# End upstream commitment #}
+  {# End upstream commitment -#}
 </div>
-{# End open source section #}
+{# End open source section -#}
 
-{# Compensation section #}
+{# Compensation section -#}
 <div class="pt-4 md:pt-6 px-6 border-t border-stone-100">
-  {% call filters_title(text = "Compensation") %}
+  {% call filters_title(text = "Compensation") -%}
 </div>
 
 <div class="p-6 pb-4 md:pb-6 pt-3 flex flex-col space-y-5">
-  {# Salary #}
+  {# Salary -#}
   <div>
-    {% call filters_subtitle(text = "Minimum salary (USD / year)") %}
+    {% call filters_subtitle(text = "Minimum salary (USD / year)") -%}
     <div class="mt-1">
       <input-range form="{{ form }}" name="salary_min" value="{{ filters.salary_min|display_some_or(0) }}" max="250000" step="5000" unit="K" prefix="$" legendsNumber="6">
     </div>
   </div>
-  {# End salary #}
+  {# End salary -#}
 
-  {# Benefits #}
+  {# Benefits -#}
   <div>
-    {% call filters_subtitle(text = "Benefits") %}
+    {% call filters_subtitle(text = "Benefits") -%}
     <searchable-filter name="benefits" viewType="rows" form="{{ device }}-jobs-form" {%- if let Some(filters_benefits) = filters.benefits %}selected="{{ filters_benefits|json }}"{%- endif -%}></searchable-filter>
   </div>
-  {# End benefits #}
+  {# End benefits -#}
 </div>
-{# End compensation section #}
+{# End compensation section -#}
 {% endmacro filters %}
-{# End filters #}
+{# End filters -#}
 
-{# Filters title #}
+{# Filters title -#}
 {% macro filters_title(text) %}
   <div class="text-xs/6 text-stone-500/75 uppercase">{{ text }}</div>
 {% endmacro filters_title %}
-{# End filters title #}
+{# End filters title -#}
 
-{# Filters subtitle #}
+{# Filters subtitle -#}
 {% macro filters_subtitle(text) %}
   <div class="font-semibold leading-4 md:leading-8 text-[0.8rem]">{{ text }}</div>
 {% endmacro filters_subtitle %}
-{# End filters subtitle #}
+{# End filters subtitle -#}
 
-{# Current page #}
+{# Current page -#}
 {% macro current_page(total, items_number, offset_value) -%}
   {%- if let Some(offset) = offset_value -%}
     {{ offset + 1 }} - {{ items_number + offset }}
@@ -178,9 +178,9 @@
   {%- endif -%}
   {{ "" }} of {{ total }} results
 {%- endmacro current_page %}
-{# End current page #}
+{# End current page -#}
 
-{# Checkbox #}
+{# Checkbox -#}
 {% macro checkbox(form, name, value, label, icon, active_filters, required = false, device = "") %}
   <div class="group">
     <input id="{%- if !device.is_empty() -%}{{ device }}-{%- endif -%}{{ name }}-{{ value }}"
@@ -200,4 +200,4 @@
     </label>
   </div>
 {% endmacro checkbox %}
-{# End checkbox #}
+{# End checkbox -#}

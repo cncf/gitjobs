@@ -1,7 +1,7 @@
-{% import "macros.html" as macros %}
-{% import "misc/preview_modal.html" as preview %}
+{% import "macros.html" as macros -%}
+{% import "misc/preview_modal.html" as preview -%}
 
-{% let profile = profile.clone().unwrap_or_default() %}
+{% let profile = profile.clone().unwrap_or_default() -%}
 
 <div class="space-y-12">
   <div class="flex flex-col xl:flex-row xl:justify-between xl:space-x-10">
@@ -49,9 +49,9 @@
     </ul>
 
     <div class="flex items-center justify-end space-x-5 mt-6 xl:mt-0">
-      {# Preview #}
+      {# Preview -#}
       <div>
-        {# Preview button #}
+        {# Preview button -#}
         <button id="preview-button"
                 hx-post="/dashboard/job-seeker/profile/preview"
                 hx-include="#photo_id, #profile-form, #experience-form, #education-form, #projects-form"
@@ -65,13 +65,13 @@
           <span class="block md:hidden">
             <div class="svg-icon size-3 icon-eye group-hover:bg-white"></div>
           </span>
-          {% call macros::btn_spinner(id = "preview-spinner") %}
+          {% call macros::btn_spinner(id = "preview-spinner") -%}
         </button>
-        {# End preview button #}
+        {# End preview button -#}
       </div>
-      {# End preview #}
+      {# End preview -#}
 
-      {# Save button #}
+      {# Save button -#}
       <div>
         <button id="update-profile-button"
                 class="btn-primary w-24"
@@ -80,37 +80,37 @@
                 hx-include="[name=photo_id], #profile-form, #experience-form, #education-form, #projects-form"
                 hx-indicator="#dashboard-spinner, #save-spinner"
                 hx-disabled-elt="#update-profile-button, #preview-button">
-          {% call macros::btn_spinner(id = "save-spinner", spinner_type = "2") %}
+          {% call macros::btn_spinner(id = "save-spinner", spinner_type = "2") -%}
           Save
         </button>
       </div>
-      {# End save button #}
+      {# End save button -#}
     </div>
   </div>
 
   <div>
-    {# Profile #}
+    {# Profile -#}
     <div data-content="profile">
       <p class="mt-1 text-sm/6 text-stone-500">
         This information will be accessible to employers when you apply for a job. If you wish, you can also mark your profile as public and it will be displayed in the site profiles list.
       </p>
 
       <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 max-w-4xl">
-        {# Form image #}
+        {# Form image -#}
         <div class="col-span-full">
-          {% if let Some(photo_id) = profile.photo_id %}
-            {% let image = &self::build_dashboard_image_url(photo_id, "small") %}
-            {% call macros::images_form(label = "Photo", name = "photo_id", icon = "user", value = photo_id.to_string(), url_image = image) %}
-          {% else %}
-            {% call macros::images_form(label = "Photo", name = "photo_id", icon = "user") %}
-          {% endif %}
+          {% if let Some(photo_id) = profile.photo_id -%}
+            {% let image = &self::build_dashboard_image_url(photo_id, "small") -%}
+            {% call macros::images_form(label = "Photo", name = "photo_id", icon = "user", value = photo_id.to_string(), url_image = image) -%}
+          {% else -%}
+            {% call macros::images_form(label = "Photo", name = "photo_id", icon = "user") -%}
+          {% endif -%}
         </div>
-        {# End form image #}
+        {# End form image -#}
       </div>
       <form id="profile-form">
         <div class="space-y-12">
           <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-6 max-w-5xl">
-            {# Name #}
+            {# Name -#}
             <div class="col-span-3">
               <label for="name" class="form-label">
                 Name <span class="asterisk">*</span>
@@ -128,9 +128,9 @@
                        required>
               </div>
             </div>
-            {# End name #}
+            {# End name -#}
 
-            {# Phone #}
+            {# Phone -#}
             <div class="col-span-3">
               <label for="phone" class="form-label">Phone</label>
               <div class="mt-2">
@@ -145,9 +145,9 @@
                        spellcheck="false">
               </div>
             </div>
-            {# End phone #}
+            {# End phone -#}
 
-            {# Email #}
+            {# Email -#}
             <div class="col-span-3">
               <label for="email" class="form-label">
                 Email <span class="asterisk">*</span>
@@ -161,20 +161,20 @@
                        required>
               </div>
             </div>
-            {# End email #}
+            {# End email -#}
 
-            {# Location #}
+            {# Location -#}
             <div class="col-span-full lg:col-span-3">
               <label for="ts_query" class="form-label">Location</label>
-              {% if let Some(location) = profile.location %}
+              {% if let Some(location) = profile.location -%}
                 <search-location location_id="{{ location.location_id }}" city="{{ location.city }}" state="{{ location.state|display_some }}" country="{{ location.country }}"></search-location>
-              {% else %}
+              {% else -%}
                 <search-location></search-location>
-              {% endif %}
+              {% endif -%}
             </div>
-            {# End location #}
+            {# End location -#}
 
-            {# Summary #}
+            {# Summary -#}
             <div class="col-span-full">
               <label for="summary" class="form-label">
                 Summary <span class="asterisk">*</span>
@@ -184,46 +184,46 @@
               </div>
               <p class="form-legend">A short introduction of yourself. You can use markdown to format the text.</p>
             </div>
-            {# End Summary #}
+            {# End Summary -#}
 
-            {# Skills #}
+            {# Skills -#}
             <div class="col-span-full">
               <multi-select name="skills" label="Skills" legend="Indicate your top skills." {%+ if let Some(skills) = profile.skills -%} selected="{{ skills|json }}"{%- endif -%}></multi-select>
             </div>
-            {# End skills #}
+            {# End skills -#}
 
-            {# Open to relocation #}
+            {# Open to relocation -#}
             <div class="col-span-full">
               <label class="inline-flex items-center cursor-pointer">
-                {% call macros::toggle_checkbox(id = "open_to_relocation", checked = profile.open_to_relocation.unwrap_or(false)) %}
+                {% call macros::toggle_checkbox(id = "open_to_relocation", checked = profile.open_to_relocation.unwrap_or(false)) -%}
                 <span class="ms-3 text-sm font-medium text-stone-900">Open to relocation</span>
               </label>
             </div>
-            {# End open to relocation #}
+            {# End open to relocation -#}
 
-            {# Open to remote #}
+            {# Open to remote -#}
             <div class="col-span-full">
               <label class="inline-flex items-center cursor-pointer">
-                {% call macros::toggle_checkbox(id = "open_to_remote", checked = profile.open_to_remote.unwrap_or(false)) %}
+                {% call macros::toggle_checkbox(id = "open_to_remote", checked = profile.open_to_remote.unwrap_or(false)) -%}
                 <span class="ms-3 text-sm font-medium text-stone-900">Open to remote work</span>
               </label>
             </div>
-            {# End open to remote #}
+            {# End open to remote -#}
 
-            {# Public #}
+            {# Public -#}
             <div class="col-span-full">
               <label class="inline-flex items-center cursor-pointer">
-                {% call macros::toggle_checkbox(id = "public", checked = profile.public) %}
+                {% call macros::toggle_checkbox(id = "public", checked = profile.public) -%}
                 <span class="ms-3 text-sm font-medium text-stone-900">Display profile publicly in the profiles list of the site</span>
               </label>
             </div>
-            {# End Public #}
+            {# End Public -#}
           </div>
           <div class="border-t border-stone-900/10 pt-12">
-            {% call macros::form_title(title = "Links", description = "Some links where employers can find out more about you and your work.") %}
+            {% call macros::form_title(title = "Links", description = "Some links where employers can find out more about you and your work.") -%}
 
             <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 max-w-5xl">
-              {# Website URL #}
+              {# Website URL -#}
               <div class="col-span-3">
                 <label for="website_url" class="form-label">Website URL</label>
                 <div class="mt-2 relative">
@@ -237,9 +237,9 @@
                          class="input-primary ps-10">
                 </div>
               </div>
-              {# End website url #}
+              {# End website url -#}
 
-              {# Facebook url #}
+              {# Facebook url -#}
               <div class="col-span-3">
                 <label for="facebook_url" class="form-label">Facebook url</label>
                 <div class="mt-2 relative">
@@ -253,9 +253,9 @@
                          class="input-primary ps-10">
                 </div>
               </div>
-              {# End facebook url #}
+              {# End facebook url -#}
 
-              {# GitHub url #}
+              {# GitHub url -#}
               <div class="col-span-3">
                 <label for="github_url" class="form-label">GitHub url</label>
                 <div class="mt-2 relative">
@@ -269,9 +269,9 @@
                          class="input-primary ps-10">
                 </div>
               </div>
-              {# End github url #}
+              {# End github url -#}
 
-              {# LinkedIn url #}
+              {# LinkedIn url -#}
               <div class="col-span-3">
                 <label for="linkedin_url" class="form-label">LinkedIn url</label>
                 <div class="mt-2 relative">
@@ -285,9 +285,9 @@
                          class="input-primary ps-10">
                 </div>
               </div>
-              {# End linkedIn url #}
+              {# End linkedIn url -#}
 
-              {# Twitter url #}
+              {# Twitter url -#}
               <div class="col-span-3">
                 <label for="twitter_url" class="form-label">Twitter url</label>
                 <div class="mt-2 relative">
@@ -301,23 +301,23 @@
                          class="input-primary ps-10">
                 </div>
               </div>
-              {# End twitter url #}
+              {# End twitter url -#}
             </div>
           </div>
         </div>
       </form>
     </div>
-    {# End profile #}
+    {# End profile -#}
 
-    {# Experience #}
+    {# Experience -#}
     <div data-content="experience" class="hidden">
       <form id="experience-form">
         <experience-section experience=" {%- if let Some(experience) = profile.experience -%}{{ experience|json }}{%- endif -%} "></experience-section>
       </form>
     </div>
-    {# End experience #}
+    {# End experience -#}
 
-    {# Education and certifications #}
+    {# Education and certifications -#}
     <div data-content="education" class="hidden">
       <form id="education-form">
         <div class="flex flex-col space-y-12">
@@ -326,20 +326,20 @@
         </div>
       </form>
     </div>
-    {# End education and certifications #}
+    {# End education and certifications -#}
 
-    {# Projects #}
+    {# Projects -#}
     <div data-content="projects" class="hidden">
       <form id="projects-form">
         <projects-section projects="{%- if let Some(projects) = profile.projects -%}{{ projects|json }}{%- endif -%}"></projects-section>
       </form>
     </div>
-    {# End projects #}
+    {# End projects -#}
   </div>
 </div>
 
 {# Preview modal -#}
-{% call preview::modal() %}
+{% call preview::modal() -%}
 {# End preview modal -#}
 
 <script type="module">

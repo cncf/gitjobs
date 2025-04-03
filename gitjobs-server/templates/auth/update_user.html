@@ -1,6 +1,6 @@
-{% import "macros.html" as macros %}
+{% import "macros.html" as macros -%}
 
-{# Update user details form #}
+{# Update user details form -#}
 <form id="user-details-form"
       hx-put="/dashboard/account/update/details"
       hx-ext="no-empty-vals"
@@ -9,9 +9,9 @@
       hx-disabled-elt="button[type=submit]">
   <div class="space-y-12">
     <div>
-      {% call macros::form_title(title = "Account", description = "You can update your personal user account details here.") %}
+      {% call macros::form_title(title = "Account", description = "You can update your personal user account details here.") -%}
       <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-6 max-w-5xl">
-        {# Name #}
+        {# Name -#}
         <div class="col-span-3">
           <label for="name" class="form-label">
             Name <span class="asterisk">*</span>
@@ -29,11 +29,11 @@
                    required>
           </div>
         </div>
-        {# End name #}
+        {# End name -#}
 
         <div class="col-span-3"></div>
 
-        {# Username #}
+        {# Username -#}
         <div class="col-span-3 hidden">
           <label for="username" class="form-label">
             Username <span class="asterisk">*</span>
@@ -51,9 +51,9 @@
                    required>
           </div>
         </div>
-        {# End username #}
+        {# End username -#}
 
-        {# Email #}
+        {# Email -#}
         <div class="col-span-3 hidden">
           <label for="email" class="form-label">
             Email <span class="asterisk">*</span>
@@ -67,25 +67,25 @@
                    required>
           </div>
         </div>
-        {# End email #}
+        {# End email -#}
       </div>
     </div>
 
     <div class="mt-6">
       <button type="submit" class="btn-primary">
-        {% call macros::btn_spinner(id = "save-user-spinner", spinner_type = "2") %}
+        {% call macros::btn_spinner(id = "save-user-spinner", spinner_type = "2") -%}
         Save
       </button>
     </div>
   </div>
 </form>
-{# End update user details #}
+{# End update user details -#}
 
-{% let has_password = user_summary.has_password.unwrap_or(false) %}
-{% if has_password %}
+{% let has_password = user_summary.has_password.unwrap_or(false) -%}
+{% if has_password -%}
   <hr class="w-full h-px mx-auto my-12 bg-stone-200 border-0">
 
-  {# Update user password form #}
+  {# Update user password form -#}
   <form id="password-form"
         hx-put="/dashboard/account/update/password"
         hx-ext="no-empty-vals"
@@ -95,7 +95,7 @@
         hx-disabled-elt="button[type=submit]">
     <div class="space-y-12">
       <div>
-        {% call macros::form_title(title = "Update password", description = "After updating your password all your current sessions will be terminated and you will need to log back in.") %}
+        {% call macros::form_title(title = "Update password", description = "After updating your password all your current sessions will be terminated and you will need to log back in.") -%}
 
         <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-6 max-w-5xl">
           <div class="col-span-3">
@@ -143,13 +143,13 @@
 
       <div class="mt-6 items-center">
         <button type="submit" class="btn-primary">
-          {% call macros::btn_spinner(id = "update-password-spinner", spinner_type = "2") %}
+          {% call macros::btn_spinner(id = "update-password-spinner", spinner_type = "2") -%}
           Save
         </button>
       </div>
     </div>
   </form>
-  {# End update user password form #}
+  {# End update user password form -#}
 
   <script type="module">
     const passwordsInputs = document.querySelectorAll('input[type="password"]');
@@ -167,7 +167,7 @@
       });
     });
   </script>
-{% endif %}
+{% endif -%}
 
 <script type="module">
   import {

@@ -1,6 +1,6 @@
-{% extends "header.html" %}
-{% import "macros.html" as macros %}
+{% extends "header.html" -%}
+{% import "macros.html" as macros -%}
 
 {% block user_menu %}
-  {% call macros::user_menu(user.name, user.username) %}
+  {% call macros::user_menu(user.name, user.username) -%}
 {% endblock user_menu %}

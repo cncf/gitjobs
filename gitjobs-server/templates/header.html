@@ -1,8 +1,8 @@
-{% import "macros.html" as macros %}
+{% import "macros.html" as macros -%}
 
-{# Navbar #}
+{# Navbar -#}
 <div class="flex items-center gap-x-6">
-  {# Logo #}
+  {# Logo -#}
   <div class="me-3">
     <a hx-boost="true" href="/">
       <div class="flex items-top gap-x-2">
@@ -21,34 +21,34 @@
       </div>
     </a>
   </div>
-  {# End logo #}
+  {# End logo -#}
 
-  {# Desktop links #}
+  {# Desktop links -#}
   <div class="hidden xl:flex xl:gap-x-6 -mb-2">
-    {% call header_link(text = "Jobs", href = "/", active = page_id == PageId::JobBoard) %}
-    {% call header_link(text = "About", href = "/about", active = page_id == PageId::About) %}
+    {% call header_link(text = "Jobs", href = "/", active = page_id == PageId::JobBoard) -%}
+    {% call header_link(text = "About", href = "/about", active = page_id == PageId::About) -%}
   </div>
-  {# End desktop links #}
+  {# End desktop links -#}
 </div>
 
 <div class="relative flex">
-  {% if page_id == PageId::JobBoard || page_id == PageId::About %}
+  {% if page_id == PageId::JobBoard || page_id == PageId::About -%}
     <div hx-get="/section/user-menu"
          hx-trigger="load"
          hx-target="this"
          hx-boost="true">
       <button class="relative group rounded-full cursor-pointer bg-white border text-xl border-primary-500 text-primary-600 size-[38px] p-0.5 overflow-hidden"
               disabled>
-        {% call macros::btn_spinner(id = "user-spinner", size = "size-[2.35rem]", spinner_type = "5", htmx = false) %}
+        {% call macros::btn_spinner(id = "user-spinner", size = "size-[2.35rem]", spinner_type = "5", htmx = false) -%}
         <div class="svg-icon size-4 mx-auto bg-primary-500 icon-user"></div>
       </button>
     </div>
-  {% else %}
-    {% call user_menu(user) %}
-  {% endif %}
+  {% else -%}
+    {% call user_menu(user) -%}
+  {% endif -%}
 </div>
 
-{# End Navbar #}
+{# End Navbar -#}
 
 {% macro header_link(text, href, active = false) %}
   <a href="{{ href }}"
@@ -64,19 +64,19 @@
           title="Coming soon!">{{ text }}</button>
 {% endmacro disabled_header_link %}
 
-{# Header user menu #}
+{# Header user menu -#}
 {% macro user_menu(user) %}
-  {% if user.logged_in %}
+  {% if user.logged_in -%}
     <button id="user-dropdown-button"
             data-logged-in="true"
             data-has-profile="{%- if user.has_profile -%}true{%- else -%}false{%- endif -%}"
             class="cursor-pointer group rounded-full bg-white border text-xl border-primary-500 text-primary-600 hover:text-primary-800 hover:border-primary-800 size-[38px] p-0.5 overflow-hidden">
-      {% let name = user.name|display_some %}
-      {% let initial = name.chars().nth(0).unwrap_or('-') %}
+      {% let name = user.name|display_some -%}
+      {% let initial = name.chars().nth(0).unwrap_or('-') -%}
       <div class="font-semibold uppercase mt-px">{{ initial }}</div>
     </button>
 
-    {# Dropdown user #}
+    {# Dropdown user -#}
     <div id="dropdown-user"
          class="dropdown absolute hidden z-10 end-0 top-10 w-[250px] bg-white divide-y divide-stone-100 rounded-lg shadow border border-stone-200">
       <ul class="text-stone-700 my-2">
@@ -121,19 +121,19 @@
         </li>
       </ul>
     </div>
-    {# End dropdown user #}
-  {% else %}
+    {# End dropdown user -#}
+  {% else -%}
     <button id="user-dropdown-button"
             data-logged-in="false"
             data-has-profile="false"
             class="cursor-pointer group rounded-full bg-white border text-xl border-primary-500 text-primary-600 hover:text-primary-800 hover:border-primary-800 size-[38px] p-0.5 overflow-hidden">
       <div class="svg-icon size-4 mx-auto bg-primary-500 group-hover:bg-primary-800 icon-user"></div>
     </button>
-    {# Dropdown user #}
+    {# Dropdown user -#}
     <div id="dropdown-user"
          class="dropdown absolute hidden z-10 end-0 top-10 w-[250px] bg-white divide-y divide-stone-100 rounded-lg shadow border border-stone-200">
       <ul class="text-stone-700 my-2">
-        {# Sign up #}
+        {# Sign up -#}
         <li>
           <a hx-boost="true"
              href="/sign-up"
@@ -145,9 +145,9 @@
             </div>
           </a>
         </li>
-        {# End sign up #}
+        {# End sign up -#}
 
-        {# Login #}
+        {# Login -#}
         <li>
           <a hx-boost="true"
              href="/log-in"
@@ -159,12 +159,12 @@
             </div>
           </a>
         </li>
-        {# End login #}
+        {# End login -#}
       </ul>
     </div>
-    {# End dropdown user #}
-  {% endif %}
-  {# Dropdown script #}
+    {# End dropdown user -#}
+  {% endif -%}
+  {# Dropdown script -#}
   <script type="module">
     import {
       onClickDropdown
@@ -175,5 +175,5 @@
       dropdownButton.addEventListener('click', onClickDropdown);
     }
   </script>
-  {# End dropdown script #}
+  {# End dropdown script -#}
 {% endmacro user_menu %}

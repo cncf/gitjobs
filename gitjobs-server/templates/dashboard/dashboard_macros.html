@@ -1,12 +1,12 @@
-{# Menu title #}
+{# Menu title -#}
 {% macro menu_title(text, extra_styles = "") %}
   <div class="text-xs/6 text-stone-500 uppercase px-3 {{ extra_styles }}">{{ text }}</div>
 {% endmacro menu_title %}
-{# End menu title #}
+{# End menu title -#}
 
-{# Menu item #}
+{# Menu item -#}
 {% macro menu_item(name, icon, is_active, href, disabled = false, extra_styles = "", icon_size = "size-4" ) %}
-  {% if is_active %}
+  {% if is_active -%}
     <div class="relative bg-white border border-stone-200 px-3 rounded-lg {{ extra_styles }}">
       <a hx-get="{{ href }}"
          hx-target="body"
@@ -18,8 +18,8 @@
       </a>
       <div class="absolute top-0.5 -left-3 lg:-left-5 bottom-0.5 w-1 bg-primary-600 rounded-lg"></div>
     </div>
-  {% else %}
-    {% if disabled %}
+  {% else -%}
+    {% if disabled -%}
       <button class="rounded-md px-3 border border-transparent cursor-not-allowed {{ extra_styles }}"
               disabled
               title="Coming soon!">
@@ -28,7 +28,7 @@
           <div class="text-xs/8 lg:text-sm/8 ms-3">{{ name }}</div>
         </div>
       </button>
-    {% else %}
+    {% else -%}
       <div class="rounded-md px-3 border border-transparent hover:bg-white hover:border-stone-200 {{ extra_styles }}">
         <a hx-get="{{ href }}"
            hx-target="body"
@@ -39,7 +39,7 @@
           <div class="text-xs/8 lg:text-sm/8 ms-3">{{ name }}</div>
         </a>
       </div>
-    {% endif %}
-  {% endif %}
+    {% endif -%}
+  {% endif -%}
 {% endmacro menu_item %}
-{# End menu item #}
+{# End menu item -#}

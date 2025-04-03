@@ -1,7 +1,7 @@
-{% import "macros.html" as macros %}
-{% import "misc/preview_modal.html" as preview %}
+{% import "macros.html" as macros -%}
+{% import "misc/preview_modal.html" as preview -%}
 
-{% call macros::form_title(title = "My applications") %}
+{% call macros::form_title(title = "My applications") -%}
 
 {# Applicants Table -#}
 <div class="relative overflow-visible mt-10">
@@ -14,9 +14,9 @@
       </tr>
     </thead>
     <tbody id="applications-list">
-      {% if applications.is_empty() %}
+      {% if applications.is_empty() -%}
         <tr class="bg-white border-b border-stone-200">
-          {# No applications #}
+          {# No applications -#}
           <td class="px-8 py-20 text-center" colspan="3">
             <div class="text-xl lg:text-2xl mb-10">
               <div>You have not applied yet to any jobs within GitJobs.</div>
@@ -26,10 +26,10 @@
             </p>
           </td>
         </tr>
-      {% else %}
-        {% for application in applications %}
+      {% else -%}
+        {% for application in applications -%}
           <tr class="odd:bg-white even:bg-stone-50/50 border-b border-stone-200">
-            {# Position #}
+            {# Position -#}
             <td class="px-3 xl:px-5 py-4 font-medium text-stone-900">
               <button hx-get="/section/jobs/{{ application.job_id }}"
                       hx-target="#preview-content"
@@ -37,27 +37,27 @@
                       class="flex flex-col justify-between items-start cursor-pointer preview-button max-w-full min-w-0">
                 <div class="max-w-full text-black truncate">{{ application.job_title }}</div>
                 <div class="text-xs/4 text-stone-500 max-w-full truncate">
-                  {# Workplace #}
-                  {% if application.job_workplace == Workplace::Remote %}
+                  {# Workplace -#}
+                  {% if application.job_workplace == Workplace::Remote -%}
                     Remote
-                  {% else %}
-                    {% if let Some(job_location) = application.job_location %}
+                  {% else -%}
+                    {% if let Some(job_location) = application.job_location -%}
                       {{ job_location.city }}, {{ job_location.country }}
-                    {% else %}
+                    {% else -%}
                       No location provided
-                    {% endif %}
-                  {% endif %}
-                  {# End workplace #}
+                    {% endif -%}
+                  {% endif -%}
+                  {# End workplace -#}
                 </div>
               </button>
             </td>
-            {# End postion #}
+            {# End postion -#}
 
-            {# Applied date #}
+            {# Applied date -#}
             <td class="px-3 xl:px-5 py-4 whitespace-nowrap">{{ application.applied_at.format(DATE_FORMAT) }}</td>
-            {# End applied date #}
+            {# End applied date -#}
 
-            {# Actions #}
+            {# Actions -#}
             <td>
               <div>
                 <button id="cancel-application-{{ application.application_id }}"
@@ -92,17 +92,17 @@
                 </script>
               </div>
             </td>
-            {# End actions #}
+            {# End actions -#}
           </tr>
-        {% endfor %}
-      {% endif %}
+        {% endfor -%}
+      {% endif -%}
     </tbody>
   </table>
 </div>
-{# End applicants Table #}
+{# End applicants Table -#}
 
 {# Preview modal -#}
-{% call preview::modal() %}
+{% call preview::modal() -%}
 {# End preview modal -#}
 
 <script type="module">

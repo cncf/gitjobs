@@ -2,7 +2,7 @@
 <div id="pagination" class="flex items-end justify-center pt-12 pb-8">
   <div hx-boost="true" class="inline-flex" role="group">
     {# First button -#}
-    {% if let Some(first) = first %}
+    {% if let Some(first) = first -%}
       <a href="{{ first.url }}"
          hx-get="{{ first.hx_url }}"
          hx-target="#items-list"
@@ -11,18 +11,18 @@
         <div class="svg-icon me-2 size-5 bg-primary-500 group-hover:bg-white icon-arrow_left_double"></div>
         First
       </a>
-    {% else %}
+    {% else -%}
       <button type="button"
               disabled
               class="inline-flex items-center pr-4 pl-3 py-2 text-sm text-stone-300 bg-stone-50 border border-stone-300 rounded-s-full">
         <div class="svg-icon me-2 size-5 bg-stone-300 icon-arrow_left_double"></div>
         First
       </button>
-    {% endif %}
+    {% endif -%}
     {# End first button -#}
 
     {# Prev button -#}
-    {% if let Some(prev) = prev %}
+    {% if let Some(prev) = prev -%}
       <a href="{{ prev.url }}"
          hx-get="{{ prev.hx_url }}"
          hx-target="#items-list"
@@ -31,18 +31,18 @@
         <div class="svg-icon me-2 size-5 bg-primary-500 group-hover:bg-white icon-arrow_left"></div>
         Prev
       </a>
-    {% else %}
+    {% else -%}
       <button type="button"
               disabled
               class="inline-flex items-center pr-4 pl-[0.6rem] py-2 text-sm text-stone-300 bg-stone-50 border-t border-b border-e border-stone-300">
         <div class="svg-icon me-2 size-5 bg-stone-300 icon-arrow_left"></div>
         Prev
       </button>
-    {% endif %}
+    {% endif -%}
     {# End prev button -#}
 
     {# Next button -#}
-    {% if let Some(next) = next %}
+    {% if let Some(next) = next -%}
       <a href="{{ next.url }}"
          hx-get="{{ next.hx_url }}"
          hx-target="#items-list"
@@ -51,18 +51,18 @@
         Next
         <div class="svg-icon ms-2 size-5 bg-primary-500 group-hover:bg-white icon-arrow_right"></div>
       </a>
-    {% else %}
+    {% else -%}
       <button type="button"
               disabled
               class="inline-flex items-center pl-4 pr-[0.6rem] py-2 text-sm text-stone-300 bg-stone-50 border-t border-b border-stone-300">
         Next
         <div class="svg-icon ms-2 size-5 bg-stone-300 icon-arrow_right"></div>
       </button>
-    {% endif %}
+    {% endif -%}
     {# End next button -#}
 
     {# Last button -#}
-    {% if let Some(last) = last %}
+    {% if let Some(last) = last -%}
       <a href="{{ last.url }}"
          hx-get="{{ last.hx_url }}"
          hx-target="#items-list"
@@ -71,14 +71,14 @@
         Last
         <div class="svg-icon ms-2 size-5 bg-primary-500 group-hover:bg-white icon-arrow_right_double"></div>
       </a>
-    {% else %}
+    {% else -%}
       <button type="button"
               disabled
               class="inline-flex items-center pl-4 pr-3 py-2 text-sm text-stone-300 bg-stone-50 border border-stone-300 rounded-e-full">
         Last
         <div class="svg-icon ms-2 size-5 bg-stone-300 icon-arrow_right_double"></div>
       </button>
-    {% endif %}
+    {% endif -%}
     {# End last button -#}
   </div>
 </div>

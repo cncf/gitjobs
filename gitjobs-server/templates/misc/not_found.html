@@ -1,4 +1,4 @@
-{% extends "common_base.html" %}
+{% extends "common_base.html" -%}
 
 {% block main %}
   <div class="container max-w-6xl px-2 py-24 text-center mx-24 lg:mx-auto">
@@ -9,12 +9,12 @@
       <div class="text-4xl font-semibold mb-10 text-stone-900">Error 404 - Page Not Found</div>
       <p class="text-3xl text-stone-700">The page you were looking for wasn't found.</p>
 
-      {# Button home #}
+      {# Button home -#}
       <div class="mt-20 flex justify-center items-center">
 
         <a href="/" class="btn-primary-anchor w-64 text-xl" hx-boost="true">Go to Home</a>
       </div>
-      {# End button home #}
+      {# End button home -#}
     </div>
   </div>
 {% endblock main %}

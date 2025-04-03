@@ -1,24 +1,24 @@
-{% extends "base.html" %}
+{% extends "base.html" -%}
 
 {% block content %}
-  {# Lit components #}
+  {# Lit components -#}
   <script type="module" src="/static/js/common/search-location.js"></script>
   <script type="module" src="/static/js/common/searchable-filter.js"></script>
   <script type="module" src="/static/js/common/input-range.js"></script>
-  {# End lit components #}
+  {# End lit components -#}
 
-  {# Header #}
+  {# Header -#}
   <nav class="flex items-center justify-between border-b border-transparent h-20 min-h-20 px-4 lg:px-5">
-    {% include "header.html" %}
+    {% include "header.html" -%}
   </nav>
-  {# End Header #}
+  {# End Header -#}
 
   <div class="flex md:grow">
     {% block main %}
     {% endblock main %}
   </div>
 
-  {# Footer #}
-  {% include "footer.html" %}
-  {# End Footer #}
+  {# Footer -#}
+  {% include "footer.html" -%}
+  {# End Footer -#}
 {% endblock content %}

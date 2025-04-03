@@ -1,5 +1,5 @@
-{% extends "common_base.html" %}
-{% import "misc/preview_modal.html" as preview %}
+{% extends "common_base.html" -%}
+{% import "misc/preview_modal.html" as preview -%}
 
 {% block main %}
   <div class="flex flex-col w-full">
@@ -12,6 +12,6 @@
   </div>
 
   {# Preview modal -#}
-  {% call preview::modal(on_close = "clean_job_id_param") %}
+  {% call preview::modal(on_close = "clean_job_id_param") -%}
   {# End preview modal -#}
 {% endblock main %}

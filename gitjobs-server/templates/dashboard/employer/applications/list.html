@@ -1,34 +1,34 @@
-{% import "macros.html" as macros %}
-{% import "misc/preview_modal.html" as preview %}
+{% import "macros.html" as macros -%}
+{% import "misc/preview_modal.html" as preview -%}
 
-{% call macros::form_title(title = "Applications") %}
+{% call macros::form_title(title = "Applications") -%}
 
 <div class="my-10">
   <div class="relative w-1/2">
-    {# Jobs button to open dropdown #}
+    {# Jobs button to open dropdown -#}
     <button id="jobs-btn"
             class="select select-primary flex items-center enabled:cursor-pointer"
             {% if filters_options.jobs.is_empty() -%}
             disabled
             {%- endif -%}>
-      {# Icon #}
+      {# Icon -#}
       <div class="flex items-baseline relative">
-        {% if let Some(selected_job) = self.selected_job() %}
+        {% if let Some(selected_job) = self.selected_job() -%}
           {{ selected_job.title }} <span class="text-xs text-stone-500 ms-2">
-          {% if let Some(city) = selected_job.city %}
+          {% if let Some(city) = selected_job.city -%}
             ({{ city }}
             {%- if let Some (country) = selected_job.country -%}, {{ country }}{%- endif -%}
               )
-            {% endif %}
+            {% endif -%}
           </span>
-        {% else %}
+        {% else -%}
           All jobs
-        {% endif %}
+        {% endif -%}
       </div>
     </button>
-    {# End jobs button to open dropdown #}
+    {# End jobs button to open dropdown -#}
 
-    {# Dropdown jobs #}
+    {# Dropdown jobs -#}
     <div id="dropdown-jobs"
          class="hidden absolute top-10 start-0 w-full z-10 bg-white rounded-lg shadow-sm border border-stone-200">
       <ul class="max-h-48 overflow-y-auto text-stone-700">
@@ -39,7 +39,7 @@
                   class="w-full flex items-center px-4 py-2 text-sm/6 hover:bg-stone-100 disabled:bg-stone-100 enabled:cursor-pointer"
                   {% if filters.job_id.is_none() %}disabled{% endif %}>All jobs</button>
         </li>
-        {% for job in filters_options.jobs %}
+        {% for job in filters_options.jobs -%}
           <li>
             <button hx-get="/dashboard/employer/applications/list?job_id={{ job.job_id }}"
                     hx-trigger="click"
@@ -52,19 +52,19 @@
                     {%- endif -%}>
               <div class="flex items-baseline relative">
                 {{ job.title }} <span class="text-xs text-stone-500 ms-2">
-                {% if let Some(city) = job.city %}
+                {% if let Some(city) = job.city -%}
                   ({{ city }}
                   {%- if let Some (country) = job.country -%}, {{ country }}{%- endif -%}
                     )
-                  {% endif %}
+                  {% endif -%}
                 </span>
               </div>
             </button>
           </li>
-        {% endfor %}
+        {% endfor -%}
       </ul>
     </div>
-    {# End dropdown jobs #}
+    {# End dropdown jobs -#}
   </div>
 </div>
 
@@ -79,7 +79,7 @@
       </tr>
     </thead>
     <tbody id="applications-list">
-      {% if filters_options.jobs.is_empty() %}
+      {% if filters_options.jobs.is_empty() -%}
         <tr class="bg-white border-b border-stone-200">
           <td class="px-8 py-20 text-center" colspan="3">
             <div class="text-xl lg:text-2xl mb-10">It looks like you have not posted any job yet.</div>
@@ -91,17 +91,17 @@
             </p>
           </td>
         </tr>
-      {% else %}
-        {% if applications.is_empty() %}
+      {% else -%}
+        {% if applications.is_empty() -%}
           <tr class="bg-white border-b border-stone-200">
-            {# No applications #}
+            {# No applications -#}
             <td class="px-8 py-20 text-center" colspan="3">
               <div class="text-xl lg:text-2xl mb-10">
-                {% if filters.job_id.is_none() %}
+                {% if filters.job_id.is_none() -%}
                   <div>It looks like no one has applied yet to any of the jobs you have posted.</div>
-                {% else %}
+                {% else -%}
                   <div>It looks like no one has applied yet to this job.</div>
-                {% endif %}
+                {% endif -%}
               </div>
               <p class="text-lg lg:text-xl text-stone-700 mb-10">Hold on a bit, they will start applying soon :)</p>
               <p class="text-stone-700">
@@ -109,38 +109,38 @@
               </p>
             </td>
           </tr>
-        {% else %}
-          {% for application in applications %}
+        {% else -%}
+          {% for application in applications -%}
             <tr class="odd:bg-white even:bg-stone-50/50 border-b border-stone-200">
-              {# Applicant #}
+              {# Applicant -#}
               <td class="px-3 xl:px-5 py-4 font-medium text-stone-900">
                 <button hx-get="/dashboard/employer/applications/profile/{{ application.job_seeker_profile_id }}/preview"
                         hx-target="#preview-content"
                         hx-disabled-elt="this"
                         class="flex items-stretch gap-x-6 cursor-pointer preview-button max-w-full">
-                  {# Photo #}
+                  {# Photo -#}
                   <div class="hidden lg:flex justify-center items-center size-8 md:size-10 shrink-0">
-                    {% if let Some(photo_id) = application.photo_id %}
-                      {% let photo = &self::build_dashboard_image_url(photo_id, "small") %}
+                    {% if let Some(photo_id) = application.photo_id -%}
+                      {% let photo = &self::build_dashboard_image_url(photo_id, "small") -%}
                       <img class="size-8 md:size-10 object-contain"
                            height="auto"
                            width="auto"
                            src="{{ photo }}"
                            alt="{{ application.name }} photo">
-                    {% else %}
+                    {% else -%}
                       <div class="rounded-full size-8 md:size-10 bg-stone-100 p-1 flex">
                         <div class="svg-icon size-4 md:size-6 icon-user bg-stone-500 m-auto"></div>
                       </div>
-                    {% endif %}
+                    {% endif -%}
                   </div>
-                  {# End photo #}
+                  {# End photo -#}
 
                   <div class="flex flex-col justify-between items-start h-8 md:h-10 min-w-0">
-                    {# Name #}
+                    {# Name -#}
                     <div class="max-w-full truncate">{{ application.name }}</div>
-                    {# End name #}
+                    {# End name -#}
 
-                    {# Last position #}
+                    {# Last position -#}
                     <div class="text-xs/4 text-stone-500 max-w-full truncate">
                       {%- if let Some(last_position) = application.last_position -%}
                         {{ last_position }}
@@ -148,13 +148,13 @@
                         Last position not available
                       {%- endif -%}
                     </div>
-                    {# End last position #}
+                    {# End last position -#}
                   </div>
                 </button>
               </td>
-              {# End applicant #}
+              {# End applicant -#}
 
-              {# Position #}
+              {# Position -#}
               <td class="px-3 xl:px-5 py-4 font-medium text-stone-900">
                 <button hx-post="/dashboard/employer/jobs/{{ application.job_id }}/preview"
                         hx-target="#preview-content"
@@ -162,40 +162,40 @@
                         class="flex flex-col justify-between items-start h-[32px] md:h-[40px] cursor-pointer preview-button min-w-0 max-w-full">
                   <div class="max-w-full text-black truncate">{{ application.job_title }}</div>
                   <div class="text-xs/4 text-stone-500 max-w-full truncate">
-                    {# Workplace #}
-                    {% if application.job_workplace == Workplace::Remote %}
+                    {# Workplace -#}
+                    {% if application.job_workplace == Workplace::Remote -%}
                       Remote
-                    {% else %}
-                      {% if let Some(job_location) = application.job_location %}
+                    {% else -%}
+                      {% if let Some(job_location) = application.job_location -%}
                         {{ job_location.city }}, {{ job_location.country }}
-                      {% else %}
+                      {% else -%}
                         No location provided
-                      {% endif %}
-                    {% endif %}
-                    {# End workplace #}
+                      {% endif -%}
+                    {% endif -%}
+                    {# End workplace -#}
                   </div>
                 </button>
               </td>
-              {# End postion #}
+              {# End postion -#}
 
-              {# Applied date #}
+              {# Applied date -#}
               <td class="px-3 xl:px-5 py-4 whitespace-nowrap">{{ application.applied_at.format(DATE_FORMAT) }}</td>
-              {# End applied date #}
+              {# End applied date -#}
             </tr>
-          {% endfor %}
-        {% endif %}
-      {% endif %}
+          {% endfor -%}
+        {% endif -%}
+      {% endif -%}
     </tbody>
   </table>
 </div>
-{# End applicants Table #}
+{# End applicants Table -#}
 
 {# Pagination -#}
 {% if applications.len() > 0 %}{{ navigation_links|safe }}{% endif %}
 {# End pagination -#}
 
 {# Preview modal -#}
-{% call preview::modal() %}
+{% call preview::modal() -%}
 {# End preview modal -#}
 
 <script type="module">

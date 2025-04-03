@@ -1,7 +1,7 @@
-{% extends "base.html" %}
+{% extends "base.html" -%}
 
 {% block content %}
-  {# Lit components #}
+  {# Lit components -#}
   <script type="module" src="/static/js/common/search-location.js"></script>
   <script type="module" src="/static/js/common/multiselect.js"></script>
   <script type="module" src="/static/js/common/markdown-editor.js"></script>
@@ -10,26 +10,26 @@
   <script type="module" src="/static/js/dashboard/jobseeker/certifications.js"></script>
   <script type="module" src="/static/js/dashboard/jobseeker/projects.js"></script>
   <script type="module" src="/static/js/common/input-range.js"></script>
-  {# End lit components #}
+  {# End lit components -#}
 
-  {# Header #}
+  {# Header -#}
   <nav class="bg-white fixed w-full z-20 top-0 start-0 border-b border-stone-200 h-20 drop-shadow-sm flex items-center justify-between px-3 lg:px-5">
-    {% include "header.html" %}
+    {% include "header.html" -%}
   </nav>
-  {# End Header #}
+  {# End Header -#}
 
-  {# View for small devices #}
+  {# View for small devices -#}
   <div class="flex md:hidden justify-center items-center w-full h-full">
     <div class="fixed top-0 start-0 end-0 -z-10 block w-full h-full bg-jobboard"></div>
     <div class="text-center bg-stone-100 border-4 border-primary-600 border-dashed rounded-lg text-2xl font-medium text-stone-800 p-10 m-10">
       This site is not optimized yet for mobile devices
     </div>
   </div>
-  {# End view for small devices #}
+  {# End view for small devices -#}
 
-  {# Main Content #}
+  {# Main Content -#}
   <div class="hidden md:flex">
-    {# Sticky menu #}
+    {# Sticky menu -#}
     <aside class="h-dvh sticky top-0 w-[225px] lg:w-[300px]">
       <div class="flex flex-col justify-between py-5 pt-24 h-full">
         <div class="flex flex-col grow min-h-0 w-full">
@@ -38,7 +38,7 @@
         </div>
 
         <div class="w-full px-3 lg:px-5 shrink-0">
-          {# Logout #}
+          {# Logout -#}
           <a href="/log-out"
              hx-boost="false"
              target="_self"
@@ -46,16 +46,16 @@
             <div>Log out</div>
             <div class="svg-icon size-4 icon-logout group-hover:bg-white"></div>
           </a>
-          {# End logout #}
+          {# End logout -#}
         </div>
       </div>
     </aside>
-    {# End sticky menu #}
+    {# End sticky menu -#}
 
     <main class="w-[calc(100%-225px)] lg:w-[calc(100%-300px)] bg-white border border-stone-200 rounded-lg m-5 ms-0 mt-[6.25rem] relative">
       {% block dashboard_main %}
       {% endblock dashboard_main %}
     </main>
   </div>
-  {# End Main Content #}
+  {# End Main Content -#}
 {% endblock content %}

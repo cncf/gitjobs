@@ -36,6 +36,19 @@
                       hx-disabled-elt="this"
                       class="flex flex-col justify-between items-start cursor-pointer preview-button max-w-full min-w-0">
                 <div class="max-w-full text-black truncate">{{ application.job_title }}</div>
+                <div class="text-xs/4 text-stone-500 max-w-full truncate">
+                  {# Workplace #}
+                  {% if application.job_workplace == Workplace::Remote %}
+                    Remote
+                  {% else %}
+                    {% if let Some(job_location) = application.job_location %}
+                      {{ job_location.city }}, {{ job_location.country }}
+                    {% else %}
+                      No location provided
+                    {% endif %}
+                  {% endif %}
+                  {# End workplace #}
+                </div>
               </button>
             </td>
             {# End postion #}

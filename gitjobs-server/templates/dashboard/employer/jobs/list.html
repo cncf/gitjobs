@@ -61,7 +61,7 @@
         <th scope="col" class="px-3 xl:px-5 py-3">Title</th>
         <th scope="col" class="hidden xl:table-cell px-3 xl:px-5 py-3">Location</th>
         <th scope="col" class="px-3 xl:px-5 py-3">Status</th>
-        <th scope="col" class="hidden xl:table-cell px-3 xl:px-5 py-3">Created</th>
+        <th scope="col" class="hidden 2xl:table-cell px-3 xl:px-5 py-3">Created</th>
         <th scope="col" class="px-3 xl:px-5 py-3">Published</th>
         <th scope="col" class="hidden xl:table-cell px-5 py-3">Archived</th>
         <th scope="col" class="p-4"></th>
@@ -80,21 +80,35 @@
         </tr>
       {% else %}
         {% for job in jobs %}
-          {% let location = &self::format_location(job.city.as_deref(), None, job.country.as_deref())|display_some_or("-") %}
+          {% let location = &self::format_location(job.city.as_deref(), None, job.country.as_deref())|display_some_or("No location provided") %}
           <tr class="odd:bg-white even:bg-stone-50/50 border-b border-stone-200">
             {# Title job #}
             <th scope="row"
                 class="px-3 xl:px-5 py-4 font-medium text-stone-900 min-w-[100px] max-w-[200px] xl:max-w-auto">
               <div class="max-w-full truncate">{{ job.title }}</div>
-              {% if let Some(city) = job.city %}
-                <div class="block xl:hidden text-xs text-stone-500 max-w-full truncate">{{ location }}</div>
-              {% endif %}
+              {# Workplace #}
+              <div class="block xl:hidden text-xs text-stone-500 max-w-full truncate">
+                {% if job.workplace == Workplace::Remote %}
+                  Remote
+                {% else %}
+                  {{ location }}
+                {% endif %}
+              </div>
+              {# End workplace #}
             </th>
             {# End title job #}
 
             {# Location #}
             <td class="hidden xl:table-cell px-3 xl:px-5 py-4 whitespace-nowrap min-w-[100px] max-w-[100px] xl:max-w-[200px]">
-              <div class="max-w-full truncate">{{ location }}</div>
+              <div class="max-w-full truncate">
+                {# Workplace #}
+                {% if job.workplace == Workplace::Remote %}
+                  Remote
+                {% else %}
+                  {{ location }}
+                {% endif %}
+                {# End workplace #}
+              </div>
             </td>
             {# End location #}
 
@@ -105,7 +119,7 @@
             {# End status #}
 
             {# Created date #}
-            <td class="hidden xl:table-cell px-3 xl:px-5 py-4 whitespace-nowrap w-32">
+            <td class="hidden 2xl:table-cell px-3 xl:px-5 py-4 whitespace-nowrap w-32">
               {{ job.created_at.format(DATE_FORMAT) }}
             </td>
             {# End created date #}

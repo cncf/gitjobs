@@ -493,7 +493,11 @@
       toggleModalVisibility('preview-modal', "open");
     } else {
       // When the preview is not available, show an error message
-      showErrorAlert('Something went wrong previewing the job, please try again later.');
+      if (e.detail.xhr.status == 422) {
+        showErrorAlert('You must fill in all required fields to be able to preview the job.');
+      } else {
+        showErrorAlert('Something went wrong previewing the data, please try again later.');
+      }
     }
   });
 </script>

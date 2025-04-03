@@ -14,6 +14,18 @@
     <div class="border-b border-stone-900/10 pb-12">
       {% call macros::form_title(title = "Job details", description = "Please add as many details about this job as possible. You can save it as a draft and come back later to finish it.") %}
 
+      <div class="border border-primary-500 rounded-lg mt-10 px-8 py-5 bg-primary-50/20"
+           role="alert">
+        <ul class="text-stone-600 text-sm list-disc list-outside ps-5">
+          <li>
+            Jobs postings must be in <span class="font-semibold">English</span>.
+          </li>
+          <li class="mt-3">
+            Keep the job title <span class="font-semibold">as short as possible</span>, not including words like remote, a location, or tags. We provide other specific fields to provide that information.
+          </li>
+        </ul>
+      </div>
+
       <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-6 max-w-5xl">
         {# Job title #}
         <div class="col-span-full lg:col-span-3">

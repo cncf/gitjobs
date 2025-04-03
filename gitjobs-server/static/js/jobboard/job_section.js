@@ -26,13 +26,10 @@ export const applyButton = () => {
     });
   } else {
     if (applyUrl !== "") {
-      const applyAnchor = document.createElement("a");
-      applyAnchor.href = applyUrl;
-      applyAnchor.className = "btn-primary w-full block mt-4 mb-2";
-      applyAnchor.textContent = "Apply";
-      applyAnchor.target = "_blank";
-      applyAnchor.rel = "noopener noreferrer";
-      applyButton.replaceWith(applyAnchor);
+      // Open external link in a new tab
+      applyButton.addEventListener("click", () => {
+        window.open(applyUrl, "_blank");
+      });
     } else {
       if (hasProfile === "false") {
         applyButton.addEventListener("click", () => {

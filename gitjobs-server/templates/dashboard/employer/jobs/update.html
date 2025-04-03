@@ -369,7 +369,7 @@
         <div class="col-span-full lg:col-span-3">
           <label for="open_source" class="form-label">Open source</label>
           <div class="mt-2 me-8">
-            <input-range name="open_source" value="{{ job.open_source|display_some_or(0) }}" step="5">
+            <input-range name="open_source" value="{{ job.open_source|display_some_or(0) }}" step="5" type="type-3">
           </div>
           <p class="form-legend">Percentage of time working on open source projects.</p>
         </div>
@@ -379,7 +379,7 @@
         <div class="col-span-full lg:col-span-3">
           <label for="upstream_commitment" class="form-label">Upstream commitment</label>
           <div class="mt-2 me-8">
-            <input-range name="upstream_commitment" value="{{ job.upstream_commitment|display_some_or(0) }}" step="5">
+            <input-range name="upstream_commitment" value="{{ job.upstream_commitment|display_some_or(0) }}" step="5" type="type-2">
           </div>
           <p class="form-legend">
             Percentage of time working on upstream open source projects the company depends on.

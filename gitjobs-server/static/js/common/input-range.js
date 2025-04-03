@@ -14,6 +14,7 @@ export class InputRange extends LitWrapper {
     unit: { type: String },
     legendsNumber: { type: Number },
     visibleTooltip: { type: Boolean },
+    type: { type: String },
   };
 
   inputRef = createRef();
@@ -33,6 +34,27 @@ export class InputRange extends LitWrapper {
     this.legendsNumber = 5;
     this.visibleTooltip = false;
     this.steps = [];
+    this.type = "type-1";
+    this.colors = {
+      "type-1": {
+        "progress-line": "var(--color-primary-500)",
+        thumb: "accent-primary-600",
+        "bg-color": "bg-primary-900",
+        peak: "border-b-primary-900",
+      },
+      "type-2": {
+        "progress-line": "var(--color-lime-500)",
+        thumb: "accent-lime-600",
+        "bg-color": "bg-lime-900",
+        peak: "border-b-lime-900",
+      },
+      "type-3": {
+        "progress-line": "var(--color-lime-300)",
+        thumb: "accent-lime-400",
+        "bg-color": "bg-lime-800",
+        peak: "border-b-lime-800",
+      },
+    };
   }
 
   connectedCallback() {
@@ -115,8 +137,11 @@ export class InputRange extends LitWrapper {
           max="${this.max}"
           step="${this.step}"
           value="${this.value}"
-          class="w-full h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-primary-300"
-          style="background-image: linear-gradient(90deg, var(--color-primary-500) 0%, var(--color-primary-500) ${this
+          class="w-full h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer ${this.colors[this.type]
+            .thumb}"
+          style="background-image: linear-gradient(90deg, ${this.colors[this.type][
+            "progress-line"
+          ]} 0%, ${this.colors[this.type]["progress-line"]} ${this
             .percentValue}%, rgb(231 229 228 / var(--tw-bg-opacity, 1)) ${this
             .percentValue}%, rgb(231 229 228 / var(--tw-bg-opacity, 1)) 100%);"
         />
@@ -124,13 +149,15 @@ export class InputRange extends LitWrapper {
           role="tooltip"
           class="duration-100 transition-opacity ${this.visibleTooltip
             ? ""
-            : "opacity-0"} absolute z-10 inline-block px-2 py-1 text-sm font-medium text-white text-center bg-primary-900 rounded-lg shadow-xs tooltip top-8 start-[8.5px] -ms-8 w-16"
+            : "opacity-0"} absolute z-10 inline-block px-2 py-1 text-sm font-medium text-white text-center ${this
+            .colors[this.type]["bg-color"]} rounded-lg shadow-xs tooltip top-8 start-[8.5px] -ms-8 w-16"
           style="left: calc(${this.percentValue}% + ${this.offset}px);"
         >
           <small>${this.prefix}</small><span>${this._prettyNumber(this.value)}</span
           ><small>${this.unit}</small>
           <div
-            class="h-0 w-0 border-x-[6px] border-x-transparent border-b-[6px] border-b-primary-900 absolute -top-1.5 start-[25px]"
+            class="h-0 w-0 border-x-[6px] border-x-transparent border-b-[6px] ${this.colors[this.type]
+              .peak} absolute -top-1.5 start-[calc(50%-6px)]"
           ></div>
         </div>
         <div class="mx-[15px]">

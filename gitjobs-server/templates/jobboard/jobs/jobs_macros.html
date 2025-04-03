@@ -114,7 +114,7 @@
     <div>
       {% call filters_subtitle(text = "Time working on open source") %}
       <div class="mt-1">
-        <input-range form="{{ form }}" name="open_source" value="{{ filters.open_source|display_some_or(0) }}">
+        <input-range form="{{ form }}" name="open_source" value="{{ filters.open_source|display_some_or(0) }}" type="type-3">
       </input-range>
     </div>
   </div>
@@ -124,7 +124,7 @@
   <div>
     {% call filters_subtitle(text = "Time working on upstream projects") %}
     <div class="mt-1">
-      <input-range form="{{ form }}" name="upstream_commitment" value="{{ filters.upstream_commitment|display_some_or(0) }}">
+      <input-range form="{{ form }}" name="upstream_commitment" value="{{ filters.upstream_commitment|display_some_or(0) }}" type="type-2">
     </div>
   </div>
   {# End upstream commitment #}

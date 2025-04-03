@@ -132,7 +132,12 @@
                 </div>
                 <div class="absolute right-[9px] top-[9px]">
                   {# Search button #}
-                  <button id="search-jobs-btn" class="btn-primary-outline group p-1.5">
+                  <button id="search-jobs-btn"
+                          class="hidden lg:inline-flex btn-primary-outline group p-1.5">
+                    <div class="svg-icon size-3.5 mx-auto bg-primary-500 group-hover:bg-white icon-search"></div>
+                  </button>
+                  <button id="search-jobs-btn-mobile"
+                          class="inline-flex lg:hidden btn-primary-outline group p-1.5">
                     <div class="svg-icon size-3.5 mx-auto bg-primary-500 group-hover:bg-white icon-search"></div>
                   </button>
                   {# End search button #}
@@ -208,6 +213,9 @@
 
   const searchJobsBtn = document.getElementById('search-jobs-btn');
   searchJobsBtn.addEventListener('click', () => triggerActionOnForm('desktop-jobs-form', "submit", true));
+
+  const searchJobsBtnMobile = document.getElementById('search-jobs-btn-mobile');
+  searchJobsBtnMobile.addEventListener('click', () => triggerActionOnForm('mobile-jobs-form', "submit", true));
 
   const formItems = document.querySelectorAll("[data-trigger-form]");
   formItems.forEach((item) => {

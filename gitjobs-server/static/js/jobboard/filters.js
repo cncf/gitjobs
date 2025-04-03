@@ -14,6 +14,7 @@ export const close = () => {
   drawer.classList.add("-translate-x-full");
   drawer.classList.remove("transition-transform");
   drawer.dataset.open = "false";
+  drawer.scrollTop = 0;
   const backdrop = document.getElementById("drawer-backdrop");
   backdrop.classList.add("hidden");
 };
@@ -23,7 +24,7 @@ export const triggerActionOnForm = (formId, action, fromSearch) => {
   // Prevent form submission if the search input is empty, and it is triggered
   // from the search input
   if (fromSearch) {
-    const input = document.getElementById("ts_query");
+    const input = document.getElementById("searchbar");
     if (input.value === "") {
       return;
     }

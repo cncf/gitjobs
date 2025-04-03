@@ -107,7 +107,7 @@ export const resetForm = async (formId) => {
     }
 
     // Clean ts_query input field
-    const input = document.getElementById("ts_query");
+    const input = document.getElementById("searchbar");
     if (input) {
       input.value = "";
     }

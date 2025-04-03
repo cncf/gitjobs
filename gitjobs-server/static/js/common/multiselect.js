@@ -106,7 +106,7 @@ export class MultiSelect extends LitWrapper {
               autocorrect="off"
               autocapitalize="off"
               spellcheck="false"
-              class="flex flex-grow p-0 ps-1.5 rounded-md text-stone-900 max-w-full min-w-[80px] border-0 focus:ring-0 sm:text-sm/6"
+              class="flex grow p-0 ps-1.5 rounded-md text-stone-900 max-w-full min-w-[80px] border-0 focus:ring-0 sm:text-sm/6"
             />
           </div>
         </div>

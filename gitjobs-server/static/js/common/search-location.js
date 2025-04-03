@@ -314,7 +314,7 @@ export class SearchLocation extends LitWrapper {
         ? html`
             <div class="flex items-center space-x-3 mt-3">
               <div class="text-xs/6 text-stone-500/75">Max. distance</div>
-              <div class="flex-grow">
+              <div class="grow">
                 <select
                   form=${this.form}
                   name="max_distance"

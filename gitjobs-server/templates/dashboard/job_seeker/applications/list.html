@@ -31,7 +31,7 @@
           <tr class="odd:bg-white even:bg-stone-50/50 border-b border-stone-200">
             {# Position #}
             <td class="px-3 xl:px-5 py-4 font-medium text-stone-900">
-              <button hx-post="/dashboard/employer/jobs/{{ application.job_id }}/preview"
+              <button hx-get="/section/jobs/{{ application.job_id }}"
                       hx-target="#preview-content"
                       hx-disabled-elt="this"
                       class="flex flex-col justify-between items-start cursor-pointer preview-button max-w-full min-w-0">

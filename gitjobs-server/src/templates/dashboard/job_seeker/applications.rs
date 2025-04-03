@@ -5,7 +5,7 @@ use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::templates::{helpers::DATE_FORMAT, misc::Location};
+use crate::templates::{dashboard::employer::jobs::Workplace, helpers::DATE_FORMAT, misc::Location};
 
 // Pages templates.
 
@@ -26,6 +26,7 @@ pub(crate) struct Application {
     pub applied_at: DateTime<Utc>,
     pub job_id: Uuid,
     pub job_title: String,
+    pub job_workplace: Workplace,
 
     pub job_location: Option<Location>,
 }

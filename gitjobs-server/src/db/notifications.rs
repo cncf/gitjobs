@@ -15,13 +15,13 @@ use crate::{
 /// Trait that defines some database operations used to manage notifications.
 #[async_trait]
 pub(crate) trait DBNotifications {
-    /// Enqueue a notification to be sent.
+    /// Enqueue a notification to be delivered.
     async fn enqueue_notification(&self, notification: &NewNotification) -> Result<()>;
 
-    /// Get a pending notification.
+    /// Get a pending notification to deliver it.
     async fn get_pending_notification(&self, client_id: Uuid) -> Result<Option<Notification>>;
 
-    /// Update notification.
+    /// Update notification (after trying to deliver it).
     async fn update_notification(
         &self,
         client_id: Uuid,

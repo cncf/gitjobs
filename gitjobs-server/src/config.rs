@@ -56,6 +56,20 @@ pub(crate) struct SmtpConfig {
     pub password: String,
 }
 
+/// Logs configuration.
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
+pub(crate) struct LogConfig {
+    pub format: LogFormat,
+}
+
+/// Format to use in logs.
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub(crate) enum LogFormat {
+    Json,
+    Pretty,
+}
+
 /// Http server configuration.
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
 pub(crate) struct HttpServerConfig {
@@ -80,20 +94,6 @@ pub(crate) struct BasicAuth {
 #[derive(Debug, Clone, Default, PartialEq, Deserialize, Serialize)]
 pub(crate) struct CookieConfig {
     pub secure: Option<bool>,
-}
-
-/// Logs configuration.
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
-pub(crate) struct LogConfig {
-    pub format: LogFormat,
-}
-
-/// Format to use in logs.
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
-#[serde(rename_all = "snake_case")]
-pub(crate) enum LogFormat {
-    Json,
-    Pretty,
 }
 
 /// Login options enabled.

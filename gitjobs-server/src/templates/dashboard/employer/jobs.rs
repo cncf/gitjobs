@@ -54,6 +54,7 @@ pub(crate) struct JobSummary {
     pub created_at: DateTime<Utc>,
     pub title: String,
     pub status: JobStatus,
+    pub workplace: Workplace,
 
     pub archived_at: Option<DateTime<Utc>>,
     pub city: Option<String>,
@@ -164,11 +165,12 @@ pub(crate) enum SalaryKind {
 }
 
 /// Job workplace.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, strum::Display, strum::EnumString)]
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize, strum::Display, strum::EnumString)]
 #[serde(rename_all = "kebab-case")]
 #[strum(serialize_all = "kebab-case")]
 pub(crate) enum Workplace {
     Hybrid,
+    #[default]
     OnSite,
     Remote,
 }

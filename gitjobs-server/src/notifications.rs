@@ -28,8 +28,8 @@ const PAUSE_ON_ERROR: Duration = Duration::from_secs(30);
 /// Amount of time to sleep when there are no notifications to deliver.
 const PAUSE_ON_NONE: Duration = Duration::from_secs(15);
 
-/// Abstraction layer over the notifications manager. This trait that defines
-/// some operations a notifications manager implementation must support.
+/// Abstraction layer over the notifications manager. This trait defines some
+/// operations that a notifications manager implementation must support.
 ///
 /// A notifications manager is in charge of delivering notifications to users.
 #[async_trait]

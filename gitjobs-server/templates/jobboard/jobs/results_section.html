@@ -115,7 +115,8 @@
               <div class="flex items-center space-x-4 min-w-0">
                 {# Title #}
                 <div class="leading-4 md:leading-normal text-[0.8rem] md:text-base font-stretch-condensed font-medium text-stone-900 truncate mt-1 md:mt-0">
-                  {{ job.title|truncate(45) }}
+                  {# Truncate job title to 50 characters #}
+                  {{ job.title|truncate(50) }}
                 </div>
                 {# End title #}
 

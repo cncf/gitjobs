@@ -133,6 +133,8 @@ export class InputRange extends LitWrapper {
           @input=${this._onInputChange}
           @mousedown=${() => this._updateTooltipVisibility(true)}
           @mouseup=${this._mouseup}
+          @touchstart=${() => this._updateTooltipVisibility(true)}
+          @touchend=${this._mouseup}
           min="${this.min}"
           max="${this.max}"
           step="${this.step}"

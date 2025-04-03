@@ -52,7 +52,8 @@
                           hx-trigger="click"
                           hx-target="#dashboard-content"
                           hx-indicator="#dashboard-spinner"
-                          class="cursor-pointer w-full flex items-center px-4 py-2 text-sm/6 hover:bg-stone-100
+                          hx-disabled-elt=".employer-button"
+                          class="employer-button cursor-pointer w-full flex items-center px-4 py-2 text-sm/6 hover:bg-stone-100
                                  {% if is_selected -%}bg-stone-100{%- endif %}"
                           {% if is_selected %}disabled{% endif %}>
                     {% call employer_content_list(company = employer.company, logo_id = employer.logo_id) %}
@@ -123,6 +124,16 @@
         }
       });
     }
+
+
+    const dropdownEmployerBtns = document.querySelectorAll('button.employer-button');
+    dropdownEmployerBtns.forEach((btn) => {
+      btn.addEventListener("htmx:beforeRequest", () => {
+        dropdownEmployers.classList.add('hidden');
+      });
+    })
+
+
 
     const addEmployerButton = document.getElementById('add-employer-button');
     if (addEmployerButton) {

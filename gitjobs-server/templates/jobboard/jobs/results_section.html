@@ -53,21 +53,19 @@
         {# Job title -#}
         <div class="flex flex-1 flex-row items-stretch space-x-4 w-full">
           {# Company logo -#}
-          <div class="hidden sm:flex justify-center items-center shrink-0 size-9 md:size-12 bg-white">
+          <div class="hidden sm:flex justify-center items-center shrink-0 size-10 md:size-13 p-1 bg-white border border-stone-200">
             {% if let Some(logo_id) = job.employer.logo_id -%}
               {% let logo = &self::build_jobboard_image_url(logo_id, "medium") -%}
               {% let logo_small = &self::build_jobboard_image_url(logo_id, "small") -%}
               <img loading="lazy"
-                   class="size-9 md:size-12 object-contain flex"
+                   class="size-full object-contain flex"
                    height="auto"
                    width="auto"
                    srcset="{{ logo_small }}, {{ logo }} 2x"
                    src="{{ logo }}"
                    alt="{{ job.employer.company }} image">
             {% else -%}
-              <div class="size-9 md:size-12 bg-stone-100 p-1 flex">
-                <div class="svg-icon size-6 md:size-8 icon-company bg-stone-500 m-auto"></div>
-              </div>
+              <div class="svg-icon size-6 md:size-8 icon-company bg-stone-300 m-auto"></div>
             {% endif -%}
           </div>
           {# End company logo -#}
@@ -104,7 +102,7 @@
                 </div>
 
                 {# Published date -#}
-                <div class="truncate leading-[0.7rem] w-[50px] md:leading-3 text-[0.7rem] md:text-xs font-semibold tracking-wide uppercase">
+                <div class="truncate leading-[0.7rem] w-[50px] md:leading-3 text-[0.7rem] md:text-xs font-semibold tracking-wide uppercase text-end">
                   {{ job.published_at.format(DATE_FORMAT_3) }}
                 </div>
                 {# End published date -#}
@@ -112,9 +110,9 @@
             </div>
 
             <div class="flex space-x-3 items-center mt-auto lg:pe-12 xl:pe-16">
-              <div class="flex items-center space-x-4 min-w-0">
+              <div class="flex items-center space-x-4 min-w-0 md:h-[22px] sm:-mb-[3px] md:-mb-[4px] relative">
                 {# Title -#}
-                <div class="leading-4 md:leading-normal text-[0.8rem] md:text-base font-stretch-condensed font-medium text-stone-900 truncate mt-1 md:mt-0">
+                <div class="leading-4 md:leading-5 text-[0.8rem] md:text-base font-stretch-condensed font-medium text-stone-900 truncate mt-4 md:mt-0">
                   {# Truncate job title to 50 characters -#}
                   {{ job.title|truncate(50) }}
                 </div>
@@ -132,7 +130,7 @@
         </div>
 
         {# Location for mobile devices -#}
-        <div class="flex justify-between mt-3 md:mt-0 md:hidden sm:ps-[3.25rem]">
+        <div class="flex justify-between mt-5 md:mt-0 md:hidden sm:ps-14">
           <div class="max-w-full min-w-0">
             {% if job.workplace == Workplace::Remote -%}
               {%- call badge(content = "Remote") -%}
@@ -148,9 +146,10 @@
 
         {# End location and salary for mobile devices -#}
 
-        <div class="flex justify-between items-end gap-x-2 md:gap-x-6 w-full mt-3 md:mt-5 md:ps-16">
+        <div class="flex justify-between items-end gap-x-2 md:gap-x-6 w-full mt-5 md:mt-8 sm:ps-14 md:ps-17">
           {# Tags -#}
-          <div class="flex items-center gap-x-6 w-full text-[0.8rem] text-stone-600">
+          <div class="flex items-center gap-x-6 w-full text-[0.8rem] text-stone-600 leading-3 md:leading-normal relative -mb-px md:mb-0">
+            {# Tags -#}
             {% let kind = job.kind.to_string() -%}
             {% let workplace = job.workplace.to_string() -%}
 
@@ -215,18 +214,18 @@
     </div>
 
     {% if is_open_source -%}
-      <div class="hidden md:flex space-x-10 items-center mt-3 md:ps-16">
+      <div class="hidden md:flex space-x-10 items-center mt-4 md:mt-2 md:ps-17">
         {# Open source -#}
         <div class="block">
           {% call macros_preview::job_details_subheading(content = "Time working on open source", extra_styles = "text-stone-600") -%}
-          {% call macros_preview::badge_percentage_bar(percentage = open_source) -%}
+          {% call macros_preview::badge_percentage_bar(percentage = open_source, bar_margin = "my-0") -%}
         </div>
         {# End open source -#}
 
         {# Upstream commitment -#}
         <div class="block">
           {% call macros_preview::job_details_subheading(content = "Time working on upstream projects", extra_styles = "text-stone-600") -%}
-          {% call macros_preview::badge_percentage_bar(percentage = upstream_commitment, type = "upstream_commitment") -%}
+          {% call macros_preview::badge_percentage_bar(percentage = upstream_commitment, type = "upstream_commitment", bar_margin = "my-0") -%}
         </div>
         {# End Upstream commitment -#}
       </div>

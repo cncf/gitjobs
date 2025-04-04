@@ -6,17 +6,15 @@
     <div class="grow min-w-0">
       <div class="grow flex items-stretch gap-x-4 md:gap-x-5 pe-12 md:pe-0 min-w-0">
         {# Image -#}
-        <div class="hidden sm:flex justify-center items-center size-9 md:size-14 shrink-0">
+        <div class="hidden sm:flex justify-center items-center size-9 md:size-14 border border-stone-200 p-1 shrink-0">
           {% if let Some(logo_id) = employer.logo_id -%}
-            <img class="size-9 md:size-14 object-contain"
+            <img class="size-full object-contain"
                  height="auto"
                  width="auto"
                  src="{{ logo }}"
                  alt="{{ employer.company }} logo">
           {% else -%}
-            <div class="rounded-full size-9 md:size-14 bg-stone-100 p-1 flex">
-              <div class="svg-icon size-5 md:size-8 icon-company bg-stone-500 m-auto"></div>
-            </div>
+            <div class="svg-icon size-5 md:size-8 icon-company bg-stone-300 m-auto"></div>
           {% endif -%}
         </div>
         {# End image -#}
@@ -366,9 +364,9 @@
 {# End currency -#}
 
 {# Badge with percentage bar -#}
-{% macro badge_percentage_bar(percentage = 0, type = &"open_source") -%}
+{% macro badge_percentage_bar(percentage = 0, type = &"open_source", bar_margin = "my-2") -%}
   <div class="-mt-1 flex space-x-2 items-center w-full">
-    <div class="w-full bg-stone-200 rounded-full h-1.5 my-2">
+    <div class="w-full bg-stone-200 rounded-full h-1.5 {{ bar_margin }}">
       {# djlint:off H008 #}
       <div class='{%- if type == &"open_source" -%}bg-lime-300{%- else -%}bg-lime-500{%- endif %} h-1.5 rounded-full'
            style="width: {{ percentage }}%"></div>

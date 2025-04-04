@@ -81,6 +81,7 @@ begin
             j.salary_max,
             j.salary_period,
             j.seniority,
+            j.skills,
             j.updated_at,
             j.upstream_commitment,
             (
@@ -203,6 +204,7 @@ begin
                 'salary_max', salary_max,
                 'salary_period', salary_period,
                 'seniority', seniority,
+                'skills', skills,
                 'updated_at', updated_at,
                 'upstream_commitment', upstream_commitment,
                 'employer', employer,

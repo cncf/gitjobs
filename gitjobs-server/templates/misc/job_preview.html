@@ -25,7 +25,7 @@
           {# End company -#}
 
           {# Title -#}
-          <div class="text-[0.85rem] leading-tight md:text-xl font-stretch-condensed font-medium text-stone-900 truncate my-1.5 md:my-0">
+          <div class="text-lg lg:leading-tight md:text-xl font-stretch-condensed font-medium text-stone-900 lg:truncate my-1.5 md:my-0">
             {{ job.title }}
           </div>
           {# End title -#}
@@ -196,7 +196,7 @@
           {# End projects -#}
         </div>
 
-        <div class="mb-4 md:mb-0">
+        <div class="mb-4">
           {# Apply button -#}
           {% if !job_id.is_empty() -%}
             <button id="apply-button"

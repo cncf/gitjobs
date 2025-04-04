@@ -98,7 +98,6 @@ export class SearchableFilter extends LitWrapper {
   };
 
   _handleKeyDown(event) {
-    console.log("key down", event.key);
     switch (event.key) {
       // Highlight the next item in the list
       case "ArrowDown":

@@ -1,7 +1,7 @@
 {% import "macros.html" as macros -%}
 
 {# Filters -#}
-{% macro filters(form, device = "desktop") %}
+{% macro filters(form, device = "desktop") -%}
   <div class="pt-3 md:pt-5 px-6">{% call filters_title(text = "Type and location") -%}</div>
 
   <div class="p-6 pb-4 md:pb-6 pt-3 flex flex-col space-y-5">
@@ -154,19 +154,19 @@
   {# End benefits -#}
 </div>
 {# End compensation section -#}
-{% endmacro filters %}
+{% endmacro filters -%}
 {# End filters -#}
 
 {# Filters title -#}
-{% macro filters_title(text) %}
+{% macro filters_title(text) -%}
   <div class="text-xs/6 text-stone-500/75 uppercase">{{ text }}</div>
-{% endmacro filters_title %}
+{% endmacro filters_title -%}
 {# End filters title -#}
 
 {# Filters subtitle -#}
-{% macro filters_subtitle(text) %}
+{% macro filters_subtitle(text) -%}
   <div class="font-semibold leading-4 md:leading-8 text-[0.8rem]">{{ text }}</div>
-{% endmacro filters_subtitle %}
+{% endmacro filters_subtitle -%}
 {# End filters subtitle -#}
 
 {# Current page -#}
@@ -177,11 +177,11 @@
     1 - {{ items_number }}
   {%- endif -%}
   {{ "" }} of {{ total }} results
-{%- endmacro current_page %}
+{%- endmacro current_page -%}
 {# End current page -#}
 
 {# Checkbox -#}
-{% macro checkbox(form, name, value, label, icon, active_filters, required = false, device = "") %}
+{% macro checkbox(form, name, value, label, icon, active_filters, required = false, device = "") -%}
   <div class="group">
     <input id="{%- if !device.is_empty() -%}{{ device }}-{%- endif -%}{{ name }}-{{ value }}"
            form="{{ form }}"
@@ -199,5 +199,5 @@
       <div class="text-[0.8rem] text-center text-nowrap">{{ label }}</div>
     </label>
   </div>
-{% endmacro checkbox %}
+{% endmacro checkbox -%}
 {# End checkbox -#}

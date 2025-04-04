@@ -280,11 +280,11 @@
 {# djlint:on #}
 {# End list view -#}
 
-{% macro icon(name) %}
+{% macro icon(name) -%}
   <div class="svg-icon size-2.5 md:size-3 icon-{{ name }} bg-stone-500 shrink-0"></div>
-{% endmacro icon %}
+{% endmacro icon -%}
 
-{% macro salary_badge(job) %}
+{% macro salary_badge(job) -%}
   <div class="text-sm/6 text-stone-600">
     {% if let Some(salary) = job.salary -%}
       {# Salary -#}
@@ -318,17 +318,17 @@
       {# End salary range -#}
     {% endif -%}
   </div>
-{% endmacro salary_badge %}
+{% endmacro salary_badge -%}
 
-{% macro location_badge(location) %}
+{% macro location_badge(location) -%}
   <div class="flex border border-stone-200 bg-white rounded-md px-2 py-0.5 text-xs text-stone-500 font-normal items-center">
     <div class="svg-icon size-2.5 icon-location bg-stone-500 me-1 shrink-0"></div>
     <div class="text-nowrap truncate">{{ location.city }}, {{ location.country }}</div>
   </div>
-{% endmacro location_badge %}
+{% endmacro location_badge -%}
 
-{% macro badge(content) %}
+{% macro badge(content) -%}
   <div class="flex border border-stone-200 bg-white rounded-md px-2 py-0.5 text-xs text-stone-500 font-normal items-center">
     <div class="text-nowrap truncate">{{ content }}</div>
   </div>
-{% endmacro badge %}
+{% endmacro badge -%}

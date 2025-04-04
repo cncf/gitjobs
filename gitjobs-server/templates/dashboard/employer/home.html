@@ -2,7 +2,7 @@
 {% import "macros.html" as macros -%}
 {% import "dashboard/dashboard_macros.html" as dashboard_macros -%}
 
-{% block menu %}
+{% block menu -%}
   <div class="flex justify-between items-center mt-3 mb-6 px-3 lg:px-5">
     <div class="font-semibold text-stone-900 text-2xl">Dashboard</div>
     <div id="dashboard-spinner" class="hx-spinner -mt-1.5 relative">
@@ -86,9 +86,9 @@
       {% call dashboard_macros::menu_item(name = "Account", icon = "user", is_active = content.is_account(), href = "/dashboard/employer?tab=account", icon_size = "size-3.5") -%}
     </div>
   </div>
-{% endblock menu %}
+{% endblock menu -%}
 
-{% block dashboard_main %}
+{% block dashboard_main -%}
   <div id="dashboard-content"
        hx-get="/dashboard/employer/jobs/list"
        hx-trigger="refresh-jobs-table"
@@ -143,9 +143,9 @@
     {% call macros::alerts(messages) -%}
   {% endif -%}
   {# End messages -#}
-{% endblock dashboard_main %}
+{% endblock dashboard_main -%}
 
-{% macro employer_content_list(company, logo_id) %}
+{% macro employer_content_list(company, logo_id) -%}
   {% if let Some(logo_id) = logo_id -%}
     {% let logo = &self::build_dashboard_image_url(logo_id, "small") -%}
     <div class="flex items-center justify-center size-6 me-3">
@@ -161,4 +161,4 @@
     </div>
   {% endif -%}
   <div class="truncate">{{ company }}</div>
-{% endmacro employer_content_list %}
+{% endmacro employer_content_list -%}

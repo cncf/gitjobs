@@ -1,6 +1,6 @@
 {% extends "base.html" -%}
 
-{% block content %}
+{% block content -%}
   {# Lit components -#}
   <script type="module" src="/static/js/common/search-location.js"></script>
   <script type="module" src="/static/js/common/multiselect.js"></script>
@@ -33,8 +33,8 @@
     <aside class="h-dvh sticky top-0 w-[225px] lg:w-[300px]">
       <div class="flex flex-col justify-between py-5 pt-24 h-full">
         <div class="flex flex-col grow min-h-0 w-full">
-          {% block menu %}
-          {% endblock menu %}
+          {% block menu -%}
+          {% endblock menu -%}
         </div>
 
         <div class="w-full px-3 lg:px-5 shrink-0">
@@ -53,9 +53,9 @@
     {# End sticky menu -#}
 
     <main class="w-[calc(100%-225px)] lg:w-[calc(100%-300px)] bg-white border border-stone-200 rounded-lg m-5 ms-0 mt-[6.25rem] relative">
-      {% block dashboard_main %}
-      {% endblock dashboard_main %}
+      {% block dashboard_main -%}
+      {% endblock dashboard_main -%}
     </main>
   </div>
   {# End Main Content -#}
-{% endblock content %}
+{% endblock content -%}

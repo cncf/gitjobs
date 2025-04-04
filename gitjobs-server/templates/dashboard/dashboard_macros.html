@@ -1,11 +1,11 @@
 {# Menu title -#}
-{% macro menu_title(text, extra_styles = "") %}
+{% macro menu_title(text, extra_styles = "") -%}
   <div class="text-xs/6 text-stone-500 uppercase px-3 {{ extra_styles }}">{{ text }}</div>
-{% endmacro menu_title %}
+{% endmacro menu_title -%}
 {# End menu title -#}
 
 {# Menu item -#}
-{% macro menu_item(name, icon, is_active, href, disabled = false, extra_styles = "", icon_size = "size-4" ) %}
+{% macro menu_item(name, icon, is_active, href, disabled = false, extra_styles = "", icon_size = "size-4" ) -%}
   {% if is_active -%}
     <div class="relative bg-white border border-stone-200 px-3 rounded-lg {{ extra_styles }}">
       <a hx-get="{{ href }}"
@@ -41,5 +41,5 @@
       </div>
     {% endif -%}
   {% endif -%}
-{% endmacro menu_item %}
+{% endmacro menu_item -%}
 {# End menu item -#}

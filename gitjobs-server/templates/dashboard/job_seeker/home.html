@@ -2,7 +2,7 @@
 {% import "macros.html" as macros -%}
 {% import "dashboard/dashboard_macros.html" as dashboard_macros -%}
 
-{% block menu %}
+{% block menu -%}
   <div class="flex justify-between items-center mt-3 mb-6 px-3 lg:px-5">
     <div class="font-semibold text-stone-900 text-2xl">Dashboard</div>
     <div id="dashboard-spinner" class="hx-spinner -mt-1.5 relative">
@@ -22,9 +22,9 @@
       {% call dashboard_macros::menu_item(name = "Account", icon = "user", is_active = content.is_account(), href = "/dashboard/job-seeker?tab=account", icon_size = "size-3.5") -%}
     </div>
   </div>
-{% endblock menu %}
+{% endblock menu -%}
 
-{% block dashboard_main %}
+{% block dashboard_main -%}
   <div id="dashboard-content" class="p-4 sm:p-6 lg:p-12">
     {# Content -#}
     {{ content|safe }}
@@ -35,4 +35,4 @@
     {% call macros::alerts(messages) -%}
   {% endif -%}
   {# End messages -#}
-{% endblock dashboard_main %}
+{% endblock dashboard_main -%}

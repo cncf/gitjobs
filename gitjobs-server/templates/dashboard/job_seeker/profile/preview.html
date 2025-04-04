@@ -205,18 +205,18 @@
   {# End right column -#}
 </div>
 
-{% macro main_badge(content, icon) %}
+{% macro main_badge(content, icon) -%}
   <div class="border border-stone-200 rounded-full px-4 flex items-center text-stone-600 text-xs/6 xl:text-sm/6 space-x-2">
     <div class="svg-icon size-4 icon-{{ icon }} bg-stone-500"></div>
     <div>{{ content }}</div>
   </div>
-{% endmacro main_badge %}
+{% endmacro main_badge -%}
 
-{% macro title(content) %}
+{% macro title(content) -%}
   <div class="uppercase text-stone-800 tracking-[0.25rem] font-semibold mb-3">{{ content }}</div>
-{% endmacro title %}
+{% endmacro title -%}
 
-{% macro social_link(url, icon, is_email = false) %}
+{% macro social_link(url, icon, is_email = false) -%}
   <a href="{%- if is_email -%}mailto:{%- endif -%}{{ url }}"
      class="btn-tertiary-anchor border border-stone-200 btn-mini flex items-center space-x-2"
      target="_blank"
@@ -224,9 +224,9 @@
     <div class="svg-icon size-3 bg-stone-300 icon-{{ icon }}"></div>
     <div class="truncate">{{ url }}</div>
   </a>
-{% endmacro social_link %}
+{% endmacro social_link -%}
 
-{% macro timeline_item(title, entity, description, start_date, end_date) %}
+{% macro timeline_item(title, entity, description, start_date, end_date) -%}
   <li class="mb-10 ms-4">
     <div class="absolute size-3 bg-stone-300 rounded-full mt-1 -start-1.5 border border-white"></div>
     <div class="mb-2 text-sm text-stone-500/75">{{ start_date }} - {{ end_date }}</div>
@@ -234,9 +234,9 @@
     <div class="text-sm/6 text-stone-500 italic mb-3">{{ entity }}</div>
     <div class="text-sm/6 text-stone-600 markdown">{{ description|md_to_html|safe }}</div>
   </li>
-{% endmacro timeline_item %}
+{% endmacro timeline_item -%}
 
-{% macro toggle_option(title, status = false) %}
+{% macro toggle_option(title, status = false) -%}
   <div class="flex space-x-2 items-center">
     <div class="w-4">
       {% if status -%}
@@ -247,4 +247,4 @@
     </div>
     <div class="text-xs/6">{{ title }}</div>
   </div>
-{% endmacro toggle_option %}
+{% endmacro toggle_option -%}

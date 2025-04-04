@@ -1,4 +1,4 @@
-{% macro modal(on_close = &"") %}
+{% macro modal(on_close = &"") -%}
   {# Preview modal -#}
   <div id="preview-modal"
        tabindex="-1"
@@ -49,4 +49,4 @@
     closePreviewModal.addEventListener('click', onCloseModal);
 </script>
   {# djlint:on #}
-{% endmacro modal %}
+{% endmacro modal -%}

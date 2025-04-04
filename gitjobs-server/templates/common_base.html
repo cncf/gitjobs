@@ -1,6 +1,6 @@
 {% extends "base.html" -%}
 
-{% block content %}
+{% block content -%}
   {# Lit components -#}
   <script type="module" src="/static/js/common/search-location.js"></script>
   <script type="module" src="/static/js/common/searchable-filter.js"></script>
@@ -14,11 +14,11 @@
   {# End Header -#}
 
   <div class="flex md:grow">
-    {% block main %}
-    {% endblock main %}
+    {% block main -%}
+    {% endblock main -%}
   </div>
 
   {# Footer -#}
   {% include "footer.html" -%}
   {# End Footer -#}
-{% endblock content %}
+{% endblock content -%}

@@ -1,7 +1,7 @@
 {% import "macros.html" as macros -%}
 
 {# Job preview -#}
-{% macro job_preview(job, employer, logo = "", employer_description = "", job_id = "") %}
+{% macro job_preview(job, employer, logo = "", employer_description = "", job_id = "") -%}
   <div class="flex flex-col w-full gap-3 md:flex-row md:items-center border-b border-stone-200 pb-7 xl:pb-10">
     <div class="grow min-w-0">
       <div class="grow flex items-stretch gap-x-4 md:gap-x-5 pe-12 md:pe-0 min-w-0">
@@ -296,11 +296,11 @@
       {# End content -#}
     </div>
   </div>
-{% endmacro job_preview %}
+{% endmacro job_preview -%}
 {# End job preview -#}
 
 {# Job kind -#}
-{% macro job_kind(kind) %}
+{% macro job_kind(kind) -%}
   {% let job_kind = kind.to_string().as_str()|unnormalize -%}
   {% match kind -%}
   {% when JobKind::FullTime -%}
@@ -312,11 +312,11 @@
   {% when JobKind::Internship -%}
   {% call job_details_content(text = job_kind, icon = "graduation_cap", extra_styles = "capitalize") -%}
 {% endmatch -%}
-{% endmacro job_kind %}
+{% endmacro job_kind -%}
 {# End job kind -#}
 
 {# Job workplace -#}
-{% macro job_workplace(workplace) %}
+{% macro job_workplace(workplace) -%}
   {% let job_workplace = workplace.to_string().as_str()|unnormalize -%}
   {% match workplace -%}
   {% when Workplace::OnSite -%}
@@ -326,17 +326,17 @@
   {% when Workplace::Hybrid -%}
   {% call job_details_content(text = job_workplace, icon = "buildings", extra_styles = "capitalize") -%}
 {% endmatch -%}
-{% endmacro job_workplace %}
+{% endmacro job_workplace -%}
 {# End job workplace -#}
 
 {# Content heading -#}
-{% macro content_heading(content, margin = "mt-1") %}
+{% macro content_heading(content, margin = "mt-1") -%}
   <div class="text-lg font-semibold text-stone-800 mb-3 {{ margin }}">{{ content }}</div>
-{% endmacro content_heading %}
+{% endmacro content_heading -%}
 {# End content heading -#}
 
 {# Job details subheading -#}
-{% macro job_details_subheading(content, content_short = "", extra_styles = "") %}
+{% macro job_details_subheading(content, content_short = "", extra_styles = "") -%}
   <div class="text-xs/6 text-stone-500/75 my-0 md:mb-1 md:mt-4 {{ extra_styles }}">
     {% if content_short.is_empty() -%}
       {{ content }}
@@ -345,28 +345,28 @@
       <span class="inline-flex md:hidden xl:inline-flex">{{ content }}</span>
     {% endif -%}
   </div>
-{% endmacro job_details_subheading %}
+{% endmacro job_details_subheading -%}
 {# End job details subheading -#}
 
 {# Job details content -#}
-{% macro job_details_content(text, icon = "", extra_styles = "") %}
+{% macro job_details_content(text, icon = "", extra_styles = "") -%}
   <div class="flex items-center text-xs">
     {% if !icon.is_empty() -%}
       <div class="svg-icon size-3 icon-{{ icon }} bg-stone-500 me-2 shrink-0"></div>
     {% endif -%}
     <div class="truncate {{ extra_styles }}">{{ text }}</div>
   </div>
-{% endmacro job_details_content %}
+{% endmacro job_details_content -%}
 {# End job details content -#}
 
 {# Currency -#}
-{% macro currency(value) %}
+{% macro currency(value) -%}
   {% if let Some(value) = value %}<div class="text-xs text-stone-500 me-1">{{ value }}</div>{% endif %}
-{% endmacro %}
+{% endmacro currency -%}
 {# End currency -#}
 
 {# Badge with percentage bar -#}
-{% macro badge_percentage_bar(percentage = 0, type = &"open_source") %}
+{% macro badge_percentage_bar(percentage = 0, type = &"open_source") -%}
   <div class="-mt-1 flex space-x-2 items-center w-full">
     <div class="w-full bg-stone-200 rounded-full h-1.5 my-2">
       {# djlint:off H008 #}
@@ -378,11 +378,11 @@
       {{ percentage }}<small class="text-stone-500">%</small>
     </div>
   </div>
-{% endmacro %}
+{% endmacro badge_percentage_bar -%}
 {# End badge with percentage bar -#}
 
 {# Salary content -#}
-{% macro salary_content(job, text_size = "text-xs/6", salary_size = "text-sm") %}
+{% macro salary_content(job, text_size = "text-xs/6", salary_size = "text-sm") -%}
   <div class="flex items-baseline {{ text_size }}">
     {% let salary_kind = job.salary_kind() -%}
     {% match salary_kind -%}
@@ -426,5 +426,5 @@
     {# End range salary -#}
   {% endmatch -%}
 </div>
-{% endmacro salary_content %}
+{% endmacro salary_content -%}
 {# End salary content -#}

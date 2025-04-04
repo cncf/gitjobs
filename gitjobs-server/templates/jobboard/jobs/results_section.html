@@ -218,17 +218,29 @@
         {# Open source -#}
         <div class="block">
           {% call macros_preview::job_details_subheading(content = "Time working on open source", extra_styles = "text-stone-600 text-nowrap") -%}
-          {% call macros_preview::badge_percentage_bar(percentage = open_source, bar_margin = "my-0") -%}
+          {% call macros_preview::badge_percentage_bar(percentage = open_source, bar_margin = "mt-2") -%}
         </div>
         {# End open source -#}
 
         {# Upstream commitment -#}
         <div class="block">
           {% call macros_preview::job_details_subheading(content = "Time working on upstream projects", extra_styles = "text-stone-600 text-nowrap") -%}
-          {% call macros_preview::badge_percentage_bar(percentage = upstream_commitment, type = "upstream_commitment", bar_margin = "my-0") -%}
+          {% call macros_preview::badge_percentage_bar(percentage = upstream_commitment, type = "upstream_commitment", bar_margin = "mt-2") -%}
         </div>
         {# End Upstream commitment -#}
       </div>
+    {% endif -%}
+
+    {% if let Some(skills) = job.skills -%}
+      {# Skills -#}
+      <div class="flex mt-5 md:mt-8 sm:ps-14 md:ps-17 md:max-w-3/4 h-[22px] overflow-hidden">
+        <div class="flex flex-wrap gap-x-4">
+          {% for skill in skills.iter().take(10) -%}
+            {% call badge(content = skill|unnormalize, extra_styles = "uppercase") -%}
+          {% endfor -%}
+        </div>
+      </div>
+      {# End skills -#}
     {% endif -%}
 
     {# Spinner -#}
@@ -326,8 +338,8 @@
   </div>
 {% endmacro location_badge -%}
 
-{% macro badge(content) -%}
-  <div class="flex border border-stone-200 bg-white rounded-md px-2 py-0.5 text-xs text-stone-500 font-normal items-center">
+{% macro badge(content, extra_styles = "") -%}
+  <div class="flex border border-stone-200 bg-white rounded-md px-2 py-0.5 text-xs text-stone-500 font-normal items-center {{ extra_styles }}">
     <div class="text-nowrap truncate">{{ content }}</div>
   </div>
 {% endmacro badge -%}

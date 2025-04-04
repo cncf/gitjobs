@@ -253,7 +253,7 @@
             {% call content_heading(content = "Required skills") -%}
             <div class="flex flex-wrap gap-3 md:gap-5 mt-2">
               {% for skill in skills -%}
-                {% call macros::badge(content = skill|unnormalize) -%}
+                {% call badge(content = skill|unnormalize) -%}
               {% endfor -%}
             </div>
           </div>
@@ -266,7 +266,7 @@
             {% call content_heading(content = "Benefits") -%}
             <div class="flex flex-wrap gap-3 md:gap-5 mt-2">
               {% for benefit in benefits -%}
-                {% call macros::badge(content = benefit|unnormalize) -%}
+                {% call badge(content = benefit|unnormalize) -%}
               {% endfor -%}
             </div>
           </div>
@@ -362,6 +362,14 @@
   {% if let Some(value) = value %}<div class="text-xs text-stone-500 me-1">{{ value }}</div>{% endif %}
 {% endmacro currency -%}
 {# End currency -#}
+
+{# Badge for skills/benefits -#}
+{% macro badge(content) -%}
+  <div class="flex border border-stone-200 bg-white rounded-md px-2 py-0.5 text-sm text-stone-500 font-normal items-center uppercase">
+    <div class="text-nowrap truncate">{{ content }}</div>
+  </div>
+{% endmacro badge -%}
+{# End badge for skills/benefits -#}
 
 {# Badge with percentage bar -#}
 {% macro badge_percentage_bar(percentage = 0, type = &"open_source", bar_margin = "my-2") -%}

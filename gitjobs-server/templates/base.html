@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en"
-      class="h-full min-h-screen has-[div[role='dialog'][data-open='true']]:overflow-hidden">
+      class="h-full min-h-dvh has-[div[role='dialog'][data-open='true']]:overflow-hidden">
   <head>
     <title>GitJobs</title>
     <meta name="description"
@@ -73,10 +73,16 @@
       });
     </script>
   </head>
-  <body class="flex flex-col h-screen font-inter bg-stone-100"
+  <body class="flex flex-col h-dvh font-inter bg-stone-100"
         hx-get
         hx-trigger="refresh-body">
     {% block content -%}
     {% endblock content -%}
+
+    {% if page_id == PageId::JobBoard || page_id == PageId::About -%}
+      {# Footer -#}
+      {% include "footer.html" -%}
+      {# End Footer -#}
+    {% endif -%}
   </body>
 </html>

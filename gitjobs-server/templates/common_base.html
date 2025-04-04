@@ -13,12 +13,8 @@
   </nav>
   {# End Header -#}
 
-  <div class="flex md:grow">
+  <div class="flex grow">
     {% block main -%}
     {% endblock main -%}
   </div>
-
-  {# Footer -#}
-  {% include "footer.html" -%}
-  {# End Footer -#}
 {% endblock content -%}

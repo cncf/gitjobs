@@ -461,7 +461,7 @@ fn get_log_in_url(next_url: Option<&String>) -> String {
     let mut log_in_url = LOG_IN_URL.to_string();
     if let Some(next_url) = next_url {
         log_in_url = format!("{log_in_url}?next_url={next_url}");
-    };
+    }
     log_in_url
 }
 

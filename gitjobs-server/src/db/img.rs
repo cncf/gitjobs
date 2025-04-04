@@ -1,5 +1,7 @@
 //! This module defines some database functionality used to manage images.
 
+use std::sync::Arc;
+
 use anyhow::Result;
 use async_trait::async_trait;
 use tracing::{instrument, trace};
@@ -23,6 +25,9 @@ pub(crate) trait DBImage {
     /// Save image versions.
     async fn save_image_versions(&self, user_id: &Uuid, versions: Vec<ImageVersion>) -> Result<Uuid>;
 }
+
+/// Type alias to represent a `DBImage` trait object.
+pub(crate) type DynDBImage = Arc<dyn DBImage + Send + Sync>;
 
 #[async_trait]
 impl DBImage for PgDB {

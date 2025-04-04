@@ -8,7 +8,7 @@ members = [
 version = "0.0.1"
 license = "Apache-2.0"
 edition = "2024"
-rust-version = "1.85"
+rust-version = "1.86"
 
 [workspace.dependencies]
 anyhow = "1.0.97"

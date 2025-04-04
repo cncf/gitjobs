@@ -1,5 +1,7 @@
 //! This module defines some types and functionality used to paginate.
 
+use std::fmt::Write as _;
+
 use anyhow::Result;
 use askama::Template;
 use serde::{Deserialize, Serialize};
@@ -142,12 +144,14 @@ pub(crate) fn build_url<T>(base_url: &str, filters: &T) -> Result<String>
 where
     T: Serialize + Pagination,
 {
-    let mut url = base_url.to_string();
-    let sep = get_url_filters_separator(&url);
+    let sep = get_url_filters_separator(base_url);
     let filters_params = serde_qs::to_string(filters)?;
+
+    let mut url = base_url.to_string();
     if !filters_params.is_empty() {
-        url.push_str(&format!("{sep}{filters_params}"));
+        write!(url, "{sep}{filters_params}")?;
     }
+
     Ok(url)
 }
 

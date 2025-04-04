@@ -64,7 +64,7 @@ pub(crate) enum ImageFormat {
 
 /// Check if the image is in SVG format.
 pub(crate) fn is_svg(file_name: &str) -> bool {
-    if let Some(extension) = file_name.split('.').last() {
+    if let Some(extension) = file_name.split('.').next_back() {
         if extension.to_lowercase() == "svg" {
             return true;
         }

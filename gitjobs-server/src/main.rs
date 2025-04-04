@@ -58,7 +58,7 @@ async fn main() -> Result<()> {
     match cfg.log.format {
         LogFormat::Json => ts.json().init(),
         LogFormat::Pretty => ts.init(),
-    };
+    }
 
     // Setup task tracker and cancellation token
     let tracker = TaskTracker::new();

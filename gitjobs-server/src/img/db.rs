@@ -5,20 +5,18 @@ use async_trait::async_trait;
 use uuid::Uuid;
 
 use crate::{
-    db::DynDB,
+    db::img::DynDBImage,
     img::{ImageFormat, ImageStore, ImageVersion, generate_versions, is_svg},
 };
 
 /// Database-backed image store.
 pub(crate) struct DbImageStore {
-    // TODO: switch to DynDBImage when 1.86 is released
-    // https://github.com/rust-lang/rust/issues/65991
-    db: DynDB,
+    db: DynDBImage,
 }
 
 impl DbImageStore {
     /// Create a new `DbImageStore` instance.
-    pub(crate) fn new(db: DynDB) -> Self {
+    pub(crate) fn new(db: DynDBImage) -> Self {
         Self { db }
     }
 }

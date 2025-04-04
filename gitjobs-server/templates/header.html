@@ -37,11 +37,27 @@
          hx-trigger="load"
          hx-target="this"
          hx-boost="true">
-      <button class="relative group rounded-full cursor-pointer bg-white border text-xl border-primary-500 text-primary-600 size-[38px] p-0.5 overflow-hidden"
-              disabled>
-        {% call macros::btn_spinner(id = "user-spinner", size = "size-[2.35rem]", spinner_type = "5", htmx = false) -%}
-        <div class="svg-icon size-4 mx-auto bg-primary-500 icon-user"></div>
-      </button>
+      <div class="flex items-center">
+        <div class="hidden lg:flex items-center space-x-5">
+          <a hx-boost="true"
+             href="/dashboard/job-seeker"
+             hx-target="body"
+             class="btn-primary-outline-anchor w-[140px]">Create profile</a>
+
+          <a hx-boost="true"
+             href="/dashboard/employer"
+             hx-target="body"
+             class="btn-primary-outline-anchor w-[140px]">Post a job</a>
+        </div>
+
+        <div class="ms-10">
+          <button class="relative group rounded-full cursor-pointer bg-white border text-xl border-primary-500 text-primary-600 size-[38px] p-0.5 overflow-hidden"
+                  disabled>
+            {% call macros::btn_spinner(id = "user-spinner", size = "size-[2.35rem]", spinner_type = "5", htmx = false) -%}
+            <div class="svg-icon size-4 mx-auto bg-primary-500 icon-user"></div>
+          </button>
+        </div>
+      </div>
     </div>
   {% else -%}
     {% call user_menu(user) -%}

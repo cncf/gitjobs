@@ -164,8 +164,15 @@
 .markdown h4,
 .markdown h5,
 .markdown h6 {
-  font-size: inherit;
+  color: var(--color-stone-800);
+  font-size: var(--text-base);
   font-weight: 600;
+  margin-bottom: 0.5rem;
+  margin-top: 1rem;
+}
+
+.markdown h1 {
+  font-size: var(--text-lg);
 }
 
 .markdown p:not(:last-child),
@@ -173,7 +180,7 @@
 .markdown ol:not(:last-child),
 .markdown pre:not(:last-child),
 .markdown table:not(:last-child) {
-  margin-bottom: 0.5rem;
+  margin-bottom: 1rem;
 }
 
 .markdown blockquote {
@@ -634,6 +641,14 @@ select.aligned-right option {
 
 .EasyMDEContainer .CodeMirror .cm-spell-error:not(.cm-url):not(.cm-comment):not(.cm-tag):not(.cm-word) {
   background: transparent !important;
+}
+
+.EasyMDEContainer .cm-s-easymde .cm-header-1 {
+  font-size: var(--text-lg) !important;
+}
+
+.EasyMDEContainer .cm-s-easymde .cm-header-2, .EasyMDEContainer .cm-s-easymde .cm-header-3, .EasyMDEContainer .cm-s-easymde .cm-header-4, .EasyMDEContainer .cm-s-easymde .cm-header-5, .EasyMDEContainer .cm-s-easymde .cm-header-6 {
+  font-size: var(--text-base) !important;
 }
 
 .EasyMDEContainer .editor-preview-active {

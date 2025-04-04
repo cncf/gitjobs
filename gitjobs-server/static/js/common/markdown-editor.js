@@ -38,7 +38,7 @@ export class MarkdownEditor extends LitWrapper {
     const easyMDE = new EasyMDE({
       element: textarea,
       forceSync: true,
-      hideIcons: ["side-by-side", "fullscreen", "guide", "heading", "image", "code"],
+      hideIcons: ["side-by-side", "fullscreen", "guide", "image", "code"],
       showIcons: ["code", "table", "undo", "redo", "horizontal-rule"],
       initialValue: this.content,
       status: false,

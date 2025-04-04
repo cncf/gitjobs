@@ -217,14 +217,14 @@
       <div class="hidden md:flex space-x-10 items-center mt-4 md:mt-2 md:ps-17">
         {# Open source -#}
         <div class="block">
-          {% call macros_preview::job_details_subheading(content = "Time working on open source", extra_styles = "text-stone-600") -%}
+          {% call macros_preview::job_details_subheading(content = "Time working on open source", extra_styles = "text-stone-600 text-nowrap") -%}
           {% call macros_preview::badge_percentage_bar(percentage = open_source, bar_margin = "my-0") -%}
         </div>
         {# End open source -#}
 
         {# Upstream commitment -#}
         <div class="block">
-          {% call macros_preview::job_details_subheading(content = "Time working on upstream projects", extra_styles = "text-stone-600") -%}
+          {% call macros_preview::job_details_subheading(content = "Time working on upstream projects", extra_styles = "text-stone-600 text-nowrap") -%}
           {% call macros_preview::badge_percentage_bar(percentage = upstream_commitment, type = "upstream_commitment", bar_margin = "my-0") -%}
         </div>
         {# End Upstream commitment -#}

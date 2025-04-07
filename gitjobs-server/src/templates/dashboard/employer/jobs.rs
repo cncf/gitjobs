@@ -65,7 +65,6 @@ pub(crate) struct JobSummary {
 /// Job details.
 #[skip_serializing_none]
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[allow(clippy::struct_field_names)]
 pub(crate) struct Job {
     pub description: String,
     pub status: JobStatus,

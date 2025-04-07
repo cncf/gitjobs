@@ -369,7 +369,6 @@ pub(crate) struct PasswordCredentials {
 
 /// User information.
 #[derive(Clone, Serialize, Deserialize)]
-#[allow(clippy::struct_field_names, dead_code)]
 pub(crate) struct User {
     pub user_id: Uuid,
     pub auth_hash: Vec<u8>,
@@ -407,7 +406,6 @@ impl std::fmt::Debug for User {
 /// User information summary.
 #[skip_serializing_none]
 #[derive(Clone, Serialize, Deserialize)]
-#[allow(clippy::struct_field_names)]
 pub(crate) struct UserSummary {
     pub email: String,
     pub name: String,

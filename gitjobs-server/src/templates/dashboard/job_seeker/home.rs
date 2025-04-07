@@ -17,7 +17,6 @@ use crate::templates::{
 /// Home page template.
 #[derive(Debug, Clone, Template)]
 #[template(path = "dashboard/job_seeker/home.html")]
-#[allow(clippy::struct_field_names)]
 pub(crate) struct Page {
     pub content: Content,
     pub page_id: PageId,

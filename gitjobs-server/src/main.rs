@@ -1,4 +1,5 @@
 #![warn(clippy::all, clippy::pedantic)]
+#![allow(clippy::struct_field_names)]
 
 use std::{path::PathBuf, sync::Arc};
 

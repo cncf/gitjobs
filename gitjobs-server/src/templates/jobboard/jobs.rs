@@ -148,7 +148,7 @@ pub(crate) enum Seniority {
 }
 
 /// Filters options used in the jobs explore section.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub(crate) struct FiltersOptions {
     pub foundations: Vec<Foundation>,
     pub projects: Vec<Project>,

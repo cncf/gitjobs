@@ -100,6 +100,7 @@ pub(crate) async fn setup(
         ))
         .route("/", get(jobboard::jobs::jobs_page))
         .route("/about", get(jobboard::about::page))
+        .route("/embed", get(jobboard::embed::page))
         .route("/health-check", get(health_check))
         .nest("/jobboard/images", jobboard_images_router)
         .route("/locations/search", get(search_locations))

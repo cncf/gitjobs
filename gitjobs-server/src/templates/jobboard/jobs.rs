@@ -12,7 +12,7 @@ use crate::templates::{
     dashboard::employer::jobs::{JobKind, SalaryKind, Workplace},
     filters,
     helpers::{DATE_FORMAT, DATE_FORMAT_3, build_jobboard_image_url, option_is_none_or_default},
-    misc::{Location, Member, Project},
+    misc::{Foundation, Location, Member, Project},
     pagination::{NavigationLinks, Pagination},
 };
 
@@ -63,6 +63,8 @@ pub(crate) struct Filters {
     pub benefits: Option<Vec<String>>,
     #[serde(skip_serializing_if = "option_is_none_or_default")]
     pub date_range: Option<DateRange>,
+    #[serde(skip_serializing_if = "option_is_none_or_default")]
+    pub foundation: Option<String>,
     #[serde(skip_serializing_if = "option_is_none_or_default")]
     pub kind: Option<Vec<JobKind>>,
     #[serde(skip_serializing_if = "option_is_none_or_default")]
@@ -148,6 +150,7 @@ pub(crate) enum Seniority {
 /// Filters options used in the jobs explore section.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub(crate) struct FiltersOptions {
+    pub foundations: Vec<Foundation>,
     pub projects: Vec<Project>,
 }
 

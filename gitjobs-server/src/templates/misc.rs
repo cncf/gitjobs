@@ -39,6 +39,14 @@ pub(crate) struct UserMenuSection {
 
 // Types.
 
+/// Foundation information.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[allow(clippy::struct_field_names)]
+pub(crate) struct Foundation {
+    pub foundation_id: Uuid,
+    pub name: String,
+}
+
 /// Location information.
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 #[allow(clippy::struct_field_names)]

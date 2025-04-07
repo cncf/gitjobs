@@ -198,24 +198,32 @@ impl DBJobBoard for PgDB {
             let row = db
                 .query_one(
                     "
-                select
-                    (
-                        select json_agg(json_build_object(
-                            'project_id', project_id,
-                            'foundation', foundation,
-                            'logo_url', logo_url,
-                            'maturity', maturity,
-                            'name', name
-                        ))
-                        from project
-                    )::text as projects;
-                ",
+                    select
+                        (
+                            select json_agg(json_build_object(
+                                'foundation_id', foundation_id,
+                                'name', name
+                            ))
+                            from foundation
+                        )::text as foundations,
+                        (
+                            select json_agg(json_build_object(
+                                'project_id', project_id,
+                                'foundation', foundation,
+                                'logo_url', logo_url,
+                                'maturity', maturity,
+                                'name', name
+                            ))
+                            from project
+                        )::text as projects;
+                    ",
                     &[],
                 )
                 .await?;
 
             // Prepare filters options
             let filters_options = FiltersOptions {
+                foundations: serde_json::from_str(&row.get::<_, String>("foundations"))?,
                 projects: serde_json::from_str(&row.get::<_, String>("projects"))?,
             };
 

@@ -57,6 +57,9 @@ export class SearchLocation extends LitWrapper {
     this.state = "";
     this.country = "";
     this.value = "";
+    this.distance = this.defaultDistance;
+    this.options = null;
+    this.activeIndex = null;
 
     // Wait for the update to complete
     await this.updateComplete;
@@ -77,6 +80,7 @@ export class SearchLocation extends LitWrapper {
         this.value = "";
       }
       this.options = null;
+      this.activeIndex = null;
     }
   };
 
@@ -156,6 +160,7 @@ export class SearchLocation extends LitWrapper {
     this.country = location.country;
     this.value = this._formatLocation(location.city, location.state, location.country);
     this.options = null;
+    this.activeIndex = null;
     if (this.distance === "") {
       this.distance = this.defaultDistance;
     }
@@ -187,7 +192,9 @@ export class SearchLocation extends LitWrapper {
     this.state = "";
     this.country = "";
     this.value = "";
+    this.distance = this.defaultDistance;
     this.options = null;
+    this.activeIndex = null;
 
     // Wait for the update to complete
     await this.updateComplete;

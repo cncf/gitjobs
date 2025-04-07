@@ -9,7 +9,6 @@ use uuid::Uuid;
 
 use crate::{
     PgDB,
-    db::misc::Total,
     templates::{
         dashboard::employer::{
             applications::{self, Application},
@@ -808,5 +807,5 @@ impl DBDashBoardEmployer for PgDB {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub(crate) struct ApplicationsSearchOutput {
     pub applications: Vec<Application>,
-    pub total: Total,
+    pub total: usize,
 }

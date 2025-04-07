@@ -11,7 +11,6 @@ use uuid::Uuid;
 
 use crate::{
     PgDB,
-    db::misc::Total,
     templates::jobboard::jobs::{Filters, FiltersOptions, Job, JobSummary},
 };
 
@@ -262,5 +261,5 @@ impl DBJobBoard for PgDB {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub(crate) struct JobsSearchOutput {
     pub jobs: Vec<JobSummary>,
-    pub total: Total,
+    pub total: usize,
 }

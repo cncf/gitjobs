@@ -197,7 +197,7 @@
         </div>
 
         <div>
-          <div class="mb-4">
+          <div class="mb-4 md:mb-8">
             {# Apply button -#}
             {% if !job_id.is_empty() -%}
               <button id="apply-button"
@@ -223,7 +223,7 @@
               {% call job_details_subheading(content = "Share this job") -%}
               <div id="social-links"
                    data-job-id="{{ job_id }}"
-                   class="flex flex-col gap-3 mt-2">
+                   class="flex flex-col gap-3 mt-2 relative">
                 <div class="flex flex-wrap overflow-hidden max-h-[35px] xl:max-h-[40px] gap-3">
                   {# Twitter link -#}
                   <a data-platform="twitter"
@@ -273,6 +273,13 @@
                     <div class="svg-icon size-4 md:size-5 group-hover:bg-white icon-copy"></div>
                   </a>
                   {# End Copy link -#}
+                </div>
+                <div id="copy-link-tooltip"
+                     role="tooltip"
+                     class="absolute top-11 xl:top-12 z-10 start-8.5 xl:start-7.5 opacity-0 inline-block px-3 py-2 text-xs xl:text-sm font-medium text-white transition-opacity duration-300 bg-stone-900/80 rounded-lg shadow-xs tooltip">
+                  Job link copied to clipboard!
+                  <div class="h-0 w-0 border-x-[6px] border-x-transparent border-b-[6px] border-stone-900/80 absolute -top-1.5 end-3">
+                  </div>
                 </div>
               </div>
             </div>

@@ -123,6 +123,10 @@ export const shareJob = () => {
   const copyLink = document.querySelector("#copy-link");
   copyLink.addEventListener("click", () => {
     navigator.clipboard.writeText(shareUrl);
-    showSuccessAlert("Job link copied to clipboard!");
+    const tooltip = document.querySelector("#copy-link-tooltip");
+    tooltip.classList.add("opacity-100");
+    setTimeout(() => {
+      tooltip.classList.remove("opacity-100");
+    }, 3000);
   });
 };

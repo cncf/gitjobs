@@ -33,7 +33,7 @@ use crate::{
 pub(crate) async fn page(
     auth_session: AuthSession,
     messages: Messages,
-    State(_db): State<DynDB>,
+    State(db): State<DynDB>,
     Query(query): Query<HashMap<String, String>>,
 ) -> Result<impl IntoResponse, HandlerError> {
     // Get user from session
@@ -44,7 +44,10 @@ pub(crate) async fn page(
     // Prepare content for the selected tab
     let tab: Tab = query.get("tab").unwrap_or(&String::new()).parse().unwrap_or_default();
     let content = match tab {
-        Tab::PendingJobs => Content::PendingJobs(jobs::PendingPage {}),
+        Tab::PendingJobs => {
+            let jobs = db.list_moderation_pending_jobs().await?;
+            Content::PendingJobs(jobs::PendingPage { jobs })
+        }
     };
 
     // Prepare template

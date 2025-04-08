@@ -28,7 +28,7 @@ pub(crate) enum Content {
 }
 
 impl Content {
-    /// Check if the content is the account page.
+    /// Check if the content is the pending jobs page.
     fn is_pending_jobs(&self) -> bool {
         matches!(self, Content::PendingJobs(_))
     }

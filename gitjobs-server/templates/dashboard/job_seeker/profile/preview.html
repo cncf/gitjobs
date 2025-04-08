@@ -108,7 +108,7 @@
         {% call title(content = "Skills") -%}
         <div class="text-stone-600 text-xs/6 flex flex-wrap pt-2">
           {% for skill in skills -%}
-            <div class="bg-stone-100 px-4 rounded-full inline-block capitalize mb-2 me-2">{{ skill|unnormalize }}</div>
+            <div class="bg-stone-100 px-4 rounded-full inline-block uppercase mb-2 me-2">{{ skill|unnormalize }}</div>
           {% endfor -%}
         </div>
       </div>

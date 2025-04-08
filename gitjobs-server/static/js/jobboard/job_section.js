@@ -57,3 +57,26 @@ export const applyButton = () => {
     }
   }
 };
+
+export const renderEmbedCode = () => {
+  const embedCode = document.getElementById("embed-code");
+  const params = new URLSearchParams(window.location.search);
+  params.append("limit", "10");
+  embedCode.textContent = `
+<iframe id="gitjobs" src="${window.location.origin}/embed?${params.toString()}" style="width:100%;max-width:870px;height:100%;display:block;border:none;"></iframe>
+
+<!-- Uncomment the following lines for resizing iframes dynamically using open-iframe-resizer
+<script type="module">
+  import { initialize } from "https://cdn.jsdelivr.net/npm/@open-iframe-resizer/core@latest/dist/index.js";
+  initialize({}, "#gitjobs");
+</script> -->`;
+};
+
+export const copyEmbedCodeToClipboard = (elId) => {
+  const embedCode = document.getElementById(elId);
+
+  // Copy the text inside the text field
+  navigator.clipboard.writeText(embedCode.textContent);
+
+  showSuccessAlert("Embed code copied to clipboard!");
+};

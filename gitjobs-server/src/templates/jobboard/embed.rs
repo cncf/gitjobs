@@ -3,7 +3,12 @@
 use askama::Template;
 use serde::{Deserialize, Serialize};
 
-use crate::templates::jobboard::jobs::JobSummary;
+use crate::templates::{
+    dashboard::employer::jobs::{JobKind, Workplace},
+    filters,
+    helpers::{DATE_FORMAT_3, build_jobboard_image_url},
+    jobboard::jobs::JobSummary,
+};
 
 /// Embed page template.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]

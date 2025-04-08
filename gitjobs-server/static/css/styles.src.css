@@ -364,6 +364,11 @@ select.aligned-right option {
   -webkit-mask-image: url("/static/images/icons/company.svg");
 }
 
+.icon-copy {
+  mask-image: url("/static/images/icons/copy.svg");
+  -webkit-mask-image: url("/static/images/icons/copy.svg");
+}
+
 .icon-draft {
   mask-image: url("/static/images/icons/draft.svg");
   -webkit-mask-image: url("/static/images/icons/draft.svg");

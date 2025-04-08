@@ -550,6 +550,26 @@ pub(crate) async fn user_has_profile_access(
     next.run(request).await.into_response()
 }
 
+/// Check if the user is a moderator.
+#[instrument(skip_all)]
+pub(crate) async fn user_is_moderator(
+    auth_session: AuthSession,
+    request: Request,
+    next: Next,
+) -> impl IntoResponse {
+    // Check if user is logged in
+    let Some(user) = auth_session.user else {
+        return StatusCode::FORBIDDEN.into_response();
+    };
+
+    // Check if the user is a moderator
+    if !user.moderator {
+        return StatusCode::FORBIDDEN.into_response();
+    }
+
+    next.run(request).await.into_response()
+}
+
 /// Check if the user owns the employer provided.
 #[instrument(skip_all)]
 pub(crate) async fn user_owns_employer(

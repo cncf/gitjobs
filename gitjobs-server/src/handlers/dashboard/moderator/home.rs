@@ -1,4 +1,4 @@
-//! This module defines the HTTP handlers for the job seeker dashboard home
+//! This module defines the HTTP handlers for the moderator dashboard home
 //! page.
 
 use std::collections::HashMap;
@@ -18,11 +18,10 @@ use crate::{
     db::DynDB,
     handlers::error::HandlerError,
     templates::{
-        PageId, auth,
-        dashboard::job_seeker::{
-            applications,
+        PageId,
+        dashboard::moderator::{
             home::{self, Content, Tab},
-            profile,
+            jobs,
         },
     },
 };
@@ -34,36 +33,25 @@ use crate::{
 pub(crate) async fn page(
     auth_session: AuthSession,
     messages: Messages,
-    State(db): State<DynDB>,
+    State(_db): State<DynDB>,
     Query(query): Query<HashMap<String, String>>,
 ) -> Result<impl IntoResponse, HandlerError> {
     // Get user from session
-    let Some(user) = auth_session.user.clone() else {
+    let Some(_user) = auth_session.user.clone() else {
         return Ok(StatusCode::FORBIDDEN.into_response());
     };
 
     // Prepare content for the selected tab
     let tab: Tab = query.get("tab").unwrap_or(&String::new()).parse().unwrap_or_default();
     let content = match tab {
-        Tab::Account => {
-            let user_summary = user.clone().into();
-            Content::Account(auth::UpdateUserPage { user_summary })
-        }
-        Tab::Applications => {
-            let applications = db.list_job_seeker_applications(&user.user_id).await?;
-            Content::Applications(applications::ApplicationsPage { applications })
-        }
-        Tab::Profile => {
-            let profile = db.get_job_seeker_profile(&user.user_id).await?;
-            Content::Profile(profile::UpdatePage { profile })
-        }
+        Tab::PendingJobs => Content::PendingJobs(jobs::PendingPage {}),
     };
 
     // Prepare template
     let template = home::Page {
         content,
         messages: messages.into_iter().collect(),
-        page_id: PageId::JobSeekerDashboard,
+        page_id: PageId::ModeratorDashboard,
         user: auth_session.into(),
     };
 

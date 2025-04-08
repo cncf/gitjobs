@@ -375,6 +375,7 @@ pub(crate) struct User {
     pub email: String,
     pub email_verified: bool,
     pub has_profile: bool,
+    pub moderator: bool,
     pub name: String,
     pub username: String,
 

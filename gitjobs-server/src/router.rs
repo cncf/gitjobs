@@ -74,6 +74,7 @@ pub(crate) async fn setup(
     // Setup sub-routers
     let employer_dashboard_router = setup_employer_dashboard_router(&state);
     let job_seeker_dashboard_router = setup_job_seeker_dashboard_router();
+    let moderator_dashboard_router = setup_moderator_dashboard_router(&state);
     let dashboard_images_router = setup_dashboard_images_router(&state);
     let jobboard_images_router = setup_jobboard_images_router(&state);
 
@@ -88,8 +89,9 @@ pub(crate) async fn setup(
             put(auth::update_user_password),
         )
         .nest("/dashboard/employer", employer_dashboard_router)
-        .nest("/dashboard/job-seeker", job_seeker_dashboard_router)
         .nest("/dashboard/images", dashboard_images_router)
+        .nest("/dashboard/job-seeker", job_seeker_dashboard_router)
+        .nest("/dashboard/moderator", moderator_dashboard_router)
         .route("/dashboard/members/search", get(search_members))
         .route("/dashboard/projects/search", get(search_projects))
         .route("/jobs/{job_id}/apply", post(jobboard::jobs::apply))
@@ -243,6 +245,17 @@ fn setup_job_seeker_dashboard_router() -> Router<State> {
             "/profile/update",
             get(dashboard::job_seeker::profile::update_page).put(dashboard::job_seeker::profile::update),
         )
+}
+
+/// Setup moderator dashboard router.
+fn setup_moderator_dashboard_router(state: &State) -> Router<State> {
+    // Setup middleware
+    let user_is_moderator = middleware::from_fn_with_state(state.clone(), auth::user_is_moderator);
+
+    // Setup router
+    Router::new()
+        .route("/", get(dashboard::moderator::home::page))
+        .route_layer(user_is_moderator)
 }
 
 /// Setup dashboard images router.

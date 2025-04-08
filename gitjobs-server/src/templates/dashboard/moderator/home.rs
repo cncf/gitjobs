@@ -2,10 +2,10 @@
 //! dashboard home page.
 
 use askama::Template;
-use axum_messages::Message;
+use axum_messages::{Level, Message};
 use serde::{Deserialize, Serialize};
 
-use crate::templates::{PageId, auth::User, dashboard::moderator::jobs};
+use crate::templates::{PageId, auth::User, dashboard::moderator::jobs, filters};
 
 // Pages templates.
 

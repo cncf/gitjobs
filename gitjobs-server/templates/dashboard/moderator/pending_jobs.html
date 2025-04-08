@@ -1,1 +1,134 @@
-<h1>Pending jobs page</h1>
+{% import "macros.html" as macros -%}
+{% import "misc/preview_modal.html" as preview -%}
+
+<div class="flex items-center">
+  {# Mobile filters button -#}
+  {# <div class="flex shrink-0 me-3 md:me-6 lg:hidden">
+    <button id="open-menu-button" class="btn-primary-outline group size-[40px] items-center flex justify-center">
+      <div class="svg-icon size-4 icon-menu group-hover:bg-white shrink-0"></div>
+    </button>
+  </div> #}
+  {# End mobile filters button -#}
+  {% call macros::form_title(title = "Pending jobs") -%}
+</div>
+
+{# Pending jobs Table -#}
+<div class="relative overflow-visible mt-10">
+  <table class="table-fixed w-full text-xs lg:text-sm text-left rtl:text-right text-stone-500">
+    <thead class="text-xs text-stone-700 uppercase bg-stone-100 border-b border-stone-200">
+      <tr>
+        <th scope="col" class="px-3 xl:px-5 py-3">Employer</th>
+        <th scope="col" class="px-3 xl:px-5 py-3">Job title</th>
+        <th scope="col" class="px-3 xl:px-5 py-3 w-26 xl:w-32">Published</th>
+        <th scope="col" class="p-4 w-20 xl:w-24"></th>
+      </tr>
+    </thead>
+    <tbody id="applications-list">
+      {% if jobs.is_empty() -%}
+        <tr class="bg-white border-b border-stone-200">
+          {# No applications -#}
+          <td class="px-8 py-20 text-center" colspan="3">
+            <div class="text-xl lg:text-2xl mb-10">
+              <div>Lorem ipsum...</div>
+            </div>
+            <p class="text-stone-700 mb-10">Lorem ipsum...</p>
+          </td>
+        </tr>
+      {% else -%}
+        {% for job in jobs -%}
+          <tr class="odd:bg-white even:bg-stone-50/50 border-b border-stone-200">
+            {# Employer -#}
+            <td class="px-3 xl:px-5 py-4">
+              <div class="text-stone-700 font-semibold truncate">{{ job.employer.company }}</div>
+              <div>
+                {# Member -#}
+                {% if let Some(member) = job.employer.member -%}
+                  <div class="flex items-center space-x-1 rounded-md uppercase mt-1">
+                    <div class="shrink-0 size-3 flex items-center justify-center">
+                      <img class="size-3 object-contain"
+                           height="auto"
+                           width="auto"
+                           src="/static/images/foundations/{{ member.foundation }}.svg"
+                           alt="{{ member.foundation }} logo">
+                    </div>
+
+                    <div class="leading-3 text-stone-600 text-[0.8rem] md:text-xs font-semibold tracking-wide uppercase">
+                      {{ member.foundation }} member
+                    </div>
+                  </div>
+                {% endif -%}
+                {# End member -#}
+              </div>
+            </td>
+            {# End employer -#}
+
+            {# Job -#}
+            <td class="px-3 xl:px-5 py-4 font-medium text-stone-900">
+              <button hx-get="/section/jobs/{{ job.job_id }}"
+                      hx-target="#preview-content"
+                      hx-disabled-elt="this"
+                      class="flex flex-col justify-between items-start cursor-pointer preview-button max-w-full min-w-0">
+                <div class="max-w-full text-stone-900 truncate">{{ job.title }}</div>
+              </button>
+            </td>
+            {# End job -#}
+
+            {# Published date -#}
+            <td class="px-3 xl:px-5 py-4 whitespace-nowrap">{{ job.published_at.format(DATE_FORMAT) }}</td>
+            {# End published date -#}
+
+            {# Actions -#}
+            <td>
+              <div class="flex items-center space-x-2">
+                <div>
+                  <button hx-disabled-elt="this"
+                          hx-trigger="confirmed"
+                          class="btn-tertiary p-2">
+                    <div class="svg-icon size-4 icon-check"></div>
+                  </button>
+                </div>
+
+                <div>
+                  <button hx-disabled-elt="this"
+                          hx-trigger="confirmed"
+                          class="btn-tertiary p-2">
+                    <div class="svg-icon size-3.5 icon-cancel"></div>
+                  </button>
+                </div>
+              </div>
+            </td>
+            {# End actions -#}
+          </tr>
+        {% endfor -%}
+      {% endif -%}
+    </tbody>
+  </table>
+</div>
+{# End pending jobs Table -#}
+
+{# Preview modal -#}
+{% call preview::modal() -%}
+{# End preview modal -#}
+
+<script type="module">
+  import {
+    toggleModalVisibility,
+    isSuccessfulXHRStatus
+  } from '/static/js/common/common.js';
+  import {
+    showErrorAlert,
+  } from "/static/js/common/alerts.js";
+
+  // On preview button click, show the preview modal
+  const previewButtons = document.querySelectorAll('.preview-button');
+  previewButtons.forEach((button) => {
+    button.addEventListener('htmx:afterRequest', (e) => {
+      if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
+        toggleModalVisibility('preview-modal', "open");
+      } else {
+        // When the preview is not available, show an error message
+        showErrorAlert('Something went wrong previewing the data, please try again later.');
+      }
+    });
+  });
+</script>

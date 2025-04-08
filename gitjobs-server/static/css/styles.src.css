@@ -334,6 +334,11 @@ select.aligned-right option {
   -webkit-mask-image: url("/static/images/icons/calendar.svg");
 }
 
+.icon-cancel {
+  mask-image: url("/static/images/icons/cancel.svg");
+  -webkit-mask-image: url("/static/images/icons/cancel.svg");
+}
+
 .icon-caret_down {
   mask-image: url("/static/images/icons/caret_down.svg");
   -webkit-mask-image: url("/static/images/icons/caret_down.svg");

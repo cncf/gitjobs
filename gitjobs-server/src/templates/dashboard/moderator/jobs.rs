@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use uuid::Uuid;
 
-use crate::templates::misc::Member;
+use crate::templates::{helpers::DATE_FORMAT, misc::Member};
 
 // Pages templates.
 

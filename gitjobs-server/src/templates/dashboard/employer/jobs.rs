@@ -82,6 +82,7 @@ pub(crate) struct Job {
     pub published_at: Option<DateTime<Utc>>,
     pub qualifications: Option<String>,
     pub responsibilities: Option<String>,
+    pub review_notes: Option<String>,
     pub salary: Option<i64>,
     pub salary_usd_year: Option<i64>,
     pub salary_currency: Option<String>,

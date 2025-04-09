@@ -4,6 +4,7 @@
 use anyhow::Result;
 use async_trait::async_trait;
 use tracing::{instrument, trace};
+use uuid::Uuid;
 
 use crate::{PgDB, templates::dashboard::moderator::jobs::JobSummary};
 
@@ -11,12 +12,40 @@ use crate::{PgDB, templates::dashboard::moderator::jobs::JobSummary};
 /// dashboard.
 #[async_trait]
 pub(crate) trait DBDashBoardModerator {
+    /// Approve job.
+    async fn approve_job(&self, job_id: &Uuid, reviewer: &Uuid) -> Result<()>;
+
     /// List moderation pending jobs.
     async fn list_moderation_pending_jobs(&self) -> Result<Vec<JobSummary>>;
+
+    /// Reject job.
+    async fn reject_job(&self, job_id: &Uuid, reviewer: &Uuid, review_notes: &str) -> Result<()>;
 }
 
 #[async_trait]
 impl DBDashBoardModerator for PgDB {
+    #[instrument(skip(self), err)]
+    async fn approve_job(&self, job_id: &Uuid, reviewer: &Uuid) -> Result<()> {
+        trace!("db: approve job");
+
+        let db = self.pool.get().await?;
+        db.execute(
+            "
+            update job
+            set
+                status = 'published',
+                published_at = current_timestamp,
+                reviewed_at = current_timestamp,
+                reviewed_by = $2
+            where job_id = $1
+            ",
+            &[job_id, reviewer],
+        )
+        .await?;
+
+        Ok(())
+    }
+
     #[instrument(skip(self), err)]
     async fn list_moderation_pending_jobs(&self) -> Result<Vec<JobSummary>> {
         trace!("db: list moderation pending jobs");
@@ -65,5 +94,27 @@ impl DBDashBoardModerator for PgDB {
             .collect();
 
         Ok(jobs)
+    }
+
+    #[instrument(skip(self), err)]
+    async fn reject_job(&self, job_id: &Uuid, reviewer: &Uuid, review_notes: &str) -> Result<()> {
+        trace!("db: reject job");
+
+        let db = self.pool.get().await?;
+        db.execute(
+            "
+            update job
+            set
+                status = 'rejected',
+                review_notes = $3,
+                reviewed_at = current_timestamp,
+                reviewed_by = $2
+            where job_id = $1;
+            ",
+            &[job_id, reviewer, &review_notes],
+        )
+        .await?;
+
+        Ok(())
     }
 }

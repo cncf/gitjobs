@@ -48,7 +48,7 @@ impl DBDashBoardModerator for PgDB {
                 from job j
                 join employer e on j.employer_id = e.employer_id
                 left join member m on e.member_id = m.member_id
-                where j.status = 'published'
+                where j.status = 'pending-approval'
                 order by j.published_at desc;
                 ",
                 &[],

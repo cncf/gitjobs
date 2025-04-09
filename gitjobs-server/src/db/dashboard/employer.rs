@@ -175,8 +175,7 @@ impl DBDashBoardEmployer for PgDB {
                     skills,
                     tz_end,
                     tz_start,
-                    upstream_commitment,
-                    published_at
+                    upstream_commitment
                 )
                 select
                     $1::uuid,
@@ -204,8 +203,7 @@ impl DBDashBoardEmployer for PgDB {
                     $23::text[],
                     $24::text,
                     $25::text,
-                    $26::int,
-                    case when $3::text = 'published' then current_timestamp else null end
+                    $26::int
                 returning job_id;
                 ",
                 &[
@@ -273,7 +271,7 @@ impl DBDashBoardEmployer for PgDB {
                 archived_at = current_timestamp,
                 updated_at = current_timestamp
             where job_id = $1::uuid
-            and status = 'published';
+            and (status = 'pending-approval' or status = 'published');
             ",
             &[&job_id],
         )
@@ -624,15 +622,14 @@ impl DBDashBoardEmployer for PgDB {
             "
             update job
             set
-                status = 'published',
-                published_at = current_timestamp,
+                status = 'pending-approval',
                 updated_at = current_timestamp,
                 archived_at = null,
                 salary_usd_year = $2::bigint,
                 salary_min_usd_year = $3::bigint,
                 salary_max_usd_year = $4::bigint
             where job_id = $1::uuid
-            and status <> 'published';
+            and (status = 'archived' or status = 'draft' or status = 'rejected');
             ",
             &[
                 &job_id,

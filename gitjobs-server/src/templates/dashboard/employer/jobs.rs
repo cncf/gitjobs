@@ -140,7 +140,9 @@ pub(crate) enum JobStatus {
     Archived,
     #[default]
     Draft,
+    PendingApproval,
     Published,
+    Rejected,
 }
 
 /// Job kind.

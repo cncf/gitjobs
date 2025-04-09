@@ -14,7 +14,7 @@ use uuid::Uuid;
 use crate::{
     db::DynDB,
     handlers::{error::HandlerError, extractors::SelectedEmployerIdRequired},
-    templates::dashboard::employer::jobs::{self, Job},
+    templates::dashboard::employer::jobs::{self, Job, JobStatus},
 };
 
 // Pages handlers.
@@ -104,6 +104,11 @@ pub(crate) async fn add(
         Err(e) => return Ok((StatusCode::UNPROCESSABLE_ENTITY, e.to_string()).into_response()),
     };
     job.normalize();
+
+    // Make sure the status provided is valid
+    if job.status != JobStatus::Draft && job.status != JobStatus::PendingApproval {
+        return Ok((StatusCode::UNPROCESSABLE_ENTITY, "invalid status").into_response());
+    }
 
     // Add job to database
     db.add_job(&employer_id, &job).await?;

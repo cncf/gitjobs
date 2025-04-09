@@ -173,7 +173,7 @@
                        class="dropdown absolute hidden z-10 end-0 top-8 w-[200px] bg-white divide-y divide-stone-100 rounded-lg shadow border border-stone-200">
                     <ul class="py-2 text-sm text-stone-700"
                         aria-labelledby="dropdownDefaultButton">
-                      {% if job.status != JobStatus::Published -%}
+                      {% if job.status != JobStatus::Published && job.status != JobStatus::PendingApproval -%}
                         <li>
                           <button hx-put="/dashboard/employer/jobs/{{ job.job_id }}/publish"
                                   hx-target="#dashboard-content"

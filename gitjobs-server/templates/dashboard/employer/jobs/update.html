@@ -17,19 +17,16 @@
       {# Review notes when rejected job -#}
       {% let review_notes = job.review_notes|display_some %}
       {% if job.status == JobStatus::Rejected && !review_notes.is_empty() -%}
-        <div class="border border-primary-500 rounded-lg mt-10 px-8 py-5 bg-primary-50/20"
+        <div class="border border-primary-500 rounded-lg mt-10 p-8 bg-primary-50/20"
              role="alert">
-          <div class="font-semibold text-primary-500 uppercase mb-2">Review notes</div>
-          <div class="text-xs text-stone-600">
-            This job was rejected by the moderator. Please check the comments below and update the job before resubmitting it.
-          </div>
-          <div class="text-stone-600 mt-2 border-s-3 border-primary-500 ps-3 py-3 italic">{{ review_notes }}</div>
+          <div class="font-semibold text-primary-500 uppercase mb-2">Moderator notes</div>
+          <div class="text-stone-600 mt-4">{{ review_notes }}</div>
         </div>
       {% endif -%}
       {# End review notes when rejected job -#}
 
       {# Recommendations -#}
-      <div class="border border-primary-500 rounded-lg mt-10 px-8 py-5 bg-primary-50/20"
+      <div class="border border-primary-500 rounded-lg mt-10 p-8 bg-primary-50/20"
            role="alert">
         <ul class="text-stone-600 text-xs lg:text-sm list-disc list-outside ps-5">
           <li>

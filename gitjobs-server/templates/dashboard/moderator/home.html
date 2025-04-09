@@ -22,7 +22,10 @@
 {% endblock menu -%}
 
 {% block dashboard_main -%}
-  <div id="dashboard-content" class="p-4 sm:p-6 lg:p-12">
+  <div id="dashboard-content"
+       hx-get="/dashboard/moderator/jobs/pending"
+       hx-trigger="refresh-pending-jobs-table"
+       class="p-4 sm:p-6 lg:p-12">
     {# Content -#}
     {{ content|safe }}
     {# End Content -#}

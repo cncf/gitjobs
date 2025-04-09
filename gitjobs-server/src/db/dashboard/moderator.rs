@@ -19,7 +19,7 @@ pub(crate) trait DBDashBoardModerator {
     async fn list_moderation_pending_jobs(&self) -> Result<Vec<JobSummary>>;
 
     /// Reject job.
-    async fn reject_job(&self, job_id: &Uuid, reviewer: &Uuid, review_notes: &str) -> Result<()>;
+    async fn reject_job(&self, job_id: &Uuid, reviewer: &Uuid, review_notes: Option<&String>) -> Result<()>;
 }
 
 #[async_trait]
@@ -97,7 +97,7 @@ impl DBDashBoardModerator for PgDB {
     }
 
     #[instrument(skip(self), err)]
-    async fn reject_job(&self, job_id: &Uuid, reviewer: &Uuid, review_notes: &str) -> Result<()> {
+    async fn reject_job(&self, job_id: &Uuid, reviewer: &Uuid, review_notes: Option<&String>) -> Result<()> {
         trace!("db: reject job");
 
         let db = self.pool.get().await?;

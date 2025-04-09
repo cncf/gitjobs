@@ -2,15 +2,20 @@
 
 use askama::Template;
 use axum::{
+    Form,
     extract::{Path, State},
     response::{Html, IntoResponse},
 };
 use reqwest::StatusCode;
+use serde::{Deserialize, Serialize};
 use tracing::instrument;
 use uuid::Uuid;
 
 use crate::{
-    auth::AuthSession, db::DynDB, handlers::error::HandlerError, templates::dashboard::moderator::jobs,
+    auth::AuthSession,
+    db::DynDB,
+    handlers::error::HandlerError,
+    templates::{dashboard::moderator::jobs, helpers::option_is_none_or_default},
 };
 
 // Pages handlers.
@@ -54,7 +59,7 @@ pub(crate) async fn reject(
     auth_session: AuthSession,
     State(db): State<DynDB>,
     Path(job_id): Path<Uuid>,
-    body: String,
+    Form(input): Form<RejectInput>,
 ) -> Result<impl IntoResponse, HandlerError> {
     // Get user from session
     let Some(user) = auth_session.user else {
@@ -62,12 +67,21 @@ pub(crate) async fn reject(
     };
 
     // Reject job
-    let review_notes = &body;
-    db.reject_job(&job_id, &user.user_id, review_notes).await?;
+    db.reject_job(&job_id, &user.user_id, input.review_notes.as_ref())
+        .await?;
 
     Ok((
         StatusCode::NO_CONTENT,
         [("HX-Trigger", "refresh-pending-jobs-table")],
     )
         .into_response())
+}
+
+// Types.
+
+/// Reject information.
+#[derive(Clone, Debug, Serialize, Deserialize)]
+struct RejectInput {
+    #[serde(skip_serializing_if = "option_is_none_or_default")]
+    review_notes: Option<String>,
 }

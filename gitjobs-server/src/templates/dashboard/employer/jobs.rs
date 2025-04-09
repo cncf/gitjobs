@@ -60,6 +60,7 @@ pub(crate) struct JobSummary {
     pub city: Option<String>,
     pub country: Option<String>,
     pub published_at: Option<DateTime<Utc>>,
+    pub review_notes: Option<String>,
 }
 
 /// Job details.

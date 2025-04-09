@@ -536,6 +536,7 @@ impl DBDashBoardEmployer for PgDB {
                     j.workplace,
                     j.archived_at,
                     j.published_at,
+                    j.review_notes,
                     l.city,
                     l.country
                 from job j
@@ -557,6 +558,7 @@ impl DBDashBoardEmployer for PgDB {
                 country: row.get("country"),
                 archived_at: row.get("archived_at"),
                 published_at: row.get("published_at"),
+                review_notes: row.get("review_notes"),
             })
             .collect();
 

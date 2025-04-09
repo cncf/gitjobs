@@ -244,6 +244,10 @@
   <span class='bg-blue-100 text-blue-800 {{ size }} {%- if size == "xs" %} px-2.5 py-0.5 {%- else %} px-3 py-1 {%- endif %} rounded-full capitalize tracking-wide'>{{ status }}</span>
   {% when JobStatus::Published -%}
   <span class='bg-green-100 text-green-800 {{ size }} {%- if size == "xs" %} px-2.5 py-0.5 {%- else %} px-3 py-1 {%- endif %} rounded-full capitalize tracking-wide'>{{ status }}</span>
+  {% when JobStatus::PendingApproval -%}
+  <span class='bg-orange-100 text-orange-800 {{ size }} {%- if size == "xs" %} px-2.5 py-0.5 {%- else %} px-3 py-1 {%- endif %} rounded-full capitalize tracking-wide'>{{ status }}</span>
+  {% when JobStatus::Rejected -%}
+  <span class='bg-red-100 text-red-800 {{ size }} {%- if size == "xs" %} px-2.5 py-0.5 {%- else %} px-3 py-1 {%- endif %} rounded-full capitalize tracking-wide'>{{ status }}</span>
 {% endmatch -%}
 {# djlint:on H008 #}
 {% endmacro job_status_badge -%}

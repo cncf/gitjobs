@@ -164,6 +164,11 @@ pub(crate) async fn update(
     };
     job.normalize();
 
+    // Make sure the status provided is valid
+    if job.status != JobStatus::Draft && job.status != JobStatus::PendingApproval {
+        return Ok((StatusCode::UNPROCESSABLE_ENTITY, "invalid status").into_response());
+    }
+
     // Update job in database
     db.update_job(&job_id, &job).await?;
 

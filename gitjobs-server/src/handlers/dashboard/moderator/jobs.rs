@@ -81,7 +81,7 @@ pub(crate) async fn reject(
 
 /// Reject information.
 #[derive(Clone, Debug, Serialize, Deserialize)]
-struct RejectInput {
+pub(crate) struct RejectInput {
     #[serde(skip_serializing_if = "option_is_none_or_default")]
-    review_notes: Option<String>,
+    pub review_notes: Option<String>,
 }

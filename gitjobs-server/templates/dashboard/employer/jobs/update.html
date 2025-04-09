@@ -14,6 +14,18 @@
     <div class="border-b border-stone-900/10 pb-12">
       {% call macros::form_title(title = "Job details", description = "Please add as many details about this job as possible. You can save it as a draft and come back later to finish it.") -%}
 
+      {% if job.status == JobStatus::Rejected -%}
+        <div class="border border-primary-500 rounded-lg mt-10 px-8 py-5 bg-primary-50/20"
+             role="alert">
+          <div class="font-semibold text-primary-500 uppercase mb-2">Review notes</div>
+          <div class="text-xs text-stone-600">
+            This job was rejected by the moderator. Please check the comments below and update the job before resubmitting it.
+          </div>
+          {# TODO - review_notes #}
+          <div class="text-stone-600 mt-2">Lorem ipsum...</div>
+        </div>
+      {% endif -%}
+
       <div class="border border-primary-500 rounded-lg mt-10 px-8 py-5 bg-primary-50/20"
            role="alert">
         <ul class="text-stone-600 text-xs lg:text-sm list-disc list-outside ps-5">

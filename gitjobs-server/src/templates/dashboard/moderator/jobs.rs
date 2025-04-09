@@ -35,6 +35,7 @@ pub(crate) struct JobSummary {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub(crate) struct Employer {
     pub company: String,
+    pub employer_id: Uuid,
 
     pub logo_id: Option<Uuid>,
     pub member: Option<Member>,

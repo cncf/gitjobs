@@ -24,9 +24,9 @@ pub(crate) struct PendingPage {
 #[skip_serializing_none]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub(crate) struct JobSummary {
+    pub created_at: DateTime<Utc>,
     pub employer: Employer,
     pub job_id: uuid::Uuid,
-    pub published_at: DateTime<Utc>,
     pub title: String,
 }
 

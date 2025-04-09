@@ -55,9 +55,9 @@ impl DBDashBoardModerator for PgDB {
             .query(
                 "
                 select
+                    j.created_at,
                     j.job_id,
                     j.title,
-                    j.published_at,
                     (
                         select jsonb_strip_nulls(jsonb_build_object(
                             'company', e.company,
@@ -78,16 +78,16 @@ impl DBDashBoardModerator for PgDB {
                 join employer e on j.employer_id = e.employer_id
                 left join member m on e.member_id = m.member_id
                 where j.status = 'pending-approval'
-                order by j.published_at desc;
+                order by j.created_at desc;
                 ",
                 &[],
             )
             .await?
             .into_iter()
             .map(|row| JobSummary {
+                created_at: row.get("created_at"),
                 job_id: row.get("job_id"),
                 title: row.get("title"),
-                published_at: row.get("published_at"),
                 employer: serde_json::from_value(row.get::<_, serde_json::Value>("employer"))
                     .expect("employer should be valid"),
             })

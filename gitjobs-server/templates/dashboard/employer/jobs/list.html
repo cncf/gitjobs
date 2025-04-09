@@ -113,7 +113,7 @@
             {# End location -#}
 
             {# Status -#}
-            <td class="px-3 xl:px-5 py-4 whitespace-nowrap w-32 flex items-center gap-x-2">
+            <td class="px-3 xl:px-5 py-4 whitespace-nowrap">
               {% let review_notes = job.review_notes|display_some %}
               {% if job.status == JobStatus::Rejected && !review_notes.is_empty() -%}
                 <div class="relative">

@@ -2,6 +2,12 @@
 create or replace function user_has_image_access(p_user_id uuid, p_image_id uuid)
 returns boolean as $$
 begin
+    -- User is a moderator
+    perform from "user"
+    where user_id = p_user_id
+    and moderator = true;
+    if found then return true; end if;
+
     -- Profile photo or employer logo: user created the image
     perform from image
     where image_id = p_image_id

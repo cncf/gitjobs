@@ -258,6 +258,10 @@ fn setup_moderator_dashboard_router(state: &State) -> Router<State> {
         .route("/jobs/pending", get(dashboard::moderator::jobs::pending_page))
         .route("/jobs/{job_id}/approve", put(dashboard::moderator::jobs::approve))
         .route("/jobs/{job_id}/reject", put(dashboard::moderator::jobs::reject))
+        .route(
+            "/jobs/{employer_id}/{job_id}/preview",
+            post(dashboard::moderator::jobs::preview_page),
+        )
         .route_layer(user_is_moderator)
 }
 

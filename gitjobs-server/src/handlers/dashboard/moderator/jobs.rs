@@ -15,7 +15,10 @@ use crate::{
     auth::AuthSession,
     db::DynDB,
     handlers::error::HandlerError,
-    templates::{dashboard::moderator::jobs, helpers::option_is_none_or_default},
+    templates::{
+        dashboard::{employer, moderator::jobs},
+        helpers::option_is_none_or_default,
+    },
 };
 
 // Pages handlers.
@@ -27,6 +30,19 @@ pub(crate) async fn pending_page(State(db): State<DynDB>) -> Result<impl IntoRes
     let template = jobs::PendingPage { jobs };
 
     Ok(Html(template.render()?))
+}
+
+/// Handler that returns the job preview page.
+#[instrument(skip_all, err)]
+pub(crate) async fn preview_page(
+    State(db): State<DynDB>,
+    Path(employer_id): Path<Uuid>,
+    Path(job_id): Path<Uuid>,
+) -> Result<impl IntoResponse, HandlerError> {
+    let (employer, job) = tokio::try_join!(db.get_employer(&employer_id), db.get_job_dashboard(&job_id))?;
+    let template = employer::jobs::PreviewPage { employer, job };
+
+    Ok(Html(template.render()?).into_response())
 }
 
 // Actions.

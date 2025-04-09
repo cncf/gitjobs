@@ -15,7 +15,7 @@
 
 ## Embed
 
-**GitJobs** allows other websites to embed a view to display the jobs that match certain criteria. You can, for example, list jobs that offer time to work on a specific project, or jobs related to any of the projects in a given foundation. Any criteria supported by the filters can be used to create an embed view. The embed code is a simple iframe that can be added to any website.
+**GitJobs** allows other websites to embed a view to display the jobs that match certain criteria. You can, for example, list jobs that offer time to work on a specific project, or jobs related to any of the projects in a given foundation. Any criteria supported by the filters, including the text search input, can be used to create an embed view. The embed code is a simple iframe that can be added to any website.
 
 To setup yours, the first step is to adjust the filters as if you were searching for jobs. Once you have the desired filters, you can click on the `Get embed code` button, at the bottom of the filters. This will open a modal with the ready to use embed code.
 

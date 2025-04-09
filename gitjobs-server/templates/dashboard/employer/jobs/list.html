@@ -114,20 +114,19 @@
 
             {# Status -#}
             <td class="px-3 xl:px-5 py-4 whitespace-nowrap w-32 flex items-center gap-x-2">
-              {% call macros::job_status_badge(status = job.status) -%}
               {% let review_notes = job.review_notes|display_some %}
               {% if job.status == JobStatus::Rejected && !review_notes.is_empty() -%}
                 <div class="relative">
-                  <div class="size-[24px] flex justify-center items-center bg-red-100 rounded-full cursor-pointer peer">
-                    <div class="svg-icon size-3.5 icon-question bg-red-800"></div>
-                  </div>
+                  <div class="cursor-pointer peer">{% call macros::job_status_badge(status = job.status) -%}</div>
                   <div role="tooltip"
-                       class="absolute top-7 z-10 -end-1.5 opacity-0 peer-hover:opacity-100 px-3 py-2 text-xs xl:text-sm font-medium text-white transition-opacity duration-300 bg-stone-900/80 rounded-lg shadow-xs tooltip min-w-[250px] max-w-[400px]">
+                       class="absolute top-7 z-10 end-4 opacity-0 peer-hover:opacity-100 px-3 py-2 text-xs xl:text-sm font-medium text-white transition-opacity duration-300 bg-stone-900/80 rounded-lg shadow-xs tooltip min-w-[250px] max-w-[400px]">
                     <div class="text-wrap">{{ review_notes }}</div>
                     <div class="size-0 border-x-[6px] border-x-transparent border-b-[6px] border-stone-900/80 absolute -top-1.5 end-3">
                     </div>
                   </div>
                 </div>
+              {% else -%}
+                {% call macros::job_status_badge(status = job.status) -%}
               {% endif -%}
             </td>
             {# End status -#}

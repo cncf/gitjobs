@@ -36,8 +36,7 @@ pub(crate) async fn pending_page(State(db): State<DynDB>) -> Result<impl IntoRes
 #[instrument(skip_all, err)]
 pub(crate) async fn preview_page(
     State(db): State<DynDB>,
-    Path(employer_id): Path<Uuid>,
-    Path(job_id): Path<Uuid>,
+    Path((employer_id, job_id)): Path<(Uuid, Uuid)>,
 ) -> Result<impl IntoResponse, HandlerError> {
     let (employer, job) = tokio::try_join!(db.get_employer(&employer_id), db.get_job_dashboard(&job_id))?;
     let template = employer::jobs::PreviewPage { employer, job };

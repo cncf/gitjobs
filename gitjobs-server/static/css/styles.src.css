@@ -539,6 +539,11 @@ select.aligned-right option {
   -webkit-mask-image: url("/static/images/icons/project.svg");
 }
 
+.icon-question {
+  mask-image: url("/static/images/icons/question.svg");
+  -webkit-mask-image: url("/static/images/icons/question.svg");
+}
+
 .icon-remote {
   mask-image: url("/static/images/icons/remote.svg");
   -webkit-mask-image: url("/static/images/icons/remote.svg");

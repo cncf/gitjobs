@@ -477,7 +477,7 @@
       {% if let Some(salary) = job.salary -%}
         <div class="flex items-baseline font-medium text-stone-900 {{ salary_size }}">
           {% call currency(value = job.salary_currency) -%}
-          {{ salary|humanize_number }}
+          {{ salary|humanize_salary }}
         </div>
       {% else -%}
         -
@@ -493,7 +493,7 @@
       {% if let Some(salary_min) = job.salary_min -%}
         <div class="flex items-baseline font-medium text-stone-900 {{ salary_size }}">
           {% call currency(value = job.salary_currency) -%}
-          {{ salary_min|humanize_number }}
+          {{ salary_min|humanize_salary }}
         </div>
       {% else -%}
         -
@@ -501,7 +501,7 @@
       {% if let Some(salary_max) = job.salary_max -%}
         <div class="flex items-baseline font-medium text-stone-900 {{ salary_size }}">
           <span class="mx-1">-</span>
-          {{ salary_max|humanize_number }}
+          {{ salary_max|humanize_salary }}
         </div>
       {% endif -%}
       {% if let Some(salary_period) = job.salary_period -%}

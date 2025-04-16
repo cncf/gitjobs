@@ -83,7 +83,7 @@ export class MultiSelect extends LitWrapper {
                   class="inline-flex items-center text-nowrap max-w-[100%] ps-2 pe-0.5 py-0.5 me-2 text-xs font-medium text-stone-800 bg-stone-100 rounded-full"
                 >
                   <div class="flex items-center w-full">
-                    <div class="truncate capitalize">${unnormalize(option)}</div>
+                    <div class="truncate uppercase">${unnormalize(option)}</div>
                     <button
                       type="button"
                       @click=${() => this._onRemoveBadge(option)}

@@ -88,6 +88,7 @@ export class SearchableFilter extends LitWrapper {
     this.enteredValue = "";
     this.visibleDropdown = false;
     this._filterOptions();
+    this.activeIndex = null;
   }
 
   // Check if the clicked element is outside the component
@@ -110,10 +111,10 @@ export class SearchableFilter extends LitWrapper {
       // Select the highlighted item
       case "Enter":
         event.preventDefault();
-        if (this.activeIndex && this.options) {
-          const activeItem = this.options[this.activeIndex];
+        if (this.activeIndex && this.visibleOptions.length > 0) {
+          const activeItem = this.visibleOptions[this.activeIndex];
           if (activeItem) {
-            const activeItem = this.options[this.activeIndex];
+            const activeItem = this.visibleOptions[this.activeIndex];
             const name = this.name === "projects" ? activeItem.name : activeItem;
             this._onSelect(name);
           }
@@ -146,6 +147,7 @@ export class SearchableFilter extends LitWrapper {
     this.enteredValue = "";
     this.visibleDropdown = false;
     this._filterOptions();
+    this.activeIndex = null;
 
     // Wait for the update to complete
     await this.updateComplete;

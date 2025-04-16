@@ -40,7 +40,6 @@ impl ApplicationsPage {
 
 /// Application information.
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[allow(clippy::struct_field_names)]
 pub(crate) struct Application {
     application_id: Uuid,
     name: String,

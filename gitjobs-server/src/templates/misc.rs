@@ -39,9 +39,15 @@ pub(crate) struct UserMenuSection {
 
 // Types.
 
+/// Foundation information.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub(crate) struct Foundation {
+    pub foundation_id: Uuid,
+    pub name: String,
+}
+
 /// Location information.
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
-#[allow(clippy::struct_field_names)]
 pub(crate) struct Location {
     pub location_id: Uuid,
     pub city: String,
@@ -63,7 +69,6 @@ impl std::fmt::Display for Location {
 
 /// Member information.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[allow(clippy::struct_field_names)]
 pub(crate) struct Member {
     pub member_id: Uuid,
     pub foundation: String,
@@ -74,7 +79,6 @@ pub(crate) struct Member {
 
 /// Project information.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[allow(clippy::struct_field_names)]
 pub(crate) struct Project {
     pub project_id: Uuid,
     pub foundation: String,

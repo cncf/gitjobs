@@ -5,10 +5,11 @@ declare
     v_benefits text[];
     v_date_from date;
     v_date_to date;
-    v_max_distance real := (p_filters->>'max_distance')::real;
+    v_foundation text := (p_filters->>'foundation');
     v_kind text[];
     v_limit int := coalesce((p_filters->>'limit')::int, 20);
     v_location_id uuid := ((p_filters->'location')->>'location_id')::uuid;
+    v_max_distance real := (p_filters->>'max_distance')::real;
     v_offset int := coalesce((p_filters->>'offset')::int, 0);
     v_open_source int := (p_filters->>'open_source')::int;
     v_projects text[];
@@ -136,6 +137,16 @@ begin
                 j.published_at::date >= v_date_from and j.published_at::date <= v_date_to
             else true end
         and
+            case when v_foundation is not null then
+                j.job_id = any(
+                    select job_id from job_project
+                    where project_id = any(
+                        select project_id from project
+                        where foundation = v_foundation
+                    )
+                )
+            else true end
+        and
             case when cardinality(v_kind) > 0 then
                 j.kind = any(v_kind)
             else true end
@@ -159,7 +170,8 @@ begin
                         select project_id from project
                         where name = any(v_projects)
                     )
-            ) else true end
+                )
+            else true end
         and
             case when v_salary_min is not null then
                 case

@@ -150,23 +150,6 @@
     </div>
   </form>
   {# End update user password form -#}
-
-  <script type="module">
-    const passwordsInputs = document.querySelectorAll('input[type="password"]');
-    const password = document.getElementById('password');
-    const passwordConfirmation = document.getElementById('password_confirmation');
-
-    passwordsInputs.forEach((input) => {
-      input.addEventListener('blur', () => {
-        // Check if passwords match
-        if (password.value !== passwordConfirmation.value) {
-          passwordConfirmation.setCustomValidity('Passwords do not match');
-        } else {
-          passwordConfirmation.setCustomValidity('');
-        }
-      });
-    });
-  </script>
 {% endif -%}
 
 <script type="module">
@@ -187,6 +170,21 @@
   });
 
   if (passwordForm) {
+    const password = document.getElementById('new_password');
+    const passwordConfirmation = document.getElementById('password_confirmation');
+
+    const isValidPassword = () => {
+      // Check if passwords match
+      if (password.value !== passwordConfirmation.value) {
+        passwordConfirmation.setCustomValidity('Passwords do not match');
+      } else {
+        passwordConfirmation.setCustomValidity('');
+      }
+    };
+
+    password.addEventListener('input', isValidPassword);
+    passwordConfirmation.addEventListener('input', isValidPassword);
+
     passwordForm.addEventListener('htmx:afterRequest', (e) => {
       if (!isSuccessfulXHRStatus(e.detail.xhr.status)) {
         showErrorAlert('Something went wrong updating the password, please try again later.');

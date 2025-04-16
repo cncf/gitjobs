@@ -9,7 +9,6 @@ use uuid::Uuid;
 
 use crate::{
     PgDB,
-    db::misc::Total,
     templates::{
         dashboard::employer::{
             applications::{self, Application},
@@ -176,8 +175,7 @@ impl DBDashBoardEmployer for PgDB {
                     skills,
                     tz_end,
                     tz_start,
-                    upstream_commitment,
-                    published_at
+                    upstream_commitment
                 )
                 select
                     $1::uuid,
@@ -205,8 +203,7 @@ impl DBDashBoardEmployer for PgDB {
                     $23::text[],
                     $24::text,
                     $25::text,
-                    $26::int,
-                    case when $3::text = 'published' then current_timestamp else null end
+                    $26::int
                 returning job_id;
                 ",
                 &[
@@ -274,7 +271,7 @@ impl DBDashBoardEmployer for PgDB {
                 archived_at = current_timestamp,
                 updated_at = current_timestamp
             where job_id = $1::uuid
-            and status = 'published';
+            and (status = 'pending-approval' or status = 'published');
             ",
             &[&job_id],
         )
@@ -420,6 +417,7 @@ impl DBDashBoardEmployer for PgDB {
                     j.published_at,
                     j.qualifications,
                     j.responsibilities,
+                    j.review_notes,
                     j.salary,
                     j.salary_currency,
                     j.salary_min,
@@ -480,6 +478,7 @@ impl DBDashBoardEmployer for PgDB {
             published_at: row.get("published_at"),
             qualifications: row.get("qualifications"),
             responsibilities: row.get("responsibilities"),
+            review_notes: row.get("review_notes"),
             salary: row.get("salary"),
             salary_usd_year: None,
             salary_currency: row.get("salary_currency"),
@@ -537,6 +536,7 @@ impl DBDashBoardEmployer for PgDB {
                     j.workplace,
                     j.archived_at,
                     j.published_at,
+                    j.review_notes,
                     l.city,
                     l.country
                 from job j
@@ -558,6 +558,7 @@ impl DBDashBoardEmployer for PgDB {
                 country: row.get("country"),
                 archived_at: row.get("archived_at"),
                 published_at: row.get("published_at"),
+                review_notes: row.get("review_notes"),
             })
             .collect();
 
@@ -625,15 +626,14 @@ impl DBDashBoardEmployer for PgDB {
             "
             update job
             set
-                status = 'published',
-                published_at = current_timestamp,
+                status = 'pending-approval',
                 updated_at = current_timestamp,
                 archived_at = null,
                 salary_usd_year = $2::bigint,
                 salary_min_usd_year = $3::bigint,
                 salary_max_usd_year = $4::bigint
             where job_id = $1::uuid
-            and status <> 'published';
+            and (status = 'archived' or status = 'draft' or status = 'rejected');
             ",
             &[
                 &job_id,
@@ -808,5 +808,5 @@ impl DBDashBoardEmployer for PgDB {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub(crate) struct ApplicationsSearchOutput {
     pub applications: Vec<Application>,
-    pub total: Total,
+    pub total: usize,
 }

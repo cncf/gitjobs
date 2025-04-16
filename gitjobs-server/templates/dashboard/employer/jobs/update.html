@@ -14,7 +14,19 @@
     <div class="border-b border-stone-900/10 pb-12">
       {% call macros::form_title(title = "Job details", description = "Please add as many details about this job as possible. You can save it as a draft and come back later to finish it.") -%}
 
-      <div class="border border-primary-500 rounded-lg mt-10 px-8 py-5 bg-primary-50/20"
+      {# Review notes when rejected job -#}
+      {% let review_notes = job.review_notes|display_some %}
+      {% if job.status == JobStatus::Rejected && !review_notes.is_empty() -%}
+        <div class="border border-primary-500 rounded-lg mt-10 p-8 bg-primary-50/20"
+             role="alert">
+          <div class="font-semibold text-primary-500 uppercase mb-2">Moderator notes</div>
+          <div class="text-stone-600 mt-4">{{ review_notes }}</div>
+        </div>
+      {% endif -%}
+      {# End review notes when rejected job -#}
+
+      {# Recommendations -#}
+      <div class="border border-primary-500 rounded-lg mt-10 p-8 bg-primary-50/20"
            role="alert">
         <ul class="text-stone-600 text-xs lg:text-sm list-disc list-outside ps-5">
           <li>
@@ -25,6 +37,7 @@
           </li>
         </ul>
       </div>
+      {# End recommendations -#}
 
       <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-6 max-w-5xl">
         {# Job title -#}
@@ -435,7 +448,9 @@
     {# End Open Source -#}
 
     {# Job status -#}
-    <input type="hidden" name="status" value="{{ job.status }}">
+    <input type="hidden"
+           name="status"
+           value="{%- if job.status == JobStatus::Rejected || job.status == JobStatus::Published -%}pending-approval{%- else -%}{{ job.status }}{%- endif -%}">
     {# End job status -#}
 
     <div class="mt-6 flex justify-between items-center">
@@ -464,6 +479,7 @@
       <div class="flex items-center justify-end gap-x-6 relative">
         {# Cancel button -#}
         <button id="cancel-button"
+                type="button"
                 hx-get="/dashboard/employer?tab=jobs"
                 hx-target="body"
                 hx-indicator="#dashboard-spinner"

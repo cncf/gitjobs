@@ -110,6 +110,25 @@
     </div>
     {# End projects -#}
 
+    {# Foundation -#}
+    <div>
+      <div class="text-xs/6 text-stone-500/75 -mt-2">
+        or any project from the <span class="inline-block lg:hidden xl:inline-block">following</span> foundation
+      </div>
+      <div class="mt-2.5">
+        <select form="{{ form }}"
+                data-trigger-form="true"
+                name="foundation"
+                class="select-primary py-0.5 text-[0.8rem]/6 text-stone-500">
+          {% call macros::select_option(value = "", label = "", selected = filters.foundation|display_some) -%}
+          {% for foundation in filters_options.foundations -%}
+            {% call macros::select_option(value = &foundation.name, label = foundation.name|upper, selected = filters.foundation|display_some) -%}
+          {% endfor -%}
+        </select>
+      </div>
+    </div>
+    {# End foundation -#}
+
     {# Open source -#}
     <div>
       {% call filters_subtitle(text = "Time working on open source") -%}
@@ -153,6 +172,12 @@
   </div>
   {# End benefits -#}
 </div>
+
+{# Embed button -#}
+<div class="pt-4 md:pt-6 px-6 md:mb-1 border-t border-stone-100 flex justify-center">
+  <button class="btn-primary-outline btn-mini" data-embed="true">Get embed code</button>
+</div>
+{# End embed button -#}
 {# End compensation section -#}
 {% endmacro filters -%}
 {# End filters -#}

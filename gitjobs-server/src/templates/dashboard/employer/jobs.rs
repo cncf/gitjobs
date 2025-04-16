@@ -60,12 +60,12 @@ pub(crate) struct JobSummary {
     pub city: Option<String>,
     pub country: Option<String>,
     pub published_at: Option<DateTime<Utc>>,
+    pub review_notes: Option<String>,
 }
 
 /// Job details.
 #[skip_serializing_none]
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[allow(clippy::struct_field_names)]
 pub(crate) struct Job {
     pub description: String,
     pub status: JobStatus,
@@ -83,6 +83,7 @@ pub(crate) struct Job {
     pub published_at: Option<DateTime<Utc>>,
     pub qualifications: Option<String>,
     pub responsibilities: Option<String>,
+    pub review_notes: Option<String>,
     pub salary: Option<i64>,
     pub salary_usd_year: Option<i64>,
     pub salary_currency: Option<String>,
@@ -141,7 +142,9 @@ pub(crate) enum JobStatus {
     Archived,
     #[default]
     Draft,
+    PendingApproval,
     Published,
+    Rejected,
 }
 
 /// Job kind.

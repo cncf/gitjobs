@@ -1,7 +1,7 @@
 // Show or hide the provided modal.
 export const toggleModalVisibility = (modalId, status) => {
   const modal = document.getElementById(modalId);
-  if (status === "open") {
+  if (status === "open" && modal) {
     modal.classList.remove("hidden");
     // This is used to hide body scroll when the modal is open
     modal.dataset.open = "true";

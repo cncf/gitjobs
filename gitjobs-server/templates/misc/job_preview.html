@@ -1,7 +1,7 @@
 {% import "macros.html" as macros -%}
 
 {# Job preview -#}
-{% macro job_preview(job, employer, logo = "", employer_description = "", job_id = "") -%}
+{% macro job_preview(job, employer, logo = "", employer_description = "", job_id = "", with_links = false) -%}
   <div class="flex flex-col w-full gap-3 md:flex-row md:items-center border-b border-stone-200 pb-7 xl:pb-10">
     <div class="grow min-w-0">
       <div class="grow flex items-stretch gap-x-4 md:gap-x-5 pe-12 md:pe-0 min-w-0">
@@ -196,24 +196,103 @@
           {# End projects -#}
         </div>
 
-        <div class="mb-4">
-          {# Apply button -#}
-          {% if !job_id.is_empty() -%}
-            <button id="apply-button"
-                    data-job-id="{{ job_id }}"
-                    data-apply-url="{{ job.apply_url|display_some }}"
-                    class="btn-primary w-full block mt-4 mb-2 md:mt-6"
-                    disabled>Apply</button>
+        <div>
+          <div class="mb-4 md:mb-8">
+            {# Apply button -#}
+            {% if !job_id.is_empty() -%}
+              <button id="apply-button"
+                      data-job-id="{{ job_id }}"
+                      data-apply-url="{{ job.apply_url|display_some }}"
+                      class="btn-primary w-full block mt-4 mb-2 md:mt-6"
+                      disabled>Apply</button>
+              <script type="module">
+                import {
+                  applyButton
+                } from '/static/js/jobboard/job_section.js';
+                applyButton();
+              </script>
+            {% else -%}
+              <button class="btn-primary w-full block mt-4 mb-2 md:mt-6" disabled>Apply</button>
+            {% endif -%}
+            {# End apply button -#}
+          </div>
+
+          {% if with_links && !job_id.is_empty() -%}
+            {# Social share -#}
+            <div class="mb-4 md:mb-0">
+              {% call job_details_subheading(content = "Share this job") -%}
+              <div id="social-links"
+                   data-job-id="{{ job_id }}"
+                   class="flex flex-col gap-3 mt-2 relative">
+                <div class="flex flex-wrap overflow-hidden max-h-[35px] xl:max-h-[40px] gap-3">
+                  {# Twitter link -#}
+                  <a data-platform="twitter"
+                     href=""
+                     target="_blank"
+                     rel="noopener noreferrer"
+                     title="Twitter share link"
+                     class="btn-primary-outline-anchor rounded-full size-[35px] xl:size-[40px] group p-1 flex items-center justify-center">
+                    <div class="svg-icon size-4 md:size-5 group-hover:bg-white icon-twitter"></div>
+                  </a>
+                  {# End Twitter link -#}
+
+                  {# Facebook link -#}
+                  <a data-platform="facebook"
+                     href=""
+                     target="_blank"
+                     rel="noopener noreferrer"
+                     title="Facebook share link"
+                     class="btn-primary-outline-anchor rounded-full size-[35px] xl:size-[40px] group p-1 flex items-center justify-center">
+                    <div class="svg-icon size-4 md:size-5 group-hover:bg-white icon-facebook"></div>
+                  </a>
+                  {# End Facebook link -#}
+
+                  {# LinkedIn link -#}
+                  <a data-platform="linkedin"
+                     href=""
+                     target="_blank"
+                     rel="noopener noreferrer"
+                     title="LinkedIn share link"
+                     class="btn-primary-outline-anchor rounded-full size-[35px] xl:size-[40px] group p-1 flex items-center justify-center">
+                    <div class="svg-icon size-4 md:size-5 group-hover:bg-white icon-linkedin"></div>
+                  </a>
+                  {# End LinkedIn link -#}
+
+                  {# Email link -#}
+                  <a data-platform="email"
+                     title="Email share link"
+                     class="btn-primary-outline-anchor rounded-full size-[35px] xl:size-[40px] group p-1 flex items-center justify-center">
+                    <div class="svg-icon size-4 md:size-5 group-hover:bg-white icon-email"></div>
+                  </a>
+                  {# End Email link -#}
+
+                  {# Copy link -#}
+                  <a id="copy-link"
+                     title="Copy link"
+                     class="btn-primary-outline-anchor rounded-full size-[35px] xl:size-[40px] group p-1 flex items-center justify-center">
+                    <div class="svg-icon size-4 md:size-5 group-hover:bg-white icon-copy"></div>
+                  </a>
+                  {# End Copy link -#}
+                </div>
+                <div id="copy-link-tooltip"
+                     role="tooltip"
+                     class="absolute top-11 xl:top-12 z-10 start-8.5 xl:start-7.5 opacity-0 inline-block px-3 py-2 text-xs xl:text-sm font-medium text-white transition-opacity duration-300 bg-stone-900/80 rounded-lg shadow-xs tooltip">
+                  Job link copied to clipboard!
+                  <div class="h-0 w-0 border-x-[6px] border-x-transparent border-b-[6px] border-stone-900/80 absolute -top-1.5 end-3">
+                  </div>
+                </div>
+              </div>
+            </div>
+            {# End social share -#}
+
             <script type="module">
               import {
-                applyButton
+                shareJob
               } from '/static/js/jobboard/job_section.js';
-              applyButton();
+
+              shareJob();
             </script>
-          {% else -%}
-            <button class="btn-primary w-full block mt-4 mb-2 md:mt-6" disabled>Apply</button>
           {% endif -%}
-          {# End apply button -#}
         </div>
       </div>
     </div>
@@ -398,7 +477,7 @@
       {% if let Some(salary) = job.salary -%}
         <div class="flex items-baseline font-medium text-stone-900 {{ salary_size }}">
           {% call currency(value = job.salary_currency) -%}
-          {{ salary|humanize_number }}
+          {{ salary|humanize_salary }}
         </div>
       {% else -%}
         -
@@ -414,7 +493,7 @@
       {% if let Some(salary_min) = job.salary_min -%}
         <div class="flex items-baseline font-medium text-stone-900 {{ salary_size }}">
           {% call currency(value = job.salary_currency) -%}
-          {{ salary_min|humanize_number }}
+          {{ salary_min|humanize_salary }}
         </div>
       {% else -%}
         -
@@ -422,7 +501,7 @@
       {% if let Some(salary_max) = job.salary_max -%}
         <div class="flex items-baseline font-medium text-stone-900 {{ salary_size }}">
           <span class="mx-1">-</span>
-          {{ salary_max|humanize_number }}
+          {{ salary_max|humanize_salary }}
         </div>
       {% endif -%}
       {% if let Some(salary_period) = job.salary_period -%}

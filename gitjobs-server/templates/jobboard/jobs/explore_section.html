@@ -100,8 +100,8 @@
 
     {# Content -#}
     <div class="relative w-full h-full lg:w-[72%] xl:w-3/4 lg:pl-6 xl:pl-10 self-stretch">
-      <div class="relative flex flex-col bg-white border border-stone-200 rounded-lg pt-5 md:pt-7 h-full w-full">
-        <div class="flex lg:items-center mb-6 md:mb-10 px-4 md:px-7">
+      <div class="relative flex flex-col md:bg-white md:border md:border-stone-200 md:rounded-lg md:pt-7 h-full w-full">
+        <div class="flex lg:items-center mb-6 md:mb-10 md:px-7">
           <div class="flex items-center w-full">
             {# Mobile filters button -#}
             <div class="flex shrink-0 me-3 md:me-6 lg:hidden">
@@ -151,7 +151,7 @@
           </div>
         </div>
 
-        <div class="flex justify-between items-center px-4 md:px-7">
+        <div class="flex justify-between items-center md:px-7">
           {# Results -#}
           <div id="results"
                class="flex flex-row items-center justify-between text-xs md:text-sm font-semibold">
@@ -186,6 +186,58 @@
     </div>
   </div>
 </div>
+
+{# Embed modal -#}
+<div id="embed-modal"
+     tabindex="-1"
+     aria-hidden="true"
+     class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-full max-h-full flex">
+  <div id="backdrop-embed-modal"
+       class="modal-overlay absolute w-full h-full bg-stone-950 opacity-[.35]"></div>
+  <div class="relative p-4 w-full max-w-2xl max-h-full">
+    <div class="relative bg-white rounded-lg shadow">
+      {# Modal header -#}
+      <div class="flex items-center justify-between p-4 md:p-5 border-b border-stone-200 rounded-t">
+        {# Title -#}
+        <h3 class="text-xl font-semibold text-stone-900">Embed</h3>
+        {# End title -#}
+
+        {# Close button -#}
+        <button id="close-embed-modal"
+                type="button"
+                class="group bg-transparent hover:bg-stone-200 rounded-full text-sm size-8 ms-auto inline-flex justify-center items-center cursor-pointer">
+          <div class="svg-icon size-5 bg-stone-400 group-hover:bg-stone-700 icon-close"></div>
+          <span class="sr-only">Close modal</span>
+        </button>
+        {# End close button -#}
+      </div>
+      {# End modal header -#}
+
+      {# Modal content -#}
+      <div class="new-group-content p-4 md:p-8">
+        <div class="flex flex-col">
+          <div class="text-sm text-stone-500 mb-6">
+            You can use the code below to embed the job board into your site using the current filters selected.
+          </div>
+          <pre class="w-full text-xs text-stone-200 px-5 py-2 border border-stone-900 bg-stone-800 rounded-lg overflow-x-auto">
+            <code id="embed-code" class="whitespace-pre"></code>
+          </pre>
+          <div class="flex justify-end">
+            <button id="copy-embed-code" class="btn-primary mt-8">
+              <div class="flex items-center space-x-1">
+                <div class="svg-icon size-3 icon-copy"></div>
+                <div>Copy</div>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+      {# End modal content -#}
+    </div>
+  </div>
+</div>
+{# End embed modal -#}
+
 <script type="module">
   import {
     open,
@@ -196,8 +248,13 @@
     triggerActionOnForm
   } from '/static/js/jobboard/filters.js';
   import {
-    shouldDisplayJobModal
+    shouldDisplayJobModal,
+    toggleModalVisibility
   } from '/static/js/common/common.js';
+  import {
+    copyEmbedCodeToClipboard,
+    renderEmbedCode
+  } from '/static/js/jobboard/job_section.js';
 
   const openFiltersBtn = document.getElementById('open-filters');
   openFiltersBtn.addEventListener('click', open);
@@ -240,6 +297,32 @@
 
   const resetMobileFilters = document.getElementById('reset-mobile-filters');
   resetMobileFilters.addEventListener('click', () => resetForm('mobile-jobs-form'));
+
+  // Embed buttons
+  const embedButtons = document.querySelectorAll("[data-embed]");
+  embedButtons.forEach((button) => {
+    button.addEventListener("click", (event) => {
+      // Set the embed code in the textarea
+      renderEmbedCode();
+      toggleModalVisibility('embed-modal', "open");
+    });
+  });
+
+  // Copy embed code
+  const copyEmbedCode = document.getElementById('copy-embed-code');
+  copyEmbedCode.addEventListener('click', () => {
+    copyEmbedCodeToClipboard("embed-code");
+  });
+
+  // Close embed modal
+  const closeEmbedModal = document.getElementById('close-embed-modal');
+  closeEmbedModal.addEventListener('click', () => {
+    toggleModalVisibility('embed-modal', "close");
+  });
+  const backdropEmbedModal = document.getElementById('backdrop-embed-modal');
+  backdropEmbedModal.addEventListener('click', () => {
+    toggleModalVisibility('embed-modal', "close");
+  });
 
   // Display job modal if the job_id is present in the query string
   shouldDisplayJobModal();

@@ -50,6 +50,7 @@ pub(crate) struct UpdateUserPage {
 pub(crate) struct User {
     pub has_profile: bool,
     pub logged_in: bool,
+    pub moderator: bool,
 
     pub name: Option<String>,
     pub username: Option<String>,
@@ -62,6 +63,7 @@ impl From<AuthSession> for User {
         Self {
             has_profile: user.is_some_and(|u| u.has_profile),
             logged_in: user.is_some(),
+            moderator: user.is_some_and(|u| u.moderator),
             name: user.map(|u| u.name.clone()),
             username: user.map(|u| u.username.clone()),
         }

@@ -416,6 +416,7 @@
       <div class="flex items-center justify-end gap-x-6 relative">
         {# Cancel button -#}
         <button id="cancel-button"
+                type="button"
                 hx-get="/dashboard/employer?tab=jobs"
                 hx-target="body"
                 hx-indicator="#dashboard-spinner"
@@ -485,8 +486,8 @@
     publishBtn.addEventListener('click', () => {
       // Update hx-spinner
       jobsForm.setAttribute('hx-indicator', '#dashboard-spinner, #publish-spinner');
-      // Update the job status to published
-      jobsForm.querySelector('input[name="status"]').value = 'published';
+      // Update the job status to pending approval
+      jobsForm.querySelector('input[name="status"]').value = 'pending-approval';
 
       // Check if the form is valid before submitting,
       // htmx does not trigger the form validation

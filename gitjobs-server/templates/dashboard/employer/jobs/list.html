@@ -60,7 +60,7 @@
       <tr>
         <th scope="col" class="px-3 xl:px-5 py-3">Title</th>
         <th scope="col" class="hidden xl:table-cell px-3 xl:px-5 py-3">Location</th>
-        <th scope="col" class="px-3 xl:px-5 py-3">Status</th>
+        <th scope="col" class="px-3 xl:px-5 py-3 w-45">Status</th>
         <th scope="col" class="hidden 2xl:table-cell px-3 xl:px-5 py-3">Created</th>
         <th scope="col" class="px-3 xl:px-5 py-3">Published</th>
         <th scope="col" class="hidden xl:table-cell px-5 py-3">Archived</th>
@@ -113,8 +113,21 @@
             {# End location -#}
 
             {# Status -#}
-            <td class="px-3 xl:px-5 py-4 whitespace-nowrap w-32">
-              {% call macros::job_status_badge(status = job.status) -%}
+            <td class="px-3 xl:px-5 py-4 whitespace-nowrap">
+              {% let review_notes = job.review_notes|display_some %}
+              {% if job.status == JobStatus::Rejected && !review_notes.is_empty() -%}
+                <div class="relative">
+                  <div class="cursor-pointer peer">{% call macros::job_status_badge(status = job.status) -%}</div>
+                  <div role="tooltip"
+                       class="absolute top-7 z-10 end-4 opacity-0 peer-hover:opacity-100 px-3 py-2 text-xs xl:text-sm font-medium text-white transition-opacity duration-300 bg-stone-900/80 rounded-lg shadow-xs tooltip min-w-[250px] max-w-[400px]">
+                    <div class="text-wrap">{{ review_notes }}</div>
+                    <div class="size-0 border-x-[6px] border-x-transparent border-b-[6px] border-stone-900/80 absolute -top-1.5 end-3">
+                    </div>
+                  </div>
+                </div>
+              {% else -%}
+                {% call macros::job_status_badge(status = job.status) -%}
+              {% endif -%}
             </td>
             {# End status -#}
 
@@ -160,7 +173,7 @@
                        class="dropdown absolute hidden z-10 end-0 top-8 w-[200px] bg-white divide-y divide-stone-100 rounded-lg shadow border border-stone-200">
                     <ul class="py-2 text-sm text-stone-700"
                         aria-labelledby="dropdownDefaultButton">
-                      {% if job.status != JobStatus::Published -%}
+                      {% if job.status != JobStatus::Published && job.status != JobStatus::PendingApproval -%}
                         <li>
                           <button hx-put="/dashboard/employer/jobs/{{ job.job_id }}/publish"
                                   hx-target="#dashboard-content"

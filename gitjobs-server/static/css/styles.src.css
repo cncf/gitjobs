@@ -334,6 +334,11 @@ select.aligned-right option {
   -webkit-mask-image: url("/static/images/icons/calendar.svg");
 }
 
+.icon-cancel {
+  mask-image: url("/static/images/icons/cancel.svg");
+  -webkit-mask-image: url("/static/images/icons/cancel.svg");
+}
+
 .icon-caret_down {
   mask-image: url("/static/images/icons/caret_down.svg");
   -webkit-mask-image: url("/static/images/icons/caret_down.svg");
@@ -362,6 +367,11 @@ select.aligned-right option {
 .icon-company {
   mask-image: url("/static/images/icons/company.svg");
   -webkit-mask-image: url("/static/images/icons/company.svg");
+}
+
+.icon-copy {
+  mask-image: url("/static/images/icons/copy.svg");
+  -webkit-mask-image: url("/static/images/icons/copy.svg");
 }
 
 .icon-draft {
@@ -444,6 +454,11 @@ select.aligned-right option {
   -webkit-mask-image: url("/static/images/icons/list.svg");
 }
 
+.icon-live {
+  mask-image: url("/static/images/icons/live.svg");
+  -webkit-mask-image: url("/static/images/icons/live.svg");
+}
+
 .icon-location {
   mask-image: url("/static/images/icons/location.svg");
   -webkit-mask-image: url("/static/images/icons/location.svg");
@@ -467,6 +482,11 @@ select.aligned-right option {
 .icon-menu {
   mask-image: url("/static/images/icons/menu.svg");
   -webkit-mask-image: url("/static/images/icons/menu.svg");
+}
+
+.icon-microphone {
+  mask-image: url("/static/images/icons/microphone.svg");
+  -webkit-mask-image: url("/static/images/icons/microphone.svg");
 }
 
 .icon-office_chair {
@@ -542,6 +562,11 @@ select.aligned-right option {
 .icon-signature {
   mask-image: url("/static/images/icons/signature.svg");
   -webkit-mask-image: url("/static/images/icons/signature.svg");
+}
+
+.icon-tasks {
+  mask-image: url("/static/images/icons/tasks.svg");
+  -webkit-mask-image: url("/static/images/icons/tasks.svg");
 }
 
 .icon-team {

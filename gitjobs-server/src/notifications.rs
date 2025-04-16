@@ -239,7 +239,6 @@ pub(crate) struct NewNotification {
 
 /// Information required to deliver a notification.
 #[derive(Debug, Clone)]
-#[allow(clippy::struct_field_names)]
 pub(crate) struct Notification {
     pub notification_id: Uuid,
     pub email: String,

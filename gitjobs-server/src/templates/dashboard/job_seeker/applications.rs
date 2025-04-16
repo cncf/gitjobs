@@ -20,7 +20,6 @@ pub(crate) struct ApplicationsPage {
 
 /// Application information.
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[allow(clippy::struct_field_names)]
 pub(crate) struct Application {
     pub application_id: Uuid,
     pub applied_at: DateTime<Utc>,

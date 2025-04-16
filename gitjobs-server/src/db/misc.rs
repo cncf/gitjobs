@@ -122,6 +122,3 @@ impl DBMisc for PgDB {
         Ok(projects)
     }
 }
-
-/// Type alias to represent the total count.
-pub(crate) type Total = usize;

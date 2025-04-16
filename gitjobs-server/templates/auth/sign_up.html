@@ -145,18 +145,24 @@
     </div>
   </div>
   <script type="module">
-    const passwordsInputs = document.querySelectorAll('input[type="password"]');
-    const password = document.getElementById('password');
-    const passwordConfirmation = document.getElementById('password_confirmation');
+    const signupForm = document.getElementById('sign-up-form');
+    const passwords = document.querySelectorAll('input[type="password"]');
 
-    passwordsInputs.forEach((input) => {
-      input.addEventListener('blur', () => {
-        // Check if passwords match
-        if (password.value !== passwordConfirmation.value) {
-          passwordConfirmation.setCustomValidity('Passwords do not match');
-        } else {
-          passwordConfirmation.setCustomValidity('');
-        }
+    const isValidPassword = () => {
+      const password = document.getElementById('password');
+      const passwordConfirmation = document.getElementById('password_confirmation');
+
+      // Check if passwords match
+      if (password.value !== passwordConfirmation.value) {
+        passwordConfirmation.setCustomValidity('Passwords do not match');
+      } else {
+        passwordConfirmation.setCustomValidity('');
+      }
+    }
+
+    passwords.forEach((password) => {
+      password.addEventListener('input', () => {
+        isValidPassword();
       });
     });
   </script>

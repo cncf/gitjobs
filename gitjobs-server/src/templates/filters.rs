@@ -1,7 +1,23 @@
 //! Some custom filters for templates.
 
+use std::sync::LazyLock;
+
 use chrono::{DateTime, NaiveDate, Utc};
+use human_format::{Formatter, Scales};
 use tracing::error;
+
+/// Salary formatter.
+static SALARY_FORMATTER: LazyLock<Formatter> = LazyLock::new(|| {
+    let mut scales = Scales::new();
+    scales
+        .with_base(1000)
+        .with_suffixes(vec!["", "K", "M", "B", "T", "P", "E", "Z", "Y"]);
+
+    let mut formatter = Formatter::new();
+    formatter.with_scales(scales).with_decimals(0).with_separator("");
+
+    formatter
+});
 
 /// Return the value if it is some, otherwise return an empty string.
 #[allow(clippy::unnecessary_wraps, clippy::ref_option)]
@@ -76,18 +92,15 @@ where
     }
 }
 
-/// Return the number in humanized format.
+/// Return the salary amount in humanized format.
 #[allow(
     clippy::unnecessary_wraps,
     clippy::ref_option,
     clippy::trivially_copy_pass_by_ref,
     clippy::cast_precision_loss
 )]
-pub(crate) fn humanize_number(value: &i64) -> askama::Result<String> {
-    Ok(human_format::Formatter::new()
-        .with_decimals(0)
-        .with_separator("")
-        .format(*value as f64))
+pub(crate) fn humanize_salary(amount: &i64) -> askama::Result<String> {
+    Ok(SALARY_FORMATTER.format(*amount as f64))
 }
 
 /// Filter to convert markdown to html.

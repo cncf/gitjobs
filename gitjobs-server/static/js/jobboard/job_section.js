@@ -57,3 +57,76 @@ export const applyButton = () => {
     }
   }
 };
+
+export const renderEmbedCode = () => {
+  const embedCode = document.getElementById("embed-code");
+  const params = new URLSearchParams(window.location.search);
+  params.append("limit", "10");
+  embedCode.textContent = `
+<iframe id="gitjobs" src="${window.location.origin}/embed?${params.toString()}" style="width:100%;max-width:870px;height:100%;display:block;border:none;"></iframe>
+
+<!-- Uncomment the following lines for resizing iframes dynamically using open-iframe-resizer
+<script type="module">
+  import { initialize } from "https://cdn.jsdelivr.net/npm/@open-iframe-resizer/core@latest/dist/index.js";
+  initialize({}, "#gitjobs");
+</script> -->`;
+};
+
+export const copyEmbedCodeToClipboard = (elId) => {
+  const embedCode = document.getElementById(elId);
+
+  // Copy the text inside the text field
+  navigator.clipboard.writeText(embedCode.textContent);
+
+  showSuccessAlert("Embed code copied to clipboard!");
+};
+
+export const shareJob = () => {
+  const socialLinks = document.getElementById("social-links");
+  const jobId = socialLinks.dataset.jobId;
+  const shareUrl = `${window.location.origin}?job_id=${jobId}`;
+  const subject = "Check out this job I found on GitJobs!";
+  const message = "Check out this job I found on GitJobs!";
+
+  const anchorTags = socialLinks.querySelectorAll("a");
+  anchorTags.forEach((anchorTag) => {
+    const platform = anchorTag.dataset.platform;
+
+    switch (platform) {
+      case "twitter":
+        anchorTag.setAttribute(
+          "href",
+          `https://twitter.com/intent/tweet?text=${encodeURIComponent(message)}&url=${shareUrl}`,
+        );
+        break;
+      case "facebook":
+        anchorTag.setAttribute(
+          "href",
+          `https://www.facebook.com/sharer/sharer.php?u=${shareUrl}&quote=${encodeURIComponent(message)}`,
+        );
+        break;
+      case "linkedin":
+        anchorTag.setAttribute("href", `https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}`);
+        break;
+      case "email":
+        anchorTag.setAttribute(
+          "href",
+          `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(
+            `${message} ${shareUrl}`,
+          )}`,
+        );
+        break;
+    }
+  });
+
+  // Copy link to clipboard
+  const copyLink = document.querySelector("#copy-link");
+  copyLink.addEventListener("click", () => {
+    navigator.clipboard.writeText(shareUrl);
+    const tooltip = document.querySelector("#copy-link-tooltip");
+    tooltip.classList.add("opacity-100");
+    setTimeout(() => {
+      tooltip.classList.remove("opacity-100");
+    }, 3000);
+  });
+};

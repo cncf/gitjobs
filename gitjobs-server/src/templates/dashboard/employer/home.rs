@@ -19,7 +19,6 @@ use crate::templates::{
 /// Home page template.
 #[derive(Debug, Clone, Template)]
 #[template(path = "dashboard/employer/home.html")]
-#[allow(clippy::struct_field_names)]
 pub(crate) struct Page {
     pub content: Content,
     pub employers: Vec<employer::employers::EmployerSummary>,

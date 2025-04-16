@@ -182,7 +182,6 @@ pub(crate) struct JobSummary {
 /// Employer details.
 #[skip_serializing_none]
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[allow(clippy::struct_field_names)]
 pub(crate) struct Employer {
     pub company: String,
     pub employer_id: Uuid,
@@ -196,7 +195,6 @@ pub(crate) struct Employer {
 /// Job details.
 #[skip_serializing_none]
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[allow(clippy::struct_field_names)]
 pub(crate) struct Job {
     pub description: String,
     pub employer: Employer,

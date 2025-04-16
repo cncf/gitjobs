@@ -14,7 +14,7 @@ use uuid::Uuid;
 use crate::{
     db::DynDB,
     handlers::{error::HandlerError, extractors::SelectedEmployerIdRequired},
-    templates::dashboard::employer::jobs::{self, Job},
+    templates::dashboard::employer::jobs::{self, Job, JobStatus},
 };
 
 // Pages handlers.
@@ -70,7 +70,7 @@ pub(crate) async fn preview_page_wo_job(
     Path(job_id): Path<Uuid>,
     SelectedEmployerIdRequired(employer_id): SelectedEmployerIdRequired,
 ) -> Result<impl IntoResponse, HandlerError> {
-    let (job, employer) = tokio::try_join!(db.get_job_dashboard(&job_id), db.get_employer(&employer_id))?;
+    let (employer, job) = tokio::try_join!(db.get_employer(&employer_id), db.get_job_dashboard(&job_id))?;
     let template = jobs::PreviewPage { employer, job };
 
     Ok(Html(template.render()?).into_response())
@@ -104,6 +104,11 @@ pub(crate) async fn add(
         Err(e) => return Ok((StatusCode::UNPROCESSABLE_ENTITY, e.to_string()).into_response()),
     };
     job.normalize();
+
+    // Make sure the status provided is valid
+    if job.status != JobStatus::Draft && job.status != JobStatus::PendingApproval {
+        return Ok((StatusCode::UNPROCESSABLE_ENTITY, "invalid status").into_response());
+    }
 
     // Add job to database
     db.add_job(&employer_id, &job).await?;
@@ -158,6 +163,14 @@ pub(crate) async fn update(
         Err(e) => return Ok((StatusCode::UNPROCESSABLE_ENTITY, e.to_string()).into_response()),
     };
     job.normalize();
+
+    // Make sure the status provided is valid
+    if job.status != JobStatus::Archived
+        && job.status != JobStatus::Draft
+        && job.status != JobStatus::PendingApproval
+    {
+        return Ok((StatusCode::UNPROCESSABLE_ENTITY, "invalid status").into_response());
+    }
 
     // Update job in database
     db.update_job(&job_id, &job).await?;

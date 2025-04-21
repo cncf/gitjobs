@@ -28,7 +28,7 @@
         hx-get='/section/jobs/results'
         hx-trigger="submit"
         hx-target="#items-list"
-        hx-include="#searchbar"
+        hx-include="#searchbar,#sort"
         hx-ext="no-empty-vals"
         hx-indicator="#mobile-jobs-spinner"
         hx-on::after-request="window.scrollTo({top: 0, behavior: 'instant'})"
@@ -72,7 +72,7 @@
             hx-get='/section/jobs/results'
             hx-trigger="submit"
             hx-target="#items-list"
-            hx-include="#searchbar"
+            hx-include="#searchbar,#sort"
             hx-ext="no-empty-vals"
             hx-indicator="#desktop-jobs-spinner"
             hx-on::after-request="window.scrollTo({top: 0, behavior: 'instant'})"
@@ -167,11 +167,24 @@
                    class="font-semibold text-[0.8rem] text-nowrap font-semibold leading-6 me-2 xl:me-3">
               Sort by
             </label>
-            <select id="sort_by"
-                    name="sort_by"
+            <select id="sort"
+                    name="sort"
                     class="block w-24 py-1 px-3 text-[0.8rem] leading-none h-[30px] text-stone-900 bg-white border border-stone-300 rounded-full focus:outline-none focus:ring-0 focus:border-stone-300 hover:border-primary-500 focus:hover:border-primary-500">
-              <option value="date" selected="">Date</option>
+              {% call macros::select_option(value = "date", label = "Date", selected = filters.sort|display_some_or("open-source")) -%}
+              {% call macros::select_option(value = "open-source", label = "Open Source time", selected = filters.sort|display_some_or("open-source")) -%}
+              {% call macros::select_option(value = "salary", label = "Salary", selected = filters.sort|display_some_or("open-source")) -%}
+              {% call macros::select_option(value = "upstream-commitment", label = "Upstream commitment time", selected = filters.sort|display_some_or("open-source")) -%}
             </select>
+            <script type="module">
+              import {
+                triggerActionOnForm
+              } from '/static/js/jobboard/filters.js';
+
+              const sortSelect = document.getElementById('sort');
+              sortSelect.addEventListener('change', () => {
+                triggerActionOnForm("desktop-jobs-form", "submit");
+              });
+            </script>
           </div>
           {# End sort by -#}
         </div>

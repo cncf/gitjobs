@@ -86,6 +86,8 @@ pub(crate) struct Filters {
     #[serde(skip_serializing_if = "option_is_none_or_default")]
     pub skills: Option<Vec<String>>,
     #[serde(skip_serializing_if = "option_is_none_or_default")]
+    pub sort: Option<Sort>,
+    #[serde(skip_serializing_if = "option_is_none_or_default")]
     pub ts_query: Option<String>,
     #[serde(skip_serializing_if = "option_is_none_or_default")]
     pub upstream_commitment: Option<usize>,
@@ -145,6 +147,18 @@ pub(crate) enum Seniority {
     Mid,
     Senior,
     Lead,
+}
+
+/// Sort options for the job search.
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize, strum::Display, strum::EnumString)]
+#[serde(rename_all = "kebab-case")]
+#[strum(serialize_all = "kebab-case")]
+pub(crate) enum Sort {
+    Date,
+    #[default]
+    OpenSource,
+    Salary,
+    UpstreamCommitment,
 }
 
 /// Filters options used in the jobs explore section.

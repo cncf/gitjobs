@@ -16,6 +16,7 @@ declare
     v_salary_min bigint := (p_filters->>'salary_min')::bigint;
     v_seniority text := (p_filters->>'seniority');
     v_skills text[];
+    v_sort text := coalesce((p_filters->>'sort'), 'open-source');
     v_tsquery_with_prefix_matching tsquery;
     v_upstream_commitment int := (p_filters->>'upstream_commitment')::int;
     v_workplace text[];
@@ -80,6 +81,7 @@ begin
             j.salary_currency,
             j.salary_min,
             j.salary_max,
+            j.salary_max_usd_year,
             j.salary_period,
             j.seniority,
             j.skills,
@@ -174,11 +176,7 @@ begin
             else true end
         and
             case when v_salary_min is not null then
-                case
-                    when j.salary_usd_year is not null then j.salary_usd_year >= v_salary_min
-                    when j.salary_min_usd_year is not null then j.salary_min_usd_year >= v_salary_min
-                    else false
-                end
+                j.salary_min_usd_year >= v_salary_min
             else true end
         and
             case when v_seniority is not null then
@@ -226,7 +224,11 @@ begin
             from (
                 select *
                 from filtered_jobs
-                order by published_at desc
+                order by
+                    (case when v_sort = 'open-source' then open_source end) desc nulls last,
+                    (case when v_sort = 'salary' then salary_max_usd_year end) desc nulls last,
+                    (case when v_sort = 'upstream-commitment' then upstream_commitment end) desc nulls last,
+                    published_at desc
                 limit v_limit
                 offset v_offset
             ) filtered_jobs_page

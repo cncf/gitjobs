@@ -113,8 +113,8 @@ impl Job {
         // Salary (to USD yearly)
         let (currency, period) = (self.salary_currency.as_ref(), self.salary_period.as_ref());
         self.salary_usd_year = normalize_salary(self.salary, currency, period);
-        self.salary_min_usd_year = normalize_salary(self.salary_min, currency, period);
-        self.salary_max_usd_year = normalize_salary(self.salary_max, currency, period);
+        self.salary_min_usd_year = normalize_salary(self.salary_min.or(self.salary), currency, period);
+        self.salary_max_usd_year = normalize_salary(self.salary_max.or(self.salary), currency, period);
 
         // Skills
         if let Some(skills) = &mut self.skills {

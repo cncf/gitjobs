@@ -28,7 +28,7 @@
         hx-get='/section/jobs/results'
         hx-trigger="submit"
         hx-target="#items-list"
-        hx-include="#searchbar,#sort"
+        hx-include="#searchbar,#sort-mobile"
         hx-ext="no-empty-vals"
         hx-indicator="#mobile-jobs-spinner"
         hx-on::after-request="window.scrollTo({top: 0, behavior: 'instant'})"
@@ -72,7 +72,7 @@
             hx-get='/section/jobs/results'
             hx-trigger="submit"
             hx-target="#items-list"
-            hx-include="#searchbar,#sort"
+            hx-include="#searchbar,#sort-desktop"
             hx-ext="no-empty-vals"
             hx-indicator="#desktop-jobs-spinner"
             hx-on::after-request="window.scrollTo({top: 0, behavior: 'instant'})"
@@ -164,25 +164,39 @@
           {# Sort by -#}
           <div class="flex flex-1 flex-row items-center justify-end">
             <label for="sort_by"
-                   class="font-semibold text-[0.8rem] text-nowrap font-semibold leading-6 me-2 xl:me-3">
+                   class="font-semibold text-xs md:text-[0.8rem] text-nowrap font-semibold leading-6 me-2 xl:me-3">
               Sort by
             </label>
-            <select id="sort"
+            {%- let selected_sort = filters.sort.clone().unwrap_or_default().to_string() -%}
+            <select id="sort-desktop"
                     name="sort"
-                    class="block w-24 py-1 px-3 text-[0.8rem] leading-none h-[30px] text-stone-900 bg-white border border-stone-300 rounded-full focus:outline-none focus:ring-0 focus:border-stone-300 hover:border-primary-500 focus:hover:border-primary-500">
-              {% call macros::select_option(value = "date", label = "Date", selected = filters.sort|display_some_or("open-source")) -%}
-              {% call macros::select_option(value = "open-source", label = "Open Source time", selected = filters.sort|display_some_or("open-source")) -%}
-              {% call macros::select_option(value = "salary", label = "Salary", selected = filters.sort|display_some_or("open-source")) -%}
-              {% call macros::select_option(value = "upstream-commitment", label = "Upstream commitment time", selected = filters.sort|display_some_or("open-source")) -%}
+                    class="hidden md:block w-[185px] py-1 px-3 text-[0.8rem] leading-none h-[30px] text-stone-900 bg-white border border-stone-300 rounded-full focus:outline-none focus:ring-0 focus:border-stone-300 hover:border-primary-500 focus:hover:border-primary-500">
+              {% call macros::select_option(value = "date", label = "Date", selected = selected_sort) -%}
+              {% call macros::select_option(value = "open-source", label = "Open Source", selected = selected_sort) -%}
+              {% call macros::select_option(value = "salary", label = "Salary", selected = selected_sort) -%}
+              {% call macros::select_option(value = "upstream-commitment", label = "Upstream Commitment", selected = selected_sort) -%}
+            </select>
+            <select id="sort-mobile"
+                    name="sort"
+                    class="block md:hidden w-[175px] py-1 px-3 text-xs leading-none h-[30px] text-stone-900 bg-white border border-stone-300 rounded-full focus:outline-none focus:ring-0 focus:border-stone-300 hover:border-primary-500 focus:hover:border-primary-500">
+              {% call macros::select_option(value = "date", label = "Date", selected = selected_sort) -%}
+              {% call macros::select_option(value = "open-source", label = "Open Source", selected = selected_sort) -%}
+              {% call macros::select_option(value = "salary", label = "Salary", selected = selected_sort) -%}
+              {% call macros::select_option(value = "upstream-commitment", label = "Upstream Commitment", selected = selected_sort) -%}
             </select>
             <script type="module">
               import {
                 triggerActionOnForm
               } from '/static/js/jobboard/filters.js';
 
-              const sortSelect = document.getElementById('sort');
-              sortSelect.addEventListener('change', () => {
+              const sortSelectDesktop = document.getElementById('sort-desktop');
+              sortSelectDesktop.addEventListener('change', () => {
                 triggerActionOnForm("desktop-jobs-form", "submit");
+              });
+
+              const sortSelectMobile = document.getElementById('sort-mobile');
+              sortSelectMobile.addEventListener('change', () => {
+                triggerActionOnForm("mobile-jobs-form", "submit");
               });
             </script>
           </div>

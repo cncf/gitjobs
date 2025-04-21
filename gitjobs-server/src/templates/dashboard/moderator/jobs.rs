@@ -14,6 +14,13 @@ use crate::templates::{
 
 // Pages templates.
 
+/// Live jobs page template.
+#[derive(Debug, Clone, Template, Serialize, Deserialize)]
+#[template(path = "dashboard/moderator/live_jobs.html")]
+pub(crate) struct LivePage {
+    pub jobs: Vec<JobSummary>,
+}
+
 /// Pending jobs page template.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
 #[template(path = "dashboard/moderator/pending_jobs.html")]

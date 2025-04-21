@@ -16,17 +16,29 @@ use crate::{
     db::DynDB,
     handlers::error::HandlerError,
     templates::{
-        dashboard::{employer, moderator::jobs},
+        dashboard::{
+            employer::{self, jobs::JobStatus},
+            moderator::jobs,
+        },
         helpers::option_is_none_or_default,
     },
 };
 
 // Pages handlers.
 
+/// Handler that returns the live jobs page.
+#[instrument(skip_all, err)]
+pub(crate) async fn live_page(State(db): State<DynDB>) -> Result<impl IntoResponse, HandlerError> {
+    let jobs = db.list_jobs_for_moderation(JobStatus::Published).await?;
+    let template = jobs::LivePage { jobs };
+
+    Ok(Html(template.render()?))
+}
+
 /// Handler that returns the pending jobs page.
 #[instrument(skip_all, err)]
 pub(crate) async fn pending_page(State(db): State<DynDB>) -> Result<impl IntoResponse, HandlerError> {
-    let jobs = db.list_moderation_pending_jobs().await?;
+    let jobs = db.list_jobs_for_moderation(JobStatus::PendingApproval).await?;
     let template = jobs::PendingPage { jobs };
 
     Ok(Html(template.render()?))

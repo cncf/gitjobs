@@ -19,9 +19,12 @@ use crate::{
     handlers::error::HandlerError,
     templates::{
         PageId,
-        dashboard::moderator::{
-            home::{self, Content, Tab},
-            jobs,
+        dashboard::{
+            employer::jobs::JobStatus,
+            moderator::{
+                home::{self, Content, Tab},
+                jobs,
+            },
         },
     },
 };
@@ -44,8 +47,12 @@ pub(crate) async fn page(
     // Prepare content for the selected tab
     let tab: Tab = query.get("tab").unwrap_or(&String::new()).parse().unwrap_or_default();
     let content = match tab {
+        Tab::LiveJobs => {
+            let jobs = db.list_jobs_for_moderation(JobStatus::Published).await?;
+            Content::LiveJobs(jobs::LivePage { jobs })
+        }
         Tab::PendingJobs => {
-            let jobs = db.list_moderation_pending_jobs().await?;
+            let jobs = db.list_jobs_for_moderation(JobStatus::PendingApproval).await?;
             Content::PendingJobs(jobs::PendingPage { jobs })
         }
     };

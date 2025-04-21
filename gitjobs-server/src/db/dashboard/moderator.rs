@@ -6,7 +6,10 @@ use async_trait::async_trait;
 use tracing::{instrument, trace};
 use uuid::Uuid;
 
-use crate::{PgDB, templates::dashboard::moderator::jobs::JobSummary};
+use crate::{
+    PgDB,
+    templates::dashboard::{employer::jobs::JobStatus, moderator::jobs::JobSummary},
+};
 
 /// Trait that defines some database operations used in the moderator
 /// dashboard.
@@ -15,8 +18,8 @@ pub(crate) trait DBDashBoardModerator {
     /// Approve job.
     async fn approve_job(&self, job_id: &Uuid, reviewer: &Uuid) -> Result<()>;
 
-    /// List moderation pending jobs.
-    async fn list_moderation_pending_jobs(&self) -> Result<Vec<JobSummary>>;
+    /// List jobs that match the given status.
+    async fn list_jobs_for_moderation(&self, status: JobStatus) -> Result<Vec<JobSummary>>;
 
     /// Reject job.
     async fn reject_job(&self, job_id: &Uuid, reviewer: &Uuid, review_notes: Option<&String>) -> Result<()>;
@@ -47,8 +50,8 @@ impl DBDashBoardModerator for PgDB {
     }
 
     #[instrument(skip(self), err)]
-    async fn list_moderation_pending_jobs(&self) -> Result<Vec<JobSummary>> {
-        trace!("db: list moderation pending jobs");
+    async fn list_jobs_for_moderation(&self, status: JobStatus) -> Result<Vec<JobSummary>> {
+        trace!("db: list jobs for moderation");
 
         let db = self.pool.get().await?;
         let jobs = db
@@ -78,10 +81,10 @@ impl DBDashBoardModerator for PgDB {
                 from job j
                 join employer e on j.employer_id = e.employer_id
                 left join member m on e.member_id = m.member_id
-                where j.status = 'pending-approval'
+                where j.status = $1
                 order by j.created_at desc;
                 ",
-                &[],
+                &[&status.to_string()],
             )
             .await?
             .into_iter()

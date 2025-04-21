@@ -255,6 +255,7 @@ fn setup_moderator_dashboard_router(state: &State) -> Router<State> {
     // Setup router
     Router::new()
         .route("/", get(dashboard::moderator::home::page))
+        .route("/jobs/live", get(dashboard::moderator::jobs::live_page))
         .route("/jobs/pending", get(dashboard::moderator::jobs::pending_page))
         .route("/jobs/{job_id}/approve", put(dashboard::moderator::jobs::approve))
         .route("/jobs/{job_id}/reject", put(dashboard::moderator::jobs::reject))

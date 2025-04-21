@@ -24,10 +24,16 @@ pub(crate) struct Page {
 /// Content section.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub(crate) enum Content {
+    LiveJobs(jobs::LivePage),
     PendingJobs(jobs::PendingPage),
 }
 
 impl Content {
+    /// Check if the content is the live jobs page.
+    fn is_live_jobs(&self) -> bool {
+        matches!(self, Content::LiveJobs(_))
+    }
+
     /// Check if the content is the pending jobs page.
     fn is_pending_jobs(&self) -> bool {
         matches!(self, Content::PendingJobs(_))
@@ -37,6 +43,7 @@ impl Content {
 impl std::fmt::Display for Content {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
+            Content::LiveJobs(template) => write!(f, "{}", template.render()?),
             Content::PendingJobs(template) => write!(f, "{}", template.render()?),
         }
     }
@@ -46,6 +53,7 @@ impl std::fmt::Display for Content {
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize, strum::Display, strum::EnumString)]
 #[strum(serialize_all = "kebab-case")]
 pub(crate) enum Tab {
+    LiveJobs,
     #[default]
     PendingJobs,
 }

@@ -1,5 +1,5 @@
 {% import "macros.html" as macros -%}
-{% import "misc/preview_modal.html" as preview -%}
+{% import "dashboard/moderator/moderator_macros.html" as moderator_macros -%}
 
 <div class="flex items-center">
   {# Mobile filters button -#}
@@ -22,92 +22,7 @@
 </div>
 
 {# Pending jobs Table -#}
-<div class="hidden md:block relative overflow-visible mt-10">
-  <table class="table-fixed w-full text-xs lg:text-sm text-left rtl:text-right text-stone-500">
-    <thead class="text-xs text-stone-700 uppercase bg-stone-100 border-b border-stone-200">
-      <tr>
-        <th scope="col" class="px-3 xl:px-5 py-3 hidden md:table-cell">Employer</th>
-        <th scope="col" class="px-3 xl:px-5 py-3 w-[35%] lg:w-[45%]">
-          Job <span class="hidden md:inline-block">title</span>
-        </th>
-        <th scope="col"
-            class="px-3 xl:px-5 py-3 w-28 xl:w-32 table-cell lg:hidden xl:table-cell">Member</th>
-        <th scope="col" class="px-3 xl:px-5 py-3 w-26 xl:w-32">Created</th>
-        <th scope="col" class="p-4 w-22 xl:w-25 text-center">Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% if jobs.is_empty() -%}
-        <tr class="bg-white border-b border-stone-200">
-          {# No jobs -#}
-          <td class="px-8 py-20 text-center" colspan="5">
-            <div class="text-xl lg:text-2xl mb-10">
-              <div>There are no moderation pending jobs at the moment.</div>
-            </div>
-            <p class="text-stone-700 mb-10">Thanks for checking, please come back later :)</p>
-          </td>
-        </tr>
-      {% else -%}
-        {% for job in jobs -%}
-          <tr class="odd:bg-white even:bg-stone-50/50 border-b border-stone-200">
-            {# Employer -#}
-            <td class="px-3 xl:px-5 py-4">
-              <div class="text-stone-500 text-xs uppercase font-semibold truncate">{{ job.employer.company }}</div>
-              <div class="hidden lg:flex xl:hidden mt-0 lg:mt-1 xl:mt-0">
-                {% call employer_member_badge(employer = job.employer ) -%}
-              </div>
-            </td>
-            {# End employer -#}
-
-            {# Job -#}
-            <td class="px-3 xl:px-5 py-4 font-medium text-stone-900">
-              <button hx-get="/dashboard/moderator/jobs/{{ job.employer.employer_id }}/{{ job.job_id }}/preview"
-                      hx-target="#preview-content"
-                      hx-disabled-elt="this"
-                      class="cursor-pointer preview-button max-w-full min-w-0 text-sm">
-                <div class="max-w-full text-stone-900 text-start truncate">{{ job.title }}</div>
-              </button>
-            </td>
-            {# End job -#}
-
-            {# Member -#}
-            <td class="px-3 xl:px-5 py-4 whitespace-nowrap table-cell lg:hidden xl:table-cell">
-              {% call employer_member_badge(employer = job.employer, with_legend = false ) -%}
-            </td>
-            {# End member -#}
-
-            {# Created date -#}
-            <td class="px-3 xl:px-5 py-4 whitespace-nowrap">{{ job.created_at.format(DATE_FORMAT) }}</td>
-            {# End created date -#}
-
-            {# Actions -#}
-            <td class="px-3 xl:px-5">
-              <div class="flex items-center justify-center space-x-2">
-                <div>
-                  <button hx-put="/dashboard/moderator/jobs/{{ job.job_id }}/approve"
-                          hx-disabled-elt="this"
-                          class="btn-tertiary p-2"
-                          title="Approve">
-                    <div class="svg-icon size-3 md:size-4 icon-check"></div>
-                  </button>
-                </div>
-
-                <div>
-                  <button data-job-id="{{ job.job_id }}"
-                          class="btn-tertiary p-2 reject-modal"
-                          title="Reject">
-                    <div class="svg-icon size-2.5 md:size-3.5 icon-cancel"></div>
-                  </button>
-                </div>
-              </div>
-            </td>
-            {# End actions -#}
-          </tr>
-        {% endfor -%}
-      {% endif -%}
-    </tbody>
-  </table>
-</div>
+{% call moderator_macros::jobs_table(jobs = jobs, kind = "pending") -%}
 {# End pending jobs Table -#}
 
 {# Mobile pending jobs cards -#}
@@ -122,184 +37,16 @@
     </div>
   {% else -%}
     {% for job in jobs -%}
-      <div class="border border-stone-200 bg-white rounded-lg p-5">
-        <div class="flex justify-between items-center">
-          {# Comapny -#}
-          <div class="text-stone-500 leading-[0.7rem] text-[0.7rem] uppercase font-semibold truncate">
-            {{ job.employer.company }}
-          </div>
-          {# End company -#}
-
-          {# Created -#}
-          <div class="truncate leading-[0.7rem] w-[50px] text-[0.7rem] font-semibold tracking-wide uppercase text-end">
-            {{ job.created_at.format(DATE_FORMAT_3) }}
-          </div>
-          {# End created -#}
-        </div>
-
-        {# Job -#}
-        <button hx-get="/dashboard/moderator/jobs/{{ job.employer.employer_id }}/{{ job.job_id }}/preview"
-                hx-target="#preview-content"
-                hx-disabled-elt="this"
-                class="cursor-pointer preview-button min-w-0">
-          <div class="text-base/6 font-stretch-condensed font-medium text-start text-stone-900 line-clamp-2 my-3">
-            {{ job.title }}
-          </div>
-        </button>
-        {# End job -#}
-
-        {# Member -#}
-        <div>{% call employer_member_badge(employer = job.employer ) -%}</div>
-        {# End member -#}
-
-        {# Actions -#}
-        <div class="flex items-center justify-center space-x-2 mt-4">
-          <div>
-            <button hx-put="/dashboard/moderator/jobs/{{ job.job_id }}/approve"
-                    hx-disabled-elt="this"
-                    class="btn-primary-outline btn-mini flex items-center justify-center space-x-2 group w-[95px]">
-              <div class="svg-icon size-3 icon-check group-hover:bg-white"></div>
-              <div>Approve</div>
-            </button>
-          </div>
-
-          <div>
-            <button data-job-id="{{ job.job_id }}"
-                    class="btn-primary-outline btn-mini flex items-center justify-center space-x-2 reject-modal group w-[95px]"
-                    title="Reject">
-              <div class="svg-icon size-2.5 icon-cancel group-hover:bg-white"></div>
-              <dv>Reject</dv>
-            </button>
-          </div>
-        </div>
-        {# End actions -#}
-      </div>
+      {% call moderator_macros::mobile_job_card(job = job, kind = "pending") -%}
     {% endfor -%}
   {% endif -%}
 </div>
 {# End mobile pending jobs cards -#}
 
 {# Preview modal -#}
-{% call preview::modal() -%}
+{% call moderator_macros::preview_modal() -%}
 {# End preview modal -#}
 
 {# Reject modal -#}
-<div id="reject-modal"
-     tabindex="-1"
-     aria-hidden="true"
-     class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-full max-h-full flex">
-  <div id="backdrop-reject-modal"
-       class="modal-overlay absolute w-full h-full bg-stone-950 opacity-[.35]"></div>
-  <div class="relative p-4 w-full max-w-2xl max-h-full">
-    <div class="relative bg-white rounded-lg shadow">
-      {# Modal header -#}
-      <div class="flex items-center justify-between p-4 md:p-5 border-b border-stone-200 rounded-t">
-        {# Title -#}
-        <h3 class="text-xl font-semibold text-stone-900">Reject job</h3>
-        {# End title -#}
-
-        {# Close button -#}
-        <button id="close-reject-modal"
-                type="button"
-                class="group bg-transparent hover:bg-stone-200 rounded-full text-sm size-8 ms-auto inline-flex justify-center items-center cursor-pointer">
-          <div class="svg-icon size-5 bg-stone-400 group-hover:bg-stone-700 icon-close"></div>
-          <span class="sr-only">Close modal</span>
-        </button>
-        {# End close button -#}
-      </div>
-      {# End modal header -#}
-
-      {# Modal content -#}
-      <div class="p-4 md:p-8">
-        <form id="reject-job-form" hx-put="" hx-trigger="submit">
-          <div class="mb-6">
-            <label for="reject-reason"
-                   class="block mb-4 text-sm font-medium text-stone-900">Review notes</label>
-            <textarea id="review_notes"
-                      name="review_notes"
-                      rows="4"
-                      class="block p-2.5 w-full text-sm text-stone-900 bg-white border border-stone-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
-                      placeholder="Please indicate the publisher the reason the job was rejected."></textarea>
-          </div>
-          <div class="flex justify-end">
-            <button type="submit" class="btn-primary mb-2">Reject</button>
-          </div>
-        </form>
-      </div>
-      {# End modal content -#}
-    </div>
-  </div>
-</div>
+{% call moderator_macros::reject_modal() -%}
 {# End reject modal -#}
-
-<script type="module">
-  import {
-    toggleModalVisibility,
-    isSuccessfulXHRStatus
-  } from '/static/js/common/common.js';
-  import {
-    showErrorAlert,
-  } from "/static/js/common/alerts.js";
-
-  // On preview button click, show the preview modal
-  const previewButtons = document.querySelectorAll('.preview-button');
-  previewButtons.forEach((button) => {
-    button.addEventListener('htmx:afterRequest', (e) => {
-      if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
-        toggleModalVisibility('preview-modal', "open");
-      } else {
-        // When the preview is not available, show an error message
-        showErrorAlert('Something went wrong previewing the data, please try again later.');
-      }
-    });
-  });
-
-  // On reject button click, show the reject modal
-  const rejectButtons = document.querySelectorAll('.reject-modal');
-  rejectButtons.forEach((button) => {
-    button.addEventListener('click', (e) => {
-      // Get the job ID from the button's data attribute
-      const jobId = e.currentTarget.dataset.jobId;
-      const form = document.getElementById('reject-job-form');
-      // Set job ID in the form action
-      form.setAttribute('hx-put', `/dashboard/moderator/jobs/${jobId}/reject`);
-      htmx.process(form);
-      toggleModalVisibility('reject-modal', "open");
-    });
-  });
-
-  // Close reject modal
-  const closeRejectModal = document.getElementById('close-reject-modal');
-  closeRejectModal.addEventListener('click', () => {
-    toggleModalVisibility('reject-modal', "close");
-  });
-  const rejectModalBackdrop = document.getElementById('backdrop-reject-modal');
-  rejectModalBackdrop.addEventListener('click', () => {
-    toggleModalVisibility('reject-modal', "close");
-  });
-</script>
-
-{% macro employer_member_badge(employer, with_legend = true) -%}
-  <div>
-    {# Member -#}
-    {% if let Some(member) = employer.member -%}
-      <div class="flex items-center space-x-1 rounded-md uppercase min-w-0">
-        <div class="shrink-0 size-3 flex items-center justify-center">
-          <img class="size-3 object-contain"
-               height="auto"
-               width="auto"
-               src="/static/images/foundations/{{ member.foundation }}.svg"
-               alt="{{ member.foundation }} logo">
-        </div>
-
-        <div class="text-stone-600 text-[0.7rem] md:text-xs font-semibold tracking-wide uppercase truncate">
-          {{ member.foundation }}
-          {% if with_legend -%}
-            member
-          {% endif -%}
-        </div>
-      </div>
-    {% endif -%}
-    {# End member -#}
-  </div>
-{% endmacro employer_member_badge -%}

@@ -75,7 +75,7 @@ pub(crate) async fn approve(
 
     Ok((
         StatusCode::NO_CONTENT,
-        [("HX-Trigger", "refresh-pending-jobs-table")],
+        [("HX-Trigger", "refresh-moderator-table")],
     )
         .into_response())
 }
@@ -99,7 +99,7 @@ pub(crate) async fn reject(
 
     Ok((
         StatusCode::NO_CONTENT,
-        [("HX-Trigger", "refresh-pending-jobs-table")],
+        [("HX-Trigger", "refresh-moderator-table")],
     )
         .into_response())
 }

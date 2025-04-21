@@ -1,1 +1,52 @@
-<h1>Live jobs page</h1>
+{% import "macros.html" as macros -%}
+{% import "dashboard/moderator/moderator_macros.html" as moderator_macros -%}
+
+<div class="flex items-center">
+  {# Mobile filters button -#}
+  <div class="flex shrink-0 me-3 md:me-6 lg:hidden">
+    <button id="open-menu-button"
+            class="btn-primary-outline group size-[40px] p-0 items-center flex justify-center">
+      <div class="svg-icon size-4 icon-menu group-hover:bg-white shrink-0"></div>
+    </button>
+    <script type="module">
+      import {
+        open
+      } from '/static/js/dashboard/base.js';
+
+      const openMenuButton = document.getElementById('open-menu-button');
+      openMenuButton.addEventListener('click', open);
+    </script>
+  </div>
+  {# End mobile filters button -#}
+  {% call macros::form_title(title = "Live jobs") -%}
+</div>
+
+{# Live jobs Table -#}
+{% call moderator_macros::jobs_table(jobs = jobs) -%}
+{# End live jobs Table -#}
+
+{# Mobile live jobs cards -#}
+<div class="flex flex-col space-y-4 md:hidden mt-6">
+  {% if jobs.is_empty() -%}
+    <div class="border border-primary-500 rounded-lg mt-10 p-5 bg-primary-50/20"
+         role="alert">
+      <div class="text-lg mb-6">
+        <div>There are no live jobs at the moment.</div>
+      </div>
+      <p class="text-stone-700">Thanks for checking, please come back later :)</p>
+    </div>
+  {% else -%}
+    {% for job in jobs -%}
+      {% call moderator_macros::mobile_job_card(job = job) -%}
+    {% endfor -%}
+  {% endif -%}
+</div>
+{# End mobile live jobs cards -#}
+
+{# Preview modal -#}
+{% call moderator_macros::preview_modal() -%}
+{# End preview modal -#}
+
+{# Reject modal -#}
+{% call moderator_macros::reject_modal() -%}
+{# End reject modal -#}

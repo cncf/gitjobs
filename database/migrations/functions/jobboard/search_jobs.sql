@@ -16,7 +16,7 @@ declare
     v_salary_min bigint := (p_filters->>'salary_min')::bigint;
     v_seniority text := (p_filters->>'seniority');
     v_skills text[];
-    v_sort text := coalesce((p_filters->>'sort'), 'open-source');
+    v_sort text := coalesce((p_filters->>'sort'), 'date');
     v_tsquery_with_prefix_matching tsquery;
     v_upstream_commitment int := (p_filters->>'upstream_commitment')::int;
     v_workplace text[];

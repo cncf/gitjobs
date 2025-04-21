@@ -154,8 +154,8 @@ pub(crate) enum Seniority {
 #[serde(rename_all = "kebab-case")]
 #[strum(serialize_all = "kebab-case")]
 pub(crate) enum Sort {
-    Date,
     #[default]
+    Date,
     OpenSource,
     Salary,
     UpstreamCommitment,

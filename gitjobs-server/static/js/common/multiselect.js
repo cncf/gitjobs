@@ -76,11 +76,11 @@ export class MultiSelect extends LitWrapper {
         <div
           class="input-primary px-1.5 flex flex-wrap focus-within:outline-[3px] focus-within:-outline-offset-2 focus-within:outline-primary-600"
         >
-          <div class="flex flex-items flex-wrap w-full">
+          <div class="flex flex-items flex-wrap w-full gap-2">
             ${this.selected.map(
               (option) =>
                 html`<span
-                  class="inline-flex items-center text-nowrap max-w-[100%] ps-2 pe-0.5 py-0.5 me-2 text-xs font-medium text-stone-800 bg-stone-100 rounded-full"
+                  class="inline-flex items-center text-nowrap max-w-[100%] ps-2 pe-0.5 py-0.5 text-xs font-medium text-stone-800 bg-stone-100 rounded-full"
                 >
                   <div class="flex items-center w-full">
                     <div class="truncate uppercase">${unnormalize(option)}</div>

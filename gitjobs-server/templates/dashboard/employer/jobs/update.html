@@ -84,13 +84,14 @@
             <div class="col-span-3">
               <div class="mt-2 grid grid-cols-1 relative">
                 <div class="absolute pointer-events-none top-3 start-3 text-xs text-stone-500">Start</div>
+                {%- let selected_tz_start = job.tz_start|display_some -%}
                 <select id="tz_start"
                         name="tz_start"
                         class="select-primary ps-10 aligned-right">
                   {% call macros::select_option(value = "", label = "", selected = job.tz_start|display_some) -%}
                   {% for i in 0..25 -%}
                     {% let timezone = format!("UTC{:+}", (12 - i)) -%}
-                    {% call macros::select_option(value = &timezone, label = timezone, selected = job.tz_start|display_some) -%}
+                    {% call macros::select_option(value = &timezone, label = timezone, selected = selected_tz_start) -%}
                   {% endfor -%}
                 </select>
               </div>
@@ -101,11 +102,12 @@
             <div class="col-span-3">
               <div class="mt-2 grid grid-cols-1 relative">
                 <div class="absolute pointer-events-none top-3 start-3 text-xs text-stone-500">End</div>
+                {%- let selected_tz_end = job.tz_end|display_some -%}
                 <select id="tz_end" name="tz_end" class="select-primary ps-10 aligned-right">
                   {% call macros::select_option(value = "", label = "", selected = job.tz_end|display_some) -%}
                   {% for i in 0..25 -%}
                     {% let timezone = format!("UTC{:+}", (12 - i)) -%}
-                    {% call macros::select_option(value = &timezone, label = timezone, selected = job.tz_end|display_some) -%}
+                    {% call macros::select_option(value = &timezone, label = timezone, selected = selected_tz_end) -%}
                   {% endfor -%}
                 </select>
               </div>
@@ -179,13 +181,14 @@
         <div class="col-span-full lg:col-span-2">
           <label for="seniority" class="form-label">Seniority level</label>
           <div class="mt-2 grid grid-cols-1">
+            {%- let selected_seniority = job.seniority|display_some -%}
             <select id="seniority" name="seniority" class="select-primary">
-              {% call macros::select_option(value = "", label = "", selected = job.seniority|display_some) -%}
-              {% call macros::select_option(value = "entry", label = "Entry", selected = job.seniority|display_some) -%}
-              {% call macros::select_option(value = "junior", label = "Junior", selected = job.seniority|display_some) -%}
-              {% call macros::select_option(value = "mid", label = "Mid-level", selected = job.seniority|display_some) -%}
-              {% call macros::select_option(value = "senior", label = "Senior", selected = job.seniority|display_some) -%}
-              {% call macros::select_option(value = "lead", label = "Lead", selected = job.seniority|display_some) -%}
+              {% call macros::select_option(value = "", label = "", selected = selected_seniority) -%}
+              {% call macros::select_option(value = "entry", label = "Entry", selected = selected_seniority) -%}
+              {% call macros::select_option(value = "junior", label = "Junior", selected = selected_seniority) -%}
+              {% call macros::select_option(value = "mid", label = "Mid-level", selected = selected_seniority) -%}
+              {% call macros::select_option(value = "senior", label = "Senior", selected = selected_seniority) -%}
+              {% call macros::select_option(value = "lead", label = "Lead", selected = selected_seniority) -%}
             </select>
           </div>
           <p class="form-legend">Experience level required for the position.</p>
@@ -346,14 +349,15 @@
         <div class="col-span-3 md:col-span-2 lg:col-span-1">
           <label for="salary_currency" class="form-label">Currency</label>
           <div class="mt-2 grid grid-cols-1">
+            {%- let selected_salary_currency = job.salary_currency|display_some -%}
             <select id="salary_currency" name="salary_currency" class="select-primary">
-              {% call macros::select_option(value = "", label = "", selected = job.salary_currency|display_some) -%}
-              {% call macros::select_option(value = "USD", label = "USD - United States Dollar", selected = job.salary_currency|display_some) -%}
-              {% call macros::select_option(value = "EUR", label = "EUR - Euro", selected = job.salary_currency|display_some) -%}
-              {% call macros::select_option(value = "GBP", label = "GBP - British Pound Sterling", selected = job.salary_currency|display_some) -%}
-              {% call macros::select_option(value = "CHF", label = "CHF - Swiss Franc", selected = job.salary_currency|display_some) -%}
-              {% call macros::select_option(value = "CAD", label = "CAD - Canadian Dollar", selected = job.salary_currency|display_some) -%}
-              {% call macros::select_option(value = "JPY", label = "JPY - Japanese Yen", selected = job.salary_currency|display_some) -%}
+              {% call macros::select_option(value = "", label = "", selected = selected_salary_currency) -%}
+              {% call macros::select_option(value = "USD", label = "USD - United States Dollar", selected = selected_salary_currency) -%}
+              {% call macros::select_option(value = "EUR", label = "EUR - Euro", selected = selected_salary_currency) -%}
+              {% call macros::select_option(value = "GBP", label = "GBP - British Pound Sterling", selected = selected_salary_currency) -%}
+              {% call macros::select_option(value = "CHF", label = "CHF - Swiss Franc", selected = selected_salary_currency) -%}
+              {% call macros::select_option(value = "CAD", label = "CAD - Canadian Dollar", selected = selected_salary_currency) -%}
+              {% call macros::select_option(value = "JPY", label = "JPY - Japanese Yen", selected = selected_salary_currency) -%}
             </select>
           </div>
         </div>
@@ -363,13 +367,14 @@
         <div class="col-span-3 md:col-span-2 lg:col-span-1">
           <label for="salary_period" class="form-label">Timeframe</label>
           <div class="mt-2 grid grid-cols-1">
+            {%- let selected_salary_period = job.salary_period|display_some -%}
             <select id="salary_period" name="salary_period" class="select-primary">
-              {% call macros::select_option(value = "", label = "", selected = job.salary_period|display_some) -%}
-              {% call macros::select_option(value = "year", label = "Year", selected = job.salary_period|display_some) -%}
-              {% call macros::select_option(value = "month", label = "Month", selected = job.salary_period|display_some) -%}
-              {% call macros::select_option(value = "week", label = "Week", selected = job.salary_period|display_some) -%}
-              {% call macros::select_option(value = "day", label = "Day", selected = job.salary_period|display_some) -%}
-              {% call macros::select_option(value = "hour", label = "Hour", selected = job.salary_period|display_some) -%}
+              {% call macros::select_option(value = "", label = "", selected = selected_salary_period) -%}
+              {% call macros::select_option(value = "year", label = "Year", selected = selected_salary_period) -%}
+              {% call macros::select_option(value = "month", label = "Month", selected = selected_salary_period) -%}
+              {% call macros::select_option(value = "week", label = "Week", selected = selected_salary_period) -%}
+              {% call macros::select_option(value = "day", label = "Day", selected = selected_salary_period) -%}
+              {% call macros::select_option(value = "hour", label = "Hour", selected = selected_salary_period) -%}
             </select>
           </div>
         </div>

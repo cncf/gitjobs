@@ -52,16 +52,17 @@
       <div>
         {% call filters_subtitle(text = "Seniority level") -%}
         <div class="mt-2">
+          {%- let selected_seniority = filters.seniority|display_some -%}
           <select form="{{ form }}"
                   data-trigger-form="true"
                   name="seniority"
                   class="select-primary py-0.5 text-[0.8rem]/6 text-stone-500">
-            {% call macros::select_option(value = "", label = "Any", selected = filters.seniority|display_some) -%}
-            {% call macros::select_option(value = "entry", label = "Entry", selected = filters.seniority|display_some) -%}
-            {% call macros::select_option(value = "junior", label = "Junior", selected = filters.seniority|display_some) -%}
-            {% call macros::select_option(value = "mid", label = "Mid-level", selected = filters.seniority|display_some) -%}
-            {% call macros::select_option(value = "senior", label = "Senior", selected = filters.seniority|display_some) -%}
-            {% call macros::select_option(value = "lead", label = "Lead", selected = filters.seniority|display_some) -%}
+            {% call macros::select_option(value = "", label = "Any", selected = selected_seniority) -%}
+            {% call macros::select_option(value = "entry", label = "Entry", selected = selected_seniority) -%}
+            {% call macros::select_option(value = "junior", label = "Junior", selected = selected_seniority) -%}
+            {% call macros::select_option(value = "mid", label = "Mid-level", selected = selected_seniority) -%}
+            {% call macros::select_option(value = "senior", label = "Senior", selected = selected_seniority) -%}
+            {% call macros::select_option(value = "lead", label = "Lead", selected = selected_seniority) -%}
           </select>
         </div>
       </div>
@@ -71,14 +72,15 @@
       <div>
         {% call filters_subtitle(text = "Published") -%}
         <div class="mt-2 relative">
+          {%- let selected_date_range = filters.date_range.clone().unwrap_or_default().to_string() -%}
           <select form="{{ form }}"
                   name="date_range"
                   data-trigger-form="true"
                   class="select-primary py-0.5 text-[0.8rem]/6 text-stone-500">
-            {% call macros::select_option(value = "last-day", label = "Last day", selected = filters.date_range|display_some_or("last30-days")) -%}
-            {% call macros::select_option(value = "last3-days", label = "Last 3 days", selected = filters.date_range|display_some_or("last30-days")) -%}
-            {% call macros::select_option(value = "last7-days", label = "Last week", selected = filters.date_range|display_some_or("last30-days")) -%}
-            {% call macros::select_option(value = "last30-days", label = "Last month", selected = filters.date_range|display_some_or("last30-days")) -%}
+            {% call macros::select_option(value = "last-day", label = "Last day", selected = selected_date_range) -%}
+            {% call macros::select_option(value = "last3-days", label = "Last 3 days", selected = selected_date_range) -%}
+            {% call macros::select_option(value = "last7-days", label = "Last week", selected = selected_date_range) -%}
+            {% call macros::select_option(value = "last30-days", label = "Last month", selected = selected_date_range) -%}
           </select>
         </div>
       </div>
@@ -116,13 +118,14 @@
         or any project from the <span class="inline-block lg:hidden xl:inline-block">following</span> foundation
       </div>
       <div class="mt-2.5">
+        {%- let selected_foundation = filters.foundation|display_some -%}
         <select form="{{ form }}"
                 data-trigger-form="true"
                 name="foundation"
                 class="select-primary py-0.5 text-[0.8rem]/6 text-stone-500">
-          {% call macros::select_option(value = "", label = "", selected = filters.foundation|display_some) -%}
+          {% call macros::select_option(value = "", label = "", selected = selected_foundation) -%}
           {% for foundation in filters_options.foundations -%}
-            {% call macros::select_option(value = &foundation.name, label = foundation.name|upper, selected = filters.foundation|display_some) -%}
+            {% call macros::select_option(value = &foundation.name, label = foundation.name|upper, selected = selected_foundation) -%}
           {% endfor -%}
         </select>
       </div>

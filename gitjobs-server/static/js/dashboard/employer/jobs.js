@@ -45,3 +45,11 @@ export const checkSalaryBeforeSubmit = () => {
     }
   }
 };
+
+export const checkJobTitle = (input) => {
+  input.setCustomValidity("");
+  const jobTitle = input.value.trim();
+  if (jobTitle.toLowerCase().includes("remote")) {
+    input.setCustomValidity("Please use the workplace field to indicate that a job is remote");
+  }
+};

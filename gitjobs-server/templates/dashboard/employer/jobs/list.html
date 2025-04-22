@@ -81,6 +81,7 @@
       {% else -%}
         {% for job in jobs -%}
           {% let location = &self::format_location(job.city.as_deref(), None, job.country.as_deref())|display_some_or("No location provided") -%}
+          {% let remote_location = &self::format_location(job.city.as_deref(), None, job.country.as_deref())|display_some_or("Remote") -%}
           <tr class="odd:bg-white even:bg-stone-50/50 border-b border-stone-200">
             {# Title job -#}
             <th scope="row"
@@ -89,7 +90,7 @@
               {# Workplace -#}
               <div class="block xl:hidden text-xs text-stone-500 max-w-full truncate">
                 {% if job.workplace == Workplace::Remote -%}
-                  Remote
+                  {{ remote_location }}
                 {% else -%}
                   {{ location }}
                 {% endif -%}
@@ -103,7 +104,7 @@
               <div class="max-w-full truncate">
                 {# Workplace -#}
                 {% if job.workplace == Workplace::Remote -%}
-                  Remote
+                  {{ remote_location }}
                 {% else -%}
                   {{ location }}
                 {% endif -%}

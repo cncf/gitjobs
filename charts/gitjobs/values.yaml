@@ -62,8 +62,11 @@ server:
 
   # Analytics configuration
   analytics:
-    # Google Tag Manager container ID
-    gtmContainerId: ""
+    # Google Tag ID
+    googleTagId: ""
+
+    # Osano script URL
+    osanoScriptUrl: ""
 
   # Base URL
   baseUrl: "https://{YOUR_GITJOBS_HOSTNAME}"

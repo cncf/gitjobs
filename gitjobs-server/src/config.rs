@@ -87,7 +87,8 @@ pub(crate) struct HttpServerConfig {
 /// Analytics configuration.
 #[derive(Debug, Clone, Default, PartialEq, Deserialize, Serialize)]
 pub(crate) struct AnalyticsConfig {
-    pub gtm_container_id: Option<String>,
+    pub google_tag_id: Option<String>,
+    pub osano_script_url: Option<String>,
 }
 
 /// Basic authentication configuration.

@@ -69,6 +69,7 @@ pub(crate) async fn log_in_page(
     // Prepare template
     let template = templates::auth::LogInPage {
         login: cfg.login.clone(),
+        cfg: cfg.into(),
         messages: messages.into_iter().collect(),
         next_url: query.get("next_url").cloned(),
         page_id: PageId::LogIn,
@@ -94,6 +95,7 @@ pub(crate) async fn sign_up_page(
     // Prepare template
     let template = templates::auth::SignUpPage {
         login: cfg.login.clone(),
+        cfg: cfg.into(),
         messages: messages.into_iter().collect(),
         next_url: query.get("next_url").cloned(),
         page_id: PageId::SignUp,

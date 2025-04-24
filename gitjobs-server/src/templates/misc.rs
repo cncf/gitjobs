@@ -4,7 +4,7 @@ use askama::Template;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::templates::{PageId, auth::User, filters, helpers::format_location};
+use crate::templates::{Config, PageId, auth::User, filters, helpers::format_location};
 
 // Templates.
 
@@ -19,6 +19,7 @@ pub(crate) struct Members {
 #[derive(Debug, Clone, Template, PartialEq, Serialize, Deserialize)]
 #[template(path = "misc/not_found.html")]
 pub(crate) struct NotFoundPage {
+    pub cfg: Config,
     pub page_id: PageId,
     pub user: User,
 }

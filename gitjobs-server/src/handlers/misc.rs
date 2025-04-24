@@ -15,6 +15,7 @@ use tracing::instrument;
 
 use crate::{
     auth::AuthSession,
+    config::HttpServerConfig,
     db::DynDB,
     handlers::{error::HandlerError, prepare_headers},
     templates::{
@@ -26,9 +27,12 @@ use crate::{
 
 /// Handler that returns the not found page.
 #[instrument(skip_all, err)]
-pub(crate) async fn not_found() -> Result<impl IntoResponse, HandlerError> {
+pub(crate) async fn not_found(
+    State(cfg): State<HttpServerConfig>,
+) -> Result<impl IntoResponse, HandlerError> {
     // Prepare template
     let template = misc::NotFoundPage {
+        cfg: cfg.into(),
         page_id: PageId::NotFound,
         user: User::default(),
     };

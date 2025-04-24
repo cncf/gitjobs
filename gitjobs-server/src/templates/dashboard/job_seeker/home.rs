@@ -6,7 +6,7 @@ use axum_messages::{Level, Message};
 use serde::{Deserialize, Serialize};
 
 use crate::templates::{
-    PageId,
+    Config, PageId,
     auth::{self, User},
     dashboard::job_seeker,
     filters,
@@ -18,6 +18,7 @@ use crate::templates::{
 #[derive(Debug, Clone, Template)]
 #[template(path = "dashboard/job_seeker/home.html")]
 pub(crate) struct Page {
+    pub cfg: Config,
     pub content: Content,
     pub page_id: PageId,
     pub messages: Vec<Message>,

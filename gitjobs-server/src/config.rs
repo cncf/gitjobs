@@ -75,11 +75,19 @@ pub(crate) enum LogFormat {
 pub(crate) struct HttpServerConfig {
     pub addr: String,
     pub base_url: String,
-    pub basic_auth: Option<BasicAuth>,
-    pub cookie: Option<CookieConfig>,
     pub login: LoginOptions,
     pub oauth2: OAuth2Config,
     pub oidc: OidcConfig,
+
+    pub analytics: Option<AnalyticsConfig>,
+    pub basic_auth: Option<BasicAuth>,
+    pub cookie: Option<CookieConfig>,
+}
+
+/// Analytics configuration.
+#[derive(Debug, Clone, Default, PartialEq, Deserialize, Serialize)]
+pub(crate) struct AnalyticsConfig {
+    pub gtm_container_id: Option<String>,
 }
 
 /// Basic authentication configuration.

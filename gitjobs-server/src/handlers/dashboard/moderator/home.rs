@@ -15,6 +15,7 @@ use tracing::instrument;
 
 use crate::{
     auth::AuthSession,
+    config::HttpServerConfig,
     db::DynDB,
     handlers::error::HandlerError,
     templates::{
@@ -37,6 +38,7 @@ pub(crate) async fn page(
     auth_session: AuthSession,
     messages: Messages,
     State(db): State<DynDB>,
+    State(cfg): State<HttpServerConfig>,
     Query(query): Query<HashMap<String, String>>,
 ) -> Result<impl IntoResponse, HandlerError> {
     // Get user from session
@@ -59,6 +61,7 @@ pub(crate) async fn page(
 
     // Prepare template
     let template = home::Page {
+        cfg: cfg.into(),
         content,
         messages: messages.into_iter().collect(),
         page_id: PageId::ModeratorDashboard,

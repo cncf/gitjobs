@@ -5,7 +5,7 @@ use askama::Template;
 use axum_messages::{Level, Message};
 use serde::{Deserialize, Serialize};
 
-use crate::templates::{PageId, auth::User, dashboard::moderator::jobs, filters};
+use crate::templates::{Config, PageId, auth::User, dashboard::moderator::jobs, filters};
 
 // Pages templates.
 
@@ -13,6 +13,7 @@ use crate::templates::{PageId, auth::User, dashboard::moderator::jobs, filters};
 #[derive(Debug, Clone, Template)]
 #[template(path = "dashboard/moderator/home.html")]
 pub(crate) struct Page {
+    pub cfg: Config,
     pub content: Content,
     pub page_id: PageId,
     pub messages: Vec<Message>,

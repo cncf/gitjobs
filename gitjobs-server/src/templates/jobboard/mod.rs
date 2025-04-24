@@ -2,5 +2,4 @@
 
 pub(crate) mod about;
 pub(crate) mod embed;
-pub(crate) mod home;
 pub(crate) mod jobs;

@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::templates::{
-    PageId,
+    Config, PageId,
     auth::{self, User},
     dashboard::employer,
     filters,
@@ -20,6 +20,7 @@ use crate::templates::{
 #[derive(Debug, Clone, Template)]
 #[template(path = "dashboard/employer/home.html")]
 pub(crate) struct Page {
+    pub cfg: Config,
     pub content: Content,
     pub employers: Vec<employer::employers::EmployerSummary>,
     pub messages: Vec<Message>,

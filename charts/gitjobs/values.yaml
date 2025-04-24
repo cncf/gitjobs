@@ -60,6 +60,11 @@ server:
   # Address to listen on
   addr: 0.0.0.0:9000
 
+  # Analytics configuration
+  analytics:
+    # Google Tag Manager container ID
+    gtmContainerId: ""
+
   # Base URL
   baseUrl: "https://{YOUR_GITJOBS_HOSTNAME}"
 
@@ -78,7 +83,7 @@ server:
 
   # Login options enabled
   login:
-      # Enable email login
+    # Enable email login
     email: true
     # Enable GitHub login
     github: false

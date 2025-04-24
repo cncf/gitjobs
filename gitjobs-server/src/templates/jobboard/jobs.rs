@@ -7,7 +7,7 @@ use serde_with::skip_serializing_none;
 use uuid::Uuid;
 
 use crate::templates::{
-    PageId,
+    Config, PageId,
     auth::User,
     dashboard::employer::jobs::{JobKind, SalaryKind, Workplace},
     filters,
@@ -22,6 +22,7 @@ use crate::templates::{
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
 #[template(path = "jobboard/jobs/jobs.html")]
 pub(crate) struct JobsPage {
+    pub cfg: Config,
     pub explore_section: ExploreSection,
     pub page_id: PageId,
     pub user: User,

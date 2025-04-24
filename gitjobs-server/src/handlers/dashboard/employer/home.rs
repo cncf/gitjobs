@@ -15,6 +15,7 @@ use tracing::instrument;
 
 use crate::{
     auth::AuthSession,
+    config::HttpServerConfig,
     db::{DynDB, dashboard::employer::ApplicationsSearchOutput},
     handlers::{error::HandlerError, extractors::SelectedEmployerIdOptional},
     templates::{
@@ -36,6 +37,7 @@ pub(crate) async fn page(
     auth_session: AuthSession,
     messages: Messages,
     State(db): State<DynDB>,
+    State(cfg): State<HttpServerConfig>,
     Query(query): Query<HashMap<String, String>>,
     QsQuery(filters): QsQuery<applications::Filters>,
     SelectedEmployerIdOptional(employer_id): SelectedEmployerIdOptional,
@@ -85,6 +87,7 @@ pub(crate) async fn page(
     // Prepare template
     let employers = db.list_employers(&user.user_id).await?;
     let template = home::Page {
+        cfg: cfg.into(),
         content,
         employers,
         messages: messages.into_iter().collect(),

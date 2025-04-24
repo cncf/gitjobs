@@ -2,22 +2,30 @@
 
 use anyhow::{Result, anyhow};
 use askama::Template;
-use axum::response::{Html, IntoResponse};
+use axum::{
+    extract::State,
+    response::{Html, IntoResponse},
+};
 use cached::proc_macro::cached;
 use chrono::Duration;
 use tracing::instrument;
 
 use crate::{
     auth::AuthSession,
+    config::HttpServerConfig,
     handlers::{error::HandlerError, prepare_headers},
     templates::{PageId, jobboard::about::Page},
 };
 
 /// Handler that returns the about page.
 #[instrument(skip_all, err)]
-pub(crate) async fn page(auth_session: AuthSession) -> Result<impl IntoResponse, HandlerError> {
+pub(crate) async fn page(
+    auth_session: AuthSession,
+    State(cfg): State<HttpServerConfig>,
+) -> Result<impl IntoResponse, HandlerError> {
     // Prepare template
     let template = Page {
+        cfg: cfg.into(),
         content: prepare_content()?,
         page_id: PageId::About,
         user: auth_session.into(),

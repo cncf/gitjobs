@@ -61,7 +61,7 @@
       </div>
     </div>
   {% else -%}
-    {% call user_menu(user) -%}
+    {% call user_menu(user, auth_provider) -%}
   {% endif -%}
 </div>
 {# End Navbar -#}
@@ -81,7 +81,7 @@
 {% endmacro disabled_header_link -%}
 
 {# Header user menu -#}
-{% macro user_menu(user) -%}
+{% macro user_menu(user, auth_provider) -%}
   {% if user.logged_in -%}
     <button id="user-dropdown-button"
             data-logged-in="true"
@@ -100,6 +100,17 @@
           <div class="flex flex-col px-4 py-2">
             <div class="font-medium text-sm/6 truncate text-stone-700 mb-3">{{ user.username|display_some }}</div>
             <div class="text-xs/4 truncate">{{ name }}</div>
+            {% if let Some(auth_provider) = auth_provider -%}
+              {% if auth_provider == "linuxfoundation" -%}
+                <a class="text-xs/6 text-primary-500 uppercase font-semibold flex items-baseline mt-3"
+                   href="https://openprofile.dev"
+                   target="_blank"
+                   rel="noopener noreferrer">
+                  <div>openprofile.dev account</div>
+                  <div class="svg-icon size-2.5 icon-external_link bg-primary-500 ms-2"></div>
+                </a>
+              {% endif -%}
+            {% endif -%}
           </div>
         </li>
         <li class="border-t border-stone-200 mt-2 pt-2 hidden md:block">

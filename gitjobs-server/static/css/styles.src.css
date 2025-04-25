@@ -394,6 +394,11 @@ select.aligned-right option {
   -webkit-mask-image: url("/static/images/icons/eraser.svg");
 }
 
+.icon-external_link {
+  mask-image: url("/static/images/icons/external_link.svg");
+  -webkit-mask-image: url("/static/images/icons/external_link.svg");
+}
+
 .icon-eye {
   mask-image: url("/static/images/icons/eye.svg");
   -webkit-mask-image: url("/static/images/icons/eye.svg");

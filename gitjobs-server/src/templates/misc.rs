@@ -38,6 +38,8 @@ pub(crate) struct Projects {
 #[template(path = "misc/user_menu_section.html")]
 pub(crate) struct UserMenuSection {
     pub user: User,
+
+    pub auth_provider: Option<String>,
 }
 
 // Types.

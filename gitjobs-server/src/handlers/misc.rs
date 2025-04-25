@@ -32,6 +32,7 @@ pub(crate) async fn not_found(
 ) -> Result<impl IntoResponse, HandlerError> {
     // Prepare template
     let template = misc::NotFoundPage {
+        auth_provider: None,
         cfg: cfg.into(),
         page_id: PageId::NotFound,
         user: User::default(),

@@ -26,6 +26,8 @@ pub(crate) struct JobsPage {
     pub explore_section: ExploreSection,
     pub page_id: PageId,
     pub user: User,
+
+    pub auth_provider: Option<String>,
 }
 
 /// Explore section template.

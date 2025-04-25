@@ -30,6 +30,9 @@ use crate::{
     templates::{self, PageId, auth::User, notifications::EmailVerification},
 };
 
+/// Key to store the auth provider in the session.
+pub(crate) const AUTH_PROVIDER_KEY: &str = "auth_provider";
+
 /// Log in URL.
 pub(crate) const LOG_IN_URL: &str = "/log-in";
 
@@ -68,6 +71,7 @@ pub(crate) async fn log_in_page(
 
     // Prepare template
     let template = templates::auth::LogInPage {
+        auth_provider: None,
         login: cfg.login.clone(),
         cfg: cfg.into(),
         messages: messages.into_iter().collect(),
@@ -94,6 +98,7 @@ pub(crate) async fn sign_up_page(
 
     // Prepare template
     let template = templates::auth::SignUpPage {
+        auth_provider: None,
         login: cfg.login.clone(),
         cfg: cfg.into(),
         messages: messages.into_iter().collect(),
@@ -281,7 +286,7 @@ pub(crate) async fn oidc_callback(
     let creds = OidcCredentials {
         code,
         nonce,
-        provider,
+        provider: provider.clone(),
     };
     let user = match auth_session.authenticate(Credentials::Oidc(creds)).await {
         Ok(Some(user)) => user,
@@ -300,6 +305,9 @@ pub(crate) async fn oidc_callback(
         .login(&user)
         .await
         .map_err(|e| HandlerError::Auth(e.to_string()))?;
+
+    // Track auth provider in the session
+    session.insert(AUTH_PROVIDER_KEY, provider).await?;
 
     // Use the first employer as the selected employer in the session
     let employers = db.list_employers(&user.user_id).await?;

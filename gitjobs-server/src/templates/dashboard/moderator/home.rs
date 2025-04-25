@@ -18,6 +18,8 @@ pub(crate) struct Page {
     pub page_id: PageId,
     pub messages: Vec<Message>,
     pub user: User,
+
+    pub auth_provider: Option<String>,
 }
 
 // Types.

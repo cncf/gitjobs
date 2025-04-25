@@ -22,6 +22,7 @@ pub(crate) struct LogInPage {
     pub messages: Vec<Message>,
     pub user: User,
 
+    pub auth_provider: Option<String>,
     pub next_url: Option<String>,
 }
 
@@ -35,6 +36,7 @@ pub(crate) struct SignUpPage {
     pub messages: Vec<Message>,
     pub user: User,
 
+    pub auth_provider: Option<String>,
     pub next_url: Option<String>,
 }
 

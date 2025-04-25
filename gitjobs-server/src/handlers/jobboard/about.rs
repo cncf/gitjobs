@@ -8,12 +8,13 @@ use axum::{
 };
 use cached::proc_macro::cached;
 use chrono::Duration;
+use tower_sessions::Session;
 use tracing::instrument;
 
 use crate::{
     auth::AuthSession,
     config::HttpServerConfig,
-    handlers::{error::HandlerError, prepare_headers},
+    handlers::{auth::AUTH_PROVIDER_KEY, error::HandlerError, prepare_headers},
     templates::{PageId, jobboard::about::Page},
 };
 
@@ -21,10 +22,12 @@ use crate::{
 #[instrument(skip_all, err)]
 pub(crate) async fn page(
     auth_session: AuthSession,
+    session: Session,
     State(cfg): State<HttpServerConfig>,
 ) -> Result<impl IntoResponse, HandlerError> {
     // Prepare template
     let template = Page {
+        auth_provider: session.get(AUTH_PROVIDER_KEY).await?,
         cfg: cfg.into(),
         content: prepare_content()?,
         page_id: PageId::About,

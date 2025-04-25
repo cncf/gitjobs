@@ -11,13 +11,14 @@ use axum::{
     response::{Html, IntoResponse},
 };
 use axum_messages::Messages;
+use tower_sessions::Session;
 use tracing::instrument;
 
 use crate::{
     auth::AuthSession,
     config::HttpServerConfig,
     db::DynDB,
-    handlers::error::HandlerError,
+    handlers::{auth::AUTH_PROVIDER_KEY, error::HandlerError},
     templates::{
         PageId,
         dashboard::{
@@ -37,6 +38,7 @@ use crate::{
 pub(crate) async fn page(
     auth_session: AuthSession,
     messages: Messages,
+    session: Session,
     State(db): State<DynDB>,
     State(cfg): State<HttpServerConfig>,
     Query(query): Query<HashMap<String, String>>,
@@ -61,6 +63,7 @@ pub(crate) async fn page(
 
     // Prepare template
     let template = home::Page {
+        auth_provider: session.get(AUTH_PROVIDER_KEY).await?,
         cfg: cfg.into(),
         content,
         messages: messages.into_iter().collect(),

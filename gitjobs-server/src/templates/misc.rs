@@ -22,6 +22,8 @@ pub(crate) struct NotFoundPage {
     pub cfg: Config,
     pub page_id: PageId,
     pub user: User,
+
+    pub auth_provider: Option<String>,
 }
 
 /// Projects selector template.

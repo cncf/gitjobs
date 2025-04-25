@@ -11,13 +11,14 @@ use axum::{
 };
 use axum_messages::Messages;
 use serde_qs::axum::QsQuery;
+use tower_sessions::Session;
 use tracing::instrument;
 
 use crate::{
     auth::AuthSession,
     config::HttpServerConfig,
     db::{DynDB, dashboard::employer::ApplicationsSearchOutput},
-    handlers::{error::HandlerError, extractors::SelectedEmployerIdOptional},
+    handlers::{auth::AUTH_PROVIDER_KEY, error::HandlerError, extractors::SelectedEmployerIdOptional},
     templates::{
         PageId, auth,
         dashboard::employer::{
@@ -33,9 +34,11 @@ use crate::{
 
 /// Handler that returns the employer dashboard home page.
 #[instrument(skip_all, err)]
+#[allow(clippy::too_many_arguments)]
 pub(crate) async fn page(
     auth_session: AuthSession,
     messages: Messages,
+    session: Session,
     State(db): State<DynDB>,
     State(cfg): State<HttpServerConfig>,
     Query(query): Query<HashMap<String, String>>,
@@ -87,6 +90,7 @@ pub(crate) async fn page(
     // Prepare template
     let employers = db.list_employers(&user.user_id).await?;
     let template = home::Page {
+        auth_provider: session.get(AUTH_PROVIDER_KEY).await?,
         cfg: cfg.into(),
         content,
         employers,

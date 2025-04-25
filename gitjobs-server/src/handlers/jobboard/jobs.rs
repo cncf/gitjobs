@@ -9,6 +9,7 @@ use axum::{
 use chrono::Duration;
 use reqwest::StatusCode;
 use serde_qs::axum::QsQuery;
+use tower_sessions::Session;
 use tracing::instrument;
 use uuid::Uuid;
 
@@ -16,7 +17,7 @@ use crate::{
     auth::AuthSession,
     config::HttpServerConfig,
     db::{DynDB, jobboard::JobsSearchOutput},
-    handlers::{error::HandlerError, prepare_headers},
+    handlers::{auth::AUTH_PROVIDER_KEY, error::HandlerError, prepare_headers},
     templates::{
         PageId,
         auth::User,
@@ -30,6 +31,7 @@ use crate::{
 /// Handler that returns the jobs page.
 #[instrument(skip_all, err)]
 pub(crate) async fn jobs_page(
+    session: Session,
     State(db): State<DynDB>,
     State(cfg): State<HttpServerConfig>,
     QsQuery(filters): QsQuery<Filters>,
@@ -40,6 +42,7 @@ pub(crate) async fn jobs_page(
 
     // Prepare template
     let template = JobsPage {
+        auth_provider: session.get(AUTH_PROVIDER_KEY).await?,
         cfg: cfg.into(),
         explore_section: ExploreSection {
             filters: filters.clone(),

@@ -64,7 +64,7 @@
            name="member[logo_url]"
            id="member_logo_url"
            value="{{ member_logo_url }}">
-    <div id="member-spinner" class="hx-spinner absolute end-10 top-1">{% call spinner(size = "size-5") -%}</div>
+    <div id="member-spinner" class="hx-spinner absolute -end-8 top-2">{% call spinner(size = "size-5") -%}</div>
     <div class="absolute end-1.5 top-1.5 peer-placeholder-shown:hidden">
       <button id="clean-member" type="button" class="cursor-pointer mt-[2px]">
         <div class="svg-icon size-5 bg-stone-400 hover:bg-stone-700 icon-close"></div>
@@ -157,7 +157,7 @@
            autocapitalize="off"
            spellcheck="false"
            autocomplete="off">
-    <div id="{{ id }}-spinner" class="hx-spinner absolute end-10 top-1">
+    <div id="{{ id }}-spinner" class="hx-spinner absolute -end-8 top-2">
       {% call spinner(size = "size-5") -%}
     </div>
     <div class="absolute end-1.5 top-1.5 peer-placeholder-shown:hidden">

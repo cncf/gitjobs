@@ -102,12 +102,12 @@
             <div class="text-xs/4 truncate">{{ name }}</div>
             {% if let Some(auth_provider) = auth_provider -%}
               {% if auth_provider == "linuxfoundation" -%}
-                <a class="text-xs/6 text-primary-500 uppercase font-semibold flex items-baseline mt-3"
+                <a class="text-xs/6 text-stone-500 flex items-center mt-3"
                    href="https://openprofile.dev"
                    target="_blank"
                    rel="noopener noreferrer">
-                  <div>openprofile.dev account</div>
-                  <div class="svg-icon size-2.5 icon-external_link bg-primary-500 ms-2"></div>
+                  <div class="underline">openprofile.dev account</div>
+                  <div class="svg-icon size-2.5 icon-external_link bg-stone-500 ms-2"></div>
                 </a>
               {% endif -%}
             {% endif -%}

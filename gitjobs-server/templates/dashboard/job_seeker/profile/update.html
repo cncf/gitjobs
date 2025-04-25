@@ -302,6 +302,22 @@
                 </div>
               </div>
               {# End twitter url -#}
+
+              {# BlueSky url -#}
+              <div class="col-span-3">
+                <label for="bluesky_url" class="form-label">BlueSky url</label>
+                <div class="mt-2 relative">
+                  <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
+                    <div class="svg-icon size-4 icon-bluesky bg-stone-300"></div>
+                  </div>
+                  <input type="url"
+                         name="bluesky_url"
+                         id="bluesky_url"
+                         value="{{ profile.bluesky_url|display_some }}"
+                         class="input-primary ps-10">
+                </div>
+              </div>
+              {# End BlueSky url -#}
             </div>
           </div>
         </div>

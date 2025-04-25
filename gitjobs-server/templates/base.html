@@ -84,5 +84,30 @@
       {% include "footer.html" -%}
       {# End Footer -#}
     {% endif -%}
+
+    {# Analytics -#}
+    {%- if let Some(analytics) = cfg.analytics -%}
+      {# Osano -#}
+      {%- if let Some(osano_script_url) = analytics.osano_script_url -%}
+        <script src="{{ osano_script_url }}"></script>
+      {% endif -%}
+      {# End Osano -#}
+
+      {# Google tag (gtag.js) -#}
+      {%- if let Some(google_tag_id) = analytics.google_tag_id -%}
+        <script src="https://www.googletagmanager.com/gtag/js?id={{ google_tag_id }}"></script>
+        <script>
+          window.dataLayer = window.dataLayer || [];
+
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '{{ google_tag_id }}');
+        </script>
+      {% endif -%}
+      {# End Google tag -#}
+    {% endif -%}
+    {# End Analytics -#}
   </body>
 </html>

@@ -40,6 +40,7 @@ pub(crate) struct JobSeekerProfile {
     pub public: bool,
     pub summary: String,
 
+    pub bluesky_url: Option<String>,
     pub certifications: Option<Vec<Certification>>,
     pub education: Option<Vec<Education>>,
     pub experience: Option<Vec<Experience>>,

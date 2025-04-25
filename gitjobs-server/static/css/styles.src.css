@@ -732,3 +732,41 @@ select.aligned-right option {
 }
 
 /* End animation */
+
+
+/* Osano */
+
+.osano-cm-widget {
+  height: 30px !important;
+  width: 30px !important;
+  right: 30px !important;
+  bottom: 30px !important;
+}
+
+.osano-cm-widget:focus, .osano-cm-input:focus {
+  outline: none;
+}
+
+.osano-cm-toggle__input:disabled:checked + .osano-cm-toggle__switch::after, .osano-cm-toggle__input:disabled:checked:focus + .osano-cm-toggle__switch::after, .osano-cm-toggle__input:disabled:checked:hover + .osano-cm-toggle__switch::after {
+  background-color: var(--color-stone-50);
+  border-color: var(--color-stone-50);
+}
+
+.osano-cm-widget .osano-cm-outline  {
+  stroke: var(--color-primary-600);
+}
+
+.osano-cm-widget .osano-cm-dot {
+  fill: var(--color-primary-300);
+}
+
+.osano-cm-info {
+  box-shadow: none;
+  border-left: 1px solid var(--color-stone-200);
+}
+
+.osano-cm-dialog {
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-stone-200);
+}
+/* End Osano */

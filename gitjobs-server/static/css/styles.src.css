@@ -743,6 +743,11 @@ select.aligned-right option {
   bottom: 30px !important;
 }
 
+.osano-cm-widget svg {
+  width: 30px !important;
+  height: 30px !important;
+}
+
 .osano-cm-widget:focus, .osano-cm-input:focus {
   outline: none;
 }

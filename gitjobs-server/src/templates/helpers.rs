@@ -102,7 +102,7 @@ pub(crate) async fn normalize_salary(
     let exchange_rates = get_exchange_rates().await;
     let Some(exchange_rate) = exchange_rates.get(currency) else {
         warn!("invalid exchange rate");
-        return None;
+        return None; // Unsupported exchange rate.
     };
 
     #[allow(clippy::cast_precision_loss)]
@@ -124,6 +124,7 @@ pub(crate) async fn normalize_salary(
     Some(salary_usd_year as i64)
 }
 
+/// Return current exchange rates defaulting to backup ones if the current ones aren't available. Values will be cached for 1 day.
 #[cached(time = 86400, sync_writes = "by_key")]
 async fn get_exchange_rates() -> HashMap<String, f64> {
     let mut backup_exchange_rates = HashMap::from([
@@ -136,13 +137,14 @@ async fn get_exchange_rates() -> HashMap<String, f64> {
     ]);
 
     let Ok(exchange_rates) = download_exchange_rates().await else {
-        return backup_exchange_rates;
+        return backup_exchange_rates; // If current exchange rates aren't available, return backup ones.
     };
-    backup_exchange_rates.extend(exchange_rates);
+    backup_exchange_rates.extend(exchange_rates); // Update current rates with backup ones in case an exchange rate is missing.
 
     backup_exchange_rates
 }
 
+/// Download current exchange rates.
 async fn download_exchange_rates() -> Result<HashMap<String, f64>> {
     let url = "https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.json";
     let data = reqwest::get(url).await?.text().await?;

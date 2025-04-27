@@ -102,7 +102,7 @@ pub(crate) struct Job {
 
 impl Job {
     /// Normalize some fields.
-    pub(crate) fn normalize(&mut self) {
+    pub(crate) async fn normalize(&mut self) {
         // Benefits
         if let Some(benefits) = &mut self.benefits {
             for benefit in benefits.iter_mut() {
@@ -112,9 +112,9 @@ impl Job {
 
         // Salary (to USD yearly)
         let (currency, period) = (self.salary_currency.as_ref(), self.salary_period.as_ref());
-        self.salary_usd_year = normalize_salary(self.salary, currency, period);
-        self.salary_min_usd_year = normalize_salary(self.salary_min.or(self.salary), currency, period);
-        self.salary_max_usd_year = normalize_salary(self.salary_max.or(self.salary), currency, period);
+        self.salary_usd_year = normalize_salary(self.salary, currency, period).await;
+        self.salary_min_usd_year = normalize_salary(self.salary_min.or(self.salary), currency, period).await;
+        self.salary_max_usd_year = normalize_salary(self.salary_max.or(self.salary), currency, period).await;
 
         // Skills
         if let Some(skills) = &mut self.skills {

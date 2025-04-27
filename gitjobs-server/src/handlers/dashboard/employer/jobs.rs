@@ -52,7 +52,7 @@ pub(crate) async fn preview_page_w_job(
         Ok(profile) => profile,
         Err(e) => return Ok((StatusCode::UNPROCESSABLE_ENTITY, e.to_string()).into_response()),
     };
-    job.normalize();
+    job.normalize().await;
     job.published_at = Some(Utc::now());
     job.updated_at = Some(Utc::now());
 
@@ -103,7 +103,7 @@ pub(crate) async fn add(
         Ok(profile) => profile,
         Err(e) => return Ok((StatusCode::UNPROCESSABLE_ENTITY, e.to_string()).into_response()),
     };
-    job.normalize();
+    job.normalize().await;
 
     // Make sure the status provided is valid
     if job.status != JobStatus::Draft && job.status != JobStatus::PendingApproval {
@@ -162,7 +162,7 @@ pub(crate) async fn update(
         Ok(profile) => profile,
         Err(e) => return Ok((StatusCode::UNPROCESSABLE_ENTITY, e.to_string()).into_response()),
     };
-    job.normalize();
+    job.normalize().await;
 
     // Make sure the status provided is valid
     if job.status != JobStatus::Archived

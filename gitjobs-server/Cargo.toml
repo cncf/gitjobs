@@ -38,7 +38,7 @@ rand = { workspace = true }
 regex = { workspace = true }
 reqwest = { workspace = true }
 rust-embed = { workspace = true }
-serde = { workspace = true }
+serde.workspace = true
 serde_html_form = { workspace = true }
 serde_json = { workspace = true }
 serde_qs = { workspace = true }
@@ -46,7 +46,7 @@ serde_with = { workspace = true }
 strum = { workspace = true }
 thiserror = { workspace = true }
 time = { workspace = true }
-tokio = { workspace = true }
+tokio = { version = "1.43", features = ["full"] }
 tokio-postgres = { workspace = true }
 tower = { workspace = true }
 tower-http = { workspace = true }

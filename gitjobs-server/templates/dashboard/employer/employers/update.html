@@ -53,11 +53,34 @@
       {# Member -#}
       <div class="col-span-full">
         <label for="member" class="form-label">Foundation member</label>
-        {% if let Some(member) = employer.member -%}
-          {% call macros::search_member(member_id = member.member_id, member_name = member.name, member_level = member.level, member_foundation = member.foundation, member_logo_url = member.logo_url) -%}
-        {% else -%}
-          {% call macros::search_member() -%}
-        {% endif -%}
+        <div class="grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-6 max-w-5xl">
+          <div class="mt-2 col-span-full lg:col-span-2">
+            {# Foundation -#}
+            <select id="foundation" name="foundation" class="select-primary">
+              {% if let Some(member) = employer.member -%}
+                {% for foundation in foundations -%}
+                  {% call macros::select_option(value = &foundation.name, label = foundation.name, selected = member.foundation) -%}
+                {% endfor -%}
+              {% else -%}
+                {% for foundation in foundations -%}
+                  {% call macros::select_option(value = &foundation.name, label = foundation.name, selected = "cncf") -%}
+                {% endfor -%}
+              {% endif -%}
+            </select>
+            {# End foundation -#}
+          </div>
+
+          {# Search members -#}
+          <div class="col-span-full lg:col-span-4">
+            {% if let Some(member) = employer.member -%}
+              {% call macros::search_member(member_id = member.member_id, member_name = member.name, member_level = member.level, member_foundation = member.foundation, member_logo_url = member.logo_url) -%}
+            {% else -%}
+              {% call macros::search_member() -%}
+            {% endif -%}
+          </div>
+          {# End search members -#}
+        </div>
+
         <p class="form-legend">
           If your company is a member of any of the supported foundations please select the corresponding member entry. Jobs posted by members will be featured across the site. False membership claims may lead to the suspension of the employer and associated user accounts.
         </p>

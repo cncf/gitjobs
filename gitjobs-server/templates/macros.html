@@ -29,9 +29,9 @@
       <div class="svg-icon size-4 icon-search bg-stone-300"></div>
     </div>
     <input id="member"
-           name="name"
+           name="member"
            hx-get="/dashboard/members/search"
-           hx-include="#member"
+           hx-include="#member,#foundation"
            hx-trigger="searchMembers"
            hx-target="#search-member"
            hx-indicator="#member-spinner"

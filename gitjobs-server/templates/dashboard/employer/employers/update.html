@@ -23,6 +23,7 @@
         hx-put="/dashboard/employer/employers/update"
         hx-ext="no-empty-vals"
         hx-include="[name=logo_id]"
+        hx-exclude="[name=foundation],[name=member]"
         hx-trigger="submit"
         hx-indicator="#dashboard-spinner, #save-spinner"
         hx-disabled-elt="button[type=submit], #cancel-button">
@@ -56,7 +57,7 @@
         <div class="grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-6 max-w-5xl">
           <div class="mt-2 col-span-full lg:col-span-2">
             {# Foundation -#}
-            <select id="foundation" name="foundation" class="select-primary">
+            <select id="foundation" name="foundation" class="select-primary uppercase">
               {% if let Some(member) = employer.member -%}
                 {% for foundation in foundations -%}
                   {% call macros::select_option(value = &foundation.name, label = foundation.name, selected = member.foundation) -%}

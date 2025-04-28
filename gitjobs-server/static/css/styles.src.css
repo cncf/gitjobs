@@ -246,13 +246,12 @@
 }
 
 @media screen and (max-width: 768px) {
-  .about h1 {
-    font-size: 2rem;
-    line-height: 2rem;
-  }
-
   .about {
     font-size: 0.9rem;
+  }
+
+  .about h2 {
+    font-size: 1rem;
   }
 }
 
@@ -442,6 +441,11 @@ select.aligned-right option {
 .icon-image {
   mask-image: url("/static/images/icons/image.svg");
   -webkit-mask-image: url("/static/images/icons/image.svg");
+}
+
+.icon-info {
+  mask-image: url("/static/images/icons/info.svg");
+  -webkit-mask-image: url("/static/images/icons/info.svg");
 }
 
 .icon-lfx {

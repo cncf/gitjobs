@@ -113,13 +113,26 @@
             {% endif -%}
           </div>
         </li>
+        {# About page for mobile -#}
+        <li class="border-t border-stone-200 mt-2 pt-2 block md:hidden">
+          <a hx-boost="true"
+             href="/about"
+             hx-target="body"
+             class="inline-block w-full text-start px-4 py-2 hover:bg-stone-100">
+            <div class="flex items-center">
+              <div class="svg-icon size-4 icon-info bg-stone-600"></div>
+              <div class="ms-2 text-xs/6">About</div>
+            </div>
+          </a>
+        </li>
+        {# End about page for mobile -#}
         <li class="border-t border-stone-200 mt-2 pt-2 hidden md:block">
           <a hx-boost="true"
              href="/dashboard/employer"
              hx-target="body"
              class="inline-block w-full text-start px-4 py-2 hover:bg-stone-100">
             <div class="flex items-center">
-              <div class="svg-icon size-4 icon-company bg-stone-600"></div>
+              <div class="svg-icon size-4 icon-company bg-stone-600 relative -mt-px"></div>
               <div class="ms-2 text-xs/6">Employer dashboard</div>
             </div>
           </a>

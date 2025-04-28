@@ -747,6 +747,8 @@ select.aligned-right option {
 /* Osano */
 
 .osano-cm-window {
+  bottom: 0;
+  top: auto !important;
   z-index: 10 !important;
 }
 
@@ -755,6 +757,11 @@ select.aligned-right option {
   width: 30px !important;
   right: 30px !important;
   bottom: 30px !important;
+  position: absolute !important;
+}
+
+.osano-cm-window__dialog {
+  position: absolute !important;
 }
 
 .osano-cm-widget svg {

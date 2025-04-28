@@ -12,7 +12,6 @@ declare
     v_max_distance real := (p_filters->>'max_distance')::real;
     v_offset int := coalesce((p_filters->>'offset')::int, 0);
     v_open_source int := (p_filters->>'open_source')::int;
-    v_projects text[];
     v_salary_min bigint := (p_filters->>'salary_min')::bigint;
     v_seniority text := (p_filters->>'seniority');
     v_skills text[];
@@ -42,10 +41,6 @@ begin
     if p_filters ? 'kind' then
         select array_agg(e::text) into v_kind
         from jsonb_array_elements_text(p_filters->'kind') e;
-    end if;
-    if p_filters ? 'projects' then
-        select array_agg(e::text) into v_projects
-        from jsonb_array_elements_text(p_filters->'projects') e;
     end if;
     if p_filters ? 'skills' then
         select array_agg(e::text) into v_skills
@@ -165,12 +160,17 @@ begin
                 j.open_source >= v_open_source
             else true end
         and
-            case when cardinality(v_projects) > 0 then
+            case when p_filters ? 'projects' then
                 j.job_id = any(
                     select job_id from job_project
                     where project_id = any(
-                        select project_id from project
-                        where name = any(v_projects)
+                        select project_id
+                        from project p
+                        join json_table((p_filters->'projects'), '$[*]' columns (
+                            foundation text path '$.foundation',
+                            name text path '$.name'
+                        )) fp
+                        on p.foundation = fp.foundation and p.name = fp.name
                     )
                 )
             else true end

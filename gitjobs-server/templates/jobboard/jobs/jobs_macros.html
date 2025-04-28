@@ -105,18 +105,14 @@
   </div>
 
   <div class="p-6 pb-4 md:pb-6 pt-3 flex flex-col space-y-5">
-    {# Projects -#}
-    <div>
-      {% call filters_subtitle(text = "Projects you'd like to work on") -%}
-      <searchable-filter name="projects" form="{{ device }}-jobs-form" {%- if let Some(filters_projects) = filters.projects %}selected="{{ filters_projects|json }}"{%- endif -%}></searchable-filter>
-    </div>
-    {# End projects -#}
-
     {# Foundation -#}
     <div>
-      <div class="text-xs/6 text-stone-500/75 -mt-2">
-        or any project from the <span class="inline-block lg:hidden xl:inline-block">following</span> foundation
+      {% call filters_subtitle(text = "Projects you'd like to work on") -%}
+
+      <div class="text-xs/6 text-stone-500/75">
+        Any project from the <span class="inline-block lg:hidden xl:inline-block">following</span> foundation
       </div>
+
       <div class="mt-2.5">
         {%- let selected_foundation = filters.foundation|display_some -%}
         <select form="{{ form }}"
@@ -131,6 +127,21 @@
       </div>
     </div>
     {# End foundation -#}
+
+    {# Projects -#}
+    <div>
+      <div class="text-xs/6 text-stone-500/75 -mt-2 mb-2">or select specific projects</div>
+
+      <select class="select-primary py-0.5 text-[0.8rem]/6 text-stone-500 mb-2">
+        {% call macros::select_option(value = "", label = "Any foundation") -%}
+        {% for foundation in filters_options.foundations -%}
+          {% call macros::select_option(value = &foundation.name, label = foundation.name|upper) -%}
+        {% endfor -%}
+      </select>
+
+      <searchable-filter name="projects" viewType="rows" form="{{ device }}-jobs-form"></searchable-filter>
+    </div>
+    {# End projects -#}
 
     {# Open source -#}
     <div>

@@ -746,6 +746,10 @@ select.aligned-right option {
 
 /* Osano */
 
+.osano-cm-window {
+  z-index: 10 !important;
+}
+
 .osano-cm-widget {
   height: 30px !important;
   width: 30px !important;

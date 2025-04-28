@@ -638,8 +638,8 @@ impl DBDashBoardEmployer for PgDB {
             &[
                 &job_id,
                 &normalize_salary(salary, currency.as_ref(), period.as_ref()).await,
-                &normalize_salary(salary_min, currency.as_ref(), period.as_ref()).await,
-                &normalize_salary(salary_max, currency.as_ref(), period.as_ref()).await,
+                &normalize_salary(salary_min.or(salary), currency.as_ref(), period.as_ref()).await,
+                &normalize_salary(salary_max.or(salary), currency.as_ref(), period.as_ref()).await,
             ],
         )
         .await?;

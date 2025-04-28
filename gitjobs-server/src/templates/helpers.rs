@@ -1,11 +1,11 @@
 //! Some helpers for templates.
 
-use std::{collections::HashMap, sync::LazyLock};
+use std::{collections::HashMap, sync::LazyLock, time::Duration};
 
 use anyhow::Result;
 use cached::proc_macro::cached;
 use regex::Regex;
-use tracing::warn;
+use tracing::{debug, warn};
 use uuid::Uuid;
 
 use crate::templates::dashboard::employer::employers::EmployerSummary;
@@ -100,9 +100,9 @@ pub(crate) async fn normalize_salary(
 
     // Convert to USD.
     let exchange_rates = get_exchange_rates().await;
-    let Some(exchange_rate) = exchange_rates.get(currency) else {
-        warn!("invalid exchange rate");
-        return None; // Unsupported exchange rate.
+    let Some(exchange_rate) = exchange_rates.get(&currency.to_lowercase()) else {
+        warn!(currency, "exchange rate not found");
+        return None;
     };
 
     #[allow(clippy::cast_precision_loss)]
@@ -124,35 +124,42 @@ pub(crate) async fn normalize_salary(
     Some(salary_usd_year as i64)
 }
 
-/// Return current exchange rates defaulting to backup ones if the current ones aren't available. Values will be cached for 1 day.
+/// Return current exchange rates, defaulting to backup ones if the current
+/// ones aren't available. Rates will be cached for 1 day.
 #[cached(time = 86400, sync_writes = "by_key")]
 async fn get_exchange_rates() -> HashMap<String, f64> {
-    let mut backup_exchange_rates = HashMap::from([
+    // Exchange rates as of 2024-04-28.
+    let backup_exchange_rates = HashMap::from([
         ("usd".to_string(), 1.0),
-        ("eur".to_string(), 0.87),
-        ("gbp".to_string(), 0.7476),
-        ("cad".to_string(), 1.3832),
-        ("chf".to_string(), 0.8117),
-        ("jpy".to_string(), 143.6587),
+        ("eur".to_string(), 0.878),
+        ("gbp".to_string(), 0.751),
+        ("cad".to_string(), 1.386),
+        ("chf".to_string(), 0.828),
+        ("jpy".to_string(), 143.658),
     ]);
 
+    // Download current exchange rates.
     let Ok(exchange_rates) = download_exchange_rates().await else {
-        return backup_exchange_rates; // If current exchange rates aren't available, return backup ones.
+        warn!("error downloading current exchange rates, using backup ones");
+        return backup_exchange_rates;
     };
-    backup_exchange_rates.extend(exchange_rates); // Update current rates with backup ones in case an exchange rate is missing.
 
-    backup_exchange_rates
+    exchange_rates
 }
 
 /// Download current exchange rates.
+#[tracing::instrument(skip_all, err)]
 async fn download_exchange_rates() -> Result<HashMap<String, f64>> {
+    debug!("downloading current exchange rates");
+
     let url = "https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.json";
-    let data = reqwest::get(url).await?.text().await?;
-    let exchange_rates: ExchangeRatesApiResponse = serde_json::from_str(&data)?;
+    let client = reqwest::Client::builder().timeout(Duration::from_secs(5)).build()?;
+    let exchange_rates: ExchangeRatesApiResponse = client.get(url).send().await?.json().await?;
 
     Ok(exchange_rates.usd)
 }
 
+/// Response from the exchange rates API.
 #[derive(Debug, Clone, PartialEq, serde::Deserialize)]
 struct ExchangeRatesApiResponse {
     pub usd: HashMap<String, f64>,

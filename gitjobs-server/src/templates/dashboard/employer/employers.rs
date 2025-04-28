@@ -8,7 +8,7 @@ use uuid::Uuid;
 use crate::templates::{
     filters,
     helpers::build_dashboard_image_url,
-    misc::{Location, Member},
+    misc::{Foundation, Location, Member},
 };
 
 // Pages templates.
@@ -16,7 +16,9 @@ use crate::templates::{
 /// Add employer page template.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
 #[template(path = "dashboard/employer/employers/add.html")]
-pub(crate) struct AddPage {}
+pub(crate) struct AddPage {
+    pub foundations: Vec<Foundation>,
+}
 
 /// Employer initial setup page template.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
@@ -28,6 +30,7 @@ pub(crate) struct InitialSetupPage {}
 #[template(path = "dashboard/employer/employers/update.html")]
 pub(crate) struct UpdatePage {
     pub employer: Employer,
+    pub foundations: Vec<Foundation>,
 }
 
 // Types.

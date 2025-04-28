@@ -21,8 +21,9 @@ use crate::{
 
 /// Handler that returns the page to add a new job.
 #[instrument(skip_all, err)]
-pub(crate) async fn add_page(State(_db): State<DynDB>) -> Result<impl IntoResponse, HandlerError> {
-    let template = jobs::AddPage {};
+pub(crate) async fn add_page(State(db): State<DynDB>) -> Result<impl IntoResponse, HandlerError> {
+    let foundations = db.list_foundations().await?;
+    let template = jobs::AddPage { foundations };
 
     Ok(Html(template.render()?))
 }
@@ -82,8 +83,9 @@ pub(crate) async fn update_page(
     State(db): State<DynDB>,
     Path(job_id): Path<Uuid>,
 ) -> Result<impl IntoResponse, HandlerError> {
+    let foundations = db.list_foundations().await?;
     let job = db.get_job_dashboard(&job_id).await?;
-    let template = jobs::UpdatePage { job };
+    let template = jobs::UpdatePage { foundations, job };
 
     Ok(Html(template.render()?).into_response())
 }

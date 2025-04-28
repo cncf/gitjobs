@@ -47,7 +47,6 @@ pub(crate) struct UserMenuSection {
 /// Foundation information.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub(crate) struct Foundation {
-    pub foundation_id: Uuid,
     pub name: String,
 }
 

@@ -23,8 +23,9 @@ use crate::{
 
 /// Handler that returns the page to add a new employer.
 #[instrument(skip_all, err)]
-pub(crate) async fn add_page(State(_db): State<DynDB>) -> Result<impl IntoResponse, HandlerError> {
-    let template = employers::AddPage {};
+pub(crate) async fn add_page(State(db): State<DynDB>) -> Result<impl IntoResponse, HandlerError> {
+    let foundations = db.list_foundations().await?;
+    let template = employers::AddPage { foundations };
 
     Ok(Html(template.render()?))
 }
@@ -36,7 +37,11 @@ pub(crate) async fn update_page(
     SelectedEmployerIdRequired(employer_id): SelectedEmployerIdRequired,
 ) -> Result<impl IntoResponse, HandlerError> {
     let employer = db.get_employer(&employer_id).await?;
-    let template = employers::UpdatePage { employer };
+    let foundations = db.list_foundations().await?;
+    let template = employers::UpdatePage {
+        employer,
+        foundations,
+    };
 
     Ok(Html(template.render()?))
 }

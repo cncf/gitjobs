@@ -12,7 +12,7 @@ use crate::templates::{
     filters,
     helpers::{DATE_FORMAT, build_dashboard_image_url, format_location, normalize, normalize_salary},
     jobboard::jobs::Seniority,
-    misc::{Location, Project},
+    misc::{Foundation, Location, Project},
 };
 
 // Pages templates.
@@ -20,7 +20,9 @@ use crate::templates::{
 /// Add job page template.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
 #[template(path = "dashboard/employer/jobs/add.html")]
-pub(crate) struct AddPage {}
+pub(crate) struct AddPage {
+    pub foundations: Vec<Foundation>,
+}
 
 /// Jobs list page template.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
@@ -41,6 +43,7 @@ pub(crate) struct PreviewPage {
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
 #[template(path = "dashboard/employer/jobs/update.html")]
 pub(crate) struct UpdatePage {
+    pub foundations: Vec<Foundation>,
     pub job: Job,
 }
 

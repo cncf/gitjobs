@@ -83,7 +83,11 @@ pub(crate) async fn page(
         }
         Tab::Profile => {
             let employer = db.get_employer(&employer_id.expect("to be some")).await?;
-            Content::Profile(employers::UpdatePage { employer })
+            let foundations = db.list_foundations().await?;
+            Content::Profile(employers::UpdatePage {
+                employer,
+                foundations,
+            })
         }
     };
 

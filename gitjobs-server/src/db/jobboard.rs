@@ -200,7 +200,6 @@ impl DBJobBoard for PgDB {
                     select
                         (
                             select json_agg(json_build_object(
-                                'foundation_id', foundation_id,
                                 'name', name
                             ))
                             from foundation

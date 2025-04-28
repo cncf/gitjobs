@@ -16,6 +16,7 @@ use crate::{
             jobs::{Job, JobSummary},
         },
         helpers::normalize_salary,
+        misc::Foundation,
     },
 };
 
@@ -54,6 +55,9 @@ pub(crate) trait DBDashBoardEmployer {
 
     /// List employers where the user is part of the team.
     async fn list_employers(&self, user_id: &Uuid) -> Result<Vec<EmployerSummary>>;
+
+    /// List foundations.
+    async fn list_foundations(&self) -> Result<Vec<Foundation>>;
 
     /// Publish job.
     async fn publish_job(&self, job_id: &Uuid) -> Result<()>;
@@ -591,6 +595,23 @@ impl DBDashBoardEmployer for PgDB {
             .collect();
 
         Ok(employers)
+    }
+
+    #[instrument(skip(self), err)]
+    async fn list_foundations(&self) -> Result<Vec<Foundation>> {
+        trace!("db: list foundations");
+
+        let db = self.pool.get().await?;
+        let foundations = db
+            .query("select name from foundation order by name asc;", &[])
+            .await?
+            .into_iter()
+            .map(|row| Foundation {
+                name: row.get("name"),
+            })
+            .collect();
+
+        Ok(foundations)
     }
 
     #[instrument(skip(self), err)]

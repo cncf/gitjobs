@@ -5,6 +5,7 @@
 <form id="jobs-form"
       hx-post="/dashboard/employer/jobs/add"
       hx-ext="no-empty-vals"
+      hx-exclude="[name=foundation],[name=project]"
       hx-trigger="submit"
       hx-indicator="#dashboard-spinner, #save-spinner"
       hx-disabled-elt="button[type=submit], #publish-job, #cancel-button, #preview-button">
@@ -376,7 +377,7 @@
           <div class="grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-6 max-w-5xl">
             <div class="mt-2 col-span-full lg:col-span-2">
               {# Foundation -#}
-              <select id="foundation" name="foundation" class="select-primary">
+              <select id="foundation" name="foundation" class="select-primary uppercase">
                 {% for foundation in foundations -%}
                   {% call macros::select_option(value = &foundation.name, label = foundation.name, selected = "cncf") -%}
                 {% endfor -%}

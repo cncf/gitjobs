@@ -142,9 +142,9 @@
       <div class="svg-icon size-4 icon-search bg-stone-300"></div>
     </div>
     <input id="{{ id }}"
-           name="name"
+           name="project"
            hx-get="/projects/search"
-           hx-include="#{{ id }}"
+           hx-include="#{{ id }},#foundation"
            hx-trigger="searchprojects"
            hx-target="#search-{{ id }}"
            hx-indicator="#{{ id }}-spinner"

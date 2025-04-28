@@ -1,10 +1,6 @@
 {% import "jobboard/jobs/jobs_macros.html" as jobs_macros -%}
 {% import "macros.html" as macros -%}
 
-<div id="projects-list"
-     data-projects="{{ filters_options.projects|json }}"
-     class="hidden"></div>
-
 {# Mobile filters -#}
 <div id="drawer-filters"
      class="fixed top-0 left-0 z-[1100] h-dvh overflow-y-auto -translate-x-full bg-white w-80 border border-r border-stone-200 shadow-lg"

@@ -168,7 +168,6 @@ pub(crate) enum Sort {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub(crate) struct FiltersOptions {
     pub foundations: Vec<Foundation>,
-    pub projects: Vec<Project>,
 }
 
 /// Job summary.

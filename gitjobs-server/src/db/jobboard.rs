@@ -204,17 +204,7 @@ impl DBJobBoard for PgDB {
                                 'name', name
                             ))
                             from foundation
-                        )::text as foundations,
-                        (
-                            select json_agg(json_build_object(
-                                'project_id', project_id,
-                                'foundation', foundation,
-                                'logo_url', logo_url,
-                                'maturity', maturity,
-                                'name', name
-                            ))
-                            from project
-                        )::text as projects;
+                        )::text as foundations;
                     ",
                     &[],
                 )
@@ -223,7 +213,6 @@ impl DBJobBoard for PgDB {
             // Prepare filters options
             let filters_options = FiltersOptions {
                 foundations: serde_json::from_str(&row.get::<_, String>("foundations"))?,
-                projects: serde_json::from_str(&row.get::<_, String>("projects"))?,
             };
 
             Ok(filters_options)

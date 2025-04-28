@@ -16,10 +16,10 @@ pub(crate) trait DBMisc {
     async fn search_locations(&self, ts_query: &str) -> Result<Vec<Location>>;
 
     /// Search members.
-    async fn search_members(&self, name: &str) -> Result<Vec<Member>>;
+    async fn search_members(&self, foundation: &str, member: &str) -> Result<Vec<Member>>;
 
     /// Search projects.
-    async fn search_projects(&self, name: &str) -> Result<Vec<Project>>;
+    async fn search_projects(&self, foundation: &str, project: &str) -> Result<Vec<Project>>;
 }
 
 #[async_trait]
@@ -55,7 +55,7 @@ impl DBMisc for PgDB {
     }
 
     #[instrument(skip(self), err)]
-    async fn search_members(&self, name: &str) -> Result<Vec<Member>> {
+    async fn search_members(&self, foundation: &str, member: &str) -> Result<Vec<Member>> {
         trace!("db: search members");
 
         let db = self.pool.get().await?;
@@ -69,10 +69,11 @@ impl DBMisc for PgDB {
                     logo_url,
                     name
                 from member
-                where name ilike '%' || $1::text || '%'
+                where foundation = $1::text
+                and name ilike '%' || $2::text || '%'
                 limit 20;
                 ",
-                &[&name],
+                &[&foundation, &member],
             )
             .await?
             .into_iter()
@@ -89,7 +90,7 @@ impl DBMisc for PgDB {
     }
 
     #[instrument(skip(self), err)]
-    async fn search_projects(&self, name: &str) -> Result<Vec<Project>> {
+    async fn search_projects(&self, foundation: &str, project: &str) -> Result<Vec<Project>> {
         trace!("db: search projects");
 
         let db = self.pool.get().await?;
@@ -103,10 +104,11 @@ impl DBMisc for PgDB {
                     maturity,
                     name
                 from project
-                where name ilike '%' || $1::text || '%'
+                where foundation = $1::text
+                and name ilike '%' || $2::text || '%'
                 limit 20;
                 ",
-                &[&name],
+                &[&foundation, &project],
             )
             .await?
             .into_iter()

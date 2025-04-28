@@ -93,7 +93,6 @@ pub(crate) async fn setup(
         .nest("/dashboard/job-seeker", job_seeker_dashboard_router)
         .nest("/dashboard/moderator", moderator_dashboard_router)
         .route("/dashboard/members/search", get(search_members))
-        .route("/dashboard/projects/search", get(search_projects))
         .route("/jobs/{job_id}/apply", post(jobboard::jobs::apply))
         .route_layer(login_required!(
             AuthnBackend,
@@ -129,6 +128,7 @@ pub(crate) async fn setup(
     // Resume router setup.
     router = router
         .route("/log-out", get(auth::log_out))
+        .route("/projects/search", get(search_projects))
         .route("/section/jobs/{job_id}", get(jobboard::jobs::job_section))
         .route("/section/jobs/results", get(jobboard::jobs::results_section))
         .route("/section/user-menu", get(user_menu_section))

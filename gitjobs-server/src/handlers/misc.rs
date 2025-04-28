@@ -72,10 +72,10 @@ pub(crate) async fn search_members(
     Query(query): Query<HashMap<String, String>>,
 ) -> Result<impl IntoResponse, HandlerError> {
     // Get members from the database
-    let Some(name) = query.get("name") else {
-        return Ok((StatusCode::BAD_REQUEST, "missing name parameter").into_response());
+    let (Some(foundation), Some(member)) = (query.get("foundation"), query.get("member")) else {
+        return Ok((StatusCode::BAD_REQUEST, "missing foundation or member parameter").into_response());
     };
-    let members = db.search_members(name).await?;
+    let members = db.search_members(foundation, member).await?;
 
     // Prepare template
     let template = misc::Members { members };
@@ -93,10 +93,10 @@ pub(crate) async fn search_projects(
     Query(query): Query<HashMap<String, String>>,
 ) -> Result<impl IntoResponse, HandlerError> {
     // Get projects from the database
-    let Some(name) = query.get("name") else {
-        return Ok((StatusCode::BAD_REQUEST, "missing name parameter").into_response());
+    let (Some(foundation), Some(project)) = (query.get("foundation"), query.get("project")) else {
+        return Ok((StatusCode::BAD_REQUEST, "missing foundation or project parameter").into_response());
     };
-    let projects = db.search_projects(name).await?;
+    let projects = db.search_projects(foundation, project).await?;
 
     // Prepare template
     let template = misc::Projects { projects };

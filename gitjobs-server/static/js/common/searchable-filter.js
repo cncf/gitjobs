@@ -55,12 +55,6 @@ export class SearchableFilter extends LitWrapper {
       case "benefits":
         this.options = getBenefits();
         break;
-      case "projects":
-        const projects = document.getElementById("projects-list");
-        if (projects) {
-          this.options = JSON.parse(projects.dataset.projects);
-        }
-        break;
       default:
         this.options = this.options;
     }
@@ -71,7 +65,7 @@ export class SearchableFilter extends LitWrapper {
   _filterOptions() {
     if (this.enteredValue.length > 0) {
       this.visibleOptions = this.options.filter((option) => {
-        const name = this.name === "projects" ? option.name : unnormalize(option);
+        const name = unnormalize(option);
         return name.toLowerCase().includes(this.enteredValue.toLowerCase());
       });
     } else {
@@ -115,8 +109,7 @@ export class SearchableFilter extends LitWrapper {
           const activeItem = this.visibleOptions[this.activeIndex];
           if (activeItem) {
             const activeItem = this.visibleOptions[this.activeIndex];
-            const name = this.name === "projects" ? activeItem.name : activeItem;
-            this._onSelect(name);
+            this._onSelect(activeItem);
           }
         }
         break;
@@ -199,55 +192,28 @@ export class SearchableFilter extends LitWrapper {
           ${this.visibleOptions.length > 0 && this.visibleDropdown
             ? html`<ul class="text-sm text-stone-700 overflow-auto max-h-[180px]">
                 ${this.visibleOptions.map((option, index) => {
-                  const isProjectsType = this.name === "projects";
-                  const name = isProjectsType ? option.name : option;
-                  const isSelected = this.selected.includes(name);
+                  const isSelected = this.selected.includes(option);
                   return html`<li
                     class="group ${this.activeIndex === index ? "active" : ""}"
                     data-index="${index}"
                   >
                     <button
                       type="button"
-                      @click=${() => this._onSelect(name)}
+                      @click=${() => this._onSelect(option)}
                       @mouseover=${() => (this.activeIndex = index)}
                       class=${`group-[.active]:bg-stone-100 ${
                         isSelected ? "bg-stone-100 opacity-50" : "cursor-pointer hover:bg-stone-100"
-                      } capitalize block w-full text-left ${isProjectsType ? "px-3" : "px-4"} py-1`}
+                      } capitalize block w-full text-left px-4 py-1`}
                       ?disabled="${isSelected}"
                     >
-                      ${isProjectsType
-                        ? html`<div class="flex items-center space-x-3">
-                            <div class="size-8 shrink-0 flex items-center justify-center">
-                              <img
-                                loading="lazy"
-                                class="size-8 object-contain"
-                                height="auto"
-                                width="auto"
-                                src="${option.logo_url}"
-                                alt="${name} logo"
-                              />
-                            </div>
-                            <div class="flex flex-col justify-start min-w-0">
-                              <div class="truncate text-start text-xs/5 text-stone-700 font-medium">
-                                ${name}
-                              </div>
-                              <div class="inline-flex">
-                                <div
-                                  class="truncate text-nowrap uppercase max-w-[100%] text-[0.65rem] font-medium text-stone-500/75"
-                                >
-                                  ${option.foundation} ${option.maturity}
-                                </div>
-                              </div>
-                            </div>
-                          </div>`
-                        : html`<div class="flex items-center">
-                            <div class="size-3 me-2">
-                              ${isSelected
-                                ? html`<div class="svg-icon size-3 icon-check bg-stone-400"></div>`
-                                : ""}
-                            </div>
-                            <div class="truncate text-[0.8rem]/6">${unnormalize(name)}</div>
-                          </div>`}
+                      <div class="flex items-center">
+                        <div class="size-3 me-2">
+                          ${isSelected
+                            ? html`<div class="svg-icon size-3 icon-check bg-stone-400"></div>`
+                            : ""}
+                        </div>
+                        <div class="truncate text-[0.8rem]/6">${unnormalize(option)}</div>
+                      </div>
                     </button>
                   </li>`;
                 })}

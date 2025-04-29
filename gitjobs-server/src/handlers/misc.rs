@@ -62,7 +62,7 @@ pub(crate) async fn search_locations(
     // Prepare response headers
     let headers = prepare_headers(Duration::hours(1), &[])?;
 
-    Ok((headers, Json(locations).into_response()).into_response())
+    Ok((headers, Json(locations)).into_response())
 }
 
 /// Handler that returns the members search results.
@@ -77,13 +77,10 @@ pub(crate) async fn search_members(
     };
     let members = db.search_members(foundation, member).await?;
 
-    // Prepare template
-    let template = misc::Members { members };
-
     // Prepare response headers
     let headers = prepare_headers(Duration::hours(1), &[])?;
 
-    Ok((headers, Html(template.render()?)).into_response())
+    Ok((headers, Json(members)).into_response())
 }
 
 /// Handler that returns the projects search results.
@@ -98,13 +95,10 @@ pub(crate) async fn search_projects(
     };
     let projects = db.search_projects(foundation, project).await?;
 
-    // Prepare template
-    let template = misc::Projects { projects };
-
     // Prepare response headers
     let headers = prepare_headers(Duration::hours(1), &[])?;
 
-    Ok((headers, Html(template.render()?)).into_response())
+    Ok((headers, Json(projects)).into_response())
 }
 
 /// Handler that returns the header user menu section.

@@ -8,13 +8,6 @@ use crate::templates::{Config, PageId, auth::User, filters, helpers::format_loca
 
 // Templates.
 
-/// Members selector template.
-#[derive(Debug, Clone, Template, PartialEq, Serialize, Deserialize)]
-#[template(path = "misc/members.html")]
-pub(crate) struct Members {
-    pub members: Vec<Member>,
-}
-
 /// Not found page template.
 #[derive(Debug, Clone, Template, PartialEq, Serialize, Deserialize)]
 #[template(path = "misc/not_found.html")]
@@ -24,13 +17,6 @@ pub(crate) struct NotFoundPage {
     pub user: User,
 
     pub auth_provider: Option<String>,
-}
-
-/// Projects selector template.
-#[derive(Debug, Clone, Template, PartialEq, Serialize, Deserialize)]
-#[template(path = "misc/projects.html")]
-pub(crate) struct Projects {
-    pub projects: Vec<Project>,
 }
 
 /// User menu section template.

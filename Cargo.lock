@@ -1551,6 +1551,28 @@ dependencies = [
 ]
 
 [[package]]
+name = "gitjobs-syncer"
+version = "0.0.1"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "clap",
+ "deadpool-postgres",
+ "figment",
+ "futures",
+ "openssl",
+ "postgres-openssl",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "serde_with",
+ "tokio",
+ "tokio-postgres",
+ "tracing",
+ "tracing-subscriber",
+]
+
+[[package]]
 name = "group"
 version = "0.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"

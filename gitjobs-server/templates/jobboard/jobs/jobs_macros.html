@@ -119,7 +119,7 @@
                 data-trigger-form="true"
                 name="foundation"
                 class="select-primary py-0.5 text-[0.8rem]/6 text-stone-500">
-          {% call macros::select_option(value = "", label = "", selected = selected_foundation) -%}
+          {% call macros::select_option(value = "", label = "Any foundation", selected = selected_foundation) -%}
           {% for foundation in filters_options.foundations -%}
             {% call macros::select_option(value = &foundation.name, label = foundation.name|upper, selected = selected_foundation) -%}
           {% endfor -%}
@@ -131,15 +131,7 @@
     {# Projects -#}
     <div>
       <div class="text-xs/6 text-stone-500/75 -mt-2 mb-2">or select specific projects</div>
-
-      <select class="select-primary py-0.5 text-[0.8rem]/6 text-stone-500 mb-2">
-        {% call macros::select_option(value = "", label = "Any foundation") -%}
-        {% for foundation in filters_options.foundations -%}
-          {% call macros::select_option(value = &foundation.name, label = foundation.name|upper) -%}
-        {% endfor -%}
-      </select>
-
-      <searchable-filter name="projects" viewType="rows" form="{{ device }}-jobs-form"></searchable-filter>
+      <search-projects foundations="{{ filters_options.foundations|json }}" viewType="rows" form="{{ device }}-jobs-form" {%- if let Some(filters_projects) = filters.projects %}selected="{{ filters_projects|json }}"{%- endif -%}></search-projects>
     </div>
     {# End projects -#}
 

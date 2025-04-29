@@ -94,6 +94,12 @@ export const resetForm = async (formId) => {
       await searchableFilters[i].cleanSelected();
     }
 
+    // Clean search projects input field
+    const searchProjects = document.getElementsByTagName("search-projects");
+    for (let i = 0; i < searchProjects.length; i++) {
+      await searchProjects[i].cleanSelected();
+    }
+
     // Clean range inputs
     const rangeFilters = document.getElementsByTagName("input-range");
     for (let i = 0; i < rangeFilters.length; i++) {

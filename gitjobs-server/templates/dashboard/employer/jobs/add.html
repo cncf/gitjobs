@@ -372,30 +372,7 @@
         {# End Upstream commitment -#}
 
         {# Projects -#}
-        <div class="col-span-full">
-          <label for="project" class="form-label">Projects</label>
-          <div class="grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-6 max-w-5xl">
-            <div class="mt-2 col-span-full lg:col-span-2">
-              {# Foundation -#}
-              <select id="foundation" name="foundation" class="select-primary uppercase">
-                {% for foundation in foundations -%}
-                  {% call macros::select_option(value = &foundation.name, label = foundation.name, selected = "cncf") -%}
-                {% endfor -%}
-              </select>
-              {# End foundation -#}
-            </div>
-
-            {# Search projects -#}
-            <div class="col-span-full lg:col-span-4">{% call macros::search_project() -%}</div>
-            {# End search projects -#}
-          </div>
-          <p class="form-legend">
-            If the job position involves contributing to any of the supported foundations projects, please list them here.
-          </p>
-        </div>
-        <div class="col-span-full -mt-4">
-          <div id="selected-projects" class="flex flex-wrap gap-5 w-full"></div>
-        </div>
+        <dashboard-search foundations="{{ foundations|json }}" class="col-span-full"></dashboard-search>
         {# End projects -#}
       </div>
     </div>

@@ -178,7 +178,6 @@ export class SearchProjects extends LitWrapper {
     const isDisabled = this.foundation === null;
 
     return html`<select
-        name="projects-foundation"
         class="select-primary py-0.5 text-[0.8rem]/6 text-stone-500 mb-2"
         @change=${this._handleFoundationChange}
       >

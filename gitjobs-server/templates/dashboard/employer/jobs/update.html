@@ -420,161 +420,121 @@
         {# End Upstream commitment -#}
 
         {# Projects -#}
-        <div class="col-span-full">
-          <label for="project" class="form-label">Projects</label>
-          <div class="grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-6 max-w-5xl">
-            <div class="mt-2 col-span-full lg:col-span-2">
-              {# Foundation -#}
-              <select id="foundation" name="foundation" class="select-primary uppercase">
-                {% for foundation in foundations -%}
-                  {% call macros::select_option(value = &foundation.name, label = foundation.name, selected = "cncf") -%}
-                {% endfor -%}
-              </select>
-              {# End foundation -#}
-            </div>
-
-            {# Search projects -#}
-            <div class="col-span-full lg:col-span-4">{% call macros::search_project() -%}</div>
-            {# End search projects -#}
-          </div>
-          <p class="form-legend">
-            If the job position involves contributing to any of the supported foundations projects, please list them here.
-          </p>
+        <dashboard-search foundations="{{ foundations|json }}"
+        {% if let Some(projects) = job.projects -%}selected="{{ projects|json }}"{%- endif %} class="col-span-full"></dashboard-search>
+          {# End projects -#}
         </div>
-        <div class="col-span-full -mt-4">
-          <div id="selected-projects"
-               class="flex flex-wrap gap-5 w-full"
-               {% if let Some(projects) = job.projects -%}data-projects="{{ projects|json }}"{%- endif %}></div>
-        </div>
-        <script type="module">
-          import {
-            addProjectCard
-          } from '/static/js/misc/projects.js';
+      </div>
+      {# End Open Source -#}
 
-          const selectedProjects = document.getElementById('selected-projects');
-          if (selectedProjects) {
-            const projects = selectedProjects.dataset.projects;
-            if (projects) {
-              const parsedProjects = JSON.parse(projects);
-              parsedProjects.forEach((project) => {
-                addProjectCard(project.project_id, project.name, project.maturity, project.foundation, project.logo_url, 'selected-projects');
-              });
-            }
-          }
-        </script>
-        {# End projects -#}
+      {# Job status -#}
+      <input type="hidden"
+             name="status"
+             value="{%- if job.status == JobStatus::Rejected || job.status == JobStatus::Published -%}pending-approval{%- else -%}{{ job.status }}{%- endif -%}">
+      {# End job status -#}
+
+      <div class="mt-6 flex justify-between items-center">
+        {# Preview -#}
+        <div class="flex items-center gap-x-6">
+          {# Preview button -#}
+          <button id="preview-button"
+                  type="button"
+                  hx-post="/dashboard/employer/jobs/preview"
+                  hx-include="#jobs-form"
+                  hx-ext="no-empty-vals"
+                  hx-target="#preview-content"
+                  hx-indicator="#preview-spinner"
+                  type="button"
+                  class="group btn-primary-outline">
+            <span class="hidden md:block">Preview</span>
+            <span class="block md:hidden">
+              <div class="svg-icon size-3 icon-eye group-hover:bg-white"></div>
+            </span>
+            {% call macros::btn_spinner(id = "preview-spinner") -%}
+          </button>
+          {# End preview button -#}
+        </div>
+        {# End preview -#}
+
+        <div class="flex items-center justify-end gap-x-6 relative">
+          {# Cancel button -#}
+          <button id="cancel-button"
+                  type="button"
+                  hx-get="/dashboard/employer?tab=jobs"
+                  hx-target="body"
+                  hx-indicator="#dashboard-spinner"
+                  class="btn-primary-outline">Cancel</button>
+          {# End cancel button -#}
+
+          {# Save button -#}
+          <button type="submit" class="btn-primary">
+            {% call macros::btn_spinner(id = "save-spinner", spinner_type = "2") -%}
+            Save
+          </button>
+          {# End save button -#}
+        </div>
       </div>
     </div>
-    {# End Open Source -#}
 
-    {# Job status -#}
-    <input type="hidden"
-           name="status"
-           value="{%- if job.status == JobStatus::Rejected || job.status == JobStatus::Published -%}pending-approval{%- else -%}{{ job.status }}{%- endif -%}">
-    {# End job status -#}
+  </form>
 
-    <div class="mt-6 flex justify-between items-center">
-      {# Preview -#}
-      <div class="flex items-center gap-x-6">
-        {# Preview button -#}
-        <button id="preview-button"
-                type="button"
-                hx-post="/dashboard/employer/jobs/preview"
-                hx-include="#jobs-form"
-                hx-ext="no-empty-vals"
-                hx-target="#preview-content"
-                hx-indicator="#preview-spinner"
-                type="button"
-                class="group btn-primary-outline">
-          <span class="hidden md:block">Preview</span>
-          <span class="block md:hidden">
-            <div class="svg-icon size-3 icon-eye group-hover:bg-white"></div>
-          </span>
-          {% call macros::btn_spinner(id = "preview-spinner") -%}
-        </button>
-        {# End preview button -#}
-      </div>
-      {# End preview -#}
+  {# Preview modal -#}
+  {% call preview::modal() -%}
+  {# End preview modal -#}
 
-      <div class="flex items-center justify-end gap-x-6 relative">
-        {# Cancel button -#}
-        <button id="cancel-button"
-                type="button"
-                hx-get="/dashboard/employer?tab=jobs"
-                hx-target="body"
-                hx-indicator="#dashboard-spinner"
-                class="btn-primary-outline">Cancel</button>
-        {# End cancel button -#}
+  <script type="module">
+    import {
+      triggerActionOnForm,
+      checkSalaryBeforeSubmit,
+      checkJobTitle
+    } from '/static/js/dashboard/employer/jobs.js';
+    import {
+      toggleModalVisibility,
+      isSuccessfulXHRStatus
+    } from '/static/js/common/common.js';
+    import {
+      showErrorAlert,
+      showSuccessAlert
+    } from '/static/js/common/alerts.js';
 
-        {# Save button -#}
-        <button type="submit" class="btn-primary">
-          {% call macros::btn_spinner(id = "save-spinner", spinner_type = "2") -%}
-          Save
-        </button>
-        {# End save button -#}
-      </div>
-    </div>
-  </div>
+    const jobsForm = document.getElementById('jobs-form');
+    const jobTitleInput = document.getElementById('title');
+    jobTitleInput.addEventListener('input', () => {
+      checkJobTitle(jobTitleInput);
+    });
 
-</form>
+    // Before the form is submitted, check the salary option selected
+    jobsForm.addEventListener('htmx:trigger', () => {
+      checkSalaryBeforeSubmit();
+    });
 
-{# Preview modal -#}
-{% call preview::modal() -%}
-{# End preview modal -#}
+    jobsForm.addEventListener('htmx:afterRequest', (e) => {
+      // Check if the form is the jobs form and not the input ts_query requesting locations
+      if (e.detail.elt.id === 'jobs-form') {
+        // Update hx-spinner
+        jobsForm.setAttribute('hx-indicator', '#dashboard-spinner, #save-spinner');
 
-<script type="module">
-  import {
-    triggerActionOnForm,
-    checkSalaryBeforeSubmit,
-    checkJobTitle
-  } from '/static/js/dashboard/employer/jobs.js';
-  import {
-    toggleModalVisibility,
-    isSuccessfulXHRStatus
-  } from '/static/js/common/common.js';
-  import {
-    showErrorAlert,
-    showSuccessAlert
-  } from '/static/js/common/alerts.js';
+        if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
+          showSuccessAlert('Job updated successfully.');
+        } else {
+          showErrorAlert('Something went wrong updating the job, please try again later.');
+        }
+      }
+    });
 
-  const jobsForm = document.getElementById('jobs-form');
-  const jobTitleInput = document.getElementById('title');
-  jobTitleInput.addEventListener('input', () => {
-    checkJobTitle(jobTitleInput);
-  });
-
-  // Before the form is submitted, check the salary option selected
-  jobsForm.addEventListener('htmx:trigger', () => {
-    checkSalaryBeforeSubmit();
-  });
-
-  jobsForm.addEventListener('htmx:afterRequest', (e) => {
-    // Check if the form is the jobs form and not the input ts_query requesting locations
-    if (e.detail.elt.id === 'jobs-form') {
-      // Update hx-spinner
-      jobsForm.setAttribute('hx-indicator', '#dashboard-spinner, #save-spinner');
-
+    // On preview button click, show the preview modal
+    const previewButton = document.getElementById('preview-button');
+    previewButton.addEventListener('htmx:afterRequest', (e) => {
       if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
-        showSuccessAlert('Job updated successfully.');
+        toggleModalVisibility('preview-modal', "open");
       } else {
-        showErrorAlert('Something went wrong updating the job, please try again later.');
+        // When the preview is not available, show an error message
+        if (e.detail.xhr.status == 422) {
+          showErrorAlert('You must fill in all required fields to be able to preview the job.');
+        } else {
+          showErrorAlert('Something went wrong previewing the data, please try again later.');
+        }
       }
-    }
-  });
-
-  // On preview button click, show the preview modal
-  const previewButton = document.getElementById('preview-button');
-  previewButton.addEventListener('htmx:afterRequest', (e) => {
-    if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
-      toggleModalVisibility('preview-modal', "open");
-    } else {
-      // When the preview is not available, show an error message
-      if (e.detail.xhr.status == 422) {
-        showErrorAlert('You must fill in all required fields to be able to preview the job.');
-      } else {
-        showErrorAlert('Something went wrong previewing the data, please try again later.');
-      }
-    }
-  });
-</script>
-{# End Jobs form -#}
+    });
+  </script>
+  {# End Jobs form -#}

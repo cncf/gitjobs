@@ -135,16 +135,16 @@ export class SearchProjects extends LitWrapper {
   }
 
   _highlightItem(direction) {
-    if (this.options && this.options.length > 0) {
+    if (this.visibleOptions && this.visibleOptions.length > 0) {
       if (this.activeIndex === null) {
-        this.activeIndex = direction === "down" ? 0 : this.options.length - 1;
+        this.activeIndex = direction === "down" ? 0 : this.visibleOptions.length - 1;
       } else {
         let newIndex = direction === "down" ? this.activeIndex + 1 : this.activeIndex - 1;
-        if (newIndex >= this.options.length) {
+        if (newIndex >= this.visibleOptions.length) {
           newIndex = 0;
         }
         if (newIndex < 0) {
-          newIndex = this.options.length - 1;
+          newIndex = this.visibleOptions.length - 1;
         }
         this.activeIndex = newIndex;
       }
@@ -208,7 +208,7 @@ export class SearchProjects extends LitWrapper {
           autocapitalize="off"
           spellcheck="false"
           autocomplete="off"
-          .disabled="${isDisabled}"
+          ?disabled="${isDisabled}"
         />
         <div class="absolute end-1.5 top-0.5 peer-placeholder-shown:hidden">
           <button @click=${this._cleanEnteredValue} type="button" class="cursor-pointer mt-[2px]">
@@ -224,6 +224,7 @@ export class SearchProjects extends LitWrapper {
             ${this.visibleOptions !== null && this.visibleOptions.length > 0 && this.visibleDropdown
               ? html`<ul class="text-sm text-stone-700 overflow-auto max-h-[180px]">
                   ${this.visibleOptions.map((option, index) => {
+                    console.log(this.activeIndex, index);
                     const isSelected = this.selected.some((item) => item.name === option.name);
                     return html`<li
                       class="group ${this.activeIndex === index ? "active" : ""}"

@@ -128,16 +128,16 @@ export class DashboardSearch extends LitWrapper {
   }
 
   _highlightItem(direction) {
-    if (this.options && this.options.length > 0) {
+    if (this.visibleOptions.length > 0) {
       if (this.activeIndex === null) {
-        this.activeIndex = direction === "down" ? 0 : this.options.length - 1;
+        this.activeIndex = direction === "down" ? 0 : this.visibleOptions.length - 1;
       } else {
         let newIndex = direction === "down" ? this.activeIndex + 1 : this.activeIndex - 1;
-        if (newIndex >= this.options.length) {
+        if (newIndex >= this.visibleOptions.length) {
           newIndex = 0;
         }
         if (newIndex < 0) {
-          newIndex = this.options.length - 1;
+          newIndex = this.visibleOptions.length - 1;
         }
         this.activeIndex = newIndex;
       }

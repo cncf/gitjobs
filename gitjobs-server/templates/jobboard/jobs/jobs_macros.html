@@ -115,7 +115,8 @@
 
       <div class="mt-2.5">
         {%- let selected_foundation = filters.foundation|display_some -%}
-        <select form="{{ form }}"
+        <select id="{{ device }}-foundation"
+                form="{{ form }}"
                 data-trigger-form="true"
                 name="foundation"
                 class="select-primary py-0.5 text-[0.8rem]/6 text-stone-500">
@@ -124,6 +125,18 @@
             {% call macros::select_option(value = &foundation.name, label = foundation.name|upper, selected = selected_foundation) -%}
           {% endfor -%}
         </select>
+        <script type="module">
+          const foundationSelect = document.getElementById("{{ device }}-foundation");
+          foundationSelect.addEventListener("change", (event) => {
+            if (event.target.value !== "") {
+              // Clean search projects input field
+              const searchProjects = document.getElementsByTagName("search-projects");
+              for (let i = 0; i < searchProjects.length; i++) {
+                searchProjects[i].cleanSelected();
+              }
+            }
+          });
+        </script>
       </div>
     </div>
     {# End foundation -#}

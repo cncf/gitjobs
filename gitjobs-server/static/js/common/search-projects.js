@@ -158,6 +158,14 @@ export class SearchProjects extends LitWrapper {
     this.visibleOptions = null;
     this.activeIndex = null;
 
+    // Remove selected foundation on select out of this component
+    const foundationSelects = document.getElementsByName("foundation");
+    foundationSelects.forEach((select) => {
+      if (select.value !== "") {
+        select.value = "";
+      }
+    });
+
     // Wait for the update to complete
     await this.updateComplete;
 
@@ -224,7 +232,6 @@ export class SearchProjects extends LitWrapper {
             ${this.visibleOptions !== null && this.visibleOptions.length > 0 && this.visibleDropdown
               ? html`<ul class="text-sm text-stone-700 overflow-auto max-h-[180px]">
                   ${this.visibleOptions.map((option, index) => {
-                    console.log(this.activeIndex, index);
                     const isSelected = this.selected.some((item) => item.name === option.name);
                     return html`<li
                       class="group ${this.activeIndex === index ? "active" : ""}"

@@ -1,13 +1,14 @@
 //! This module defines some types and the logic to synchronize the members and
 //! projects of the foundations with the `GitJobs` database.
 
-use std::time::Duration;
+use std::{sync::LazyLock, time::Duration};
 
 use anyhow::{Context, Error, Result, format_err};
 use futures::stream::{self, StreamExt};
+use regex::Regex;
 use serde::{Deserialize, Serialize};
 use tokio::time::timeout;
-use tracing::{info, instrument};
+use tracing::{debug, info, instrument};
 
 use crate::db::DynDB;
 
@@ -93,11 +94,79 @@ impl Syncer {
                 .strip_suffix('/')
                 .unwrap_or(&foundation.landscape_url)
         );
-        let members_in_landscape: Vec<LandscapeMember> =
-            self.http_client.get(&url).send().await?.json().await?;
+        let mut members_in_landscape: Vec<LandscapeMember> = self
+            .http_client
+            .get(&url)
+            .send()
+            .await
+            .context("error fetching landscape members")?
+            .json()
+            .await?;
+        for landscape_member in &mut members_in_landscape {
+            // Remove the member kind from the name
+            landscape_member.name = MEMBER_KIND.replace(&landscape_member.name, "").to_string();
+        }
 
         // Get members from database
         let members_in_db = self.db.list_members(&foundation.name).await?;
+
+        // Add new members (members in landscape but not in db)
+        let members_added: Vec<Member> = members_in_landscape
+            .iter()
+            .filter(|landscape_member| {
+                !members_in_db
+                    .iter()
+                    .any(|db_member| db_member.name == landscape_member.name)
+                    && !landscape_member.name.to_lowercase().contains("non-public")
+            })
+            .map(|landscape_member| Member {
+                foundation: foundation.name.clone(),
+                name: landscape_member.name.clone(),
+                level: landscape_member.subcategory.clone(),
+                logo_url: landscape_member.logo_url.clone(),
+            })
+            .collect();
+        for member in members_added {
+            debug!(name = member.name, "adding member");
+            self.db.add_member(&member).await?;
+        }
+
+        // Remove non-existing members (members in db but not in landscape)
+        let members_removed: Vec<&String> = members_in_db
+            .iter()
+            .filter(|db_member| {
+                !members_in_landscape
+                    .iter()
+                    .any(|landscape_member| landscape_member.name == db_member.name)
+            })
+            .map(|db_member| &db_member.name)
+            .collect();
+        for member_name in members_removed {
+            debug!(name = member_name, "removing member");
+            self.db.remove_member(&foundation.name, member_name).await?;
+        }
+
+        // Update existing members (members in both landscape and db)
+        let members_updated: Vec<Member> = members_in_landscape
+            .iter()
+            .filter(|landscape_member| {
+                members_in_db.iter().any(|db_member| {
+                    db_member.name == landscape_member.name
+                        && (db_member.level != landscape_member.subcategory
+                            || db_member.logo_url != landscape_member.logo_url)
+                })
+            })
+            .map(|landscape_member| Member {
+                foundation: foundation.name.clone(),
+                name: landscape_member.name.clone(),
+                level: landscape_member.subcategory.clone(),
+                logo_url: landscape_member.logo_url.clone(),
+            })
+            .collect();
+        for member in members_updated {
+            debug!(name = member.name, "updating member");
+            self.db.update_member(&member).await?;
+        }
 
         Ok(())
     }
@@ -113,15 +182,83 @@ impl Syncer {
                 .strip_suffix('/')
                 .unwrap_or(&foundation.landscape_url)
         );
-        let projects_in_landscape: Vec<LandscapeProject> =
-            self.http_client.get(&url).send().await?.json().await?;
+        let projects_in_landscape: Vec<LandscapeProject> = self
+            .http_client
+            .get(&url)
+            .send()
+            .await
+            .context("error fetching landscape projects")?
+            .json()
+            .await?;
 
         // Get projects from database
         let projects_in_db = self.db.list_projects(&foundation.name).await?;
 
+        // Add new projects (projects in landscape but not in db)
+        let projects_added: Vec<Project> = projects_in_landscape
+            .iter()
+            .filter(|landscape_project| {
+                !projects_in_db
+                    .iter()
+                    .any(|db_project| db_project.name == landscape_project.name)
+                    && landscape_project.maturity != "archived"
+            })
+            .map(|landscape_project| Project {
+                foundation: foundation.name.clone(),
+                name: landscape_project.name.clone(),
+                maturity: landscape_project.maturity.clone(),
+                logo_url: landscape_project.logo_url.clone(),
+            })
+            .collect();
+        for project in projects_added {
+            debug!(name = project.name, "adding project");
+            self.db.add_project(&project).await?;
+        }
+
+        // Remove non-existing projects (projects in db but not in landscape)
+        let projects_removed: Vec<&String> = projects_in_db
+            .iter()
+            .filter(|db_project| {
+                !projects_in_landscape
+                    .iter()
+                    .any(|landscape_project| landscape_project.name == db_project.name)
+            })
+            .map(|db_project| &db_project.name)
+            .collect();
+        for project_name in projects_removed {
+            debug!(name = project_name, "removing project");
+            self.db.remove_project(&foundation.name, project_name).await?;
+        }
+
+        // Update existing projects (projects in both landscape and db)
+        let projects_updated: Vec<Project> = projects_in_landscape
+            .iter()
+            .filter(|landscape_project| {
+                projects_in_db.iter().any(|db_project| {
+                    db_project.name == landscape_project.name
+                        && (db_project.maturity != landscape_project.maturity
+                            || db_project.logo_url != landscape_project.logo_url)
+                })
+            })
+            .map(|landscape_project| Project {
+                foundation: foundation.name.clone(),
+                name: landscape_project.name.clone(),
+                maturity: landscape_project.maturity.clone(),
+                logo_url: landscape_project.logo_url.clone(),
+            })
+            .collect();
+        for project in projects_updated {
+            debug!(name = project.name, "updating project");
+            self.db.update_project(&project).await?;
+        }
+
         Ok(())
     }
 }
+
+/// Regular expression that matches the member kind in the name.
+static MEMBER_KIND: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r" \(.*\)").expect("exprs in MEMBER_KIND should be valid"));
 
 // Types.
 
@@ -136,7 +273,7 @@ pub(crate) struct Foundation {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 struct LandscapeMember {
     name: String,
-    level: String,
+    subcategory: String,
     logo_url: String,
 }
 

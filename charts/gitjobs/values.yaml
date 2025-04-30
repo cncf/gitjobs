@@ -151,6 +151,14 @@ server:
       repository: gitjobs/server
     resources: {}
 
+# Syncer configuration
+syncer:
+  cronjob:
+    image:
+      # Syncer image repository (without the tag)
+      repository: gitjobs/syncer
+    resources: {}
+
 # PostgreSQL configuration
 postgresql:
   enabled: true

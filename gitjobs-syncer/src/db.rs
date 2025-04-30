@@ -19,12 +19,6 @@ pub(crate) trait DB {
     /// Add foundation project.
     async fn add_project(&self, project: &Project) -> Result<()>;
 
-    /// Delete foundation member.
-    async fn delete_member(&self, foundation: &str, member_name: &str) -> Result<()>;
-
-    /// Delete foundation project.
-    async fn delete_project(&self, foundation: &str, project_name: &str) -> Result<()>;
-
     /// List foundations.
     async fn list_foundations(&self) -> Result<Vec<Foundation>>;
 
@@ -33,6 +27,12 @@ pub(crate) trait DB {
 
     /// List foundation projects.
     async fn list_projects(&self, foundation: &str) -> Result<Vec<Project>>;
+
+    /// Remove foundation member.
+    async fn remove_member(&self, foundation: &str, member_name: &str) -> Result<()>;
+
+    /// Remove foundation project.
+    async fn remove_project(&self, foundation: &str, project_name: &str) -> Result<()>;
 
     /// Update foundation member.
     async fn update_member(&self, member: &Member) -> Result<()>;
@@ -99,34 +99,6 @@ impl DB for PgDB {
                 &project.maturity,
                 &project.logo_url,
             ],
-        )
-        .await?;
-
-        Ok(())
-    }
-
-    #[instrument(skip(self), err)]
-    async fn delete_member(&self, foundation: &str, member_name: &str) -> Result<()> {
-        trace!("db: delete member");
-
-        let db = self.pool.get().await?;
-        db.execute(
-            "delete from member where foundation = $1 and name = $2;",
-            &[&foundation, &member_name],
-        )
-        .await?;
-
-        Ok(())
-    }
-
-    #[instrument(skip(self), err)]
-    async fn delete_project(&self, foundation: &str, project_name: &str) -> Result<()> {
-        trace!("db: delete project");
-
-        let db = self.pool.get().await?;
-        db.execute(
-            "delete from project where foundation = $1 and name = $2;",
-            &[&foundation, &project_name],
         )
         .await?;
 
@@ -218,6 +190,34 @@ impl DB for PgDB {
             .collect();
 
         Ok(projects)
+    }
+
+    #[instrument(skip(self), err)]
+    async fn remove_member(&self, foundation: &str, member_name: &str) -> Result<()> {
+        trace!("db: remove member");
+
+        let db = self.pool.get().await?;
+        db.execute(
+            "delete from member where foundation = $1 and name = $2;",
+            &[&foundation, &member_name],
+        )
+        .await?;
+
+        Ok(())
+    }
+
+    #[instrument(skip(self), err)]
+    async fn remove_project(&self, foundation: &str, project_name: &str) -> Result<()> {
+        trace!("db: remove project");
+
+        let db = self.pool.get().await?;
+        db.execute(
+            "delete from project where foundation = $1 and name = $2;",
+            &[&foundation, &project_name],
+        )
+        .await?;
+
+        Ok(())
     }
 
     #[instrument(skip(self), err)]

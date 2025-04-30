@@ -15,10 +15,9 @@ figment = { workspace = true }
 futures = { workspace = true }
 openssl = { workspace = true }
 postgres-openssl = { workspace = true }
+regex = { workspace = true }
 reqwest = { workspace = true }
 serde = { workspace = true }
-serde_json = { workspace = true }
-serde_with = { workspace = true }
 tokio = { workspace = true }
 tokio-postgres = { workspace = true }
 tracing = { workspace = true }

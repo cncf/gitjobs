@@ -7,6 +7,7 @@ WORKDIR /gitjobs
 COPY Cargo.* ./
 COPY docs/about.md docs/about.md
 COPY gitjobs-server gitjobs-server
+COPY gitjobs-syncer/Cargo.* gitjobs-syncer
 WORKDIR /gitjobs/gitjobs-server
 RUN cargo build --release
 

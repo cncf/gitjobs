@@ -141,7 +141,7 @@ export class SearchLocation extends LitWrapper {
       // Select the highlighted item
       case "Enter":
         event.preventDefault();
-        if (this.activeIndex && this.options) {
+        if (this.activeIndex !== null && this.options) {
           const activeItem = this.options[this.activeIndex];
           if (activeItem) {
             this._selectLocation(activeItem);

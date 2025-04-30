@@ -105,7 +105,7 @@ export class SearchableFilter extends LitWrapper {
       // Select the highlighted item
       case "Enter":
         event.preventDefault();
-        if (this.activeIndex && this.visibleOptions.length > 0) {
+        if (this.activeIndex !== null && this.visibleOptions.length > 0) {
           const activeItem = this.visibleOptions[this.activeIndex];
           if (activeItem) {
             const activeItem = this.visibleOptions[this.activeIndex];

@@ -20,7 +20,7 @@ export const showSuccessAlert = (message) => {
   Swal.fire({
     text: message,
     icon: "success",
-    showConfirmButton: false,
+    showConfirmButton: true,
     timer: 5000,
     ...getCommonAlertOptions(),
   });

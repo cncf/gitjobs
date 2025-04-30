@@ -50,7 +50,7 @@ export class SearchProjects extends LitWrapper {
   }
 
   async _getProjects() {
-    const url = `/projects/search?project=${encodeURIComponent(this.enteredValue)}&foundation=${this.foundation}`;
+    const url = `/projects/search?project=${encodeURIComponent(this.enteredValue)}&foundation=${this.selectedFoundation}`;
     try {
       const response = await fetch(url);
       if (!response.ok) {
@@ -69,9 +69,9 @@ export class SearchProjects extends LitWrapper {
   _handleFoundationChange(event) {
     const selectedFoundation = event.target.value;
     if (selectedFoundation === "") {
-      this.foundation = null;
+      this.selectedFoundation = null;
     } else {
-      this.foundation = selectedFoundation;
+      this.selectedFoundation = selectedFoundation;
     }
     this.visibleOptions = null;
     this.enteredValue = "";
@@ -175,7 +175,7 @@ export class SearchProjects extends LitWrapper {
   }
 
   render() {
-    const isDisabled = this.foundation === null;
+    const isDisabled = this.selectedFoundation === null;
 
     return html`<select
         class="select-primary py-0.5 text-[0.8rem]/6 text-stone-500 mb-2"
@@ -196,9 +196,9 @@ export class SearchProjects extends LitWrapper {
           <div class="svg-icon size-3.5 icon-search bg-stone-300"></div>
         </div>
         <input
-          type="text"
           @keydown="${this._handleKeyDown}"
           @input=${this._onInputChange}
+          type="text"
           .value="${this.enteredValue}"
           class="input-primary py-0.5 peer ps-9 rounded-lg text-[0.8rem]/6 ${isDisabled ? "opacity-50" : ""}"
           placeholder="Search projects"

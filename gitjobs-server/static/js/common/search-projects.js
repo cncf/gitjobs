@@ -44,6 +44,7 @@ export class SearchProjects extends LitWrapper {
 
   async cleanSelected() {
     this.selected = [];
+    this.selectedFoundation = null;
 
     // Wait for the update to complete
     await this.updateComplete;

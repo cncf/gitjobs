@@ -232,7 +232,9 @@ export class SearchProjects extends LitWrapper {
             ${this.visibleOptions !== null && this.visibleOptions.length > 0 && this.visibleDropdown
               ? html`<ul class="text-sm text-stone-700 overflow-auto max-h-[180px]">
                   ${this.visibleOptions.map((option, index) => {
-                    const isSelected = this.selected.some((item) => item.name === option.name);
+                    const isSelected = this.selected.some(
+                      (item) => item.name === option.name && item.foundation === option.foundation,
+                    );
                     return html`<li
                       class="group ${this.activeIndex === index ? "active" : ""}"
                       data-index="${index}"

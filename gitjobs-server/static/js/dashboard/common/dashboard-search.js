@@ -155,7 +155,12 @@ export class DashboardSearch extends LitWrapper {
   }
 
   _onRemove(id) {
-    this.selected = this.selected.filter((item) => item.project_id !== id);
+    this.selected = this.selected.filter((item) => {
+      const itemId = this.type === "members" ? item.member_id : item.project_id;
+      if (itemId !== id) {
+        return item;
+      }
+    });
   }
 
   render() {

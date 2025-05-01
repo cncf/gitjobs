@@ -1,4 +1,5 @@
 {% extends "base.html" -%}
+{% import "macros.html" as macros -%}
 
 {% block content -%}
   {# Lit components -#}
@@ -39,6 +40,17 @@
         </div>
 
         <div class="w-full px-3 lg:px-5 shrink-0">
+          {# Analytics -#}
+          {%- if let Some(analytics) = cfg.analytics -%}
+            {# Osano -#}
+            {%- if let Some(osano_script_url) = analytics.osano_script_url -%}
+              {# Cookie preferences -#}
+              {% call macros::cookie_button(extra_styles = "mt-4 mb-8") -%}
+              {# End cookie preferences -#}
+            {%- endif -%}
+          {% endif -%}
+          {# End analytics -#}
+
           {# Logout -#}
           <a href="/log-out"
              hx-boost="false"

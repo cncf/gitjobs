@@ -753,7 +753,7 @@ select.aligned-right option {
 .osano-cm-window {
   bottom: 0;
   top: auto !important;
-  z-index: 10 !important;
+  z-index: 21 !important;
 }
 
 .osano-cm-widget {
@@ -762,6 +762,12 @@ select.aligned-right option {
   right: 30px !important;
   bottom: 30px !important;
   position: absolute !important;
+  display: none;
+}
+
+/* Osano widget is only visible on pages with footer */
+body:has(footer) .osano-cm-widget {
+  display: block;
 }
 
 .osano-cm-window__dialog {

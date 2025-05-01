@@ -82,5 +82,16 @@
       {% endif -%}
       {# End messages -#}
     </div>
+
+    {# Analytics -#}
+    {%- if let Some(analytics) = cfg.analytics -%}
+      {# Osano -#}
+      {%- if let Some(osano_script_url) = analytics.osano_script_url -%}
+        {# Cookie preferences -#}
+        {% call macros::cookie_button(extra_styles = "mt-8") -%}
+        {# End cookie preferences -#}
+      {%- endif -%}
+    {% endif -%}
+    {# End analytics -#}
   </div>
 {% endblock main -%}

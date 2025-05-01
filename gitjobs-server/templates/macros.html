@@ -252,6 +252,34 @@
 {% endmacro alert_box -%}
 {# End alert box #}
 
+{# Osano cookie btn #}
+{% macro cookie_button(id = "btn-cookies", close_drawer = false, extra_styles = "") -%}
+  <div class="flex items-center justify-center {{ extra_styles }}">
+    <button id="{{ id }}"
+            class="text-xs text-stone-400 hover:text-stine-600 text-center cursor-pointer">
+      Cookie Preferences
+    </button>
+    {# djlint:off #}
+      <script type="module">
+        import {
+          close
+        } from '/static/js/dashboard/base.js';
+
+        const cookiesBtn = document.getElementById("{{ id }}");
+        if (cookiesBtn) {
+          cookiesBtn.addEventListener('click', () => {
+            {% if close_drawer -%}
+            close();
+            {% endif -%}
+            Osano.cm.showDrawer('osano-cm-dom-info-dialog-open');
+          });
+        }
+</script>
+    {# djlint:on #}
+  </div>
+{% endmacro cookie_button -%}
+{# End Osano cookie btn #}
+
 {# Alerts #}
 {# djlint:off #}
 {% macro alerts(messages) -%}

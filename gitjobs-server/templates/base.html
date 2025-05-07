@@ -72,18 +72,6 @@
         }
       });
     </script>
-  </head>
-  <body class="flex flex-col min-h-dvh font-inter bg-stone-100 relative"
-        hx-get
-        hx-trigger="refresh-body">
-    {% block content -%}
-    {% endblock content -%}
-
-    {% if page_id == PageId::JobBoard || page_id == PageId::About -%}
-      {# Footer -#}
-      {% include "footer.html" -%}
-      {# End Footer -#}
-    {% endif -%}
 
     {# Analytics -#}
     {%- if let Some(analytics) = cfg.analytics -%}
@@ -109,5 +97,17 @@
       {# End Google tag -#}
     {% endif -%}
     {# End Analytics -#}
+  </head>
+  <body class="flex flex-col min-h-dvh font-inter bg-stone-100 relative"
+        hx-get
+        hx-trigger="refresh-body">
+    {% block content -%}
+    {% endblock content -%}
+
+    {% if page_id == PageId::JobBoard || page_id == PageId::About -%}
+      {# Footer -#}
+      {% include "footer.html" -%}
+      {# End Footer -#}
+    {% endif -%}
   </body>
 </html>

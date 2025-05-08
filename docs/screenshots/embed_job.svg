@@ -1,0 +1,237 @@
+<svg width="600" height="300" viewBox="0 0 600 340" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    @font-face {
+      font-family: "Inter";
+      font-style: normal;
+      font-weight: 300 800;
+      font-display: fallback;
+      src: url(http://localhost:9000/static/vendor/fonts/inter-latin-ext.woff2) format("woff2");
+      unicode-range:
+        U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304,
+        U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB,
+        U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+
+    @font-face {
+      font-family: "Inter";
+      font-style: normal;
+      font-weight: 300 800;
+      font-display: fallback;
+      src: url(http://localhost:9000/static/vendor/fonts/inter-latin.woff2) format("woff2");
+      unicode-range:
+        U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+        U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212,
+        U+2215, U+FEFF, U+FFFD;
+    }
+
+    text {
+      font-family: 'Inter', sans-serif;
+      font-weight: 500;
+    }
+
+    .logo-git {
+      font-weight: 600;
+      fill: #6D6E71;
+      font-size: 20px;
+    }
+
+    .logo-jobs {
+      font-weight: 400;
+      fill: #000000;
+      font-size: 20px;
+    }
+
+    .beta {
+      font-size: 9px;
+      fill: #000000;
+      letter-spacing: 1.2px;
+    }
+
+    .date {
+      font-size: 12px;
+      font-weight: 400;
+      text-anchor: end;
+    }
+
+    .title {
+      font-size: 16px;
+    }
+
+    .icon {
+      fill: #78716C;
+    }
+
+    .legend {
+      font-size: 10px;
+      font-weight: 400;
+      fill: #78716C;
+    }
+
+    .content {
+      font-size: 13px;
+      font-weight: 500;
+      fill: #44403C;
+    }
+
+    .skills {
+      font-size: 11px;
+      font-weight: 500;
+      fill: #44403C;
+      white-space: pre-wrap;
+    }
+
+    .percentage {
+      font-size: 12px;
+      font-weight: 500;
+      fill: #000000;
+      text-anchor: end;
+    }
+
+    .percentage-symbol {
+      font-size: 10px;
+      font-weight: 400;
+      fill: #78716C;
+    }
+
+    .placeholder-content {
+      font-size: 16px;
+      font-weight: 400;
+      fill: #78716C;
+      text-anchor: middle;
+    }
+
+    .placeholder-title {
+      font-weight: 400;
+      font-size: 25px;
+      fill: #44403C;
+      text-anchor: middle;
+    }
+  </style>
+
+  <!-- Background -->
+  <rect x="0" width="600" height="340" fill="#6D6E71" fill-rule="evenodd"></rect>
+  <rect x="2" y="2" width="596" height="336" fill="#ffffff" fill-rule="evenodd"></rect>
+  <!-- End background -->
+
+  <!-- Header -->
+  <g transform="translate(2, 2)">
+    <rect x="0" y="0" width="596" height="56" fill="#F5F5F4"></rect>
+    <line x1="0" y1="56" x2="596" y2="56" stroke="#6D6E71" stroke-width="2"></line>
+    <!-- Logo -->
+    <g transform="translate(21, 14)">
+      <g transform="translate(0, 0)">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 388.95999 388.95999" width="26px" height="26px">
+          <path fill="#000000" d="M73.68278,250.2292H25.97467v112.03505h111.66696v-48.17966h-63.95885v-63.85539Zm240.10936,.52429v63.3311h-63.96256v48.17966h111.66861v-112.03505h-48.23367l.52762,.52429ZM25.97467,138.77079h48.23243l-.52432-.5243v-63.33109h63.95885V26.73575H25.97467v112.03504ZM249.82958,26.73575v48.17966h63.96256v63.85538h47.70605V26.73575h-111.66861Z"></path>
+          <path fill="#6D6E71" d="M243.56044,138.77079l-63.95844-63.85538h70.24831V26.73575h-112.19207v48.17966l63.96259,63.85538h41.93961Zm-57.66854,111.45799h-41.93961l52.94902,52.89831,10.48595,10.95708h-69.72903v48.17966h112.19207v-48.70398l-31.9771-31.45574-31.98131-31.87533Zm127.90023-111.45799v69.62224l-11.00938-11.00981-52.95318-52.89792v42.41281l31.45778,31.45574,31.97716,31.9277h48.23367v-111.51075h-47.70605Zm-176.1339,63.3311l-63.43494-63.3311H25.99087v111.45841h47.70814v-69.62224l63.95923,63.90774v-42.41281Z"></path>
+        </svg>
+      </g>
+      <g transform="translate(30, 21)">
+        <text x="0" class="logo-git">GIT</text>
+        <text x="32" class="logo-jobs">JOBS</text>
+      </g>
+      <!-- Beta -->
+      <g transform="translate(126, 13)">
+        <rect x="-8" y="-11" rx="8" width="40" height="15" fill="#E7E5E4" fill-rule="evenodd"></rect>
+        <text class="beta">BETA</text>
+      </g>
+      <!-- End beta -->
+    </g>
+    <!-- End logo -->
+  </g>
+  <!-- End header -->
+
+  <g transform="translate(25, 90)">
+      <!-- Company -->
+      <text x="0" y="0" class="legend">COMPANY NAME</text>
+      <!-- End company -->
+
+      <g transform="translate(550, 0)">
+          <!-- Date -->
+          <text class="date" fill="#78716C">MAY  8</text>
+          <!-- End date -->
+        </g>
+      <!-- Title -->
+      <text x="0" y="25" class="title" fill="#1C1917">Senior Software Engineer</text>
+      <!-- End title -->
+    </g>
+
+    <g transform="translate(25, 157)">
+      <!-- Job type -->
+      <g transform="translate(0, 0)">
+        <text class="legend">JOB TYPE</text>
+        <g transform="translate(0, 22)">
+          <text x="0" class="content">
+          Full Time
+            </text>
+        </g>
+      </g>
+      <!-- End job type -->
+
+      <!-- Salary -->
+      <g transform="translate(106, 0)">
+        <text class="legend">SALARY</text>
+        <g transform="translate(0, 22)">
+          <!-- <svg y="-9" stroke="currentColor" fill="currentColor" class="icon" stroke-width="0" viewBox="0 0 512 512" height="10px" width="10px" xmlns="http://www.w3.org/2000/svg"><path d="M0 405.3V448c0 35.3 86 64 192 64s192-28.7 192-64v-42.7C342.7 434.4 267.2 448 192 448S41.3 434.4 0 405.3zM320 128c106 0 192-28.7 192-64S426 0 320 0 128 28.7 128 64s86 64 192 64zM0 300.4V352c0 35.3 86 64 192 64s192-28.7 192-64v-51.6c-41.3 34-116.9 51.6-192 51.6S41.3 334.4 0 300.4zm416 11c57.3-11.1 96-31.7 96-55.4v-42.7c-23.2 16.4-57.3 27.6-96 34.5v63.6zM192 160C86 160 0 195.8 0 240s86 80 192 80 192-35.8 192-80-86-80-192-80zm219.3 56.3c60-10.8 100.7-32 100.7-56.3v-42.7c-35.5 25.1-96.5 38.6-160.7 41.8 29.5 14.3 51.2 33.5 60 57.2z"></path></svg> -->
+            <text x="0" class="content">
+              USD
+              220K-240K
+              / year</text>
+          </g>
+      </g>
+      <!-- End salary -->
+
+      <!-- Location -->
+      <g transform="translate(292, 0)">
+        <text class="legend">LOCATION</text>
+        <g transform="translate(0, 22)">
+          <text x="0" class="content">
+            New York City, United States
+            </text>
+        </g>
+      </g>
+      <!-- End location -->
+    </g>
+
+    <g transform="translate(25, 224)">
+      <!-- Open Source -->
+      <g transform="translate(0, 0)">
+        <text class="legend">TIME WORKING ON OPEN SOURCE</text>
+        <g transform="translate(0, 15)">
+          <svg width="220px" height="6px">
+            <rect x="0" y="0" rx="3" width="100%" height="100%" fill="#E7E5E4"></rect>
+            <rect x="0" y="0" rx="3" width="50%" height="100%" fill="#BEF264"></rect>
+          </svg>
+          <g transform="translate(248, 7)">
+            <text class="percentage">50</text>
+            <text x="0" y="0" class="percentage-symbol">%</text>
+          </g>
+        </g>
+      </g>
+      <!-- End open source -->
+
+      <!-- Upstream Commitment -->
+      <g transform="translate(292, 0)">
+        <text class="legend">TIME WORKING ON UPSTREAM PROJECTS</text>
+        <g transform="translate(0, 15)">
+          <svg width="220px" height="6px">
+            <rect x="0" y="0" rx="3" width="100%" height="100%" fill="#E7E5E4"></rect>
+            <rect x="0" y="0" rx="3" width="35%" height="100%" fill="#84CC16"></rect>
+          </svg>
+          <g transform="translate(248, 7)">
+            <text class="percentage">35</text>
+            <text x="0" y="0" class="percentage-symbol">%</text>
+          </g>
+        </g>
+      </g>
+      <!-- End Upstream Commitment -->
+    </g>
+
+    <g transform="translate(25, 291)">
+      <!-- Skills -->
+      <text class="legend">REQUIRED SKILLS</text>
+        <g transform="translate(0, 22)">
+          <text class="skills">KUBERNETES  ·  DOCKER  ·  OCI  ·  CI/CD  ·  DEVOPS</text>
+        </g>
+      <!-- End skills -->
+    </g>
+  </svg>

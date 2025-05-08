@@ -54,6 +54,7 @@ pub(crate) struct ResultsSection {
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
 #[template(path = "jobboard/jobs/job_section.html")]
 pub(crate) struct JobSection {
+    pub base_url: String,
     pub job: Job,
 }
 

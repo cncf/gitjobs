@@ -92,6 +92,7 @@ pub(crate) async fn results_section(
 /// Handler that returns the job details section.
 #[instrument(skip_all, err)]
 pub(crate) async fn job_section(
+    State(cfg): State<HttpServerConfig>,
     State(db): State<DynDB>,
     Path(job_id): Path<Uuid>,
 ) -> Result<impl IntoResponse, HandlerError> {
@@ -101,7 +102,10 @@ pub(crate) async fn job_section(
     };
 
     // Prepare template
-    let template = JobSection { job };
+    let template = JobSection {
+        base_url: cfg.base_url.strip_suffix('/').unwrap_or(&cfg.base_url).to_string(),
+        job,
+    };
 
     // Prepare response headers
     let headers = prepare_headers(Duration::hours(1), &[])?;

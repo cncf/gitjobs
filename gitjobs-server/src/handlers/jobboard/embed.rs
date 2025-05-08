@@ -57,7 +57,7 @@ pub(crate) async fn job_card(
     };
 
     // Prepare response headers
-    let headers = prepare_headers(Duration::hours(1), &[])?;
+    let headers = prepare_headers(Duration::minutes(10), &[])?;
 
     Ok((headers, Html(template.render()?)))
 }

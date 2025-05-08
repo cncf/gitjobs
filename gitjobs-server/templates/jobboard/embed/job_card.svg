@@ -5,7 +5,7 @@
 
   <svg width="600"
     height="300"
-    viewBox="0 0 600 300"
+    viewBox="0 0 600 320"
     fill="none"
     xmlns="http://www.w3.org/2000/svg">
     <style>
@@ -59,6 +59,7 @@
       .date {
         font-size: 12px;
         font-weight: 600;
+        text-anchor: end;
       }
 
       .title {
@@ -69,10 +70,6 @@
         fill: #78716C;
       }
 
-      .icon-success {
-        fill: #84CC16;
-      }
-
       .legend {
         font-size: 10px;
         font-weight: 400;
@@ -80,15 +77,34 @@
       }
 
       .content {
-        font-size: 14px;
+        font-size: 13px;
         font-weight: 500;
         fill: #44403C;
+      }
+
+      .skills {
+        font-size: 12px;
+        font-weight: 500;
+        fill: #44403C;
+      }
+
+      .percentage {
+        font-size: 12px;
+        font-weight: 500;
+        fill: #000000;
+        text-anchor: end;
+      }
+
+      .percentage-symbol {
+        font-size: 10px;
+        font-weight: 400;
+        fill: #78716C;
       }
     </style>
 
     <!-- Background -->
-    <rect x="0" width="600" height="300" fill="#6D6E71" fill-rule="evenodd" />
-    <rect x="2" y="2" width="596" height="296" fill="#ffffff" fill-rule="evenodd" />
+    <rect x="0" width="600" height="320" fill="#6D6E71" fill-rule="evenodd" />
+    <rect x="2" y="2" width="596" height="316" fill="#ffffff" fill-rule="evenodd" />
     <!-- End background -->
 
     <!-- Header -->
@@ -124,9 +140,9 @@
       <!-- End company -->
 
       {% if let Some(published_at) = job.published_at -%}
-         <g transform="translate(400, 0)">
+         <g transform="translate(550, 0)">
           <!-- Date -->
-          <text class="date" fill="#000000">{{ published_at.format(DATE_FORMAT_3)|upper }}</text>
+          <text class="date" fill="#78716C">{{ published_at.format(DATE_FORMAT_3)|upper }}</text>
           <!-- End date -->
         </g>
       {% endif -%}
@@ -143,17 +159,17 @@
         <g transform="translate(0, 22)">
           {% match job.kind -%}
             {% when JobKind::FullTime -%}
-            <svg y="-9" stroke="currentColor" fill="currentColor" class="icon" stroke-width="0" viewBox="0 0 576 512" height="10px" width="10px" xmlns="http://www.w3.org/2000/svg"><path d="M64 0C28.7 0 0 28.7 0 64L0 448c0 35.3 28.7 64 64 64l256 0c35.3 0 64-28.7 64-64l0-19.3c-2.7 1.1-5.4 2-8.2 2.7l-60.1 15c-3 .7-6 1.2-9 1.4c-.9 .1-1.8 .2-2.7 .2l-64 0c-6.1 0-11.6-3.4-14.3-8.8l-8.8-17.7c-1.7-3.4-5.1-5.5-8.8-5.5s-7.2 2.1-8.8 5.5l-8.8 17.7c-2.9 5.9-9.2 9.4-15.7 8.8s-12.1-5.1-13.9-11.3L144 381l-9.8 32.8c-6.1 20.3-24.8 34.2-46 34.2L80 448c-8.8 0-16-7.2-16-16s7.2-16 16-16l8.2 0c7.1 0 13.3-4.6 15.3-11.4l14.9-49.5c3.4-11.3 13.8-19.1 25.6-19.1s22.2 7.8 25.6 19.1l11.6 38.6c7.4-6.2 16.8-9.7 26.8-9.7c15.9 0 30.4 9 37.5 23.2l4.4 8.8 8.9 0c-3.1-8.8-3.7-18.4-1.4-27.8l15-60.1c2.8-11.3 8.6-21.5 16.8-29.7L384 203.6l0-43.6-128 0c-17.7 0-32-14.3-32-32L224 0 64 0zM256 0l0 128 128 0L256 0zM549.8 139.7c-15.6-15.6-40.9-15.6-56.6 0l-29.4 29.4 71 71 29.4-29.4c15.6-15.6 15.6-40.9 0-56.6l-14.4-14.4zM311.9 321c-4.1 4.1-7 9.2-8.4 14.9l-15 60.1c-1.4 5.5 .2 11.2 4.2 15.2s9.7 5.6 15.2 4.2l60.1-15c5.6-1.4 10.8-4.3 14.9-8.4L512.1 262.7l-71-71L311.9 321z"></path></svg>
-            <text x="16" class="content">Full Time</text>
+            <!-- <svg y="-9" stroke="currentColor" fill="currentColor" class="icon" stroke-width="0" viewBox="0 0 576 512" height="10px" width="10px" xmlns="http://www.w3.org/2000/svg"><path d="M64 0C28.7 0 0 28.7 0 64L0 448c0 35.3 28.7 64 64 64l256 0c35.3 0 64-28.7 64-64l0-19.3c-2.7 1.1-5.4 2-8.2 2.7l-60.1 15c-3 .7-6 1.2-9 1.4c-.9 .1-1.8 .2-2.7 .2l-64 0c-6.1 0-11.6-3.4-14.3-8.8l-8.8-17.7c-1.7-3.4-5.1-5.5-8.8-5.5s-7.2 2.1-8.8 5.5l-8.8 17.7c-2.9 5.9-9.2 9.4-15.7 8.8s-12.1-5.1-13.9-11.3L144 381l-9.8 32.8c-6.1 20.3-24.8 34.2-46 34.2L80 448c-8.8 0-16-7.2-16-16s7.2-16 16-16l8.2 0c7.1 0 13.3-4.6 15.3-11.4l14.9-49.5c3.4-11.3 13.8-19.1 25.6-19.1s22.2 7.8 25.6 19.1l11.6 38.6c7.4-6.2 16.8-9.7 26.8-9.7c15.9 0 30.4 9 37.5 23.2l4.4 8.8 8.9 0c-3.1-8.8-3.7-18.4-1.4-27.8l15-60.1c2.8-11.3 8.6-21.5 16.8-29.7L384 203.6l0-43.6-128 0c-17.7 0-32-14.3-32-32L224 0 64 0zM256 0l0 128 128 0L256 0zM549.8 139.7c-15.6-15.6-40.9-15.6-56.6 0l-29.4 29.4 71 71 29.4-29.4c15.6-15.6 15.6-40.9 0-56.6l-14.4-14.4zM311.9 321c-4.1 4.1-7 9.2-8.4 14.9l-15 60.1c-1.4 5.5 .2 11.2 4.2 15.2s9.7 5.6 15.2 4.2l60.1-15c5.6-1.4 10.8-4.3 14.9-8.4L512.1 262.7l-71-71L311.9 321z"></path></svg> -->
+            <text x="0" class="content">Full Time</text>
             {% when JobKind::PartTime -%}
-            <svg y="-9" stroke="currentColor" fill="currentColor" class="icon" stroke-width="0" viewBox="0 0 384 512" height="10px" width="10px" xmlns="http://www.w3.org/2000/svg"><path d="M32 0C14.3 0 0 14.3 0 32S14.3 64 32 64l0 11c0 42.4 16.9 83.1 46.9 113.1L146.7 256 78.9 323.9C48.9 353.9 32 394.6 32 437l0 11c-17.7 0-32 14.3-32 32s14.3 32 32 32l32 0 256 0 32 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l0-11c0-42.4-16.9-83.1-46.9-113.1L237.3 256l67.9-67.9c30-30 46.9-70.7 46.9-113.1l0-11c17.7 0 32-14.3 32-32s-14.3-32-32-32L320 0 64 0 32 0zM96 75l0-11 192 0 0 11c0 19-5.6 37.4-16 53L112 128c-10.3-15.6-16-34-16-53zm16 309c3.5-5.3 7.6-10.3 12.1-14.9L192 301.3l67.9 67.9c4.6 4.6 8.6 9.6 12.1 14.9L112 384z"></path></svg>
-            <text x="16" class="content">Part Time</text>
+            <!-- <svg y="-9" stroke="currentColor" fill="currentColor" class="icon" stroke-width="0" viewBox="0 0 384 512" height="10px" width="10px" xmlns="http://www.w3.org/2000/svg"><path d="M32 0C14.3 0 0 14.3 0 32S14.3 64 32 64l0 11c0 42.4 16.9 83.1 46.9 113.1L146.7 256 78.9 323.9C48.9 353.9 32 394.6 32 437l0 11c-17.7 0-32 14.3-32 32s14.3 32 32 32l32 0 256 0 32 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l0-11c0-42.4-16.9-83.1-46.9-113.1L237.3 256l67.9-67.9c30-30 46.9-70.7 46.9-113.1l0-11c17.7 0 32-14.3 32-32s-14.3-32-32-32L320 0 64 0 32 0zM96 75l0-11 192 0 0 11c0 19-5.6 37.4-16 53L112 128c-10.3-15.6-16-34-16-53zm16 309c3.5-5.3 7.6-10.3 12.1-14.9L192 301.3l67.9 67.9c4.6 4.6 8.6 9.6 12.1 14.9L112 384z"></path></svg> -->
+            <text x="0" class="content">Part Time</text>
             {% when JobKind::Contractor -%}
-            <svg y="-9" stroke="currentColor" fill="currentColor" class="icon" stroke-width="0" viewBox="0 0 384 512" height="10px" width="10px" xmlns="http://www.w3.org/2000/svg"><path d="M192 0c-41.8 0-77.4 26.7-90.5 64L64 64C28.7 64 0 92.7 0 128L0 448c0 35.3 28.7 64 64 64l256 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64l-37.5 0C269.4 26.7 233.8 0 192 0zm0 64a32 32 0 1 1 0 64 32 32 0 1 1 0-64zM72 272a24 24 0 1 1 48 0 24 24 0 1 1 -48 0zm104-16l128 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-128 0c-8.8 0-16-7.2-16-16s7.2-16 16-16zM72 368a24 24 0 1 1 48 0 24 24 0 1 1 -48 0zm88 0c0-8.8 7.2-16 16-16l128 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-128 0c-8.8 0-16-7.2-16-16z"></path></svg>
-            <text x="16" class="content">Contractor</text>
+            <!-- <svg y="-9" stroke="currentColor" fill="currentColor" class="icon" stroke-width="0" viewBox="0 0 384 512" height="10px" width="10px" xmlns="http://www.w3.org/2000/svg"><path d="M192 0c-41.8 0-77.4 26.7-90.5 64L64 64C28.7 64 0 92.7 0 128L0 448c0 35.3 28.7 64 64 64l256 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64l-37.5 0C269.4 26.7 233.8 0 192 0zm0 64a32 32 0 1 1 0 64 32 32 0 1 1 0-64zM72 272a24 24 0 1 1 48 0 24 24 0 1 1 -48 0zm104-16l128 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-128 0c-8.8 0-16-7.2-16-16s7.2-16 16-16zM72 368a24 24 0 1 1 48 0 24 24 0 1 1 -48 0zm88 0c0-8.8 7.2-16 16-16l128 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-128 0c-8.8 0-16-7.2-16-16z"></path></svg> -->
+            <text x="0" class="content">Contractor</text>
             {% when JobKind::Internship -%}
-            <svg y="-9" stroke="currentColor" fill="currentColor" class="icon" stroke-width="0" viewBox="0 0 640 512" height="10px" width="10px" xmlns="http://www.w3.org/2000/svg"><path d="M320 32c-8.1 0-16.1 1.4-23.7 4.1L15.8 137.4C6.3 140.9 0 149.9 0 160s6.3 19.1 15.8 22.6l57.9 20.9C57.3 229.3 48 259.8 48 291.9l0 28.1c0 28.4-10.8 57.7-22.3 80.8c-6.5 13-13.9 25.8-22.5 37.6C0 442.7-.9 448.3 .9 453.4s6 8.9 11.2 10.2l64 16c4.2 1.1 8.7 .3 12.4-2s6.3-6.1 7.1-10.4c8.6-42.8 4.3-81.2-2.1-108.7C90.3 344.3 86 329.8 80 316.5l0-24.6c0-30.2 10.2-58.7 27.9-81.5c12.9-15.5 29.6-28 49.2-35.7l157-61.7c8.2-3.2 17.5 .8 20.7 9s-.8 17.5-9 20.7l-157 61.7c-12.4 4.9-23.3 12.4-32.2 21.6l159.6 57.6c7.6 2.7 15.6 4.1 23.7 4.1s16.1-1.4 23.7-4.1L624.2 182.6c9.5-3.4 15.8-12.5 15.8-22.6s-6.3-19.1-15.8-22.6L343.7 36.1C336.1 33.4 328.1 32 320 32zM128 408c0 35.3 86 72 192 72s192-36.7 192-72L496.7 262.6 354.5 314c-11.1 4-22.8 6-34.5 6s-23.5-2-34.5-6L143.3 262.6 128 408z"></path></svg>
-            <text x="16" class="content">Internship</text>
+            <!-- <svg y="-9" stroke="currentColor" fill="currentColor" class="icon" stroke-width="0" viewBox="0 0 640 512" height="10px" width="10px" xmlns="http://www.w3.org/2000/svg"><path d="M320 32c-8.1 0-16.1 1.4-23.7 4.1L15.8 137.4C6.3 140.9 0 149.9 0 160s6.3 19.1 15.8 22.6l57.9 20.9C57.3 229.3 48 259.8 48 291.9l0 28.1c0 28.4-10.8 57.7-22.3 80.8c-6.5 13-13.9 25.8-22.5 37.6C0 442.7-.9 448.3 .9 453.4s6 8.9 11.2 10.2l64 16c4.2 1.1 8.7 .3 12.4-2s6.3-6.1 7.1-10.4c8.6-42.8 4.3-81.2-2.1-108.7C90.3 344.3 86 329.8 80 316.5l0-24.6c0-30.2 10.2-58.7 27.9-81.5c12.9-15.5 29.6-28 49.2-35.7l157-61.7c8.2-3.2 17.5 .8 20.7 9s-.8 17.5-9 20.7l-157 61.7c-12.4 4.9-23.3 12.4-32.2 21.6l159.6 57.6c7.6 2.7 15.6 4.1 23.7 4.1s16.1-1.4 23.7-4.1L624.2 182.6c9.5-3.4 15.8-12.5 15.8-22.6s-6.3-19.1-15.8-22.6L343.7 36.1C336.1 33.4 328.1 32 320 32zM128 408c0 35.3 86 72 192 72s192-36.7 192-72L496.7 262.6 354.5 314c-11.1 4-22.8 6-34.5 6s-23.5-2-34.5-6L143.3 262.6 128 408z"></path></svg> -->
+            <text x="0" class="content">Internship</text>
           {% endmatch -%}
         </g>
       </g>
@@ -165,14 +181,14 @@
         <g transform="translate(0, 22)">
           {% match job.workplace -%}
             {% when Workplace::OnSite -%}
-            <svg y="-9" stroke="currentColor" fill="currentColor" class="icon" stroke-width="0" viewBox="0 0 256 256" height="10px" width="10px" xmlns="http://www.w3.org/2000/svg"><path d="M252,128a12,12,0,0,1-12,12H226.6A52.09,52.09,0,0,1,176,180H140v16h20a36,36,0,0,1,36,36,12,12,0,0,1-24,0,12,12,0,0,0-12-12H140v12a12,12,0,0,1-24,0V220H96a12,12,0,0,0-12,12,12,12,0,0,1-24,0,36,36,0,0,1,36-36h20V180H80a52.09,52.09,0,0,1-50.6-40H16a12,12,0,0,1,0-24H40a12,12,0,0,1,12,12,28,28,0,0,0,28,28h96a28,28,0,0,0,28-28,12,12,0,0,1,12-12h24A12,12,0,0,1,252,128ZM72.82,133a20,20,0,0,1-4.59-16L81.8,29a19.91,19.91,0,0,1,19.79-17h52.82A19.91,19.91,0,0,1,174.2,29l13.57,88A20,20,0,0,1,168,140H88A20,20,0,0,1,72.82,133Zm19.85-17h70.66L151,36H105Z"></path></svg>
-            <text x="16" class="content">On Site</text>
+            <!-- <svg y="-9" stroke="currentColor" fill="currentColor" class="icon" stroke-width="0" viewBox="0 0 256 256" height="10px" width="10px" xmlns="http://www.w3.org/2000/svg"><path d="M252,128a12,12,0,0,1-12,12H226.6A52.09,52.09,0,0,1,176,180H140v16h20a36,36,0,0,1,36,36,12,12,0,0,1-24,0,12,12,0,0,0-12-12H140v12a12,12,0,0,1-24,0V220H96a12,12,0,0,0-12,12,12,12,0,0,1-24,0,36,36,0,0,1,36-36h20V180H80a52.09,52.09,0,0,1-50.6-40H16a12,12,0,0,1,0-24H40a12,12,0,0,1,12,12,28,28,0,0,0,28,28h96a28,28,0,0,0,28-28,12,12,0,0,1,12-12h24A12,12,0,0,1,252,128ZM72.82,133a20,20,0,0,1-4.59-16L81.8,29a19.91,19.91,0,0,1,19.79-17h52.82A19.91,19.91,0,0,1,174.2,29l13.57,88A20,20,0,0,1,168,140H88A20,20,0,0,1,72.82,133Zm19.85-17h70.66L151,36H105Z"></path></svg> -->
+            <text x="0" class="content">On Site</text>
             {% when Workplace::Remote -%}
-            <svg y="-9" stroke="currentColor" fill="currentColor" class="icon" stroke-width="0" viewBox="0 0 640 512" height="10px" width="10px" xmlns="http://www.w3.org/2000/svg"><path d="M218.3 8.5c12.3-11.3 31.2-11.3 43.4 0l208 192c6.7 6.2 10.3 14.8 10.3 23.5l-144 0c-19.1 0-36.3 8.4-48 21.7l0-37.7c0-8.8-7.2-16-16-16l-64 0c-8.8 0-16 7.2-16 16l0 64c0 8.8 7.2 16 16 16l64 0 0 128-160 0c-26.5 0-48-21.5-48-48l0-112-32 0c-13.2 0-25-8.1-29.8-20.3s-1.6-26.2 8.1-35.2l208-192zM352 304l0 144 192 0 0-144-192 0zm-48-16c0-17.7 14.3-32 32-32l224 0c17.7 0 32 14.3 32 32l0 160 32 0c8.8 0 16 7.2 16 16c0 26.5-21.5 48-48 48l-48 0-192 0-48 0c-26.5 0-48-21.5-48-48c0-8.8 7.2-16 16-16l32 0 0-160z"></path></svg>
-            <text x="16" class="content">Remote</text>
+            <!-- <svg y="-9" stroke="currentColor" fill="currentColor" class="icon" stroke-width="0" viewBox="0 0 640 512" height="10px" width="10px" xmlns="http://www.w3.org/2000/svg"><path d="M218.3 8.5c12.3-11.3 31.2-11.3 43.4 0l208 192c6.7 6.2 10.3 14.8 10.3 23.5l-144 0c-19.1 0-36.3 8.4-48 21.7l0-37.7c0-8.8-7.2-16-16-16l-64 0c-8.8 0-16 7.2-16 16l0 64c0 8.8 7.2 16 16 16l64 0 0 128-160 0c-26.5 0-48-21.5-48-48l0-112-32 0c-13.2 0-25-8.1-29.8-20.3s-1.6-26.2 8.1-35.2l208-192zM352 304l0 144 192 0 0-144-192 0zm-48-16c0-17.7 14.3-32 32-32l224 0c17.7 0 32 14.3 32 32l0 160 32 0c8.8 0 16 7.2 16 16c0 26.5-21.5 48-48 48l-48 0-192 0-48 0c-26.5 0-48-21.5-48-48c0-8.8 7.2-16 16-16l32 0 0-160z"></path></svg> -->
+            <text x="0" class="content">Remote</text>
             {% when Workplace::Hybrid -%}
-            <svg y="-9" stroke="currentColor" fill="currentColor" class="icon" stroke-width="0" viewBox="0 0 24 24" height="10px" width="10px" xmlns="http://www.w3.org/2000/svg"><path d="M19 2H9c-1.103 0-2 .897-2 2v5.586l-4.707 4.707A1 1 0 0 0 3 16v5a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V4c0-1.103-.897-2-2-2zm-8 18H5v-5.586l3-3 3 3V20zm8 0h-6v-4a.999.999 0 0 0 .707-1.707L9 9.586V4h10v16z"></path><path d="M11 6h2v2h-2zm4 0h2v2h-2zm0 4.031h2V12h-2zM15 14h2v2h-2zm-8 1h2v2H7z"></path></svg>
-            <text x="16" class="content">Hybrid</text>
+            <!-- <svg y="-9" stroke="currentColor" fill="currentColor" class="icon" stroke-width="0" viewBox="0 0 24 24" height="10px" width="10px" xmlns="http://www.w3.org/2000/svg"><path d="M19 2H9c-1.103 0-2 .897-2 2v5.586l-4.707 4.707A1 1 0 0 0 3 16v5a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V4c0-1.103-.897-2-2-2zm-8 18H5v-5.586l3-3 3 3V20zm8 0h-6v-4a.999.999 0 0 0 .707-1.707L9 9.586V4h10v16z"></path><path d="M11 6h2v2h-2zm4 0h2v2h-2zm0 4.031h2V12h-2zM15 14h2v2h-2zm-8 1h2v2H7z"></path></svg> -->
+            <text x="0" class="content">Hybrid</text>
           {% endmatch -%}
         </g>
       </g>
@@ -182,11 +198,11 @@
       <g transform="translate(215, 0)">
         <text class="legend">SENIORITY</text>
         <g transform="translate(0, 22)">
-          <svg y="-9" stroke="currentColor" fill="currentColor" class="icon" stroke-width="0" viewBox="0 0 24 24" height="10px" width="10px" xmlns="http://www.w3.org/2000/svg"><path d="M15 3C15.5523 3 16 3.44772 16 4V8C16 8.55228 15.5523 9 15 9H13V11H17C17.5523 11 18 11.4477 18 12V15H20C20.5523 15 21 15.4477 21 16V20C21 20.5523 20.5523 21 20 21H14C13.4477 21 13 20.5523 13 20V16C13 15.4477 13.4477 15 14 15H16V13H8V15H10C10.5523 15 11 15.4477 11 16V20C11 20.5523 10.5523 21 10 21H4C3.44772 21 3 20.5523 3 20V16C3 15.4477 3.44772 15 4 15H6V12C6 11.4477 6.44772 11 7 11H11V9H9C8.44772 9 8 8.55228 8 8V4C8 3.44772 8.44772 3 9 3H15ZM9 17H5V19H9V17ZM19 17H15V19H19V17ZM14 5H10V7H14V5Z"></path></svg>
+          <!-- <svg y="-9" stroke="currentColor" fill="currentColor" class="icon" stroke-width="0" viewBox="0 0 24 24" height="10px" width="10px" xmlns="http://www.w3.org/2000/svg"><path d="M15 3C15.5523 3 16 3.44772 16 4V8C16 8.55228 15.5523 9 15 9H13V11H17C17.5523 11 18 11.4477 18 12V15H20C20.5523 15 21 15.4477 21 16V20C21 20.5523 20.5523 21 20 21H14C13.4477 21 13 20.5523 13 20V16C13 15.4477 13.4477 15 14 15H16V13H8V15H10C10.5523 15 11 15.4477 11 16V20C11 20.5523 10.5523 21 10 21H4C3.44772 21 3 20.5523 3 20V16C3 15.4477 3.44772 15 4 15H6V12C6 11.4477 6.44772 11 7 11H11V9H9C8.44772 9 8 8.55228 8 8V4C8 3.44772 8.44772 3 9 3H15ZM9 17H5V19H9V17ZM19 17H15V19H19V17ZM14 5H10V7H14V5Z"></path></svg> -->
           {% if let Some(seniority) = job.seniority -%}
-            <text x="16" class="content">{{ seniority|title }} level</text>
+            <text x="0" class="content">{{ seniority|title }}</text>
           {% else -%}
-            <text x="16" class="content">Not provided</text>
+            <text x="0" class="content">Not provided</text>
           {% endif -%}
         </g>
       </g>
@@ -196,9 +212,9 @@
       <g transform="translate(330, 0)">
         <text class="legend">SALARY</text>
         <g transform="translate(0, 22)">
-          <svg y="-9" stroke="currentColor" fill="currentColor" class="icon" stroke-width="0" viewBox="0 0 512 512" height="10px" width="10px" xmlns="http://www.w3.org/2000/svg"><path d="M0 405.3V448c0 35.3 86 64 192 64s192-28.7 192-64v-42.7C342.7 434.4 267.2 448 192 448S41.3 434.4 0 405.3zM320 128c106 0 192-28.7 192-64S426 0 320 0 128 28.7 128 64s86 64 192 64zM0 300.4V352c0 35.3 86 64 192 64s192-28.7 192-64v-51.6c-41.3 34-116.9 51.6-192 51.6S41.3 334.4 0 300.4zm416 11c57.3-11.1 96-31.7 96-55.4v-42.7c-23.2 16.4-57.3 27.6-96 34.5v63.6zM192 160C86 160 0 195.8 0 240s86 80 192 80 192-35.8 192-80-86-80-192-80zm219.3 56.3c60-10.8 100.7-32 100.7-56.3v-42.7c-35.5 25.1-96.5 38.6-160.7 41.8 29.5 14.3 51.2 33.5 60 57.2z"></path></svg>
+          <!-- <svg y="-9" stroke="currentColor" fill="currentColor" class="icon" stroke-width="0" viewBox="0 0 512 512" height="10px" width="10px" xmlns="http://www.w3.org/2000/svg"><path d="M0 405.3V448c0 35.3 86 64 192 64s192-28.7 192-64v-42.7C342.7 434.4 267.2 448 192 448S41.3 434.4 0 405.3zM320 128c106 0 192-28.7 192-64S426 0 320 0 128 28.7 128 64s86 64 192 64zM0 300.4V352c0 35.3 86 64 192 64s192-28.7 192-64v-51.6c-41.3 34-116.9 51.6-192 51.6S41.3 334.4 0 300.4zm416 11c57.3-11.1 96-31.7 96-55.4v-42.7c-23.2 16.4-57.3 27.6-96 34.5v63.6zM192 160C86 160 0 195.8 0 240s86 80 192 80 192-35.8 192-80-86-80-192-80zm219.3 56.3c60-10.8 100.7-32 100.7-56.3v-42.7c-35.5 25.1-96.5 38.6-160.7 41.8 29.5 14.3 51.2 33.5 60 57.2z"></path></svg> -->
             {% if let Some(salary) = job.salary -%}
-            <text x="16" class="content">
+            <text x="0" class="content">
               {% if let Some(salary_currency) = job.salary_currency -%}
                 {{ salary_currency }}
               {% endif -%}
@@ -208,7 +224,7 @@
               {%- endif -%}
             </text>
           {% else if let Some(salary_min) = job.salary_min -%}
-            <text x="16" class="content">
+            <text x="0" class="content">
               {% if let Some(salary_currency) = job.salary_currency -%}
                 {{ salary_currency }}
               {% endif -%}
@@ -221,19 +237,57 @@
               {%- endif -%}
             </text>
           {% else -%}
-            <text x="16" class="content">Not provided</text>
+            <text x="0" class="content">Not provided</text>
           {% endif -%}
         </g>
       </g>
       <!-- End salary -->
     </g>
 
-    <g transform="translate(25, 250)">
+    <g transform="translate(25, 210)">
+      <!-- Open Source -->
+      <g transform="translate(0, 0)">
+        <text class="legend">TIME WORKING ON OPEN SOURCE</text>
+        <g transform="translate(0, 15)">
+          <svg width="220px" height="6px">
+            <rect x="0" y="0" rx="3" width="100%" height="100%" fill="#E7E5E4" />
+            <rect x="0" y="0" rx="3" width="{{ open_source }}%" height="100%" fill="#BEF264" />
+          </svg>
+          <g transform="translate(248, 7)">
+            <text class="percentage">{{ open_source }}</text>
+            <text x="0" y="0" class="percentage-symbol">%</text>
+          </g>
+        </g>
+      </g>
+      <!-- End open source -->
+
+      <!-- Upstream Commitment -->
+      <g transform="translate(292, 0)">
+        <text class="legend">TIME WORKING ON UPSTREAM PROJECTS</text>
+        <g transform="translate(0, 15)">
+          <svg width="220px" height="6px">
+            <rect x="0" y="0" rx="3" width="100%" height="100%" fill="#E7E5E4" />
+            <rect x="0" y="0" rx="3" width="{{ upstream_commitment }}%" height="100%" fill="#84CC16" />
+          </svg>
+          <g transform="translate(248, 7)">
+            <text class="percentage">{{ upstream_commitment }}</text>
+            <text x="0" y="0" class="percentage-symbol">%</text>
+          </g>
+        </g>
+      </g>
+      <!-- End Upstream Commitment -->
+    </g>
+
+    <g transform="translate(25, 265)">
       <!-- Skills -->
       {% if let Some(skills) = job.skills -%}
-        {% for skill in skills.iter().take(10) -%}
-          <text class="legend">{{skill|unnormalize}}</text>
-        {% endfor -%}
+        <text class="legend">REQUIRED SKILLS</text>
+        <g transform="translate(0, 22)">
+          {% let required_skills = skills.join(" · ") -%}
+          <text class="skills">
+            {{ required_skills|unnormalize|upper|truncate(87) }}
+          </text>
+        </g>
       {% endif -%}
       <!-- End skills -->
     </g>

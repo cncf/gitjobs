@@ -124,9 +124,9 @@ export const shareJob = () => {
   copyLink.addEventListener("click", () => {
     navigator.clipboard.writeText(shareUrl);
     const tooltip = document.querySelector("#copy-link-tooltip");
-    tooltip.classList.add("opacity-100");
+    tooltip.classList.add("opacity-100", "z-10");
     setTimeout(() => {
-      tooltip.classList.remove("opacity-100");
+      tooltip.classList.remove("opacity-100", "z-10");
     }, 3000);
   });
 };

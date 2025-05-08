@@ -21,6 +21,12 @@ To setup yours, the first step is to adjust the filters as if you were searching
 
 You can see it in action in this [example](https://codepen.io/cynthiasg/pen/gbOJLOb).
 
+### Embedding a single job
+
+It is also possible to **embed a single job**. To do this, you can click on the `Get embed code` button in the job details page (in the *share* section). The embed code is available in *Markdown*, *AsciiDoc* and *HTML* formats. The job card generated is an SVG image, and the code will include a link to the job at <https://gitjobs.dev>.
+
+![Single job embed](docs/screenshots/embed_job.png?raw=true)
+
 ## Contributing
 
 Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for more details.

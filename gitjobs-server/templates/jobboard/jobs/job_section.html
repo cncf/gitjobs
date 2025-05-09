@@ -1,9 +1,238 @@
 {% import "misc/job_preview.html" as job_preview_macros -%}
 
-{% let employer_description = job.employer.description|display_some -%}
-{% if let Some(logo_id) = job.employer.logo_id -%}
-  {% let logo = &self::build_jobboard_image_url(logo_id, "small") -%}
-  {% call job_preview_macros::job_preview(job = job, employer = job.employer, logo = logo, employer_description = employer_description, job_id = job.job_id.to_string(), base_url = base_url, with_links = true) -%}
-{% else -%}
-  {% call job_preview_macros::job_preview(job = job, employer = job.employer, employer_description = employer_description, job_id = job.job_id.to_string(), base_url = base_url, with_links = true) -%}
-{% endif -%}
+{% let job_id = job.job_id.to_string() -%}
+<div id="preview-modal"
+     tabindex="-1"
+     aria-hidden="true"
+     role="dialog"
+     data-open="false"
+     class="hidden fixed w-full h-full top-0 left-0 z-50 flex items-center justify-center">
+  <div id="backdrop-preview-modal"
+       class="absolute w-full h-full bg-stone-950 opacity-[.35]"></div>
+  <div class="fixed w-[1200px] max-w-full md:max-w-[85%] lg:max-w-[80%] top-0 md:top-20 bottom-0 md:bottom-20 bg-white md:rounded-lg drop-shadow-lg">
+    {# Close button -#}
+    <button id="close-preview-modal"
+            class="cursor-pointer absolute top-6 md:top-0 right-6 md:-right-12 lg:-right-18 xl:-right-20 cursor-pointer p-0.5 md:p-1 lg:p-1.5 xl:p-2 rounded-full bg-stone-600/50 hover:bg-stone-600/75">
+      <div class="svg-icon size-5 md:size-6 lg:size-8 bg-stone-100 icon-close"></div>
+    </button>
+    {# End close button -#}
+    {# Modal content -#}
+    <div id="preview-content"
+         class="w-full h-full overflow-x-auto p-5 md:p-6 lg:p-8 xl:p-10">
+      {% let employer_description = job.employer.description|display_some -%}
+      {% if let Some(logo_id) = job.employer.logo_id -%}
+        {% let logo = &self::build_jobboard_image_url(logo_id, "small") -%}
+        {% call job_preview_macros::job_preview(job = job, employer = job.employer, logo = logo, employer_description = employer_description, job_id = job_id, base_url = base_url, with_links = true) -%}
+      {% else -%}
+        {% call job_preview_macros::job_preview(job = job, employer = job.employer, employer_description = employer_description, job_id = job_id, base_url = base_url, with_links = true) -%}
+      {% endif -%}
+    </div>
+    {# End modal content -#}
+  </div>
+</div>
+{# End preview modal -#}
+
+{# djlint:off #}
+  <script type="module">
+    import {
+      toggleModalVisibility,
+      removeParamFromQueryString
+    } from '/static/js/common/common.js';
+
+    const onCloseModal = () => {
+      // Reset the scroll position
+      document.getElementById('preview-content').scrollTop = 0;
+      // Close the preview modal
+      removeParamFromQueryString('job_id', { modal_preview: false});
+      toggleModalVisibility('preview-modal', "close");
+    };
+
+    // Close the preview modal on backdrop click
+    const backdropPreviewModal = document.querySelector('#backdrop-preview-modal');
+    backdropPreviewModal.addEventListener('click', onCloseModal);
+
+    // Close the preview modal on close button click
+    const closePreviewModal = document.querySelector('#close-preview-modal');
+    closePreviewModal.addEventListener('click', onCloseModal);
+</script>
+{# djlint:on #}
+
+<div id="embed-code-modal"
+     tabindex="-1"
+     aria-hidden="true"
+     class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-full max-h-full flex">
+  <div id="backdrop-embed-code-modal"
+       class="modal-overlay absolute w-full h-full bg-stone-950 opacity-[.35]"></div>
+  <div class="relative p-4 w-full max-w-3xl max-h-full">
+    <div class="relative bg-white rounded-lg shadow">
+      {# Modal header -#}
+      <div class="flex items-center justify-between p-4 md:p-5 border-b border-stone-200 rounded-t">
+        {# Title -#}
+        <h3 class="text-xl font-semibold text-stone-900">Embed code</h3>
+        {# End title -#}
+
+        {# Close button -#}
+        <button id="close-embed-code-modal"
+                type="button"
+                class="group bg-transparent hover:bg-stone-200 rounded-full text-sm size-8 ms-auto inline-flex justify-center items-center cursor-pointer">
+          <div class="svg-icon size-5 bg-stone-400 group-hover:bg-stone-700 icon-close"></div>
+          <span class="sr-only">Close modal</span>
+        </button>
+        {# End close button -#}
+      </div>
+      {# End modal header -#}
+
+      {# Modal content -#}
+      <div class="p-4 md:p-8">
+        <ul class="flex flex-wrap space-x-2 -mb-px text-sm font-medium text-center border-b border-stone-900/10 w-full xl:w-auto">
+          <li>
+            <button type="button"
+                    data-section="markdown"
+                    data-active="true"
+                    class="tab lg:w-26 cursor-pointer inline-flex items-center justify-center p-3 pt-0 border-b-2 border-transparent rounded-t-lg hover:text-stone-600 hover:border-stone-300 active data-[active=true]:text-primary-600 data-[active=true]:border-primary-500 group">
+              Markdown
+            </button>
+          </li>
+          <li>
+            <button type="button"
+                    data-section="asciidoc"
+                    data-active="false"
+                    class="tab lg:w-26 cursor-pointer inline-flex items-center justify-center p-3 pt-0 border-b-2 border-transparent rounded-t-lg hover:text-stone-600 hover:border-stone-300 data-[active=true]:text-primary-600 data-[active=true]:border-primary-500 group">
+              AsciiDoc
+            </button>
+          </li>
+          <li>
+            <button type="button"
+                    data-section="html"
+                    data-active="false"
+                    class="tab lg:w-26 cursor-pointer inline-flex items-center justify-center p-3 pt-0 border-b-2 border-transparent rounded-t-lg hover:text-stone-600 hover:border-stone-300 data-[active=true]:text-primary-600 data-[active=true]:border-primary-500 group">
+              HTML
+            </button>
+          </li>
+        </ul>
+
+        <div class="mt-9 sections">
+          {# Markdown -#}
+          <div id="markdown">
+            {% let markdown_code = format!("[![GitJobs]({}/embed/job/{}/card.svg)]({}/?job_id={})", base_url, job_id, base_url, job_id) -%}
+            <div class="flex items-center justify-between gap-x-4 mb-4">
+              <pre class="block overflow-auto p-4 bg-stone-100"><code class="text-sm">{{ markdown_code }}</code></pre>
+              <div>{% call copy_button(name = "markdown", content = markdown_code) -%}</div>
+            </div>
+          </div>
+          {# End markdown #}
+
+          {# AsciiDoc -#}
+          <div id="asciidoc" class="hidden">
+            {% let asciidoc_code = format!("{}/?job_id={}[image:{}/embed/job/{}/card.svg[GitJobs]]", base_url, job_id, base_url, job_id) -%}
+            <div class="flex items-center justify-between gap-x-4 mb-4">
+              <pre class="block overflow-auto p-4 bg-stone-100"><code class="text-sm">{{ asciidoc_code }}</code></pre>
+              <div>{% call copy_button(name = "asciidoc", content = asciidoc_code) -%}</div>
+            </div>
+          </div>
+          {# End AsciiDoc #}
+
+          {# HTML -#}
+          <div id="html" class="hidden">
+            {# djlint:off #}
+              {% let html_code = format!("<a href=\"{}/?job_id={}\" rel=\"noopener noreferrer\" target=\"_blank\"><img src=\"{}/embed/job/{}/card.svg\" height=\"340\" width=\"600\" alt=\"GitJobs\" /></a>", base_url, job_id, base_url, job_id) -%}
+            {# djlint:on #}
+            <div class="flex items-center justify-between gap-x-4 mb-4">
+              <pre class="block overflow-auto p-4 bg-stone-100"><code class="text-sm">{{ html_code }}</code></pre>
+              <div>{% call copy_button(name = "html", content = html_code) -%}</div>
+            </div>
+          </div>
+          {# End HTML #}
+        </div>
+
+        <div class="text-xs/6 text-primary-500 uppercase font-semibold border-b border-stone-200 pb-1 mt-8 mb-9">
+          Preview
+        </div>
+        <div class="flex justify-center mb-3">
+          <img src="/embed/job/{{ job_id }}/card.svg"
+               height="340px"
+               width="600px"
+               alt="GitJobs" />
+        </div>
+      </div>
+      {# End modal content -#}
+    </div>
+  </div>
+</div>
+<script type="module">
+  import {
+    toggleModalVisibility
+  } from '/static/js/common/common.js';
+
+  const tabs = document.querySelectorAll('.tab');
+  tabs.forEach((tab) => {
+    tab.addEventListener('click', (event) => {
+      const section = event.currentTarget.getAttribute("data-section");
+      const buttons = document.querySelectorAll("[data-section]");
+      buttons.forEach((btn) => {
+        btn.setAttribute("data-active", "false");
+        btn.classList.remove("active");
+      });
+      event.currentTarget.setAttribute("data-active", "true");
+      event.currentTarget.classList.add("active");
+
+      const sections = document.querySelectorAll(".sections > div");
+      sections.forEach((content) => {
+        if (content.id !== section) {
+          content.classList.add("hidden");
+        } else {
+          content.classList.remove("hidden");
+        }
+      });
+    });
+  });
+
+  // Open embed code modal
+  const embedCodeButton = document.getElementById('embed-code-button');
+  embedCodeButton.addEventListener('click', () => {
+    toggleModalVisibility('embed-code-modal', "open");
+  });
+
+  // Close embed code modal
+  const closeEmbedCodeModal = document.getElementById('close-embed-code-modal');
+  closeEmbedCodeModal.addEventListener('click', () => {
+    toggleModalVisibility('embed-code-modal', "close");
+  });
+  const embedCodeModalBackdrop = document.getElementById('backdrop-embed-code-modal');
+  embedCodeModalBackdrop.addEventListener('click', () => {
+    toggleModalVisibility('embed-code-modal', "close");
+  });
+</script>
+
+{% macro copy_button(name, content = "") -%}
+  <div class="relative">
+    <button id="copy-btn-{{ name }}"
+            type="button"
+            title="Copy code"
+            class="btn-primary-outline-anchor rounded-full size-[35px] xl:size-[40px] group p-1 flex items-center justify-center">
+      <div class="svg-icon size-4 md:size-5 group-hover:bg-white icon-copy"></div>
+    </button>
+    {# End Copy link -#}
+    <div id="copy-btn-{{ name }}-tooltip"
+         role="tooltip"
+         class="absolute w-[200px] top-12 end-0.5 opacity-0 inline-block px-3 py-2 text-xs xl:text-sm font-medium text-white transition-opacity duration-300 bg-stone-900/80 rounded-lg shadow-xs tooltip">
+      Code copied to clipboard!
+      <div class="h-0 w-0 border-x-[6px] border-x-transparent border-b-[6px] border-stone-900/80 absolute -top-1.5 end-3">
+      </div>
+    </div>
+  </div>
+
+  {# djlint:off #}
+  <script type="module">
+    const copyButton = document.getElementById("copy-btn-{{ name }}");
+    copyButton.addEventListener("click", () => {
+      navigator.clipboard.writeText('{{ content|safe }}');
+      const tooltip = document.querySelector("#copy-btn-{{ name }}-tooltip");
+      tooltip.classList.add("opacity-100", "z-10");
+      setTimeout(() => {
+        tooltip.classList.remove("opacity-100", "z-10");
+      }, 3000);
+    });
+</script>
+  {# djlint:on #}
+{% endmacro copy_button -%}

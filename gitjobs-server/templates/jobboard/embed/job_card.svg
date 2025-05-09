@@ -1,5 +1,3 @@
-
-
 <svg width="600px"
 height="340px"
 viewBox="0 0 600 340"
@@ -280,13 +278,15 @@ xmlns="http://www.w3.org/2000/svg">
 
     <g transform="translate(25, 291)">
       <!-- Skills -->
-      {% if let Some(skills) = job.skills -%}
         <text class="legend">REQUIRED SKILLS</text>
         <g transform="translate(0, 22)">
-          {% let required_skills = skills.join("  ·  ") -%}
-          <text class="skills">{{ required_skills|unnormalize|upper|truncate(103) }}</text>
+          {% if let Some(skills) = job.skills -%}
+            {% let required_skills = skills.join("  ·  ") -%}
+            <text class="skills">{{ required_skills|unnormalize|upper|truncate(103) }}</text>
+          {% else -%}
+            <text class="skills">Not provided</text>
+          {% endif -%}
         </g>
-      {% endif -%}
       <!-- End skills -->
     </g>
   {% else -%}

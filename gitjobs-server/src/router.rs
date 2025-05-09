@@ -224,6 +224,26 @@ fn setup_employer_dashboard_router(state: &State) -> Router<State> {
                 .put(dashboard::employer::jobs::update)
                 .layer(check_user_owns_job.clone()),
         )
+        .route(
+            "/team/members/add",
+            get(dashboard::employer::team::add_member_page).post(dashboard::employer::team::add_member),
+        )
+        .route(
+            "/team/members/list",
+            get(dashboard::employer::team::members_list_page),
+        )
+        .route(
+            "/team/members/{user_id}/delete",
+            delete(dashboard::employer::team::delete_member),
+        )
+        .route(
+            "/team/invitation/{employer_id}/accept",
+            put(dashboard::employer::team::accept_invitation),
+        )
+        .route(
+            "/team/invitation/{employer_id}/reject",
+            put(dashboard::employer::team::reject_invitation),
+        )
 }
 
 /// Setup job seeker dashboard router.

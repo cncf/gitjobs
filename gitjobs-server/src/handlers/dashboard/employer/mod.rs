@@ -4,3 +4,4 @@ pub(crate) mod applications;
 pub(crate) mod employers;
 pub(crate) mod home;
 pub(crate) mod jobs;
+pub(crate) mod team;

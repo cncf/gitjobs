@@ -57,7 +57,8 @@ pub(crate) async fn job_card(
     };
 
     // Prepare response headers
-    let headers = prepare_headers(Duration::minutes(10), &[])?;
+    let extra_headers = [("content-type", "image/svg+xml")];
+    let headers = prepare_headers(Duration::minutes(10), &extra_headers)?;
 
-    Ok((headers, Html(template.render()?)))
+    Ok((headers, template.render()?))
 }

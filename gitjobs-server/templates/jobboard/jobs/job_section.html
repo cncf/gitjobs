@@ -3,10 +3,10 @@
 {% let job_id = job.job_id.to_string() -%}
 <div id="preview-modal"
      tabindex="-1"
-     aria-hidden="true"
+     aria-hidden="false"
      role="dialog"
-     data-open="false"
-     class="hidden fixed w-full h-full top-0 left-0 z-50 flex items-center justify-center">
+     data-open="true"
+     class="fixed w-full h-full top-0 left-0 z-50 flex items-center justify-center">
   <div id="backdrop-preview-modal"
        class="absolute w-full h-full bg-stone-950 opacity-[.35]"></div>
   <div class="fixed w-[1200px] max-w-full md:max-w-[85%] lg:max-w-[80%] top-0 md:top-20 bottom-0 md:bottom-20 bg-white md:rounded-lg drop-shadow-lg">
@@ -32,38 +32,13 @@
 </div>
 {# End preview modal -#}
 
-{# djlint:off #}
-  <script type="module">
-    import {
-      toggleModalVisibility,
-      removeParamFromQueryString
-    } from '/static/js/common/common.js';
-
-    const onCloseModal = () => {
-      // Reset the scroll position
-      document.getElementById('preview-content').scrollTop = 0;
-      // Close the preview modal
-      removeParamFromQueryString('job_id', { modal_preview: false});
-      toggleModalVisibility('preview-modal', "close");
-    };
-
-    // Close the preview modal on backdrop click
-    const backdropPreviewModal = document.querySelector('#backdrop-preview-modal');
-    backdropPreviewModal.addEventListener('click', onCloseModal);
-
-    // Close the preview modal on close button click
-    const closePreviewModal = document.querySelector('#close-preview-modal');
-    closePreviewModal.addEventListener('click', onCloseModal);
-</script>
-{# djlint:on #}
-
 <div id="embed-code-modal"
      tabindex="-1"
      aria-hidden="true"
      class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-full max-h-full flex">
   <div id="backdrop-embed-code-modal"
        class="modal-overlay absolute w-full h-full bg-stone-950 opacity-[.35]"></div>
-  <div class="relative p-4 w-full max-w-3xl max-h-full">
+  <div class="relative px-4 py-8 w-full max-w-3xl max-h-full overflow-auto">
     <div class="relative bg-white rounded-lg shadow">
       {# Modal header -#}
       <div class="flex items-center justify-between p-4 md:p-5 border-b border-stone-200 rounded-t">
@@ -114,7 +89,7 @@
         <div class="mt-9 sections">
           {# Markdown -#}
           <div id="markdown">
-            {% let markdown_code = format!("[![GitJobs]({}/embed/job/{}/card.svg)]({}/?job_id={})", base_url, job_id, base_url, job_id) -%}
+            {% let markdown_code = format!("[![GitJobs]({}/embed/job/{}/card.svg)]({}/?job_id={})", self.base_url, job_id, self.base_url, job_id) -%}
             <div class="flex items-center justify-between gap-x-4 mb-4">
               <pre class="block overflow-auto p-4 bg-stone-100"><code class="text-sm">{{ markdown_code }}</code></pre>
               <div>{% call copy_button(name = "markdown", content = markdown_code) -%}</div>
@@ -124,7 +99,7 @@
 
           {# AsciiDoc -#}
           <div id="asciidoc" class="hidden">
-            {% let asciidoc_code = format!("{}/?job_id={}[image:{}/embed/job/{}/card.svg[GitJobs]]", base_url, job_id, base_url, job_id) -%}
+            {% let asciidoc_code = format!("{}/?job_id={}[image:{}/embed/job/{}/card.svg[GitJobs]]", self.base_url, job_id, self.base_url, job_id) -%}
             <div class="flex items-center justify-between gap-x-4 mb-4">
               <pre class="block overflow-auto p-4 bg-stone-100"><code class="text-sm">{{ asciidoc_code }}</code></pre>
               <div>{% call copy_button(name = "asciidoc", content = asciidoc_code) -%}</div>
@@ -135,7 +110,7 @@
           {# HTML -#}
           <div id="html" class="hidden">
             {# djlint:off #}
-              {% let html_code = format!("<a href=\"{}/?job_id={}\" rel=\"noopener noreferrer\" target=\"_blank\"><img src=\"{}/embed/job/{}/card.svg\" height=\"340\" width=\"600\" alt=\"GitJobs\" /></a>", base_url, job_id, base_url, job_id) -%}
+              {% let html_code = format!("<a href=\"{}/?job_id={}\" rel=\"noopener noreferrer\" target=\"_blank\"><img src=\"{}/embed/job/{}/card.svg\" height=\"340\" width=\"600\" alt=\"GitJobs\" /></a>", self.base_url, job_id, self.base_url, job_id) -%}
             {# djlint:on #}
             <div class="flex items-center justify-between gap-x-4 mb-4">
               <pre class="block overflow-auto p-4 bg-stone-100"><code class="text-sm">{{ html_code }}</code></pre>
@@ -159,10 +134,30 @@
     </div>
   </div>
 </div>
+
 <script type="module">
   import {
-    toggleModalVisibility
+    toggleModalVisibility,
+    removeParamFromQueryString
   } from '/static/js/common/common.js';
+
+  const onCloseModal = () => {
+    // Reset the scroll position
+    document.getElementById('preview-content').scrollTop = 0;
+    // Close the preview modal
+    removeParamFromQueryString('job_id', {
+      modal_preview: false
+    });
+    toggleModalVisibility('preview-modal', "close");
+  };
+
+  // Close the preview modal on backdrop click
+  const backdropPreviewModal = document.querySelector('#backdrop-preview-modal');
+  backdropPreviewModal.addEventListener('click', onCloseModal);
+
+  // Close the preview modal on close button click
+  const closePreviewModal = document.querySelector('#close-preview-modal');
+  closePreviewModal.addEventListener('click', onCloseModal);
 
   const tabs = document.querySelectorAll('.tab');
   tabs.forEach((tab) => {

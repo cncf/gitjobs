@@ -88,7 +88,7 @@
 
   <div class="flex flex-col md:flex-row-reverse grow md:items-stretch">
     {# Info -#}
-    <div class="border-b pb-1 md:pb-0 md:border-0 md:border border-stone-200 md:w-1/4 pt-6">
+    <div class="border-b pb-1 md:pb-0 md:border-0 md:border border-stone-200 md:w-1/4 pt-6 md:pt-4 xl:pt-6">
       <div class="flex flex-col md:flex-col-reverse">
         <div>
           <div class="flex flex-row justify-between mb-4 md:mb-0 md:flex-col md:justify-start">
@@ -204,7 +204,7 @@
               <button id="apply-button"
                       data-job-id="{{ job_id }}"
                       data-apply-url="{{ job.apply_url|display_some }}"
-                      class="btn-primary w-full block mt-4 mb-2 md:mt-6"
+                      class="btn-primary w-full block mt-4 md:mt-2 mb-2 xl:mt-6"
                       disabled>Apply</button>
               <script type="module">
                 import {
@@ -213,7 +213,7 @@
                 applyButton();
               </script>
             {% else -%}
-              <button class="btn-primary w-full block mt-4 mb-2 md:mt-6" disabled>Apply</button>
+              <button class="btn-primary w-full block mt-4 md:mt-2 mb-2 xl:mt-6" disabled>Apply</button>
             {% endif -%}
             {# End apply button -#}
           </div>
@@ -303,7 +303,7 @@
     </div>
     {# End info -#}
 
-    <div class="md:w-3/4 md:border-e border-stone-200 md:me-6 xl:me-10 md:pe-6 xl:pe-10 pt-5 xl:pt-10">
+    <div class="md:w-3/4 md:border-e border-stone-200 md:me-6 xl:me-10 md:pe-6 xl:pe-10 pt-5 md:pt-6 xl:pt-10">
       {# Content -#}
       <div class="flex flex-col space-y-6">
         {# Job description -#}
@@ -520,7 +520,7 @@
 {# End salary content -#}
 
 {% macro embed_code_modal(job_id, base_url) -%}
-  <div class="hidden lg:flex w-3/4 xxl:w-1/2 mx-auto z-8">
+  <div class="hidden md:flex w-full lg:w-3/4 xxl:w-1/2 mx-auto z-8">
     <button class="btn-primary-outline btn-mini w-full mt-4 mb-2 md:mt-6"
             id="embed-code-button">Get embed code</button>
   </div>
@@ -578,10 +578,10 @@
             </li>
           </ul>
 
-          <div class="mt-4 sections">
+          <div class="mt-9 sections">
             {# Markdown -#}
             <div id="markdown">
-              {% let markdown_code = format!("[![GitJobs embed]({}/embed/job/{}/card.svg)]({}/?job_id={})", base_url, job_id, base_url, job_id) -%}
+              {% let markdown_code = format!("[![GitJobs]({}/embed/job/{}/card.svg)]({}/?job_id={})", base_url, job_id, base_url, job_id) -%}
               <div class="flex items-center justify-between gap-x-4 mb-4">
                 <pre class="block overflow-auto p-4 bg-stone-100"><code class="text-sm">{{ markdown_code }}</code></pre>
                 <div>{% call copy_button(name = "markdown", content = markdown_code) -%}</div>
@@ -591,7 +591,7 @@
 
             {# AsciiDoc -#}
             <div id="asciidoc" class="hidden">
-              {% let asciidoc_code = format!("{}/?job_id={}[image:{}/embed/job/{}/card.svg[GitJobs embed]]", base_url, job_id, base_url, job_id) -%}
+              {% let asciidoc_code = format!("{}/?job_id={}[image:{}/embed/job/{}/card.svg[GitJobs]]", base_url, job_id, base_url, job_id) -%}
               <div class="flex items-center justify-between gap-x-4 mb-4">
                 <pre class="block overflow-auto p-4 bg-stone-100"><code class="text-sm">{{ asciidoc_code }}</code></pre>
                 <div>{% call copy_button(name = "asciidoc", content = asciidoc_code) -%}</div>
@@ -601,9 +601,9 @@
 
             {# HTML -#}
             <div id="html" class="hidden">
-              {# djlint:off H025 #}
-              {% let html_code = format!("<a href=\"{}/?job_id={}\" rel=\"noopener noreferrer\" target=\"_blank\"><img src=\"{}/embed/job/{}/card.svg\" height=\"340\" width=\"600\" alt=\"GitJobs embed\" /></a>", base_url, job_id, base_url, job_id) -%}
-              {# djlint:off H025 #}
+              {# djlint:off #}
+              {% let html_code = format!("<a href=\"{}/?job_id={}\" rel=\"noopener noreferrer\" target=\"_blank\"><img src=\"{}/embed/job/{}/card.svg\" height=\"340\" width=\"600\" alt=\"GitJobs\" /></a>", base_url, job_id, base_url, job_id) -%}
+              {# djlint:on #}
               <div class="flex items-center justify-between gap-x-4 mb-4">
                 <pre class="block overflow-auto p-4 bg-stone-100"><code class="text-sm">{{ html_code }}</code></pre>
                 <div>{% call copy_button(name = "html", content = html_code) -%}</div>
@@ -612,14 +612,14 @@
             {# End HTML #}
           </div>
 
-          <div class="text-xs/6 text-primary-500 uppercase font-semibold border-b border-stone-200 pb-1 mb-5 mt-10">
+          <div class="text-xs/6 text-primary-500 uppercase font-semibold border-b border-stone-200 pb-1 mt-8 mb-9">
             Preview
           </div>
           <div hx-get="/embed/job/{{ job_id }}/card.svg"
                hx-trigger="load"
                hx-target="this"
                hx-swap="innerHTML"
-               class="flex justify-center"></div>
+               class="flex justify-center mb-3"></div>
         </div>
         {# End modal content -#}
       </div>

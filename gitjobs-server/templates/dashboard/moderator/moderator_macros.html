@@ -19,16 +19,11 @@
         {% if jobs.is_empty() -%}
           <tr class="bg-white border-b border-stone-200">
             {# No jobs -#}
-            <td class="px-8 py-20 text-center" colspan="5">
-              <div class="text-xl lg:text-2xl mb-10">
-                {% if kind == &"pending" -%}
-                  <div>There are no moderation pending jobs at the moment.</div>
-                {% else -%}
-                  <div>There are no live jobs at the moment.</div>
-                {% endif -%}
-              </div>
-              <p class="text-stone-700 mb-10">Thanks for checking, please come back later :)</p>
-            </td>
+            <td class="px-8 py-20 text-center table-cell lg:hidden xl:table-cell"
+                colspan="5">{% call placeholder_jobs() -%}</td>
+            <td class="px-8 py-20 text-center hidden lg:table-cell xl:hidden"
+                colspan="4">{% call placeholder_jobs() -%}</td>
+            {# End no jobs -#}
           </tr>
         {% else -%}
           {% for job in jobs -%}
@@ -281,3 +276,14 @@
     });
   </script>
 {% endmacro preview_modal -%}
+
+{% macro placeholder_jobs() -%}
+  <div class="text-xl lg:text-2xl mb-10">
+    {% if kind == &"pending" -%}
+      <div>There are no moderation pending jobs at the moment.</div>
+    {% else -%}
+      <div>There are no live jobs at the moment.</div>
+    {% endif -%}
+  </div>
+  <p class="text-stone-700 mb-10">Thanks for checking, please come back later :)</p>
+{% endmacro placeholder_jobs -%}

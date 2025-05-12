@@ -19,14 +19,6 @@ use crate::{
 
 // Pages handlers.
 
-/// Handler that returns the page to add a new team member.
-#[instrument(skip_all, err)]
-pub(crate) async fn add_member_page() -> Result<impl IntoResponse, HandlerError> {
-    let template = team::AddMemberPage {};
-
-    Ok(Html(template.render()?))
-}
-
 /// Handler that returns the team members list page.
 #[instrument(skip_all, err)]
 pub(crate) async fn members_list_page(

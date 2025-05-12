@@ -236,10 +236,7 @@ fn setup_employer_dashboard_router(state: &State) -> Router<State> {
             "/team/invitations/{employer_id}/reject",
             put(dashboard::employer::team::reject_invitation),
         )
-        .route(
-            "/team/members/add",
-            get(dashboard::employer::team::add_member_page).post(dashboard::employer::team::add_member),
-        )
+        .route("/team/members/add", post(dashboard::employer::team::add_member))
         .route(
             "/team/members/list",
             get(dashboard::employer::team::members_list_page),

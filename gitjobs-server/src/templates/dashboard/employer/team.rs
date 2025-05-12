@@ -8,11 +8,6 @@ use uuid::Uuid;
 
 // Pages templates.
 
-/// Add member page template.
-#[derive(Debug, Clone, Template, Serialize, Deserialize)]
-#[template(path = "dashboard/employer/teams/add_member.html")]
-pub(crate) struct AddMemberPage {}
-
 /// Team members list page template.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
 #[template(path = "dashboard/employer/teams/members_list.html")]

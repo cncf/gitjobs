@@ -39,6 +39,7 @@ pub(crate) enum Content {
     Account(auth::UpdateUserPage),
     Applications(employer::applications::ApplicationsPage),
     EmployerInitialSetup(employer::employers::InitialSetupPage),
+    Invitations(employer::team::UserInvitationsListPage),
     Jobs(employer::jobs::ListPage),
     Profile(employer::employers::UpdatePage),
 }
@@ -52,6 +53,11 @@ impl Content {
     /// Check if the content is the applications page.
     fn is_applications(&self) -> bool {
         matches!(self, Content::Applications(_))
+    }
+
+    /// Check if the content is the invitations page.
+    fn is_invitations(&self) -> bool {
+        matches!(self, Content::Invitations(_))
     }
 
     /// Check if the content is the jobs page.
@@ -71,6 +77,7 @@ impl std::fmt::Display for Content {
             Content::Account(template) => write!(f, "{}", template.render()?),
             Content::Applications(template) => write!(f, "{}", template.render()?),
             Content::EmployerInitialSetup(template) => write!(f, "{}", template.render()?),
+            Content::Invitations(template) => write!(f, "{}", template.render()?),
             Content::Jobs(template) => write!(f, "{}", template.render()?),
             Content::Profile(template) => write!(f, "{}", template.render()?),
         }
@@ -84,6 +91,7 @@ pub(crate) enum Tab {
     Account,
     Applications,
     EmployerInitialSetup,
+    Invitations,
     #[default]
     Jobs,
     Profile,

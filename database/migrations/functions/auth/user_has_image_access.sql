@@ -20,14 +20,16 @@ begin
     join job j on a.job_id = j.job_id
     join employer_team et on j.employer_id = et.employer_id
     where p.photo_id = p_image_id
-    and et.user_id = p_user_id;
+    and et.user_id = p_user_id
+    and et.approved = true;
     if found then return true; end if;
 
     -- Employer logo: user belongs to the employer team
     perform from employer e
     join employer_team et using (employer_id)
     where e.logo_id = p_image_id
-    and et.user_id = p_user_id;
+    and et.user_id = p_user_id
+    and et.approved = true;
     return found;
 end
 $$ language plpgsql;

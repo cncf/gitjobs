@@ -492,6 +492,7 @@ impl DBAuth for PgDB {
                     join employer_team et on j.employer_id = et.employer_id
                     where et.user_id = $1::uuid
                     and p.job_seeker_profile_id = $2::uuid
+                    and et.approved = true
                 ) as has_access;
                 ",
                 &[&user_id, &job_seeker_profile_id],
@@ -514,6 +515,7 @@ impl DBAuth for PgDB {
                     from employer_team
                     where user_id = $1::uuid
                     and employer_id = $2::uuid
+                    and approved = true
                 ) as owns_employer;
                 ",
                 &[&user_id, &employer_id],
@@ -537,6 +539,7 @@ impl DBAuth for PgDB {
                     join employer_team et using (employer_id)
                     where et.user_id = $1::uuid
                     and j.job_id = $2::uuid
+                    and et.approved = true
                 ) as owns_job;
                 ",
                 &[&user_id, &job_id],

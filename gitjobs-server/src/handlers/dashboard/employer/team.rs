@@ -21,7 +21,7 @@ use crate::{
 
 /// Handler that returns the page to add a new team member.
 #[instrument(skip_all, err)]
-pub(crate) async fn add_member_page(State(_db): State<DynDB>) -> Result<impl IntoResponse, HandlerError> {
+pub(crate) async fn add_member_page() -> Result<impl IntoResponse, HandlerError> {
     let template = team::AddMemberPage {};
 
     Ok(Html(template.render()?))
@@ -33,10 +33,28 @@ pub(crate) async fn members_list_page(
     State(db): State<DynDB>,
     SelectedEmployerIdRequired(employer_id): SelectedEmployerIdRequired,
 ) -> Result<impl IntoResponse, HandlerError> {
-    let team_members = db.list_team_members(&employer_id).await?;
-    let template = team::MembersListPage { team_members };
+    let members = db.list_team_members(&employer_id).await?;
+    let template = team::MembersListPage { members };
 
     Ok(Html(template.render()?))
+}
+
+/// Handler that returns the user invitations list page.
+#[instrument(skip_all, err)]
+pub(crate) async fn user_invitations_list_page(
+    auth_session: AuthSession,
+    State(db): State<DynDB>,
+) -> Result<impl IntoResponse, HandlerError> {
+    // Get user from session
+    let Some(user) = auth_session.user else {
+        return Ok(StatusCode::FORBIDDEN.into_response());
+    };
+
+    // Prepare template
+    let invitations = db.list_user_invitations(&user.user_id).await?;
+    let template = team::UserInvitationsListPage { invitations };
+
+    Ok(Html(template.render()?).into_response())
 }
 
 // Actions handlers.
@@ -45,8 +63,8 @@ pub(crate) async fn members_list_page(
 #[instrument(skip_all, err)]
 pub(crate) async fn add_member(
     State(db): State<DynDB>,
-    Form(member): Form<NewTeamMember>,
     SelectedEmployerIdRequired(employer_id): SelectedEmployerIdRequired,
+    Form(member): Form<NewTeamMember>,
 ) -> Result<impl IntoResponse, HandlerError> {
     // Add the new team member to the database
     db.add_team_member(&employer_id, &member.email).await?;
@@ -79,7 +97,7 @@ pub(crate) async fn accept_invitation(
         return Ok(StatusCode::FORBIDDEN);
     };
 
-    // Update the team member status in the database (invitation accepted)
+    // Mark team member as approved in the database
     db.accept_team_member_invitation(&employer_id, &user.user_id).await?;
 
     Ok(StatusCode::NO_CONTENT)

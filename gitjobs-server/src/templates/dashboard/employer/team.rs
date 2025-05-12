@@ -2,26 +2,46 @@
 //! team page.
 
 use askama::Template;
+use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
+// Pages templates.
+
 /// Add member page template.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
-#[template(path = "dashboard/employer/team/add_member.html")]
+#[template(path = "dashboard/employer/teams/add_member.html")]
 pub(crate) struct AddMemberPage {}
 
 /// Team members list page template.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
-#[template(path = "dashboard/employer/team/members_list.html")]
+#[template(path = "dashboard/employer/teams/members_list.html")]
 pub(crate) struct MembersListPage {
-    pub team_members: Vec<TeamMember>,
+    pub members: Vec<TeamMember>,
+}
+
+/// User invitations list page template.
+#[derive(Debug, Clone, Template, Serialize, Deserialize)]
+#[template(path = "dashboard/employer/teams/invitations_list.html")]
+pub(crate) struct UserInvitationsListPage {
+    pub invitations: Vec<TeamInvitation>,
+}
+
+// Types.
+
+/// Team invitation information.
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
+pub(crate) struct TeamInvitation {
+    pub created_at: DateTime<Utc>,
+    pub employer_id: Uuid,
+    pub company: String,
 }
 
 /// Team member information.
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 pub(crate) struct TeamMember {
+    pub approved: bool,
     pub email: String,
-    pub invitation_accepted: bool,
     pub name: String,
     pub user_id: Uuid,
     pub username: String,

@@ -14,6 +14,7 @@ use crate::{
             applications::{self, Application},
             employers::{Employer, EmployerSummary},
             jobs::{Job, JobSummary},
+            team::{TeamInvitation, TeamMember},
         },
         helpers::normalize_salary,
         misc::Foundation,
@@ -23,17 +24,26 @@ use crate::{
 /// Trait that defines some database operations used in the employer dashboard.
 #[async_trait]
 pub(crate) trait DBDashBoardEmployer {
+    /// Accept team member invitation.
+    async fn accept_team_member_invitation(&self, employer_id: &Uuid, user_id: &Uuid) -> Result<()>;
+
     /// Add employer.
     async fn add_employer(&self, user_id: &Uuid, employer: &Employer) -> Result<Uuid>;
 
     /// Add job.
     async fn add_job(&self, employer_id: &Uuid, job: &Job) -> Result<()>;
 
+    /// Add team member.
+    async fn add_team_member(&self, employer_id: &Uuid, email: &str) -> Result<()>;
+
     /// Archive job.
     async fn archive_job(&self, job_id: &Uuid) -> Result<()>;
 
     /// Delete job.
     async fn delete_job(&self, job_id: &Uuid) -> Result<()>;
+
+    /// Delete team member.
+    async fn delete_team_member(&self, employer_id: &Uuid, user_id: &Uuid) -> Result<()>;
 
     /// Get applications filters options.
     async fn get_applications_filters_options(
@@ -59,6 +69,12 @@ pub(crate) trait DBDashBoardEmployer {
     /// List foundations.
     async fn list_foundations(&self) -> Result<Vec<Foundation>>;
 
+    /// List team members.
+    async fn list_team_members(&self, employer_id: &Uuid) -> Result<Vec<TeamMember>>;
+
+    /// List user invitations.
+    async fn list_user_invitations(&self, user_id: &Uuid) -> Result<Vec<TeamInvitation>>;
+
     /// Publish job.
     async fn publish_job(&self, job_id: &Uuid) -> Result<()>;
 
@@ -78,6 +94,25 @@ pub(crate) trait DBDashBoardEmployer {
 
 #[async_trait]
 impl DBDashBoardEmployer for PgDB {
+    #[instrument(skip(self), err)]
+    async fn accept_team_member_invitation(&self, employer_id: &Uuid, user_id: &Uuid) -> Result<()> {
+        trace!("db: accept team member invitation");
+
+        let db = self.pool.get().await?;
+        db.execute(
+            "
+            update employer_team
+            set approved = true
+            where employer_id = $1::uuid
+            and user_id = $2::uuid;
+            ",
+            &[&employer_id, &user_id],
+        )
+        .await?;
+
+        Ok(())
+    }
+
     #[instrument(skip(self, employer), err)]
     async fn add_employer(&self, user_id: &Uuid, employer: &Employer) -> Result<Uuid> {
         trace!("db: add employer");
@@ -262,6 +297,26 @@ impl DBDashBoardEmployer for PgDB {
         Ok(())
     }
 
+    #[instrument(skip(self, email), err)]
+    async fn add_team_member(&self, employer_id: &Uuid, email: &str) -> Result<()> {
+        trace!("db: add team member");
+
+        let db = self.pool.get().await?;
+        db.execute(
+            "
+            insert into employer_team (employer_id, user_id)
+            select $1::uuid, user_id
+            from users
+            where email = $2::text
+            on conflict do nothing;
+            ",
+            &[&employer_id, &email],
+        )
+        .await?;
+
+        Ok(())
+    }
+
     #[instrument(skip(self), err)]
     async fn archive_job(&self, job_id: &Uuid) -> Result<()> {
         trace!("db: archive job");
@@ -291,6 +346,24 @@ impl DBDashBoardEmployer for PgDB {
         let db = self.pool.get().await?;
         db.execute("delete from job where job_id = $1::uuid;", &[&job_id])
             .await?;
+
+        Ok(())
+    }
+
+    #[instrument(skip(self), err)]
+    async fn delete_team_member(&self, employer_id: &Uuid, user_id: &Uuid) -> Result<()> {
+        trace!("db: delete team member");
+
+        let db = self.pool.get().await?;
+        db.execute(
+            "
+            delete from employer_team
+            where employer_id = $1::uuid
+            and user_id = $2::uuid;
+            ",
+            &[&employer_id, &user_id],
+        )
+        .await?;
 
         Ok(())
     }
@@ -581,6 +654,7 @@ impl DBDashBoardEmployer for PgDB {
                 from employer e
                 join employer_team et using (employer_id)
                 where et.user_id = $1::uuid
+                and et.approved = true
                 order by company asc;
                 ",
                 &[&user_id],
@@ -612,6 +686,73 @@ impl DBDashBoardEmployer for PgDB {
             .collect();
 
         Ok(foundations)
+    }
+
+    #[instrument(skip(self), err)]
+    async fn list_team_members(&self, employer_id: &Uuid) -> Result<Vec<TeamMember>> {
+        trace!("db: list team members");
+
+        let db = self.pool.get().await?;
+        let members = db
+            .query(
+                r#"
+                select
+                    et.approved,
+                    u.email,
+                    u.name,
+                    u.user_id,
+                    u.username
+                from employer_team et
+                join "user" u using (user_id)
+                where employer_id = $1::uuid
+                order by name asc;
+                "#,
+                &[&employer_id],
+            )
+            .await?
+            .into_iter()
+            .map(|row| TeamMember {
+                approved: row.get("approved"),
+                email: row.get("email"),
+                name: row.get("name"),
+                user_id: row.get("user_id"),
+                username: row.get("username"),
+            })
+            .collect();
+
+        Ok(members)
+    }
+
+    #[instrument(skip(self), err)]
+    async fn list_user_invitations(&self, user_id: &Uuid) -> Result<Vec<TeamInvitation>> {
+        trace!("db: list user invitations");
+
+        let db = self.pool.get().await?;
+        let invitations = db
+            .query(
+                "
+                select
+                    e.created_at,
+                    e.company,
+                    e.employer_id
+                from employer_team et
+                join employer e using (employer_id)
+                where et.user_id = $1::uuid
+                and et.approved = false
+                order by created_at desc;
+                ",
+                &[&user_id],
+            )
+            .await?
+            .into_iter()
+            .map(|row| TeamInvitation {
+                created_at: row.get("created_at"),
+                employer_id: row.get("employer_id"),
+                company: row.get("company"),
+            })
+            .collect();
+
+        Ok(invitations)
     }
 
     #[instrument(skip(self), err)]

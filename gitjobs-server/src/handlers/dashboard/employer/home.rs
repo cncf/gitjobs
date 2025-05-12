@@ -24,7 +24,7 @@ use crate::{
         dashboard::employer::{
             applications, employers,
             home::{self, Content, Tab},
-            jobs,
+            jobs, team,
         },
         pagination::NavigationLinks,
     },
@@ -77,6 +77,10 @@ pub(crate) async fn page(
             })
         }
         Tab::EmployerInitialSetup => Content::EmployerInitialSetup(employers::InitialSetupPage {}),
+        Tab::Invitations => {
+            let invitations = db.list_user_invitations(&user.user_id).await?;
+            Content::Invitations(team::UserInvitationsListPage { invitations })
+        }
         Tab::Jobs => {
             let jobs = db.list_employer_jobs(&employer_id.expect("to be some")).await?;
             Content::Jobs(jobs::ListPage { jobs })

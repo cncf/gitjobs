@@ -11,3 +11,10 @@ use serde::{Deserialize, Serialize};
 pub(crate) struct EmailVerification {
     pub link: String,
 }
+
+/// Team invitation.
+#[derive(Debug, Clone, Template, Serialize, Deserialize)]
+#[template(path = "notifications/team_invitation.html")]
+pub(crate) struct TeamInvitation {
+    pub link: String,
+}

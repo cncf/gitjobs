@@ -34,7 +34,7 @@ pub(crate) trait DBDashBoardEmployer {
     async fn add_job(&self, employer_id: &Uuid, job: &Job) -> Result<()>;
 
     /// Add team member.
-    async fn add_team_member(&self, employer_id: &Uuid, email: &str) -> Result<()>;
+    async fn add_team_member(&self, employer_id: &Uuid, email: &str) -> Result<Option<Uuid>>;
 
     /// Archive job.
     async fn archive_job(&self, job_id: &Uuid) -> Result<()>;
@@ -301,23 +301,26 @@ impl DBDashBoardEmployer for PgDB {
     }
 
     #[instrument(skip(self, email), err)]
-    async fn add_team_member(&self, employer_id: &Uuid, email: &str) -> Result<()> {
+    async fn add_team_member(&self, employer_id: &Uuid, email: &str) -> Result<Option<Uuid>> {
         trace!("db: add team member");
 
         let db = self.pool.get().await?;
-        db.execute(
-            "
-            insert into employer_team (employer_id, user_id)
-            select $1::uuid, user_id
-            from users
-            where email = $2::text
-            on conflict do nothing;
-            ",
-            &[&employer_id, &email],
-        )
-        .await?;
+        let user_id = db
+            .query_opt(
+                "
+                insert into employer_team (employer_id, user_id)
+                select $1::uuid, user_id
+                from users
+                where email = $2::text
+                on conflict do nothing
+                returning user_id;
+                ",
+                &[&employer_id, &email],
+            )
+            .await?
+            .map(|row| row.get("user_id"));
 
-        Ok(())
+        Ok(user_id)
     }
 
     #[instrument(skip(self), err)]
@@ -763,8 +766,8 @@ impl DBDashBoardEmployer for PgDB {
             .query(
                 "
                 select
-                    e.created_at,
                     e.company,
+                    e.created_at,
                     e.employer_id
                 from employer_team et
                 join employer e using (employer_id)
@@ -777,9 +780,9 @@ impl DBDashBoardEmployer for PgDB {
             .await?
             .into_iter()
             .map(|row| TeamInvitation {
+                company: row.get("company"),
                 created_at: row.get("created_at"),
                 employer_id: row.get("employer_id"),
-                company: row.get("company"),
             })
             .collect();
 

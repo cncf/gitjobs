@@ -12,9 +12,14 @@ use uuid::Uuid;
 
 use crate::{
     auth::AuthSession,
+    config::HttpServerConfig,
     db::DynDB,
     handlers::{error::HandlerError, extractors::SelectedEmployerIdRequired},
-    templates::dashboard::employer::team::{self, NewTeamMember},
+    notifications::{DynNotificationsManager, NewNotification, NotificationKind},
+    templates::{
+        dashboard::employer::team::{self, NewTeamMember},
+        notifications::TeamInvitation,
+    },
 };
 
 // Pages handlers.
@@ -54,12 +59,30 @@ pub(crate) async fn user_invitations_list_page(
 /// Handler that adds a new team member.
 #[instrument(skip_all, err)]
 pub(crate) async fn add_member(
+    State(cfg): State<HttpServerConfig>,
     State(db): State<DynDB>,
+    State(notifications_manager): State<DynNotificationsManager>,
     SelectedEmployerIdRequired(employer_id): SelectedEmployerIdRequired,
     Form(member): Form<NewTeamMember>,
 ) -> Result<impl IntoResponse, HandlerError> {
     // Add the new team member to the database
-    db.add_team_member(&employer_id, &member.email).await?;
+    let user_id = db.add_team_member(&employer_id, &member.email).await?;
+
+    // Enqueue team invitation notification (if member was added)
+    if let Some(user_id) = user_id {
+        let template_data = TeamInvitation {
+            link: format!(
+                "{}/dashboard/employer?tab=invitations",
+                cfg.base_url.strip_suffix('/').unwrap_or(&cfg.base_url)
+            ),
+        };
+        let notification = NewNotification {
+            kind: NotificationKind::TeamInvitation,
+            user_id,
+            template_data: Some(serde_json::to_value(&template_data)?),
+        };
+        notifications_manager.enqueue(&notification).await?;
+    }
 
     Ok(StatusCode::NO_CONTENT)
 }

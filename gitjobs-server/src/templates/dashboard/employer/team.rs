@@ -27,9 +27,9 @@ pub(crate) struct UserInvitationsListPage {
 /// Team invitation information.
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 pub(crate) struct TeamInvitation {
+    pub company: String,
     pub created_at: DateTime<Utc>,
     pub employer_id: Uuid,
-    pub company: String,
 }
 
 /// Team member information.

@@ -17,7 +17,11 @@ use tokio_util::{sync::CancellationToken, task::TaskTracker};
 use tracing::{error, instrument};
 use uuid::Uuid;
 
-use crate::{config::EmailConfig, db::DynDB, templates::notifications::EmailVerification};
+use crate::{
+    config::EmailConfig,
+    db::DynDB,
+    templates::notifications::{EmailVerification, TeamInvitation},
+};
 
 /// Number of workers to deliver notifications.
 const NUM_WORKERS: usize = 1;
@@ -203,6 +207,12 @@ impl Worker {
                 let body = template.render()?;
                 (subject, body)
             }
+            NotificationKind::TeamInvitation => {
+                let subject = "You have been invited to join a team";
+                let template: TeamInvitation = serde_json::from_value(template_data)?;
+                let body = template.render()?;
+                (subject, body)
+            }
         };
 
         Ok((subject.to_string(), body))
@@ -253,4 +263,5 @@ pub(crate) struct Notification {
 #[strum(serialize_all = "kebab-case")]
 pub(crate) enum NotificationKind {
     EmailVerification,
+    TeamInvitation,
 }

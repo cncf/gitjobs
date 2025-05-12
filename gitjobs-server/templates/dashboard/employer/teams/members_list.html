@@ -1,0 +1,172 @@
+{% import "macros.html" as macros -%}
+
+<div class="flex justify-between items-center">
+  <div>{% call macros::form_title(title = "Team") -%}</div>
+
+  <div>
+    {# Add member button -#}
+    <div>
+      <button id="add-member-button" class="btn-primary">Add member</button>
+    </div>
+    {# End add member button -#}
+  </div>
+</div>
+
+{# Applicants Table -#}
+<div class="relative overflow-visible mt-10">
+  <table class="table-fixed w-full text-xs lg:text-sm text-left rtl:text-right text-stone-500">
+    <thead class="text-xs text-stone-700 uppercase bg-stone-100 border-b border-stone-200">
+      <tr>
+        <th scope="col" class="px-3 xl:px-5 py-3">Member</th>
+        <th scope="col" class="px-3 xl:px-5 py-3">Status</th>
+        <th scope="col" class="p-4 w-12"></th>
+      </tr>
+    </thead>
+    <tbody id="members-list">
+      {% for member in members -%}
+        <tr class="odd:bg-white even:bg-stone-50/50 border-b border-stone-200">
+          {# Member -#}
+          <td class="px-3 xl:px-5 py-4">
+            <div class="font-medium text-stone-900">{{ member.username }}</div>
+            <div class="text-xs">{{ member.name }}</div>
+          </td>
+          {# End member -#}
+
+          {# Status -#}
+          <td class="px-3 xl:px-5 py-4">
+            {% if member.approved -%}
+              <span class="bg-green-100 text-green-800 text-xs px-2.5 py-0.5 rounded-full capitalize tracking-wide">Member</span>
+            {% else -%}
+              <span class="bg-yellow-100 text-yellow-800 text-xs px-2.5 py-0.5 rounded-full capitalize tracking-wide">Invitation sent</span>
+            {% endif -%}
+          </td>
+          {# End status #}
+
+          {# Actions -#}
+          <td>
+            <div>
+              {# button disabled -> only one member #}
+              <button id="remove-member-{{ member.user_id }}"
+                      hx-put="/dashboard/job-seeker/team/members/{{ member.user_id }}/delete"
+                      hx-disabled-elt="this"
+                      hx-trigger="confirmed"
+                      class="btn-tertiary p-2
+                             {% if members.len() == 1 -%}
+                               disabled opacity-50
+                             {% endif -%}"
+                      {% if members.len() == 1 -%}
+                        disabled
+                      {% endif -%}>
+                <div class="svg-icon size-4 icon-trash"></div>
+              </button>
+              <script type="module">
+                import {
+                  showConfirmAlert,
+                  showErrorAlert,
+                  showInfoAlertWithHtml,
+                  showSuccessAlert,
+                } from "/static/js/common/alerts.js";
+                import {
+                  isSuccessfulXHRStatus
+                } from "/static/js/common/common.js";
+                const removeMemberButton = document.getElementById('remove-member-{{ member.user_id }}');
+                removeMemberButton.addEventListener('click', (event) => {
+                  showConfirmAlert("Are you sure you wish to delete this member?", "remove-member-{{ member.user_id }}", "Yes");
+                });
+
+                removeMemberButton.addEventListener("htmx:afterRequest", (e) => {
+                  if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
+                    showSuccessAlert("You have successfully removed the member.");
+                  } else {
+                    showErrorAlert("An error occurred removing this member, please try again later.");
+                  }
+                });
+              </script>
+            </div>
+          </td>
+          {# End actions -#}
+        </tr>
+      {% endfor -%}
+    </tbody>
+  </table>
+</div>
+{# End applicants Table -#}
+
+{# Add member modal -#}
+<div id="add-member-modal"
+     tabindex="-1"
+     aria-hidden="true"
+     class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-full max-h-full flex">
+  <div id="backdrop-add-member-modal"
+       class="modal-overlay absolute w-full h-full bg-stone-950 opacity-[.35]"></div>
+  <div class="relative px-4 py-8 w-full max-w-3xl max-h-full overflow-auto">
+    <div class="relative bg-white rounded-lg shadow">
+      {# Modal header -#}
+      <div class="flex items-center justify-between p-4 md:p-5 border-b border-stone-200 rounded-t">
+        {# Title -#}
+        <h3 class="text-xl font-semibold text-stone-900">Add member</h3>
+        {# End title -#}
+
+        {# Close button -#}
+        <button id="close-add-member-modal"
+                type="button"
+                class="group bg-transparent hover:bg-stone-200 rounded-full text-sm size-8 ms-auto inline-flex justify-center items-center cursor-pointer">
+          <div class="svg-icon size-5 bg-stone-400 group-hover:bg-stone-700 icon-close"></div>
+          <span class="sr-only">Close modal</span>
+        </button>
+        {# End close button -#}
+      </div>
+      {# End modal header -#}
+
+      {# Modal content -#}
+      <div class="p-4 md:p-8">
+        <form id="add-member-form"
+              hx-post="/dashboard/job-seeker/team/members/add"
+              hx-disabled-elt="#add-member-submit-button"
+              hx-spinner="#add-member-spinner"
+              hx-trigger="submit">
+          <div class="mb-6">
+            <label for="reject-reason"
+                   class="block mb-4 text-sm font-medium text-stone-900">Email member</label>
+            <input id="email" name="email" type="email" class="input-primary">
+            <p class="form-legend">Lorem ipsum...</p>
+          </div>
+          <div class="flex justify-end">
+            <button id="add-member-submit-button" type="submit" class="btn-primary mb-2">
+              {% call macros::btn_spinner(id = "add-member-spinner", spinner_type = "2") -%}
+              Add
+            </button>
+          </div>
+        </form>
+      </div>
+      {# End modal content -#}
+    </div>
+  </div>
+</div>
+{# End add member modal -#}
+
+<script type="module">
+  import {
+    toggleModalVisibility,
+  } from '/static/js/common/common.js';
+
+  const addMemberButton = document.getElementById('add-member-button');
+  if (addMemberButton) {
+    addMemberButton.addEventListener('click', () => {
+      console.log('Add member button clicked');
+      toggleModalVisibility('add-member-modal', "open");
+    });
+  }
+
+  // Close the add member modal on backdrop click
+  const backdropAddMemberModal = document.querySelector('#backdrop-add-member-modal');
+  backdropAddMemberModal.addEventListener('click', () => {
+    toggleModalVisibility('add-member-modal', "close");
+  });
+
+  // Close the add member modal on close button click
+  const closeAddMemberModal = document.querySelector('#close-add-member-modal');
+  closeAddMemberModal.addEventListener('click', () => {
+    toggleModalVisibility('add-member-modal', "close");
+  });
+</script>

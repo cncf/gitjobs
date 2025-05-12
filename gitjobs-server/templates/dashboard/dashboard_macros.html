@@ -5,16 +5,23 @@
 {# End menu title -#}
 
 {# Menu item -#}
-{% macro menu_item(name, icon, is_active, href, disabled = false, extra_styles = "", icon_size = "size-4" ) -%}
+{% macro menu_item(name, icon, is_active, href, disabled = false, extra_styles = "", icon_size = "size-4", items_count = 0 ) -%}
   {% if is_active -%}
     <div class="relative bg-white border border-stone-200 px-3 rounded-lg {{ extra_styles }}">
       <a hx-get="{{ href }}"
          hx-target="body"
          hx-indicator="#dashboard-spinner"
          hx-push-url="true"
-         class="flex items-center cursor-pointer">
-        <div class="svg-icon {{ icon_size }} icon-{{ icon }} bg-primary-600 text-white"></div>
-        <div class="text-sm/8 ms-3">{{ name }}</div>
+         class="flex items-center justify-between cursor-pointer">
+        <div class="flex items-center">
+          <div class="svg-icon {{ icon_size }} icon-{{ icon }} bg-primary-600 text-white"></div>
+          <div class="text-sm/8 ms-3">{{ name }}</div>
+        </div>
+        {% if items_count + 0 > 0 -%}
+          <div class="text-xs text-primary-600 border border-primary-500 bg-white rounded-full px-2 ms-3">
+            {{ items_count }}
+          </div>
+        {% endif -%}
       </a>
       <div class="absolute top-0.5 -left-3 lg:-left-5 bottom-0.5 w-1 bg-primary-600 rounded-lg"></div>
     </div>
@@ -34,9 +41,16 @@
            hx-target="body"
            hx-indicator="#dashboard-spinner"
            hx-push-url="true"
-           class="flex items-center cursor-pointer">
-          <div class="svg-icon {{ icon_size }} icon-{{ icon }} bg-primary-600 text-white"></div>
-          <div class="text-sm/8 ms-3">{{ name }}</div>
+           class="flex items-center justify-between cursor-pointer">
+          <div class="flex items-center">
+            <div class="svg-icon {{ icon_size }} icon-{{ icon }} bg-primary-600 text-white"></div>
+            <div class="text-sm/8 ms-3">{{ name }}</div>
+          </div>
+          {% if items_count + 0 > 0 -%}
+            <div class="text-xs text-primary-600 border border-primary-500 bg-white rounded-full px-2 ms-3">
+              {{ items_count }}
+            </div>
+          {% endif -%}
         </a>
       </div>
     {% endif -%}

@@ -1,0 +1,77 @@
+{% import "macros.html" as macros -%}
+{% import "misc/preview_modal.html" as preview -%}
+
+{% call macros::form_title(title = "Invitations") -%}
+
+{# Invitations Table -#}
+<div class="relative overflow-visible mt-10">
+  <table class="table-fixed w-full text-xs lg:text-sm text-left rtl:text-right text-stone-500">
+    <thead class="text-xs text-stone-700 uppercase bg-stone-100 border-b border-stone-200">
+      <tr>
+        <th scope="col" class="px-3 xl:px-5 py-3">Company</th>
+        <th scope="col" class="px-3 xl:px-5 py-3 w-32">Created</th>
+        <th scope="col" class="p-4 w-12"></th>
+      </tr>
+    </thead>
+    <tbody id="applications-list">
+      {% if invitations.is_empty() -%}
+        <tr class="bg-white border-b border-stone-200">
+          {# No invitations -#}
+          <td class="px-8 py-20 text-center" colspan="3">
+            <div class="text-xl lg:text-2xl mb-10">
+              <div>Lorem ipsum</div>
+            </div>
+          </td>
+        </tr>
+      {% else -%}
+        {% for invitation in invitations -%}
+          <tr class="odd:bg-white even:bg-stone-50/50 border-b border-stone-200">
+            {# Company -#}
+            <td class="px-3 xl:px-5 py-4 font-medium text-stone-900">
+              <div class="max-w-full text-black truncate">{{ invitation.company }}</div>
+            </td>
+            {# End company -#}
+
+            {# Created at date -#}
+            <td class="px-3 xl:px-5 py-4 whitespace-nowrap">{{ invitation.created_at.format(DATE_FORMAT) }}</td>
+            {# End created at date -#}
+
+            {# Actions -#}
+            <td>
+              <div>
+                {# <button id="cancel-application-{{ application.application_id }}" hx-put="/dashboard/job-seeker/applications/{{ application.application_id }}/cancel" hx-disabled-elt="this" hx-trigger="confirmed" class="btn-tertiary p-2">
+                  <div class="svg-icon size-4 icon-trash"></div>
+                </button>
+                <script type="module">
+                  import {
+                    showConfirmAlert,
+                    showErrorAlert,
+                    showInfoAlertWithHtml,
+                    showSuccessAlert,
+                  } from "/static/js/common/alerts.js";
+                  import {
+                    isSuccessfulXHRStatus
+                  } from "/static/js/common/common.js";
+                  const cancelApplicationButton = document.getElementById('cancel-application-{{ application.application_id }}');
+                  cancelApplicationButton.addEventListener('click', (event) => {
+                    showConfirmAlert("Are you sure you wish to cancel this application?", "cancel-application-{{ application.application_id }}", "Yes");
+                  });
+
+                  cancelApplicationButton.addEventListener("htmx:afterRequest", (e) => {
+                    if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
+                      showSuccessAlert("You have successfully canceled the application.");
+                    } else {
+                      showErrorAlert("An error occurred canceling this application, please try again later.");
+                    }
+                  });
+                </script> #}
+</div>
+</td>
+{# End actions -#}
+</tr>
+{% endfor -%}
+{% endif -%}
+</tbody>
+</table>
+</div>
+{# End invitations Table -#}

@@ -533,6 +533,11 @@ select.aligned-right option {
   -webkit-mask-image: url("/static/images/icons/pencil.svg");
 }
 
+.icon-pending_invitation {
+  mask-image: url("/static/images/icons/pending_invitation.svg");
+  -webkit-mask-image: url("/static/images/icons/pending_invitation.svg");
+}
+
 .icon-phone {
   mask-image: url("/static/images/icons/phone.svg");
   -webkit-mask-image: url("/static/images/icons/phone.svg");

@@ -2,6 +2,7 @@
 
 {% let job_id = job.job_id.to_string() -%}
 <div id="preview-modal"
+     data-job-id="{{ job_id }}"
      tabindex="-1"
      aria-hidden="false"
      role="dialog"

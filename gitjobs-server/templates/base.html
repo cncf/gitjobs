@@ -55,13 +55,24 @@
     </script>
     <script type="module">
       import {
+        getParamFromQueryString,
+        shouldDisplayJobModal,
         toggleModalVisibility
       } from '/static/js/common/common.js';
 
       window.addEventListener("popstate", (event) => {
+        const job_id_param = getParamFromQueryString('job_id');
         if (event.state && event.state.modal_preview !== undefined) {
           if (event.state.modal_preview) {
-            toggleModalVisibility('preview-modal', "open");
+            const job_id = getParamFromQueryString('job_id');
+            const modal_preview = document.getElementById('preview-modal');
+            if (modal_preview !== null) {
+              if (job_id !== modal_preview.dataset.jobId) {
+                shouldDisplayJobModal();
+              } else {
+                toggleModalVisibility('preview-modal', "open");
+              }
+            }
           } else {
             toggleModalVisibility('preview-modal', "close");
           }
@@ -69,6 +80,14 @@
           if (document.getElementById('preview-modal').dataset.open === "true") {
             toggleModalVisibility('preview-modal', "close");
           }
+        }
+        const embedCode = document.getElementById('embed-code-modal');
+        if (embedCode !== null && embedCode.dataset.open === "true") {
+          toggleModalVisibility('embed-code-modal', "close");
+        }
+        const dropwodnUser = document.getElementById('dropdown-user');
+        if (dropwodnUser !== null && !dropwodnUser.classList.contains('hidden')) {
+          document.getElementById('dropdown-user').classList.add('hidden');
         }
       });
     </script>

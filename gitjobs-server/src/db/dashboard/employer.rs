@@ -362,7 +362,13 @@ impl DBDashBoardEmployer for PgDB {
             "
             delete from employer_team
             where employer_id = $1::uuid
-            and user_id = $2::uuid;
+            and user_id = $2::uuid
+            and
+                (
+                    select count(*)
+                    from employer_team
+                    where employer_id = $1::uuid
+                ) > 1;
             ",
             &[&employer_id, &user_id],
         )

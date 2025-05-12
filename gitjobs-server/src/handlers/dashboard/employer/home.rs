@@ -93,6 +93,10 @@ pub(crate) async fn page(
                 foundations,
             })
         }
+        Tab::Team => {
+            let members = db.list_team_members(&employer_id.expect("to be some")).await?;
+            Content::Team(team::MembersListPage { members })
+        }
     };
 
     // Prepare template

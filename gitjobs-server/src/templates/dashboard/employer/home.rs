@@ -43,6 +43,7 @@ pub(crate) enum Content {
     Invitations(employer::team::UserInvitationsListPage),
     Jobs(employer::jobs::ListPage),
     Profile(employer::employers::UpdatePage),
+    Team(employer::team::MembersListPage),
 }
 
 impl Content {
@@ -70,6 +71,11 @@ impl Content {
     fn is_profile(&self) -> bool {
         matches!(self, Content::Profile(_))
     }
+
+    /// Check if the content is the team page.
+    fn is_team(&self) -> bool {
+        matches!(self, Content::Team(_))
+    }
 }
 
 impl std::fmt::Display for Content {
@@ -81,6 +87,7 @@ impl std::fmt::Display for Content {
             Content::Invitations(template) => write!(f, "{}", template.render()?),
             Content::Jobs(template) => write!(f, "{}", template.render()?),
             Content::Profile(template) => write!(f, "{}", template.render()?),
+            Content::Team(template) => write!(f, "{}", template.render()?),
         }
     }
 }
@@ -96,4 +103,5 @@ pub(crate) enum Tab {
     #[default]
     Jobs,
     Profile,
+    Team,
 }

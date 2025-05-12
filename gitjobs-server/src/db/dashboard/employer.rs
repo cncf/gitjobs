@@ -60,6 +60,9 @@ pub(crate) trait DBDashBoardEmployer {
     /// Get job seeker user id.
     async fn get_job_seeker_user_id(&self, job_seeker_profile_id: &Uuid) -> Result<Option<Uuid>>;
 
+    /// Get user invitations count.
+    async fn get_user_invitations_count(&self, user_id: &Uuid) -> Result<usize>;
+
     /// List employer jobs.
     async fn list_employer_jobs(&self, employer_id: &Uuid) -> Result<Vec<JobSummary>>;
 
@@ -595,6 +598,28 @@ impl DBDashBoardEmployer for PgDB {
             .map(|row| row.get("user_id"));
 
         Ok(user_id)
+    }
+
+    #[instrument(skip(self), err)]
+    async fn get_user_invitations_count(&self, user_id: &Uuid) -> Result<usize> {
+        trace!("db: get user invitations count");
+
+        let db = self.pool.get().await?;
+        #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+        let count = db
+            .query_one(
+                "
+                select count(*) as count
+                from employer_team et
+                where et.user_id = $1::uuid
+                and et.approved = false;
+                ",
+                &[&user_id],
+            )
+            .await?
+            .get::<_, i64>("count") as usize;
+
+        Ok(count)
     }
 
     #[instrument(skip(self), err)]

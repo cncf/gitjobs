@@ -25,6 +25,7 @@ pub(crate) struct Page {
     pub employers: Vec<employer::employers::EmployerSummary>,
     pub messages: Vec<Message>,
     pub page_id: PageId,
+    pub pending_invitations: usize,
     pub user: User,
 
     pub auth_provider: Option<String>,

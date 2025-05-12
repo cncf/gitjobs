@@ -96,7 +96,10 @@ pub(crate) async fn page(
     };
 
     // Prepare template
-    let employers = db.list_employers(&user.user_id).await?;
+    let (employers, pending_invitations) = tokio::try_join!(
+        db.list_employers(&user.user_id),
+        db.get_user_invitations_count(&user.user_id)
+    )?;
     let template = home::Page {
         auth_provider: session.get(AUTH_PROVIDER_KEY).await?,
         cfg: cfg.into(),
@@ -104,6 +107,7 @@ pub(crate) async fn page(
         employers,
         messages: messages.into_iter().collect(),
         page_id: PageId::EmployerDashboard,
+        pending_invitations,
         selected_employer_id: employer_id,
         user: auth_session.into(),
     };

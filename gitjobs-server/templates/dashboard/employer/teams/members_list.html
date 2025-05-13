@@ -67,14 +67,12 @@
                 } from "/static/js/common/common.js";
                 const removeMemberButton = document.getElementById('remove-member-{{ member.user_id }}');
                 removeMemberButton.addEventListener('click', (event) => {
-                  showConfirmAlert("Are you sure you wish to delete this member?", "remove-member-{{ member.user_id }}", "Yes");
+                  showConfirmAlert("Are you sure you would like to delete this team member?", "remove-member-{{ member.user_id }}", "Yes");
                 });
 
                 removeMemberButton.addEventListener("htmx:afterRequest", (e) => {
-                  if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
-                    showSuccessAlert("You have successfully removed the member.");
-                  } else {
-                    showErrorAlert("An error occurred removing this member, please try again later.");
+                  if (!isSuccessfulXHRStatus(e.detail.xhr.status)) {
+                    showErrorAlert("Something went wrong deleting this team member. Please try again later.");
                   }
                 });
               </script>

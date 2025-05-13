@@ -85,7 +85,6 @@
 
       {# BlueSky url -#}
       {% if let Some(bluesky_url) = profile.bluesky_url -%}
-        {# TODO - update url #}
         {% call social_link(url = bluesky_url, icon = "bluesky") -%}
       {% endif -%}
       {# End BlueSky url -#}

@@ -138,6 +138,7 @@ pub(crate) async fn delete_member(
 #[instrument(skip_all, err)]
 pub(crate) async fn accept_invitation(
     auth_session: AuthSession,
+    session: Session,
     State(db): State<DynDB>,
     Path(employer_id): Path<Uuid>,
 ) -> Result<impl IntoResponse, HandlerError> {
@@ -148,6 +149,14 @@ pub(crate) async fn accept_invitation(
 
     // Mark team member as approved in the database
     db.accept_team_member_invitation(&employer_id, &user.user_id).await?;
+
+    // Update selected employer if the user didn't have one
+    let employers = db.list_employers(&user.user_id).await?;
+    if employers.len() == 1 {
+        session
+            .insert(SELECTED_EMPLOYER_ID_KEY, employers[0].employer_id)
+            .await?;
+    }
 
     Ok((
         StatusCode::NO_CONTENT,

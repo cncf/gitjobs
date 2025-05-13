@@ -307,14 +307,14 @@ impl DBDashBoardEmployer for PgDB {
         let db = self.pool.get().await?;
         let user_id = db
             .query_opt(
-                "
+                r#"
                 insert into employer_team (employer_id, user_id)
                 select $1::uuid, user_id
-                from users
+                from "user"
                 where email = $2::text
                 on conflict do nothing
                 returning user_id;
-                ",
+                "#,
                 &[&employer_id, &email],
             )
             .await?

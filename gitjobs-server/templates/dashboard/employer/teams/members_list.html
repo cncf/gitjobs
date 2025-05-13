@@ -35,9 +35,9 @@
           {# Status -#}
           <td class="px-3 xl:px-5 py-4">
             {% if member.approved -%}
-              <span class="bg-green-100 text-green-800 text-xs px-2.5 py-0.5 rounded-full capitalize tracking-wide">Member</span>
+              <span class="bg-green-100 text-green-800 text-xs px-2.5 py-0.5 rounded-full tracking-wide">Member</span>
             {% else -%}
-              <span class="bg-yellow-100 text-yellow-800 text-xs px-2.5 py-0.5 rounded-full capitalize tracking-wide">Invitation sent</span>
+              <span class="bg-yellow-100 text-yellow-800 text-xs px-2.5 py-0.5 rounded-full tracking-wide">Invitation sent</span>
             {% endif -%}
           </td>
           {# End status #}
@@ -47,7 +47,7 @@
             <div>
               {# button disabled -> only one member #}
               <button id="remove-member-{{ member.user_id }}"
-                      hx-put="/dashboard/job-seeker/team/members/{{ member.user_id }}/delete"
+                      hx-delete="/dashboard/employer/team/members/{{ member.user_id }}/delete"
                       hx-disabled-elt="this"
                       hx-trigger="confirmed"
                       class="btn-tertiary p-2
@@ -121,7 +121,7 @@
       {# Modal content -#}
       <div class="p-4 md:p-8">
         <form id="add-member-form"
-              hx-post="/dashboard/job-seeker/team/members/add"
+              hx-post="/dashboard/employer/team/members/add"
               hx-disabled-elt="#add-member-submit-button"
               hx-spinner="#add-member-spinner"
               hx-trigger="submit">

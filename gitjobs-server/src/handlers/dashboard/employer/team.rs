@@ -6,6 +6,7 @@ use axum::{
     response::{Html, IntoResponse},
 };
 use axum_extra::extract::Form;
+use axum_messages::Messages;
 use reqwest::StatusCode;
 use tower_sessions::Session;
 use tracing::instrument;
@@ -57,9 +58,46 @@ pub(crate) async fn user_invitations_list_page(
 
 // Actions handlers.
 
+/// Handler that accepts a team member invitation.
+#[instrument(skip_all, err)]
+pub(crate) async fn accept_invitation(
+    auth_session: AuthSession,
+    messages: Messages,
+    session: Session,
+    State(db): State<DynDB>,
+    Path(employer_id): Path<Uuid>,
+) -> Result<impl IntoResponse, HandlerError> {
+    // Get user from session
+    let Some(user) = auth_session.user else {
+        return Ok((StatusCode::FORBIDDEN).into_response());
+    };
+
+    // Mark team member as approved in the database
+    db.accept_team_member_invitation(&employer_id, &user.user_id).await?;
+    messages.success("Team invitation accepted.");
+
+    // Update selected employer if the user didn't have one
+    let employers = db.list_employers(&user.user_id).await?;
+    if employers.len() == 1 {
+        session
+            .insert(SELECTED_EMPLOYER_ID_KEY, employers[0].employer_id)
+            .await?;
+    }
+
+    Ok((
+        StatusCode::NO_CONTENT,
+        [(
+            "HX-Location",
+            r#"{"path":"/dashboard/employer?tab=invitations", "target":"body"}"#,
+        )],
+    )
+        .into_response())
+}
+
 /// Handler that adds a new team member.
 #[instrument(skip_all, err)]
 pub(crate) async fn add_member(
+    messages: Messages,
     State(cfg): State<HttpServerConfig>,
     State(db): State<DynDB>,
     State(notifications_manager): State<DynNotificationsManager>,
@@ -68,6 +106,7 @@ pub(crate) async fn add_member(
 ) -> Result<impl IntoResponse, HandlerError> {
     // Add the new team member to the database
     let user_id = db.add_team_member(&employer_id, &member.email).await?;
+    messages.success("New team member invited successfully.");
 
     // Enqueue team invitation notification (if member was added)
     if let Some(user_id) = user_id {
@@ -99,6 +138,7 @@ pub(crate) async fn add_member(
 #[instrument(skip_all, err)]
 pub(crate) async fn delete_member(
     auth_session: AuthSession,
+    messages: Messages,
     session: Session,
     State(db): State<DynDB>,
     SelectedEmployerIdRequired(employer_id): SelectedEmployerIdRequired,
@@ -111,6 +151,7 @@ pub(crate) async fn delete_member(
 
     // Delete the team member from the database
     db.delete_team_member(&employer_id, &member_user_id).await?;
+    messages.success("Team member deleted successfully.");
 
     // Update selected employer if the user deletes themself
     if user.user_id == member_user_id {
@@ -134,44 +175,11 @@ pub(crate) async fn delete_member(
         .into_response())
 }
 
-/// Handler that accepts a team member invitation.
-#[instrument(skip_all, err)]
-pub(crate) async fn accept_invitation(
-    auth_session: AuthSession,
-    session: Session,
-    State(db): State<DynDB>,
-    Path(employer_id): Path<Uuid>,
-) -> Result<impl IntoResponse, HandlerError> {
-    // Get user from session
-    let Some(user) = auth_session.user else {
-        return Ok((StatusCode::FORBIDDEN).into_response());
-    };
-
-    // Mark team member as approved in the database
-    db.accept_team_member_invitation(&employer_id, &user.user_id).await?;
-
-    // Update selected employer if the user didn't have one
-    let employers = db.list_employers(&user.user_id).await?;
-    if employers.len() == 1 {
-        session
-            .insert(SELECTED_EMPLOYER_ID_KEY, employers[0].employer_id)
-            .await?;
-    }
-
-    Ok((
-        StatusCode::NO_CONTENT,
-        [(
-            "HX-Location",
-            r#"{"path":"/dashboard/employer?tab=invitations", "target":"body"}"#,
-        )],
-    )
-        .into_response())
-}
-
 /// Handler that rejects a team member invitation.
 #[instrument(skip_all, err)]
 pub(crate) async fn reject_invitation(
     auth_session: AuthSession,
+    messages: Messages,
     State(db): State<DynDB>,
     Path(employer_id): Path<Uuid>,
 ) -> Result<impl IntoResponse, HandlerError> {
@@ -182,6 +190,7 @@ pub(crate) async fn reject_invitation(
 
     // Delete the team member from the database
     db.delete_team_member(&employer_id, &user.user_id).await?;
+    messages.success("Team invitation rejected.");
 
     Ok((
         StatusCode::NO_CONTENT,

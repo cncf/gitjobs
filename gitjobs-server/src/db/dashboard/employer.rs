@@ -163,10 +163,12 @@ impl DBDashBoardEmployer for PgDB {
             "
             insert into employer_team (
                 employer_id,
-                user_id
+                user_id,
+                approved
             ) values (
                 $1::uuid,
-                $2::uuid
+                $2::uuid,
+                true
             );
             ",
             &[&employer_id, &user_id],
@@ -308,8 +310,15 @@ impl DBDashBoardEmployer for PgDB {
         let user_id = db
             .query_opt(
                 r#"
-                insert into employer_team (employer_id, user_id)
-                select $1::uuid, user_id
+                insert into employer_team (
+                    employer_id,
+                    user_id,
+                    approved
+                )
+                select
+                    $1::uuid,
+                    user_id,
+                    false
                 from "user"
                 where email = $2::text
                 on conflict do nothing

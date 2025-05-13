@@ -1,15 +1,15 @@
 {% import "macros.html" as macros -%}
 {% import "misc/preview_modal.html" as preview -%}
 
-{% call macros::form_title(title = "Invitations") -%}
+{% call macros::form_title(title = "Invitations", description = "Here you will see the invitations you receive to join employers' teams.") -%}
 
 {# Invitations Table -#}
 <div class="relative overflow-visible mt-10">
   <table class="table-fixed w-full text-xs lg:text-sm text-left rtl:text-right text-stone-500">
     <thead class="text-xs text-stone-700 uppercase bg-stone-100 border-b border-stone-200">
       <tr>
-        <th scope="col" class="px-3 xl:px-5 py-3">Company</th>
-        <th scope="col" class="px-3 xl:px-5 py-3 w-32">Created</th>
+        <th scope="col" class="px-3 xl:px-5 py-3 w-auto lg:w-2/5 xl:w-1/4">Company</th>
+        <th scope="col" class="px-3 xl:px-5 py-3">Created</th>
         <th scope="col" class="p-4 w-24"></th>
       </tr>
     </thead>
@@ -18,7 +18,7 @@
         <tr class="bg-white border-b border-stone-200">
           {# No invitations -#}
           <td class="px-8 py-20 text-center" colspan="3">
-            <div class="text-xl lg:text-2xl mb-10">It looks like you haven't any pending invitation.</div>
+            <div class="text-xl lg:text-2xl mb-10">You don't have any pending invitation.</div>
           </td>
         </tr>
       {% else -%}

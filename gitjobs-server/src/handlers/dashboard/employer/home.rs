@@ -58,7 +58,7 @@ pub(crate) async fn page(
 
     // Get selected tab from query
     let mut tab: Tab = query.get("tab").unwrap_or(&String::new()).parse().unwrap_or_default();
-    if tab != Tab::Account && employer_id.is_none() {
+    if (tab != Tab::Account && tab != Tab::Invitations) && employer_id.is_none() {
         if pending_invitations > 0 {
             tab = Tab::Invitations;
         } else {

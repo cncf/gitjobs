@@ -7,6 +7,7 @@ use axum::{
 };
 use axum_extra::extract::Form;
 use reqwest::StatusCode;
+use tower_sessions::Session;
 use tracing::instrument;
 use uuid::Uuid;
 
@@ -14,7 +15,7 @@ use crate::{
     auth::AuthSession,
     config::HttpServerConfig,
     db::DynDB,
-    handlers::{error::HandlerError, extractors::SelectedEmployerIdRequired},
+    handlers::{auth::SELECTED_EMPLOYER_ID_KEY, error::HandlerError, extractors::SelectedEmployerIdRequired},
     notifications::{DynNotificationsManager, NewNotification, NotificationKind},
     templates::{
         dashboard::employer::team::{self, NewTeamMember},
@@ -97,12 +98,24 @@ pub(crate) async fn add_member(
 /// Handler that deletes a team member.
 #[instrument(skip_all, err)]
 pub(crate) async fn delete_member(
+    auth_session: AuthSession,
+    session: Session,
     State(db): State<DynDB>,
     SelectedEmployerIdRequired(employer_id): SelectedEmployerIdRequired,
     Path(user_id): Path<Uuid>,
 ) -> Result<impl IntoResponse, HandlerError> {
+    // Get user from session
+    let Some(user) = auth_session.user else {
+        return Ok((StatusCode::FORBIDDEN).into_response());
+    };
+
     // Delete the team member from the database
     db.delete_team_member(&employer_id, &user_id).await?;
+
+    // If the user deletes themself, remove the selected employer from the session
+    if user.user_id == user_id {
+        session.remove::<Option<Uuid>>(SELECTED_EMPLOYER_ID_KEY).await?;
+    }
 
     Ok((
         StatusCode::NO_CONTENT,

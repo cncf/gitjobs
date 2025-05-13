@@ -50,10 +50,20 @@ pub(crate) async fn page(
         return Ok(StatusCode::FORBIDDEN.into_response());
     };
 
+    // Get employers and pending invitations
+    let (employers, pending_invitations) = tokio::try_join!(
+        db.list_employers(&user.user_id),
+        db.get_user_invitations_count(&user.user_id)
+    )?;
+
     // Get selected tab from query
     let mut tab: Tab = query.get("tab").unwrap_or(&String::new()).parse().unwrap_or_default();
     if tab != Tab::Account && employer_id.is_none() {
-        tab = Tab::EmployerInitialSetup;
+        if pending_invitations > 0 {
+            tab = Tab::Invitations;
+        } else {
+            tab = Tab::EmployerInitialSetup;
+        }
     }
 
     // Prepare content for the selected tab
@@ -100,10 +110,6 @@ pub(crate) async fn page(
     };
 
     // Prepare template
-    let (employers, pending_invitations) = tokio::try_join!(
-        db.list_employers(&user.user_id),
-        db.get_user_invitations_count(&user.user_id)
-    )?;
     let template = home::Page {
         auth_provider: session.get(AUTH_PROVIDER_KEY).await?,
         cfg: cfg.into(),

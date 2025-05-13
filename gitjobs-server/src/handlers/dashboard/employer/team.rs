@@ -84,7 +84,14 @@ pub(crate) async fn add_member(
         notifications_manager.enqueue(&notification).await?;
     }
 
-    Ok(StatusCode::NO_CONTENT)
+    Ok((
+        StatusCode::NO_CONTENT,
+        [(
+            "HX-Location",
+            r#"{"path":"/dashboard/employer?tab=team", "target":"body"}"#,
+        )],
+    )
+        .into_response())
 }
 
 /// Handler that deletes a team member.
@@ -97,7 +104,14 @@ pub(crate) async fn delete_member(
     // Delete the team member from the database
     db.delete_team_member(&employer_id, &user_id).await?;
 
-    Ok(StatusCode::NO_CONTENT)
+    Ok((
+        StatusCode::NO_CONTENT,
+        [(
+            "HX-Location",
+            r#"{"path":"/dashboard/employer?tab=team", "target":"body"}"#,
+        )],
+    )
+        .into_response())
 }
 
 /// Handler that accepts a team member invitation.
@@ -109,13 +123,20 @@ pub(crate) async fn accept_invitation(
 ) -> Result<impl IntoResponse, HandlerError> {
     // Get user from session
     let Some(user) = auth_session.user else {
-        return Ok(StatusCode::FORBIDDEN);
+        return Ok((StatusCode::FORBIDDEN).into_response());
     };
 
     // Mark team member as approved in the database
     db.accept_team_member_invitation(&employer_id, &user.user_id).await?;
 
-    Ok(StatusCode::NO_CONTENT)
+    Ok((
+        StatusCode::NO_CONTENT,
+        [(
+            "HX-Location",
+            r#"{"path":"/dashboard/employer?tab=invitations", "target":"body"}"#,
+        )],
+    )
+        .into_response())
 }
 
 /// Handler that rejects a team member invitation.
@@ -127,11 +148,18 @@ pub(crate) async fn reject_invitation(
 ) -> Result<impl IntoResponse, HandlerError> {
     // Get user from session
     let Some(user) = auth_session.user else {
-        return Ok(StatusCode::FORBIDDEN);
+        return Ok((StatusCode::FORBIDDEN).into_response());
     };
 
     // Delete the team member from the database
     db.delete_team_member(&employer_id, &user.user_id).await?;
 
-    Ok(StatusCode::NO_CONTENT)
+    Ok((
+        StatusCode::NO_CONTENT,
+        [(
+            "HX-Location",
+            r#"{"path":"/dashboard/employer?tab=invitations", "target":"body"}"#,
+        )],
+    )
+        .into_response())
 }

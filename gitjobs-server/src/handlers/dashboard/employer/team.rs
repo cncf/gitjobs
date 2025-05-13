@@ -102,7 +102,7 @@ pub(crate) async fn delete_member(
     session: Session,
     State(db): State<DynDB>,
     SelectedEmployerIdRequired(employer_id): SelectedEmployerIdRequired,
-    Path(user_id): Path<Uuid>,
+    Path(member_user_id): Path<Uuid>,
 ) -> Result<impl IntoResponse, HandlerError> {
     // Get user from session
     let Some(user) = auth_session.user else {
@@ -110,11 +110,18 @@ pub(crate) async fn delete_member(
     };
 
     // Delete the team member from the database
-    db.delete_team_member(&employer_id, &user_id).await?;
+    db.delete_team_member(&employer_id, &member_user_id).await?;
 
-    // If the user deletes themself, remove the selected employer from the session
-    if user.user_id == user_id {
-        session.remove::<Option<Uuid>>(SELECTED_EMPLOYER_ID_KEY).await?;
+    // Update selected employer if the user deletes themself
+    if user.user_id == member_user_id {
+        let employers = db.list_employers(&user.user_id).await?;
+        if employers.is_empty() {
+            session.remove::<Option<Uuid>>(SELECTED_EMPLOYER_ID_KEY).await?;
+        } else {
+            session
+                .insert(SELECTED_EMPLOYER_ID_KEY, employers[0].employer_id)
+                .await?;
+        }
     }
 
     Ok((

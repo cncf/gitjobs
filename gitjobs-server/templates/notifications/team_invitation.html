@@ -1,0 +1,18 @@
+{% extends "notifications/base.html" -%}
+{% import "notifications/email_macros.html" as macros %}
+
+{% block subject -%}
+  Team invitation from GitJobs
+{% endblock subject -%}
+
+{% block preheader -%}
+  Team invitation from GitJobs
+{% endblock preheader -%}
+
+{% block content -%}
+  <p class="default mb-30">
+    You've been invited to join an employer's team at GitJobs. You can accept or reject this invitation from the employer dashboard
+  </p>
+
+  {% call macros::email_button(link = link, text = "Employer dashboard" ) %}
+{% endblock content -%}

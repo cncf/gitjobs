@@ -33,7 +33,10 @@ pub(crate) async fn members_list_page(
     SelectedEmployerIdRequired(employer_id): SelectedEmployerIdRequired,
 ) -> Result<impl IntoResponse, HandlerError> {
     let members = db.list_team_members(&employer_id).await?;
-    let template = team::MembersListPage { members };
+    let template = team::MembersListPage {
+        approved_members_count: members.iter().filter(|m| m.approved).count(),
+        members,
+    };
 
     Ok(Html(template.render()?))
 }

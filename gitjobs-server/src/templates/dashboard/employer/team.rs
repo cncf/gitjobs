@@ -14,6 +14,7 @@ use crate::templates::helpers::DATE_FORMAT;
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
 #[template(path = "dashboard/employer/teams/members_list.html")]
 pub(crate) struct MembersListPage {
+    pub approved_members_count: usize,
     pub members: Vec<TeamMember>,
 }
 

@@ -41,16 +41,17 @@
           {# Actions -#}
           <td>
             <div>
-              {# button disabled -> only one member #}
+              {# Disabled button on approved member when approved members number of team is 1 -#}
+              {% let disabledButton = approved_members_count == 1 && member.approved -%}
               <button id="remove-member-{{ member.user_id }}"
                       hx-delete="/dashboard/employer/team/members/{{ member.user_id }}/delete"
                       hx-disabled-elt="this"
                       hx-trigger="confirmed"
                       class="btn-tertiary p-2
-                             {% if members.len() == 1 -%}
+                             {% if disabledButton -%}
                                disabled opacity-50
                              {% endif -%}"
-                      {% if members.len() == 1 -%}
+                      {% if disabledButton -%}
                         title="When a team has only one member, it cannot be deleted." disabled
                       {% endif -%}>
                 <div class="svg-icon size-4 icon-trash"></div>

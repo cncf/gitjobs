@@ -1,6 +1,6 @@
 //! This module defines some database functionality for the employer dashboard.
 
-use anyhow::Result;
+use anyhow::{Result, bail};
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 use tokio_postgres::types::Json;
@@ -365,26 +365,66 @@ impl DBDashBoardEmployer for PgDB {
         Ok(())
     }
 
+    /// Delete team member.
+    ///
+    /// There must be at least one approved team member left on the team.
+    ///
+    /// - If the team member is approved, we can only delete it if there is at
+    ///   least one other approved team member left on the team.
+    ///
+    /// - If the team member is not approved, we can delete it directly.
+    ///
     #[instrument(skip(self), err)]
     async fn delete_team_member(&self, employer_id: &Uuid, user_id: &Uuid) -> Result<()> {
         trace!("db: delete team member");
 
         let db = self.pool.get().await?;
-        db.execute(
-            "
-            delete from employer_team
-            where employer_id = $1::uuid
-            and user_id = $2::uuid
-            and
-                (
-                    select count(*)
-                    from employer_team
+
+        let approved: bool = db
+            .query_one(
+                "
+                select approved
+                from employer_team
+                where employer_id = $1::uuid
+                and user_id = $2::uuid;
+                ",
+                &[&employer_id, &user_id],
+            )
+            .await?
+            .get("approved");
+
+        if approved {
+            let n = db
+                .execute(
+                    "
+                    delete from employer_team
                     where employer_id = $1::uuid
-                ) > 1;
-            ",
-            &[&employer_id, &user_id],
-        )
-        .await?;
+                    and user_id = $2::uuid
+                    and
+                        (
+                            select count(*)
+                            from employer_team
+                            where employer_id = $1::uuid
+                            and approved = true
+                        ) > 1;
+                    ",
+                    &[&employer_id, &user_id],
+                )
+                .await?;
+            if n == 0 {
+                bail!("cannot delete last approved team member");
+            }
+        } else {
+            db.execute(
+                "
+                delete from employer_team
+                where employer_id = $1::uuid
+                and user_id = $2::uuid;
+                ",
+                &[&employer_id, &user_id],
+            )
+            .await?;
+        }
 
         Ok(())
     }

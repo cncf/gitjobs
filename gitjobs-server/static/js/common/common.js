@@ -98,16 +98,20 @@ export const shouldDisplayJobModal = (on_load = false) => {
       // Process the button
       htmx.process(jobPreviewBtn);
       // Open the modal
-      htmx.trigger(jobPreviewBtn, "open-modal");
       if (on_load) {
-        // Register job_id open
-        registerJobIdView(job_id);
+        // If the page is loaded, we need to trigger the modal
+        // with the open-modal event (register view)
+        htmx.trigger(jobPreviewBtn, "open-modal");
+      } else {
+        // If the page is not loaded, we need to trigger the modal
+        // with the open-modal-on-popstate event (do not register view)
+        htmx.trigger(jobPreviewBtn, "open-modal-on-popstate");
       }
     }
   }
 };
 
-export const registerJobIdView = (job_id) => {
+export const registerJobIdView = async (job_id) => {
   try {
     fetch(`/jobs/${job_id}/views`, {
       method: "POST",

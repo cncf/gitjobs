@@ -44,7 +44,7 @@
               data-job-id="{{ job.job_id }}"
               hx-get="/section/jobs/{{ job.job_id }}"
               hx-target="#job-view"
-              hx-trigger="click,open-modal"
+              hx-trigger="click,open-modal,open-modal-on-popstate"
               hx-indicator="#spinner-{{ job.job_id }}"
               class="relative md:mx-7 text-start bg-white enabled:cursor-pointer border-2 rounded-lg enabled:hover:outline enabled:hover:outline-1 p-5 md:p-7 {%- if upstream_commitment > 0 %} border-lime-500 bg-lime-50/20 enabled:hover:outline-lime-500{%- else if open_source > 0 %} border-lime-300 bg-lime-50/20 enabled:hover:outline-lime-300{%- else %} border-stone-200 enabled:hover:outline-stone-200{%- endif -%}"
               hx-disabled-elt="[data-preview-job]"
@@ -73,13 +73,16 @@
   const previewBtns = document.querySelectorAll('[data-preview-job]');
 
   previewBtns.forEach((btn) => {
-    btn.addEventListener('click', (e) => {
-      registerJobIdView(btn.dataset.jobId);
-    });
-
     btn.addEventListener('htmx:afterRequest', (e) => {
       if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
-        addParamToQueryString('job_id', btn.dataset.jobId, { modal_preview: true });
+        const job_id =  btn.dataset.jobId
+        addParamToQueryString('job_id',job_id, { modal_preview: true });
+        // Register views for the job on click and open-modal events
+        // This is to avoid registering the view when the modal is opened
+        // from going back in history
+        if (['open-modal', 'click'].includes(e.detail.requestConfig.triggeringEvent.type)) {
+          registerJobIdView(job_id);
+        }
       } else {
         // When the preview is not available, show an error message
         showErrorAlert('Something went wrong previewing the job, please try again later.');

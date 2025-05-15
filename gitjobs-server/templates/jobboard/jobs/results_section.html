@@ -66,11 +66,17 @@
   import {
     toggleModalVisibility,
     isSuccessfulXHRStatus,
-    addParamToQueryString
+    addParamToQueryString,
+    registerJobIdView
   } from '/static/js/common/common.js';
 
   const previewBtns = document.querySelectorAll('[data-preview-job]');
+
   previewBtns.forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      registerJobIdView(btn.dataset.jobId);
+    });
+
     btn.addEventListener('htmx:afterRequest', (e) => {
       if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
         addParamToQueryString('job_id', btn.dataset.jobId, { modal_preview: true });

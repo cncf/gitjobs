@@ -87,7 +87,7 @@ export const modifyCurrentUrl = (params, state) => {
 };
 
 // Detect if the job preview modal should be displayed
-export const shouldDisplayJobModal = () => {
+export const shouldDisplayJobModal = (on_load = false) => {
   // Check if the job_id parameter is present in the URL
   const job_id = getParamFromQueryString("job_id");
   if (job_id) {
@@ -99,6 +99,20 @@ export const shouldDisplayJobModal = () => {
       htmx.process(jobPreviewBtn);
       // Open the modal
       htmx.trigger(jobPreviewBtn, "open-modal");
+      if (on_load) {
+        // Register job_id open
+        registerJobIdView(job_id);
+      }
     }
+  }
+};
+
+export const registerJobIdView = (job_id) => {
+  try {
+    fetch(`/jobs/${job_id}/views`, {
+      method: "POST",
+    });
+  } catch (error) {
+    // Do not do anything
   }
 };

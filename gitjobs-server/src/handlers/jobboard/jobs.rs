@@ -24,6 +24,7 @@ use crate::{
         jobboard::jobs::{ExploreSection, Filters, JobSection, JobsPage, ResultsSection},
         pagination::{NavigationLinks, build_url},
     },
+    views::DynViewsTracker,
 };
 
 // Pages and sections handlers.
@@ -129,6 +130,17 @@ pub(crate) async fn apply(
 
     // Create job application entry in the database
     db.apply_to_job(&job_id, &user.user_id).await?;
+
+    Ok(StatusCode::NO_CONTENT)
+}
+
+/// Handler used to track a job view.
+#[instrument(skip_all, err)]
+pub(crate) async fn track_view(
+    State(views_tracker): State<DynViewsTracker>,
+    Path(job_id): Path<Uuid>,
+) -> Result<impl IntoResponse, HandlerError> {
+    views_tracker.track_view(job_id).await?;
 
     Ok(StatusCode::NO_CONTENT)
 }

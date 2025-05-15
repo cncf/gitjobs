@@ -58,6 +58,8 @@ unicode-segmentation = { workspace = true }
 uuid = { workspace = true }
 
 [dev-dependencies]
+futures = { workspace = true }
+mockall = { workspace = true }
 
 [build-dependencies]
 anyhow = { workspace = true }

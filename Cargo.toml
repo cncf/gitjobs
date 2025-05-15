@@ -33,6 +33,7 @@ lettre = { version = "0.11.15", default-features = false, features = ["builder",
 markdown = "1.0.0-alpha.24"
 mime_guess = "2.0.5"
 minify-html = "0.16.4"
+mockall = "0.13.1"
 num-format = "0.4.4"
 oauth2 = "5.0.0"
 openidconnect = { version = "4.0.0", features = ["accept-rfc3339-timestamps"] }

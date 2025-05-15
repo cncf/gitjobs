@@ -34,6 +34,7 @@ use crate::{
     },
     img::DynImageStore,
     notifications::DynNotificationsManager,
+    views::DynViewsTracker,
 };
 
 /// Embed static files in the binary.
@@ -49,6 +50,7 @@ pub(crate) struct State {
     pub image_store: DynImageStore,
     pub serde_qs_de: serde_qs::Config,
     pub notifications_manager: DynNotificationsManager,
+    pub views_tracker: DynViewsTracker,
 }
 
 /// Setup router.
@@ -58,6 +60,7 @@ pub(crate) async fn setup(
     db: DynDB,
     image_store: DynImageStore,
     notifications_manager: DynNotificationsManager,
+    views_tracker: DynViewsTracker,
 ) -> Result<Router> {
     // Setup router state
     let state = State {
@@ -66,6 +69,7 @@ pub(crate) async fn setup(
         image_store,
         serde_qs_de: serde_qs::Config::new(3, false),
         notifications_manager,
+        views_tracker,
     };
 
     // Setup authentication / authorization layer
@@ -105,6 +109,7 @@ pub(crate) async fn setup(
         .route("/embed/job/{job_id}/card.svg", get(jobboard::embed::job_card))
         .route("/health-check", get(health_check))
         .nest("/jobboard/images", jobboard_images_router)
+        .route("/jobs/{job_id}/views", post(jobboard::jobs::track_view))
         .route("/locations/search", get(search_locations))
         .route("/log-in", get(auth::log_in_page));
 

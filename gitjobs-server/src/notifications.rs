@@ -48,54 +48,38 @@ pub(crate) type DynNotificationsManager = Arc<dyn NotificationsManager + Send + 
 /// Notifications manager backed by `PostgreSQL`.
 pub(crate) struct PgNotificationsManager {
     db: DynDB,
-    cfg: EmailConfig,
-    tracker: TaskTracker,
-    cancellation_token: CancellationToken,
 }
 
 impl PgNotificationsManager {
     /// Create a new `PgNotificationsManager` instance.
     pub(crate) fn new(
         db: DynDB,
-        cfg: EmailConfig,
-        tracker: TaskTracker,
-        cancellation_token: CancellationToken,
+        cfg: &EmailConfig,
+        tracker: &TaskTracker,
+        cancellation_token: &CancellationToken,
     ) -> Result<Self> {
-        let notifications_manager = Self {
-            db,
-            cfg,
-            tracker,
-            cancellation_token,
-        };
-        notifications_manager.run()?;
-
-        Ok(notifications_manager)
-    }
-
-    /// Run notifications manager.
-    fn run(&self) -> Result<()> {
         // Setup smtp client
-        let smtp_client = AsyncSmtpTransport::<Tokio1Executor>::relay(&self.cfg.smtp.host)?
+        let smtp_client = AsyncSmtpTransport::<Tokio1Executor>::relay(&cfg.smtp.host)?
             .credentials(Credentials::new(
-                self.cfg.smtp.username.clone(),
-                self.cfg.smtp.password.clone(),
+                cfg.smtp.username.clone(),
+                cfg.smtp.password.clone(),
             ))
             .build();
 
         // Setup and run some workers to deliver notifications
         for _ in 1..=NUM_WORKERS {
             let mut worker = Worker {
-                db: self.db.clone(),
-                cfg: self.cfg.clone(),
+                db: db.clone(),
+                cfg: cfg.clone(),
                 smtp_client: smtp_client.clone(),
-                cancellation_token: self.cancellation_token.clone(),
+                cancellation_token: cancellation_token.clone(),
             };
-            self.tracker.spawn(async move {
+            tracker.spawn(async move {
                 worker.run().await;
             });
         }
 
-        Ok(())
+        Ok(Self { db })
     }
 }
 

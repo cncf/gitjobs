@@ -15,6 +15,7 @@ use tokio_util::sync::CancellationToken;
 use tokio_util::task::TaskTracker;
 use tracing::{error, info};
 use tracing_subscriber::EnvFilter;
+use views::ViewsTrackerDB;
 
 use crate::{
     config::{Config, LogFormat},
@@ -29,6 +30,7 @@ mod img;
 mod notifications;
 mod router;
 mod templates;
+mod views;
 mod workers;
 
 #[derive(Debug, Parser)]
@@ -82,19 +84,29 @@ async fn main() -> Result<()> {
     // Setup image store
     let image_store = Arc::new(DbImageStore::new(db.clone()));
 
-    // Run some workers
-    workers::run(db.clone(), &tracker, cancellation_token.clone());
-
-    // Setup and launch notifications manager
+    // Setup notifications manager
     let notifications_manager = Arc::new(PgNotificationsManager::new(
         db.clone(),
-        cfg.email,
-        tracker.clone(),
-        cancellation_token.clone(),
+        &cfg.email,
+        &tracker,
+        &cancellation_token,
     )?);
 
+    // Setup views tracker
+    let views_tracker = Arc::new(ViewsTrackerDB::new(db.clone(), &tracker, &cancellation_token));
+
+    // Run some other workers
+    workers::run(db.clone(), &tracker, cancellation_token.clone());
+
     // Setup and launch HTTP server
-    let router = router::setup(cfg.server.clone(), db, image_store, notifications_manager).await?;
+    let router = router::setup(
+        cfg.server.clone(),
+        db,
+        image_store,
+        notifications_manager,
+        views_tracker,
+    )
+    .await?;
     let listener = TcpListener::bind(&cfg.server.addr).await?;
     info!("server started");
     info!(%cfg.server.addr, "listening");

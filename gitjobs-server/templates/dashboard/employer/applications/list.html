@@ -119,7 +119,7 @@
                         hx-disabled-elt="this"
                         class="flex items-stretch gap-x-6 cursor-pointer preview-button max-w-full">
                   {# Photo -#}
-                  <div class="hidden lg:flex justify-center items-center size-8 md:size-10 shrink-0">
+                  <div class="hidden lg:flex justify-center items-center size-8 md:size-10 shrink-0 p-1 bg-white border border-stone-200">
                     {% if let Some(photo_id) = application.photo_id -%}
                       {% let photo = &self::build_dashboard_image_url(photo_id, "small") -%}
                       <img class="size-8 md:size-10 object-contain"
@@ -128,9 +128,7 @@
                            src="{{ photo }}"
                            alt="{{ application.name }} photo">
                     {% else -%}
-                      <div class="rounded-full size-8 md:size-10 bg-stone-100 p-1 flex">
-                        <div class="svg-icon size-4 md:size-6 icon-user bg-stone-500 m-auto"></div>
-                      </div>
+                      <div class="svg-icon size-4 md:size-6 icon-user bg-stone-500 m-auto"></div>
                     {% endif -%}
                   </div>
                   {# End photo -#}

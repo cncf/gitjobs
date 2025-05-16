@@ -124,7 +124,7 @@
         hx-disabled-elt="#clean-image, input[type=file]">
     <label for="{{ name }}" class="form-label">{{ label }}</label>
     <div class="mt-3 flex items-stretch gap-x-5">
-      <div class="relative flex items-center size-24 min-w-24 bg-stone-200/50 rounded-xl overflow-hidden">
+      <div class="relative flex items-center size-24 min-w-24 bg-stone-200/50 overflow-hidden">
         <div id="images-spinner" class="hx-spinner absolute z-10 start-5 top-5">
           {% call spinner(size = "size-14", spinner_type = "4") -%}
         </div>
@@ -135,7 +135,7 @@
                alt="Image"
                height="auto"
                width="auto"
-               class="size-[86px] object-contain rounded-lg m-auto {%- if empty_image %} hidden{%- endif -%}">
+               class="size-[86px] object-contain m-auto {%- if empty_image %} hidden{%- endif -%}">
           {# End image -#}
           {# Placeholder image -#}
           <div id="placeholder-image"

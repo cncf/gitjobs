@@ -1,21 +1,36 @@
 <div class="flex space-x-5 items-center mb-10 pb-10 border-b border-stone-200">
-  {# Photo -#}
-  {% if let Some(photo_id) = profile.photo_id -%}
-    {% let photo = &self::build_dashboard_image_url(photo_id, "small") -%}
-    <div class="flex justify-center items-center size-24 shrink-0 rounded-lg">
+  <div class="flex justify-center items-center size-24 shrink-0 p-1 bg-white border border-stone-200">
+    {# Photo -#}
+    {% if let Some(photo_id) = profile.photo_id -%}
+      {% let photo = &self::build_dashboard_image_url(photo_id, "small") -%}
       <img src="{{ photo }}"
            alt="{{ profile.name }} photo"
            height="auto"
            width="auto"
            class="size-24 object-contain rounded-lg">
-    </div>
-  {% endif -%}
-  {# End photo -#}
+      {# End photo -#}
+    {% else -%}
+      {# Placeholder photo -#}
+      <div class="svg-icon size-12 icon-user bg-stone-500"></div>
+      {# End placeholder photo -#}
+    {% endif -%}
+  </div>
 
-  <div class="flex flex-col space-y-3">
+  <div class="flex flex-col space-y-2.5">
     {# Name -#}
-    <div class="capitalize text-2xl font-semibold">{{ profile.name }}</div>
+    <div class="capitalize text-2xl/6 font-semibold">{{ profile.name }}</div>
     {# End name -#}
+
+    {# Last position -#}
+    <div class="text-sm/7 text-stone-500 max-w-full truncate">
+      {% if let Some(experience) = profile.experience -%}
+        {% let last_position = experience[0] -%}
+        {{ last_position.title }} at {{ last_position.company }}
+      {%- else -%}
+        Last position not available
+      {%- endif -%}
+    </div>
+    {# End last position -#}
 
     <div class="flex flex-wrap gap-3 xl:gap-5">
       {# Email -#}

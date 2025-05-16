@@ -25,8 +25,11 @@
       {# Last position -#}
       <div class="text-sm/8 text-stone-500 max-w-full truncate">
         {% if let Some(experience) = profile.experience -%}
-          {% let last_position = experience[0] -%}
-          {{ last_position.title }} at {{ last_position.company }}
+          {%- if let Some(last_position) = experience.first() -%}
+            {{ last_position.title }} at {{ last_position.company }}
+          {%- else -%}
+            Last position not available
+          {%- endif -%}
         {%- else -%}
           Last position not available
         {%- endif -%}

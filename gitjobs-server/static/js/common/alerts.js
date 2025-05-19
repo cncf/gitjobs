@@ -80,14 +80,14 @@ export const showHtmlInfoAlert = (message) => {
  * Shows a confirmation alert with custom text and triggers an event if confirmed.
  * @param {string} message - The message to display in the alert.
  * @param {string} btnId - The ID of the element to trigger if confirmed.
- * @param {string} confirmText - The text to display on the confirmation button.
+ * @param {string} confirmationMessage - The message to display on the confirmation button.
  */
-export const showConfirmationAlert = (message, btnId, confirmText) => {
+export const showConfirmationAlert = (message, btnId, confirmationMessage) => {
   Swal.fire({
     text: message,
     icon: "warning",
     showCancelButton: true,
-    confirmButtonText: confirmText,
+    confirmButtonText: confirmationMessage,
     cancelButtonText: "No",
     ...getAlertOptions(),
   }).then((result) => {

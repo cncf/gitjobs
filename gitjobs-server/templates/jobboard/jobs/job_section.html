@@ -140,18 +140,18 @@
 
 <script type="module">
   import {
-    toggleModalVisibility,
-    removeParamFromQueryString
+    setModalVisibility,
+    removeQueryParam
   } from '/static/js/common/common.js';
 
   const onCloseModal = () => {
     // Reset the scroll position
     document.getElementById('preview-content').scrollTop = 0;
     // Close the preview modal
-    removeParamFromQueryString('job_id', {
+    removeQueryParam('job_id', {
       modal_preview: false
     });
-    toggleModalVisibility('preview-modal', "close");
+    setModalVisibility('preview-modal', "close");
   };
 
   // Close the preview modal on backdrop click
@@ -188,17 +188,17 @@
   // Open embed code modal
   const embedCodeButton = document.getElementById('embed-code-button');
   embedCodeButton.addEventListener('click', () => {
-    toggleModalVisibility('embed-code-modal', "open");
+    setModalVisibility('embed-code-modal', "open");
   });
 
   // Close embed code modal
   const closeEmbedCodeModal = document.getElementById('close-embed-code-modal');
   closeEmbedCodeModal.addEventListener('click', () => {
-    toggleModalVisibility('embed-code-modal', "close");
+    setModalVisibility('embed-code-modal', "close");
   });
   const embedCodeModalBackdrop = document.getElementById('backdrop-embed-code-modal');
   embedCodeModalBackdrop.addEventListener('click', () => {
-    toggleModalVisibility('embed-code-modal', "close");
+    setModalVisibility('embed-code-modal', "close");
   });
 </script>
 

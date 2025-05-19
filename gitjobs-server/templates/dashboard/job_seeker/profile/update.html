@@ -360,8 +360,8 @@
 
 <script type="module">
   import {
-    toggleModalVisibility,
-    isSuccessfulXHRStatus
+    setModalVisibility,
+    isHttpStatusSuccessful
   } from '/static/js/common/common.js';
   import {
     showErrorAlert,
@@ -389,7 +389,7 @@
   });
 
   updateBtn.addEventListener('htmx:afterRequest', (e) => {
-    if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
+    if (isHttpStatusSuccessful(e.detail.xhr.status)) {
       showSuccessAlert('Profile updated successfully.');
     } else {
       showErrorAlert('Something went wrong updating the profile, please try again later.');
@@ -399,8 +399,8 @@
   // On preview button click, show the preview modal
   const previewButton = document.getElementById('preview-button');
   previewButton.addEventListener('htmx:afterRequest', (e) => {
-    if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
-      toggleModalVisibility('preview-modal', "open");
+    if (isHttpStatusSuccessful(e.detail.xhr.status)) {
+      setModalVisibility('preview-modal', "open");
     } else {
       // When the preview is not available, show an error message
       if (e.detail.xhr.status == 422) {

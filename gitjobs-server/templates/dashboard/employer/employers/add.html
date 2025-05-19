@@ -120,7 +120,7 @@
     showErrorAlert,
   } from '/static/js/common/alerts.js';
   import {
-    isSuccessfulXHRStatus,
+    isHttpStatusSuccessful,
   } from '/static/js/common/common.js';
 
   const employerForm = document.getElementById('employer-form');
@@ -128,7 +128,7 @@
   employerForm.addEventListener('htmx:afterRequest', (e) => {
     // Check if the form is the employer form and not the input ts_query requesting locations
     if (e.detail.elt.id === 'employer-form') {
-      if (!isSuccessfulXHRStatus(e.detail.xhr.status)) {
+      if (!isHttpStatusSuccessful(e.detail.xhr.status)) {
         showErrorAlert('Something went wrong adding the profile, please try again later.');
       }
     }

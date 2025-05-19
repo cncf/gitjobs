@@ -64,24 +64,24 @@
     updateResults
   } from '/static/js/jobboard/filters.js';
   import {
-    toggleModalVisibility,
-    isSuccessfulXHRStatus,
-    addParamToQueryString,
-    registerJobIdView
+    setModalVisibility,
+    isHttpStatusSuccessful,
+    setQueryParam,
+    registerJobView
   } from '/static/js/common/common.js';
 
   const previewBtns = document.querySelectorAll('[data-preview-job]');
 
   previewBtns.forEach((btn) => {
     btn.addEventListener('htmx:afterRequest', (e) => {
-      if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
+      if (isHttpStatusSuccessful(e.detail.xhr.status)) {
         const job_id =  btn.dataset.jobId
-        addParamToQueryString('job_id',job_id, { modal_preview: true });
+        setQueryParam('job_id',job_id, { modal_preview: true });
         // Register views for the job on click and open-modal events
         // This is to avoid registering the view when the modal is opened
         // from going back in history
         if (['open-modal', 'click'].includes(e.detail.requestConfig.triggeringEvent.type)) {
-          registerJobIdView(job_id);
+          registerJobView(job_id);
         }
       } else {
         // When the preview is not available, show an error message

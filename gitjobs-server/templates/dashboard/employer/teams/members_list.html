@@ -64,7 +64,7 @@
                   showSuccessAlert,
                 } from "/static/js/common/alerts.js";
                 import {
-                  isSuccessfulXHRStatus
+                  isHttpStatusSuccessful
                 } from "/static/js/common/common.js";
                 const removeMemberButton = document.getElementById('remove-member-{{ member.user_id }}');
                 removeMemberButton.addEventListener('click', (event) => {
@@ -72,7 +72,7 @@
                 });
 
                 removeMemberButton.addEventListener("htmx:afterRequest", (e) => {
-                  if (!isSuccessfulXHRStatus(e.detail.xhr.status)) {
+                  if (!isHttpStatusSuccessful(e.detail.xhr.status)) {
                     showErrorAlert("Something went wrong deleting this team member. Please try again later.");
                   }
                 });
@@ -153,26 +153,26 @@
 
 <script type="module">
   import {
-    toggleModalVisibility,
+    setModalVisibility,
   } from '/static/js/common/common.js';
 
   const addMemberButton = document.getElementById('add-member-button');
   if (addMemberButton) {
     addMemberButton.addEventListener('click', () => {
       console.log('Add member button clicked');
-      toggleModalVisibility('add-member-modal', "open");
+      setModalVisibility('add-member-modal', "open");
     });
   }
 
   // Close the add member modal on backdrop click
   const backdropAddMemberModal = document.querySelector('#backdrop-add-member-modal');
   backdropAddMemberModal.addEventListener('click', () => {
-    toggleModalVisibility('add-member-modal', "close");
+    setModalVisibility('add-member-modal', "close");
   });
 
   // Close the add member modal on close button click
   const closeAddMemberModal = document.querySelector('#close-add-member-modal');
   closeAddMemberModal.addEventListener('click', () => {
-    toggleModalVisibility('add-member-modal', "close");
+    setModalVisibility('add-member-modal', "close");
   });
 </script>

@@ -1,5 +1,5 @@
 import { html, repeat } from "/static/vendor/js/lit-all.v3.2.1.min.js";
-import { isObjectEmpty } from "/static/js/common/common.js";
+import { isObjectValuesEmpty } from "/static/js/common/common.js";
 import { LitWrapper } from "/static/js/common/lit-wrapper.js";
 
 export class CertificationsSection extends LitWrapper {
@@ -132,7 +132,7 @@ class CertificationEntry extends LitWrapper {
   static properties = {
     data: { type: Object },
     index: { type: Number },
-    isObjectEmpty: { type: Boolean },
+    isObjectValuesEmpty: { type: Boolean },
     onDataChange: { type: Function },
   };
 
@@ -147,13 +147,13 @@ class CertificationEntry extends LitWrapper {
       end_date: "",
     };
     this.index = 0;
-    this.isObjectEmpty = true;
+    this.isObjectValuesEmpty = true;
     this.onDataChange = () => {};
   }
 
   connectedCallback() {
     super.connectedCallback();
-    this.isObjectEmpty = isObjectEmpty(this.data);
+    this.isObjectValuesEmpty = isObjectValuesEmpty(this.data);
   }
 
   _onInputChange = (e) => {
@@ -161,13 +161,13 @@ class CertificationEntry extends LitWrapper {
     const name = e.target.dataset.name;
 
     this.data[name] = value;
-    this.isObjectEmpty = isObjectEmpty(this.data);
+    this.isObjectValuesEmpty = isObjectValuesEmpty(this.data);
     this.onDataChange(this.data, this.index);
   };
 
   _onTextareaChange = (value) => {
     this.data.description = value;
-    this.isObjectEmpty = isObjectEmpty(this.data);
+    this.isObjectValuesEmpty = isObjectValuesEmpty(this.data);
     this.onDataChange(this.data, this.index);
   };
 
@@ -189,7 +189,7 @@ class CertificationEntry extends LitWrapper {
             autocorrect="off"
             autocapitalize="off"
             spellcheck="false"
-            ?required=${!this.isObjectEmpty}
+            ?required=${!this.isObjectValuesEmpty}
           />
         </div>
       </div>
@@ -208,7 +208,7 @@ class CertificationEntry extends LitWrapper {
             autocorrect="off"
             autocapitalize="off"
             spellcheck="false"
-            ?required=${!this.isObjectEmpty}
+            ?required=${!this.isObjectValuesEmpty}
           />
         </div>
       </div>
@@ -222,7 +222,7 @@ class CertificationEntry extends LitWrapper {
             content="${this.data.description}"
             .onChange="${(value) => this._onTextareaChange(value)}"
             mini
-            ?required=${!this.isObjectEmpty}
+            ?required=${!this.isObjectValuesEmpty}
           ></markdown-editor>
         </div>
       </div>
@@ -237,7 +237,7 @@ class CertificationEntry extends LitWrapper {
             name="certifications[${this.index}][start_date]"
             class="input-primary"
             value="${this.data.start_date}"
-            ?required=${!this.isObjectEmpty}
+            ?required=${!this.isObjectValuesEmpty}
           />
         </div>
       </div>
@@ -252,7 +252,7 @@ class CertificationEntry extends LitWrapper {
             name="certifications[${this.index}][end_date]"
             class="input-primary"
             value="${this.data.end_date}"
-            ?required=${!this.isObjectEmpty}
+            ?required=${!this.isObjectValuesEmpty}
           />
         </div>
       </div>

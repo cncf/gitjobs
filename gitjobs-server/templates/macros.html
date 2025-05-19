@@ -177,7 +177,7 @@
 
   <script type="module">
     import {
-      isSuccessfulXHRStatus
+      isHttpStatusSuccessful
     } from '/static/js/common/common.js';
     import {
       showErrorAlert,
@@ -192,7 +192,7 @@
 
     // On image upload, show the image and enable clear button, and hide the placeholder
     imagesForm.addEventListener('htmx:afterRequest', (e) => {
-      if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
+      if (isHttpStatusSuccessful(e.detail.xhr.status)) {
         showSuccessAlert('Image added successfully.');
         const imageId = e.detail.xhr.response;
         inputHidden.value = imageId;

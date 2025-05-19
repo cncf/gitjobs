@@ -271,8 +271,8 @@
     triggerActionOnForm
   } from '/static/js/jobboard/filters.js';
   import {
-    shouldDisplayJobModal,
-    toggleModalVisibility
+    shouldShowJobPreviewModal,
+    setModalVisibility
   } from '/static/js/common/common.js';
   import {
     copyEmbedCodeToClipboard,
@@ -327,7 +327,7 @@
     button.addEventListener("click", (event) => {
       // Set the embed code in the textarea
       renderEmbedCode();
-      toggleModalVisibility('embed-modal', "open");
+      setModalVisibility('embed-modal', "open");
 
       const device = button.getAttribute("data-device");
       if (device === "mobile") {
@@ -346,13 +346,13 @@
   // Close embed modal
   const closeEmbedModal = document.getElementById('close-embed-modal');
   closeEmbedModal.addEventListener('click', () => {
-    toggleModalVisibility('embed-modal', "close");
+    setModalVisibility('embed-modal', "close");
   });
   const backdropEmbedModal = document.getElementById('backdrop-embed-modal');
   backdropEmbedModal.addEventListener('click', () => {
-    toggleModalVisibility('embed-modal', "close");
+    setModalVisibility('embed-modal', "close");
   });
 
   // Display job modal if the job_id is present in the query string
-  shouldDisplayJobModal(true);
+  shouldShowJobPreviewModal(true);
 </script>

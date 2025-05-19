@@ -57,9 +57,9 @@
                   </button>
                   <script type="module">
                     import {
-                      showConfirmAlert,
+                      showConfirmationAlert,
                       showErrorAlert,
-                      showInfoAlertWithHtml,
+                      showHtmlInfoAlert,
                       showSuccessAlert,
                     } from "/static/js/common/alerts.js";
                     import {
@@ -67,7 +67,7 @@
                     } from "/static/js/common/common.js";
                     const rejectEmployerButton = document.getElementById('reject-employer-{{ invitation.employer_id }}');
                     rejectEmployerButton.addEventListener('click', (event) => {
-                      showConfirmAlert("Are you sure you would like to reject this invitation?", "reject-employer-{{ invitation.employer_id }}", "Yes");
+                      showConfirmationAlert("Are you sure you would like to reject this invitation?", "reject-employer-{{ invitation.employer_id }}", "Yes");
                     });
 
                     rejectEmployerButton.addEventListener("htmx:afterRequest", (e) => {

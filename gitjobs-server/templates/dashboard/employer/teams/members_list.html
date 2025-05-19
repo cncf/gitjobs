@@ -58,9 +58,9 @@
               </button>
               <script type="module">
                 import {
-                  showConfirmAlert,
+                  showConfirmationAlert,
                   showErrorAlert,
-                  showInfoAlertWithHtml,
+                  showHtmlInfoAlert,
                   showSuccessAlert,
                 } from "/static/js/common/alerts.js";
                 import {
@@ -68,7 +68,7 @@
                 } from "/static/js/common/common.js";
                 const removeMemberButton = document.getElementById('remove-member-{{ member.user_id }}');
                 removeMemberButton.addEventListener('click', (event) => {
-                  showConfirmAlert("Are you sure you would like to delete this team member?", "remove-member-{{ member.user_id }}", "Yes");
+                  showConfirmationAlert("Are you sure you would like to delete this team member?", "remove-member-{{ member.user_id }}", "Yes");
                 });
 
                 removeMemberButton.addEventListener("htmx:afterRequest", (e) => {

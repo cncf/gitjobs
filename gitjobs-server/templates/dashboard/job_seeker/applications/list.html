@@ -69,9 +69,9 @@
                 </button>
                 <script type="module">
                   import {
-                    showConfirmAlert,
+                    showConfirmationAlert,
                     showErrorAlert,
-                    showInfoAlertWithHtml,
+                    showHtmlInfoAlert,
                     showSuccessAlert,
                   } from "/static/js/common/alerts.js";
                   import {
@@ -79,7 +79,7 @@
                   } from "/static/js/common/common.js";
                   const cancelApplicationButton = document.getElementById('cancel-application-{{ application.application_id }}');
                   cancelApplicationButton.addEventListener('click', (event) => {
-                    showConfirmAlert("Are you sure you wish to cancel this application?", "cancel-application-{{ application.application_id }}", "Yes");
+                    showConfirmationAlert("Are you sure you wish to cancel this application?", "cancel-application-{{ application.application_id }}", "Yes");
                   });
 
                   cancelApplicationButton.addEventListener("htmx:afterRequest", (e) => {

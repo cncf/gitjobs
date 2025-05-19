@@ -221,7 +221,7 @@
   </div>
   <script type="module">
     import {
-      toggleModalVisibility
+      setModalVisibility
     } from '/static/js/common/common.js';
 
     // On reject button click, show the reject modal
@@ -234,18 +234,18 @@
         // Set job ID in the form action
         form.setAttribute('hx-put', `/dashboard/moderator/jobs/${jobId}/reject`);
         htmx.process(form);
-        toggleModalVisibility('reject-modal', "open");
+        setModalVisibility('reject-modal', "open");
       });
     });
 
     // Close reject modal
     const closeRejectModal = document.getElementById('close-reject-modal');
     closeRejectModal.addEventListener('click', () => {
-      toggleModalVisibility('reject-modal', "close");
+      setModalVisibility('reject-modal', "close");
     });
     const rejectModalBackdrop = document.getElementById('backdrop-reject-modal');
     rejectModalBackdrop.addEventListener('click', () => {
-      toggleModalVisibility('reject-modal', "close");
+      setModalVisibility('reject-modal', "close");
     });
   </script>
 {% endmacro reject_modal -%}
@@ -255,8 +255,8 @@
 
   <script type="module">
     import {
-      toggleModalVisibility,
-      isSuccessfulXHRStatus
+      setModalVisibility,
+      isHttpStatusSuccessful
     } from '/static/js/common/common.js';
     import {
       showErrorAlert,
@@ -266,8 +266,8 @@
     const previewButtons = document.querySelectorAll('.preview-button');
     previewButtons.forEach((button) => {
       button.addEventListener('htmx:afterRequest', (e) => {
-        if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
-          toggleModalVisibility('preview-modal', "open");
+        if (isHttpStatusSuccessful(e.detail.xhr.status)) {
+          setModalVisibility('preview-modal', "open");
         } else {
           // When the preview is not available, show an error message
           showErrorAlert('Something went wrong previewing the data, please try again later.');

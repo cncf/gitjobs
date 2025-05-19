@@ -4,7 +4,7 @@ import {
   showHtmlInfoAlert,
   showSuccessAlert,
 } from "/static/js/common/alerts.js";
-import { isSuccessfulXHRStatus } from "/static/js/common/common.js";
+import { isHttpStatusSuccessful } from "/static/js/common/common.js";
 
 export const applyButton = () => {
   const applyButton = document.getElementById("apply-button");
@@ -47,7 +47,7 @@ export const applyButton = () => {
         });
 
         applyButton.addEventListener("htmx:afterRequest", (e) => {
-          if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
+          if (isHttpStatusSuccessful(e.detail.xhr.status)) {
             showSuccessAlert("You have successfully applied to this job!");
           } else {
             showErrorAlert("An error occurred applying to this job, please try again later.");

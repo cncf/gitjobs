@@ -198,8 +198,8 @@
 
 <script type="module">
   import {
-    toggleModalVisibility,
-    isSuccessfulXHRStatus
+    setModalVisibility,
+    isHttpStatusSuccessful
   } from '/static/js/common/common.js';
   import {
     showErrorAlert,
@@ -230,8 +230,8 @@
   const previewButtons = document.querySelectorAll('.preview-button');
   previewButtons.forEach((button) => {
     button.addEventListener('htmx:afterRequest', (e) => {
-      if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
-        toggleModalVisibility('preview-modal', "open");
+      if (isHttpStatusSuccessful(e.detail.xhr.status)) {
+        setModalVisibility('preview-modal', "open");
       } else {
         // When the preview is not available, show an error message
         showErrorAlert('Something went wrong previewing the data, please try again later.');

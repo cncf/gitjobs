@@ -492,8 +492,8 @@
       checkJobTitle
     } from '/static/js/dashboard/employer/jobs.js';
     import {
-      toggleModalVisibility,
-      isSuccessfulXHRStatus
+      setModalVisibility,
+      isHttpStatusSuccessful
     } from '/static/js/common/common.js';
     import {
       showErrorAlert,
@@ -517,7 +517,7 @@
         // Update hx-spinner
         jobsForm.setAttribute('hx-indicator', '#dashboard-spinner, #save-spinner');
 
-        if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
+        if (isHttpStatusSuccessful(e.detail.xhr.status)) {
           showSuccessAlert('Job updated successfully.');
         } else {
           showErrorAlert('Something went wrong updating the job, please try again later.');
@@ -528,8 +528,8 @@
     // On preview button click, show the preview modal
     const previewButton = document.getElementById('preview-button');
     previewButton.addEventListener('htmx:afterRequest', (e) => {
-      if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
-        toggleModalVisibility('preview-modal', "open");
+      if (isHttpStatusSuccessful(e.detail.xhr.status)) {
+        setModalVisibility('preview-modal', "open");
       } else {
         // When the preview is not available, show an error message
         if (e.detail.xhr.status == 422) {

@@ -1,95 +1,143 @@
-// Show or hide the provided modal.
-export const toggleModalVisibility = (modalId, status) => {
+/**
+ * Sets the visibility of a modal element by its ID.
+ * @param {string} modalId - The ID of the modal element.
+ * @param {"open"|"close"} visibility - Whether to show ("open") or hide ("close") the modal.
+ */
+export const setModalVisibility = (modalId, visibility) => {
   const modal = document.getElementById(modalId);
-  if (status === "open" && modal) {
+  if (visibility === "open" && modal) {
     modal.classList.remove("hidden");
-    // This is used to hide body scroll when the modal is open
+    // Hide body scroll when the modal is open
     modal.dataset.open = "true";
-  } else if (status === "close") {
+  } else if (visibility === "close") {
     modal.classList.add("hidden");
-    // This is used to show body scroll when the modal is open
+    // Show body scroll when the modal is closed
     modal.dataset.open = "false";
   }
 };
 
-// Function to delay the execution of a function
-export const debounce = (func, timeout = 300) => {
+/**
+ * Returns a debounced version of the provided callback.
+ * The callback will only be executed after the specified delay has elapsed since the last call.
+ * @param {Function} callback - The function to debounce.
+ * @param {number} [delay=300] - The debounce delay in milliseconds.
+ * @returns {Function} Debounced function.
+ */
+export const debounce = (callback, delay = 300) => {
   let timer;
   return (...args) => {
     clearTimeout(timer);
     timer = setTimeout(() => {
-      func.apply(this, args);
-    }, timeout);
+      callback.apply(this, args);
+    }, delay);
   };
 };
 
-// Function to process new URL for htmx
-export const processNewHtmxUrl = (idEl, method, data) => {
-  const element = document.getElementById(idEl);
+/**
+ * Updates the htmx URL attribute for an element and processes it.
+ * @param {string} elementId - The ID of the element to update.
+ * @param {string} httpMethod - The HTTP method (e.g., "get", "post") for the hx- attribute.
+ * @param {string} replacementValue - The value to replace in the URL template.
+ */
+export const updateHtmxElementUrl = (elementId, httpMethod, replacementValue) => {
+  const element = document.getElementById(elementId);
   if (element) {
     const url = element.dataset.url;
     if (url) {
-      const newUrl = url.replace(`{:${element.dataset.replacement}}`, data);
-      element.setAttribute(`hx-${method}`, newUrl);
+      const newUrl = url.replace(`{:${element.dataset.replacement}}`, replacementValue);
+      element.setAttribute(`hx-${httpMethod}`, newUrl);
       // Process new URL
-      htmx.process(`#${idEl}`);
+      htmx.process(`#${elementId}`);
     }
   }
 };
 
-// Function to check if the status of the XHR request is successful
-export const isSuccessfulXHRStatus = (status) => {
-  if (status >= 200 && status < 300) {
-    return true;
-  } else {
-    return false;
-  }
+/**
+ * Checks if an HTTP status code is considered successful (2xx).
+ * @param {number} statusCode - The HTTP status code to check.
+ * @returns {boolean} True if successful, false otherwise.
+ */
+export const isHttpStatusSuccessful = (statusCode) => {
+  return statusCode >= 200 && statusCode < 300;
 };
 
-// Function to check if an object is empty
-export const isObjectEmpty = (obj) => {
+/**
+ * Checks if all values in an object (except 'id') are empty (null, "", or undefined).
+ * @param {Object} object - The object to check.
+ * @returns {boolean} True if all values are empty, false otherwise.
+ */
+export const isObjectValuesEmpty = (object) => {
   // Remove the id key from the object
-  const objectWithoutId = { ...obj };
+  const objectWithoutId = { ...object };
   delete objectWithoutId.id;
   return Object.values(objectWithoutId).every((x) => x === null || x === "" || typeof x === "undefined");
 };
 
-// Function to unnormalize text
-export const unnormalize = (text) => {
-  return text.replace(/-/g, " ");
+/**
+ * Converts hyphens in a string to spaces.
+ * @param {string} inputText - The text to unnormalize.
+ * @returns {string} The unnormalized text.
+ */
+export const unnormalize = (inputText) => {
+  return inputText.replace(/-/g, " ");
 };
 
-export const addParamToQueryString = (param, value, state) => {
+/**
+ * Sets a query parameter in the URL and updates browser history.
+ * @param {string} paramName - The name of the query parameter.
+ * @param {string} paramValue - The value to set for the parameter.
+ * @param {Object} [stateObj] - Optional state object for history.
+ */
+export const setQueryParam = (paramName, paramValue, stateObj) => {
   const searchParams = new URLSearchParams(window.location.search);
-  if (searchParams.has(param)) {
-    searchParams.delete(param);
+  if (searchParams.has(paramName)) {
+    searchParams.delete(paramName);
   }
-  searchParams.set(param, value);
-  modifyCurrentUrl(searchParams.toString(), state);
+  searchParams.set(paramName, paramValue);
+  updateBrowserUrl(searchParams.toString(), stateObj);
 };
 
-export const removeParamFromQueryString = (param, state) => {
+/**
+ * Removes a query parameter from the URL and updates browser history.
+ * @param {string} paramName - The name of the query parameter to remove.
+ * @param {Object} [stateObj] - Optional state object for history.
+ */
+export const removeQueryParam = (paramName, stateObj) => {
   const searchParams = new URLSearchParams(window.location.search);
-  if (searchParams.has(param)) {
-    searchParams.delete(param);
-    modifyCurrentUrl(searchParams.toString(), state);
+  if (searchParams.has(paramName)) {
+    searchParams.delete(paramName);
+    updateBrowserUrl(searchParams.toString(), stateObj);
   }
 };
 
-export const getParamFromQueryString = (param) => {
+/**
+ * Retrieves the value of a query parameter from the current URL.
+ * @param {string} paramName - The name of the query parameter.
+ * @returns {string|null} The value of the parameter, or null if not found.
+ */
+export const getQueryParam = (paramName) => {
   const searchParams = new URLSearchParams(window.location.search);
-  return searchParams.get(param);
+  return searchParams.get(paramName);
 };
 
-export const modifyCurrentUrl = (params, state) => {
-  const newUrl = `${window.location.pathname}${params ? `?${params}` : ""}`;
-  history.pushState(state || {}, "new_url", newUrl);
+/**
+ * Updates the browser's URL with the provided query string and state object.
+ * @param {string} queryString - The query string to set in the URL.
+ * @param {Object} [stateObj] - Optional state object for history.
+ */
+export const updateBrowserUrl = (queryString, stateObj) => {
+  const newUrl = `${window.location.pathname}${queryString ? `?${queryString}` : ""}`;
+  history.pushState(stateObj || {}, "new_url", newUrl);
 };
 
-// Detect if the job preview modal should be displayed
-export const shouldDisplayJobModal = (on_load = false) => {
+/**
+ * Checks if the job preview modal should be displayed based on the URL.
+ * If so, processes and triggers the appropriate modal event.
+ * @param {boolean} [onPageLoad=false] - Whether this check is on initial page load.
+ */
+export const shouldShowJobPreviewModal = (onPageLoad = false) => {
   // Check if the job_id parameter is present in the URL
-  const job_id = getParamFromQueryString("job_id");
+  const job_id = getQueryParam("job_id");
   if (job_id) {
     const elId = `job-preview-${job_id}`;
     // Check if the job preview button exists
@@ -98,25 +146,27 @@ export const shouldDisplayJobModal = (on_load = false) => {
       // Process the button
       htmx.process(jobPreviewBtn);
       // Open the modal
-      if (on_load) {
-        // If the page is loaded, we need to trigger the modal
-        // with the open-modal event (register view)
+      if (onPageLoad) {
+        // If the page is loaded, trigger the modal with the open-modal event (register view)
         htmx.trigger(jobPreviewBtn, "open-modal");
       } else {
-        // If the page is not loaded, we need to trigger the modal
-        // with the open-modal-on-popstate event (do not register view)
+        // If not on page load, trigger the modal with the open-modal-on-popstate event (do not register view)
         htmx.trigger(jobPreviewBtn, "open-modal-on-popstate");
       }
     }
   }
 };
 
-export const registerJobIdView = async (job_id) => {
+/**
+ * Registers a view for a job by sending a POST request.
+ * @param {string|number} jobId - The ID of the job to register a view for.
+ */
+export const registerJobView = async (jobId) => {
   try {
-    fetch(`/jobs/${job_id}/views`, {
+    fetch(`/jobs/${jobId}/views`, {
       method: "POST",
     });
   } catch (error) {
-    // Do not do anything
+    // Silently ignore errors
   }
 };

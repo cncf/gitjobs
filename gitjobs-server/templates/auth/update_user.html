@@ -157,14 +157,14 @@
     showErrorAlert
   } from '/static/js/common/alerts.js';
   import {
-    isSuccessfulXHRStatus
+    isHttpStatusSuccessful
   } from '/static/js/common/common.js';
 
   const userDetailsForm = document.getElementById('user-details-form');
   const passwordForm = document.getElementById('password-form');
 
   userDetailsForm.addEventListener('htmx:afterRequest', (e) => {
-    if (!isSuccessfulXHRStatus(e.detail.xhr.status)) {
+    if (!isHttpStatusSuccessful(e.detail.xhr.status)) {
       showErrorAlert('Something went wrong updating the user details, please try again later.');
     }
   });
@@ -186,7 +186,7 @@
     passwordConfirmation.addEventListener('input', isValidPassword);
 
     passwordForm.addEventListener('htmx:afterRequest', (e) => {
-      if (!isSuccessfulXHRStatus(e.detail.xhr.status)) {
+      if (!isHttpStatusSuccessful(e.detail.xhr.status)) {
         showErrorAlert('Something went wrong updating the password, please try again later.');
       }
     });

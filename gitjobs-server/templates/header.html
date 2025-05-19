@@ -241,12 +241,12 @@
   {# Dropdown script -#}
   <script type="module">
     import {
-      onClickDropdown
+      handleUserDropdownClick
     } from '/static/js/common/header.js';
     const dropdownButton = document.getElementById('user-dropdown-button');
 
     if (dropdownButton) {
-      dropdownButton.addEventListener('click', onClickDropdown);
+      dropdownButton.addEventListener('click', handleUserDropdownClick);
     }
   </script>
   {# End dropdown script -#}

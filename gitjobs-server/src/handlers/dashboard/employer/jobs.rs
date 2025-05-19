@@ -1,4 +1,8 @@
-//! This module defines the HTTP handlers for the jobs pages.
+//! HTTP handlers for employer job management pages and actions.
+//
+// This module provides handlers for adding, listing, previewing, updating, archiving,
+// deleting, and publishing jobs for employers in the dashboard. It also renders the
+// corresponding Askama templates for each page.
 
 use anyhow::Result;
 use askama::Template;
@@ -19,7 +23,7 @@ use crate::{
 
 // Pages handlers.
 
-/// Handler that returns the page to add a new job.
+/// Renders the page to add a new job for an employer.
 #[instrument(skip_all, err)]
 pub(crate) async fn add_page(State(db): State<DynDB>) -> Result<impl IntoResponse, HandlerError> {
     let foundations = db.list_foundations().await?;
@@ -28,7 +32,7 @@ pub(crate) async fn add_page(State(db): State<DynDB>) -> Result<impl IntoRespons
     Ok(Html(template.render()?))
 }
 
-/// Handler that returns the jobs list page.
+/// Renders the jobs list page for the selected employer.
 #[instrument(skip_all, err)]
 pub(crate) async fn list_page(
     State(db): State<DynDB>,
@@ -77,7 +81,7 @@ pub(crate) async fn preview_page_wo_job(
     Ok(Html(template.render()?).into_response())
 }
 
-/// Handler that returns the page to update a job.
+/// Renders the page to update an existing job.
 #[instrument(skip_all, err)]
 pub(crate) async fn update_page(
     State(db): State<DynDB>,
@@ -92,7 +96,7 @@ pub(crate) async fn update_page(
 
 // Actions handlers.
 
-/// Handler that adds a job.
+/// Adds a new job for the selected employer.
 #[instrument(skip_all, err)]
 pub(crate) async fn add(
     State(db): State<DynDB>,
@@ -118,7 +122,7 @@ pub(crate) async fn add(
     Ok((StatusCode::CREATED, [("HX-Trigger", "refresh-jobs-table")]).into_response())
 }
 
-/// Handler that archives a job.
+/// Archives a job, making it inactive but not deleting it.
 #[instrument(skip_all, err)]
 pub(crate) async fn archive(
     State(db): State<DynDB>,
@@ -129,7 +133,7 @@ pub(crate) async fn archive(
     Ok((StatusCode::NO_CONTENT, [("HX-Trigger", "refresh-jobs-table")]))
 }
 
-/// Handler that deletes a job.
+/// Permanently deletes a job from the database.
 #[instrument(skip_all, err)]
 pub(crate) async fn delete(
     State(db): State<DynDB>,
@@ -140,7 +144,7 @@ pub(crate) async fn delete(
     Ok((StatusCode::NO_CONTENT, [("HX-Trigger", "refresh-jobs-table")]))
 }
 
-/// Handler that publishes a job.
+/// Publishes a job. It'll be visible to users once it's approved.
 #[instrument(skip_all, err)]
 pub(crate) async fn publish(
     State(db): State<DynDB>,
@@ -151,7 +155,7 @@ pub(crate) async fn publish(
     Ok((StatusCode::NO_CONTENT, [("HX-Trigger", "refresh-jobs-table")]))
 }
 
-/// Handler that updates a job.
+/// Updates an existing job with new data.
 #[instrument(skip_all, err)]
 pub(crate) async fn update(
     State(db): State<DynDB>,

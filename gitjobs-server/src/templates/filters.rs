@@ -1,4 +1,4 @@
-//! Some custom filters for templates.
+//! Custom filters for Askama templates, including formatting and display helpers.
 
 use std::sync::LazyLock;
 
@@ -6,7 +6,7 @@ use chrono::{DateTime, NaiveDate, Utc};
 use human_format::{Formatter, Scales};
 use tracing::error;
 
-/// Salary formatter.
+/// Formatter for displaying salary values in human-readable format (e.g., 10K, 1M).
 static SALARY_FORMATTER: LazyLock<Formatter> = LazyLock::new(|| {
     let mut scales = Scales::new();
     scales
@@ -19,7 +19,7 @@ static SALARY_FORMATTER: LazyLock<Formatter> = LazyLock::new(|| {
     formatter
 });
 
-/// Return the value if it is some, otherwise return an empty string.
+/// Display the value if present, otherwise return an empty string.
 #[allow(clippy::unnecessary_wraps, clippy::ref_option)]
 pub(crate) fn display_some<T>(value: &Option<T>, _: &dyn askama::Values) -> askama::Result<String>
 where
@@ -31,7 +31,7 @@ where
     }
 }
 
-/// Return the value if it is some, otherwise return the alternative value.
+/// Display the value if present, otherwise return the provided alternative value.
 #[allow(clippy::unnecessary_wraps, clippy::ref_option)]
 pub(crate) fn display_some_or<T, U>(
     value: &Option<T>,
@@ -48,8 +48,7 @@ where
     }
 }
 
-/// Return the formatted date if it is some, otherwise return the alternative
-/// value.
+/// Display the formatted date if present, otherwise return the alternative value.
 #[allow(
     clippy::unnecessary_wraps,
     clippy::ref_option,
@@ -70,8 +69,7 @@ where
     }
 }
 
-/// Return the formatted datetime if it is some, otherwise return an empty
-/// string.
+/// Display the formatted datetime if present, otherwise return an empty string.
 #[allow(clippy::unnecessary_wraps, clippy::ref_option, dead_code)]
 pub(crate) fn display_some_datetime(
     value: &Option<DateTime<Utc>>,
@@ -84,8 +82,7 @@ pub(crate) fn display_some_datetime(
     }
 }
 
-/// Return the formatted datetime if it is some, otherwise return the
-/// alternative value.
+/// Display the formatted datetime if present, otherwise return the alternative value.
 #[allow(clippy::unnecessary_wraps, clippy::ref_option)]
 pub(crate) fn display_some_datetime_or<T>(
     value: &Option<DateTime<Utc>>,
@@ -102,7 +99,7 @@ where
     }
 }
 
-/// Return the salary amount in humanized format.
+/// Format a salary amount as a human-readable string (e.g., 10K, 1M).
 #[allow(
     clippy::unnecessary_wraps,
     clippy::ref_option,
@@ -113,7 +110,7 @@ pub(crate) fn humanize_salary(amount: &i64, _: &dyn askama::Values) -> askama::R
     Ok(SALARY_FORMATTER.format(*amount as f64))
 }
 
-/// Filter to convert markdown to html.
+/// Convert a markdown string to HTML using GitHub Flavored Markdown options.
 #[allow(clippy::unnecessary_wraps, clippy::ref_option)]
 pub(crate) fn md_to_html(s: &str, _: &dyn askama::Values) -> askama::Result<String> {
     let options = markdown::Options::gfm();
@@ -126,7 +123,7 @@ pub(crate) fn md_to_html(s: &str, _: &dyn askama::Values) -> askama::Result<Stri
     }
 }
 
-/// Return the unnormalized version of the string provided.
+/// Replace hyphens in a string with spaces, returning the unnormalized version.
 #[allow(clippy::unnecessary_wraps, clippy::ref_option)]
 pub(crate) fn unnormalize(s: &str, _: &dyn askama::Values) -> askama::Result<String> {
     Ok(s.replace('-', " "))

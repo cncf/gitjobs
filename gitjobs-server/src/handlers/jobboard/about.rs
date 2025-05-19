@@ -1,4 +1,4 @@
-//! This module defines the HTTP handlers for the about page.
+//! HTTP handlers for the about page.
 
 use anyhow::{Result, anyhow};
 use askama::Template;
@@ -40,7 +40,7 @@ pub(crate) async fn page(
     Ok((headers, Html(template.render()?)))
 }
 
-/// Prepare about page content.
+/// Prepares and caches the about page content as HTML from Markdown source.
 #[cached(
     key = "&str",
     convert = r#"{ "about_content" }"#,

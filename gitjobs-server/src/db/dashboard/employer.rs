@@ -1,4 +1,4 @@
-//! This module defines some database functionality for the employer dashboard.
+//! This module defines database operations for the employer dashboard.
 
 use anyhow::{Result, bail};
 use async_trait::async_trait;
@@ -21,77 +21,79 @@ use crate::{
     },
 };
 
-/// Trait that defines some database operations used in the employer dashboard.
+/// Trait for employer dashboard database operations.
 #[async_trait]
 pub(crate) trait DBDashBoardEmployer {
-    /// Accept team member invitation.
+    /// Accepts a team member invitation for an employer.
     async fn accept_team_member_invitation(&self, employer_id: &Uuid, user_id: &Uuid) -> Result<()>;
 
-    /// Add employer.
+    /// Adds a new employer to the database.
     async fn add_employer(&self, user_id: &Uuid, employer: &Employer) -> Result<Uuid>;
 
-    /// Add job.
+    /// Adds a new job for an employer.
     async fn add_job(&self, employer_id: &Uuid, job: &Job) -> Result<()>;
 
-    /// Add team member.
+    /// Adds a team member to an employer's team.
     async fn add_team_member(&self, employer_id: &Uuid, email: &str) -> Result<Option<Uuid>>;
 
-    /// Archive job.
+    /// Archives a job, marking it as no longer active.
     async fn archive_job(&self, job_id: &Uuid) -> Result<()>;
 
-    /// Delete job.
+    /// Deletes a job from the database.
     async fn delete_job(&self, job_id: &Uuid) -> Result<()>;
 
-    /// Delete team member.
+    /// Deletes a team member from an employer's team.
+    ///
+    /// There must be at least one approved team member left after deletion.
     async fn delete_team_member(&self, employer_id: &Uuid, user_id: &Uuid) -> Result<()>;
 
-    /// Get applications filters options.
+    /// Retrieves available filter options for applications.
     async fn get_applications_filters_options(
         &self,
         employer_id: &Uuid,
     ) -> Result<applications::FiltersOptions>;
 
-    /// Get employer.
+    /// Retrieves an employer's details.
     async fn get_employer(&self, employer_id: &Uuid) -> Result<Employer>;
 
-    /// Get job.
+    /// Retrieves a job's details for the dashboard.
     async fn get_job_dashboard(&self, job_id: &Uuid) -> Result<Job>;
 
-    /// Get job seeker user id.
+    /// Retrieves the user ID for a job seeker profile.
     async fn get_job_seeker_user_id(&self, job_seeker_profile_id: &Uuid) -> Result<Option<Uuid>>;
 
-    /// Get user invitations count.
+    /// Retrieves the count of invitations for a user.
     async fn get_user_invitations_count(&self, user_id: &Uuid) -> Result<usize>;
 
-    /// List employer jobs.
+    /// Lists all jobs for an employer.
     async fn list_employer_jobs(&self, employer_id: &Uuid) -> Result<Vec<JobSummary>>;
 
-    /// List employers where the user is part of the team.
+    /// Lists all employers where the user is a team member.
     async fn list_employers(&self, user_id: &Uuid) -> Result<Vec<EmployerSummary>>;
 
-    /// List foundations.
+    /// Lists all available foundations.
     async fn list_foundations(&self) -> Result<Vec<Foundation>>;
 
-    /// List team members.
+    /// Lists all team members for an employer.
     async fn list_team_members(&self, employer_id: &Uuid) -> Result<Vec<TeamMember>>;
 
-    /// List user invitations.
+    /// Lists all invitations for a user.
     async fn list_user_invitations(&self, user_id: &Uuid) -> Result<Vec<TeamInvitation>>;
 
-    /// Publish job.
+    /// Publishes a job, setting it to pending approval.
     async fn publish_job(&self, job_id: &Uuid) -> Result<()>;
 
-    /// Search applications.
+    /// Searches applications for an employer with filters.
     async fn search_applications(
         &self,
         employer_id: &Uuid,
         filters: &applications::Filters,
     ) -> Result<ApplicationsSearchOutput>;
 
-    /// Update employer.
+    /// Updates an employer's details.
     async fn update_employer(&self, employer_id: &Uuid, employer: &Employer) -> Result<()>;
 
-    /// Update job.
+    /// Updates a job's details.
     async fn update_job(&self, job_id: &Uuid, job: &Job) -> Result<()>;
 }
 
@@ -1051,7 +1053,10 @@ impl DBDashBoardEmployer for PgDB {
 
 /// Applications search results.
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// Output for applications search.
 pub(crate) struct ApplicationsSearchOutput {
+    /// List of applications matching the search.
     pub applications: Vec<Application>,
+    /// Total number of applications found.
     pub total: usize,
 }

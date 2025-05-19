@@ -1,4 +1,4 @@
-//! This module contains the workers for some tasks.
+//! This module contains background workers for some tasks.
 
 use std::time::Duration;
 
@@ -8,7 +8,7 @@ use tracing::{debug, error};
 
 use crate::db::DynDB;
 
-/// Launch workers.
+/// Launches all background workers.
 pub(crate) fn run(db: DynDB, tracker: &TaskTracker, cancellation_token: CancellationToken) {
     // Jobs archiver
     tracker.spawn(async move {
@@ -16,7 +16,7 @@ pub(crate) fn run(db: DynDB, tracker: &TaskTracker, cancellation_token: Cancella
     });
 }
 
-/// This worker archives expired jobs periodically.
+/// Worker that archives expired jobs periodically.
 pub(crate) async fn archiver(db: DynDB, cancellation_token: CancellationToken) {
     // Random sleep to avoid multiple workers running at the same time
     tokio::select! {

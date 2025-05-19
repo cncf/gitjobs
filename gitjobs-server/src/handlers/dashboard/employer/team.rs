@@ -26,7 +26,7 @@ use crate::{
 
 // Pages handlers.
 
-/// Handler that returns the team members list page.
+/// Returns the team members list page for the employer dashboard.
 #[instrument(skip_all, err)]
 pub(crate) async fn members_list_page(
     State(db): State<DynDB>,
@@ -41,7 +41,7 @@ pub(crate) async fn members_list_page(
     Ok(Html(template.render()?))
 }
 
-/// Handler that returns the user invitations list page.
+/// Returns the user invitations list page for the authenticated user.
 #[instrument(skip_all, err)]
 pub(crate) async fn user_invitations_list_page(
     auth_session: AuthSession,
@@ -61,7 +61,7 @@ pub(crate) async fn user_invitations_list_page(
 
 // Actions handlers.
 
-/// Handler that accepts a team member invitation.
+/// Accepts a team member invitation for the authenticated user.
 #[instrument(skip_all, err)]
 pub(crate) async fn accept_invitation(
     auth_session: AuthSession,
@@ -97,7 +97,7 @@ pub(crate) async fn accept_invitation(
         .into_response())
 }
 
-/// Handler that adds a new team member.
+/// Adds a new team member to the employer's team and sends an invitation notification.
 #[instrument(skip_all, err)]
 pub(crate) async fn add_member(
     messages: Messages,
@@ -137,7 +137,7 @@ pub(crate) async fn add_member(
         .into_response())
 }
 
-/// Handler that deletes a team member.
+/// Deletes a team member from the employer's team. Handles self-removal as well.
 #[instrument(skip_all, err)]
 pub(crate) async fn delete_member(
     auth_session: AuthSession,
@@ -178,7 +178,7 @@ pub(crate) async fn delete_member(
         .into_response())
 }
 
-/// Handler that rejects a team member invitation.
+/// Rejects a team member invitation for the authenticated user.
 #[instrument(skip_all, err)]
 pub(crate) async fn reject_invitation(
     auth_session: AuthSession,

@@ -18,7 +18,7 @@ use crate::{
     router,
 };
 
-/// Extractor to get the oauth2 provider from the auth session.
+/// Extractor for `OAuth2` provider details from the authenticated session.
 pub(crate) struct OAuth2(pub Arc<OAuth2ProviderDetails>);
 
 impl FromRequestParts<router::State> for OAuth2 {
@@ -39,7 +39,7 @@ impl FromRequestParts<router::State> for OAuth2 {
     }
 }
 
-/// Extractor to get the oidc provider from the auth session.
+/// Extractor for `Oidc` provider details from the authenticated session.
 pub(crate) struct Oidc(pub Arc<OidcProviderDetails>);
 
 impl FromRequestParts<router::State> for Oidc {
@@ -60,8 +60,8 @@ impl FromRequestParts<router::State> for Oidc {
     }
 }
 
-/// Extractor to get the selected employer id from the session. It returns the
-/// employer id as an option.
+/// Extractor for the selected employer id from the session, as an Option.
+/// Returns Some(Uuid) if present, or None if not set in the session.
 pub(crate) struct SelectedEmployerIdOptional(pub Option<Uuid>);
 
 impl FromRequestParts<router::State> for SelectedEmployerIdOptional {
@@ -82,8 +82,8 @@ impl FromRequestParts<router::State> for SelectedEmployerIdOptional {
     }
 }
 
-/// Extractor to get the selected employer id from the session. An error is
-/// returned if the employer id is not found in the session.
+/// Extractor for the selected employer id from the session, required variant.
+/// Returns the Uuid if present, or an error if not found in the session.
 pub(crate) struct SelectedEmployerIdRequired(pub Uuid);
 
 impl FromRequestParts<router::State> for SelectedEmployerIdRequired {

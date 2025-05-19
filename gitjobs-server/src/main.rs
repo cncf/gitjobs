@@ -33,21 +33,23 @@ mod templates;
 mod views;
 mod workers;
 
+/// Command-line arguments for the application.
 #[derive(Debug, Parser)]
 #[clap(author, version, about)]
 struct Args {
-    /// Config file path
+    /// Path to the configuration file.
     #[clap(short, long)]
     config_file: Option<PathBuf>,
 }
 
+/// Main entry point for the application.
 #[tokio::main]
 async fn main() -> Result<()> {
-    // Setup configuration
+    // Setup configuration.
     let args = Args::parse();
     let cfg = Config::new(args.config_file.as_ref()).context("error setting up configuration")?;
 
-    // Setup logging
+    // Setup logging based on configuration.
     let ts = tracing_subscriber::fmt()
         .with_env_filter(EnvFilter::try_from_default_env().unwrap_or_else(|_| {
             format!(
@@ -63,11 +65,11 @@ async fn main() -> Result<()> {
         LogFormat::Pretty => ts.init(),
     }
 
-    // Setup task tracker and cancellation token
+    // Setup task tracker and cancellation token for background workers.
     let tracker = TaskTracker::new();
     let cancellation_token = CancellationToken::new();
 
-    // Setup database
+    // Setup database connection pool.
     let mut builder = SslConnector::builder(SslMethod::tls())?;
     builder.set_verify(SslVerifyMode::NONE);
     let connector = MakeTlsConnector::new(builder.build());
@@ -81,10 +83,10 @@ async fn main() -> Result<()> {
         });
     }
 
-    // Setup image store
+    // Setup image store.
     let image_store = Arc::new(DbImageStore::new(db.clone()));
 
-    // Setup notifications manager
+    // Setup notifications manager.
     let notifications_manager = Arc::new(PgNotificationsManager::new(
         db.clone(),
         &cfg.email,
@@ -92,13 +94,13 @@ async fn main() -> Result<()> {
         &cancellation_token,
     )?);
 
-    // Setup views tracker
+    // Setup views tracker.
     let views_tracker = Arc::new(ViewsTrackerDB::new(db.clone(), &tracker, &cancellation_token));
 
-    // Run some other workers
+    // Run additional background workers.
     workers::run(db.clone(), &tracker, cancellation_token.clone());
 
-    // Setup and launch HTTP server
+    // Setup and launch the HTTP server.
     let router = router::setup(
         cfg.server.clone(),
         db,
@@ -119,7 +121,7 @@ async fn main() -> Result<()> {
     }
     info!("server stopped");
 
-    // Ask all workers to stop and wait for them to finish
+    // Request all background workers to stop and wait for completion.
     tracker.close();
     cancellation_token.cancel();
     tracker.wait().await;
@@ -127,10 +129,11 @@ async fn main() -> Result<()> {
     Ok(())
 }
 
-/// Return a future that will complete when the program is asked to stop via a
-/// ctrl+c or terminate signal.
+/// Returns a future that completes when the program receives a shutdown signal.
+///
+/// Handles both ctrl+c and terminate signals for graceful shutdown.
 async fn shutdown_signal() {
-    // Setup signal handlers
+    // Setup ctrl+c signal handler.
     let ctrl_c = async {
         signal::ctrl_c()
             .await
@@ -138,6 +141,7 @@ async fn shutdown_signal() {
     };
 
     #[cfg(unix)]
+    // Setup terminate signal handler (Unix only).
     let terminate = async {
         signal::unix::signal(signal::unix::SignalKind::terminate())
             .expect("failed to install terminate signal handler")
@@ -148,7 +152,7 @@ async fn shutdown_signal() {
     #[cfg(not(unix))]
     let terminate = std::future::pending::<()>();
 
-    // Wait for any of the signals
+    // Wait for either ctrl+c or terminate signal.
     tokio::select! {
         () = ctrl_c => {},
         () = terminate => {},

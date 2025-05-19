@@ -11,7 +11,7 @@ pub(crate) mod employer;
 pub(crate) mod job_seeker;
 pub(crate) mod moderator;
 
-/// Trait that defines some database operations used in the dashboards.
+/// Trait that defines database operations used in the dashboards.
 #[async_trait]
 pub(crate) trait DBDashBoard:
     DBDashBoardEmployer + DBDashBoardJobSeeker + DBDashBoardModerator

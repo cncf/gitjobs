@@ -5,15 +5,23 @@ use axum::http::{HeaderMap, HeaderName, HeaderValue};
 use chrono::Duration;
 use reqwest::header::CACHE_CONTROL;
 
+/// Authentication-related HTTP handlers.
 pub(crate) mod auth;
+/// Dashboard-related HTTP handlers.
 pub(crate) mod dashboard;
+/// Error handling utilities for HTTP handlers.
 pub(crate) mod error;
+/// Custom extractors for HTTP handlers.
 pub(crate) mod extractors;
+/// Image-related HTTP handlers.
 pub(crate) mod img;
+/// Job board HTTP handlers.
 pub(crate) mod jobboard;
+/// Miscellaneous HTTP handlers.
 pub(crate) mod misc;
 
-/// Helper function to prepare headers for HTTP responses.
+/// Helper function to prepare headers for HTTP responses, including cache control and
+/// additional custom headers.
 #[allow(unused_variables)]
 pub(crate) fn prepare_headers(cache_duration: Duration, extra_headers: &[(&str, &str)]) -> Result<HeaderMap> {
     let mut headers = HeaderMap::new();

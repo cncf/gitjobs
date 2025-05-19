@@ -1,4 +1,4 @@
-//! This module defines some database functionality used to manage images.
+//! This module defines database operations for managing images and their versions.
 
 use std::sync::Arc;
 
@@ -12,23 +12,24 @@ use crate::{
     img::{ImageFormat, ImageVersion},
 };
 
-/// Trait that defines some database operations used to manage images.
+/// Trait for database operations related to image management.
 #[async_trait]
 pub(crate) trait DBImage {
-    /// Get image version.
+    /// Retrieves a specific version of an image from the database.
     async fn get_image_version(
         &self,
         image_id: Uuid,
         version: &str,
     ) -> Result<Option<(Vec<u8>, ImageFormat)>>;
 
-    /// Save image versions.
+    /// Saves multiple image versions in the database.
     async fn save_image_versions(&self, user_id: &Uuid, versions: Vec<ImageVersion>) -> Result<Uuid>;
 }
 
-/// Type alias to represent a `DBImage` trait object.
+/// Shared pointer to a thread-safe, async `DBImage` trait object.
 pub(crate) type DynDBImage = Arc<dyn DBImage + Send + Sync>;
 
+/// Implementation of DBImage for the PgDB database backend.
 #[async_trait]
 impl DBImage for PgDB {
     #[instrument(skip(self), err)]

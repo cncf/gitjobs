@@ -1,4 +1,4 @@
-//! This module defines the HTTP handlers for the jobs pages.
+//! HTTP handlers for the jobs pages.
 
 use anyhow::Result;
 use askama::Template;
@@ -29,7 +29,7 @@ use crate::{
 
 // Pages and sections handlers.
 
-/// Handler that returns the jobs page.
+/// Returns the main jobs page with filters and results.
 #[instrument(skip_all, err)]
 pub(crate) async fn jobs_page(
     session: Session,
@@ -65,7 +65,7 @@ pub(crate) async fn jobs_page(
     Ok((headers, Html(template.render()?)))
 }
 
-/// Handler that returns the results section.
+/// Returns the results section for filtered jobs.
 #[instrument(skip_all, err)]
 pub(crate) async fn results_section(
     State(db): State<DynDB>,
@@ -90,7 +90,7 @@ pub(crate) async fn results_section(
     Ok((headers, Html(template.render()?)))
 }
 
-/// Handler that returns the job details section.
+/// Returns the job details section for a specific job.
 #[instrument(skip_all, err)]
 pub(crate) async fn job_section(
     State(cfg): State<HttpServerConfig>,
@@ -116,7 +116,7 @@ pub(crate) async fn job_section(
 
 // Actions handlers.
 
-/// Handler that allows users to apply to a job.
+/// Allows an authenticated user to apply to a job.
 #[instrument(skip_all, err)]
 pub(crate) async fn apply(
     State(db): State<DynDB>,
@@ -134,7 +134,7 @@ pub(crate) async fn apply(
     Ok(StatusCode::NO_CONTENT)
 }
 
-/// Handler used to track a job view.
+/// Tracks a view for a specific job in the job board.
 #[instrument(skip_all, err)]
 pub(crate) async fn track_view(
     State(views_tracker): State<DynViewsTracker>,

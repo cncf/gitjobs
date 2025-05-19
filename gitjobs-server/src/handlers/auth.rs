@@ -30,28 +30,28 @@ use crate::{
     templates::{self, PageId, auth::User, notifications::EmailVerification},
 };
 
-/// Key to store the auth provider in the session.
+/// Key used to store the authentication provider in the session.
 pub(crate) const AUTH_PROVIDER_KEY: &str = "auth_provider";
 
-/// Log in URL.
+/// URL for the log in page.
 pub(crate) const LOG_IN_URL: &str = "/log-in";
 
-/// Log out URL.
+/// URL for the log out page.
 pub(crate) const LOG_OUT_URL: &str = "/log-out";
 
-/// Key to store the next url in the session.
+/// Key used to store the next URL in the session.
 pub(crate) const NEXT_URL_KEY: &str = "next_url";
 
-/// Key to store the oauth2 csrf state in the session.
+/// Key used to store the `OAuth2` CSRF state in the session.
 pub(crate) const OAUTH2_CSRF_STATE_KEY: &str = "oauth2.csrf_state";
 
-/// Key to store the oidc nonce in the session.
+/// Key used to store the `Oidc` nonce in the session.
 pub(crate) const OIDC_NONCE_KEY: &str = "oidc.nonce";
 
-/// Key to store the selected employer id in the session.
+/// Key used to store the selected employer id in the session.
 pub(crate) const SELECTED_EMPLOYER_ID_KEY: &str = "selected_employer_id";
 
-/// Sign up URL.
+/// URL for the sign up page.
 pub(crate) const SIGN_UP_URL: &str = "/sign-up";
 
 // Pages handlers.
@@ -477,16 +477,19 @@ fn get_log_in_url(next_url: Option<&String>) -> String {
 
 // Deserialization helpers.
 
-/// `OAuth2` authorization response.
+/// `OAuth2` authorization response containing code and CSRF state.
 #[derive(Debug, Clone, Deserialize)]
 pub struct OAuth2AuthorizationResponse {
+    /// Authorization code returned by the `OAuth2` provider.
     code: String,
+    /// CSRF state returned by the `OAuth2` provider.
     state: oauth2::CsrfToken,
 }
 
-/// Next url to redirect to.
+/// Next URL to redirect to after authentication.
 #[derive(Debug, Deserialize)]
 pub(crate) struct NextUrl {
+    /// The next URL to redirect to, if provided.
     pub next_url: Option<String>,
 }
 

@@ -25,7 +25,7 @@ use crate::{
 
 // Pages handlers.
 
-/// Handler that returns the applications list page.
+/// Renders the applications list page for the selected employer.
 #[instrument(skip_all, err)]
 pub(crate) async fn list_page(
     State(db): State<DynDB>,
@@ -50,7 +50,7 @@ pub(crate) async fn list_page(
     Ok(Html(template.render()?))
 }
 
-/// Handler that returns the page to preview a profile.
+/// Renders the page to preview a job seeker's profile for employers.
 #[instrument(skip_all, err)]
 pub(crate) async fn profile_preview_page(
     State(db): State<DynDB>,

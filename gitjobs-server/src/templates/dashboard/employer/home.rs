@@ -1,5 +1,4 @@
-//! This module defines some templates and types used in the employer dashboard
-//! home page.
+//! Templates and types for the employer dashboard home page.
 
 use askama::Template;
 use axum_messages::{Level, Message};
@@ -16,33 +15,48 @@ use crate::templates::{
 
 // Pages templates.
 
-/// Home page template.
+/// Home page template for the employer dashboard.
 #[derive(Debug, Clone, Template)]
 #[template(path = "dashboard/employer/home.html")]
 pub(crate) struct Page {
+    /// Application configuration.
     pub cfg: Config,
+    /// Main content section for the page.
     pub content: Content,
+    /// List of employers for the user.
     pub employers: Vec<employer::employers::EmployerSummary>,
+    /// List of messages to display.
     pub messages: Vec<Message>,
+    /// Page identifier.
     pub page_id: PageId,
+    /// Number of pending team invitations.
     pub pending_invitations: usize,
+    /// Authenticated user information.
     pub user: User,
-
+    /// Name of the authentication provider, if any.
     pub auth_provider: Option<String>,
+    /// Selected employer's unique identifier, if any.
     pub selected_employer_id: Option<Uuid>,
 }
 
 // Types.
 
-/// Content section.
+/// Content section for the employer dashboard home page.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub(crate) enum Content {
+    /// User account page.
     Account(auth::UpdateUserPage),
+    /// Applications list page.
     Applications(employer::applications::ApplicationsPage),
+    /// Initial setup page for employer profile.
     EmployerInitialSetup(employer::employers::InitialSetupPage),
+    /// Team invitations list page.
     Invitations(employer::team::UserInvitationsListPage),
+    /// Jobs list page.
     Jobs(employer::jobs::ListPage),
+    /// Employer profile update page.
     Profile(employer::employers::UpdatePage),
+    /// Team members list page.
     Team(employer::team::MembersListPage),
 }
 
@@ -92,16 +106,23 @@ impl std::fmt::Display for Content {
     }
 }
 
-/// Tab selected.
+/// Tab selection for the employer dashboard home page.
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize, strum::Display, strum::EnumString)]
 #[strum(serialize_all = "kebab-case")]
 pub(crate) enum Tab {
+    /// User account tab.
     Account,
+    /// Applications tab.
     Applications,
+    /// Employer initial setup tab.
     EmployerInitialSetup,
+    /// Team invitations tab.
     Invitations,
+    /// Jobs tab (default).
     #[default]
     Jobs,
+    /// Employer profile tab.
     Profile,
+    /// Team members tab.
     Team,
 }

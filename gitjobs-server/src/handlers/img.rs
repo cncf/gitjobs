@@ -1,4 +1,4 @@
-//! This module defines some HTTP handlers to manage images.
+//! HTTP handlers for image management, including upload and retrieval.
 
 use axum::{
     extract::{Multipart, Path, State},
@@ -18,7 +18,7 @@ use crate::{
     img::{DynImageStore, ImageFormat},
 };
 
-/// Handler that returns an image.
+/// Returns an image from the store, setting headers for cache and content type.
 #[instrument(skip_all, err)]
 pub(crate) async fn get(
     State(image_store): State<DynImageStore>,
@@ -45,7 +45,7 @@ pub(crate) async fn get(
     Ok((headers, data).into_response())
 }
 
-/// Handler that uploads an image.
+/// Handles image upload from authenticated users, saving the image to the store.
 #[instrument(skip_all, err)]
 pub(crate) async fn upload(
     auth_session: AuthSession,

@@ -14,22 +14,23 @@ use crate::{
     templates::jobboard::jobs::{Filters, FiltersOptions, Job, JobSummary},
 };
 
-/// Trait that defines some database operations used in the job board.
+/// Trait for database operations used by the job board, such as applying and searching jobs.
 #[async_trait]
 pub(crate) trait DBJobBoard {
-    /// Apply to a job.
+    /// Records a user's application to a job.
     async fn apply_to_job(&self, job_id: &Uuid, user_id: &Uuid) -> Result<()>;
 
-    /// Get job.
+    /// Fetches a job for the job board by its unique identifier.
     async fn get_job_jobboard(&self, job_id: &Uuid) -> Result<Option<Job>>;
 
-    /// Get filters options used to search jobs.
+    /// Retrieves available filter options for job searches.
     async fn get_jobs_filters_options(&self) -> Result<FiltersOptions>;
 
-    /// Search jobs.
+    /// Searches for jobs using the provided filter criteria.
     async fn search_jobs(&self, filters: &Filters) -> Result<JobsSearchOutput>;
 }
 
+/// Implementation of DBJobBoard for the PostgreSQL database backend.
 #[async_trait]
 impl DBJobBoard for PgDB {
     #[instrument(skip(self), err)]
@@ -245,9 +246,11 @@ impl DBJobBoard for PgDB {
     }
 }
 
-/// Jobs search results.
+/// Output for job search, including job summaries and total count.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub(crate) struct JobsSearchOutput {
+    /// List of jobs matching the search criteria.
     pub jobs: Vec<JobSummary>,
+    /// Total number of jobs matching the search criteria.
     pub total: usize,
 }

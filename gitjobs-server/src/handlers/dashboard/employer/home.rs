@@ -1,4 +1,4 @@
-//! This module defines the HTTP handlers for the employer dashboard home page.
+//! HTTP handlers for the employer dashboard home page, including tab content logic.
 
 use std::collections::HashMap;
 
@@ -33,6 +33,10 @@ use crate::{
 // Pages handlers.
 
 /// Handler that returns the employer dashboard home page.
+///
+/// This handler manages the main employer dashboard page, selecting the appropriate tab
+/// and preparing the content for each dashboard section, such as account, applications,
+/// invitations, jobs, profile, and team.
 #[instrument(skip_all, err)]
 #[allow(clippy::too_many_arguments)]
 pub(crate) async fn page(

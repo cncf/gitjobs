@@ -1,4 +1,4 @@
-//! This module defines some types and functionality used to paginate.
+//! Types and helpers for paginating results and generating navigation links.
 
 use std::fmt::Write as _;
 
@@ -6,42 +6,46 @@ use anyhow::Result;
 use askama::Template;
 use serde::{Deserialize, Serialize};
 
-/// Default pagination limit.
+/// Default number of items per page for pagination.
 #[cfg(test)]
 const DEFAULT_PAGINATION_LIMIT: usize = 10;
 #[cfg(not(test))]
 const DEFAULT_PAGINATION_LIMIT: usize = 20;
 
-/// Trait to get and set some pagination values.
+/// Trait for types that support pagination.
 pub(crate) trait Pagination {
-    /// Get the base url for htmx requests.
+    /// Returns the base URL for htmx requests.
     fn get_base_hx_url(&self) -> String;
 
-    /// Get the base url.
+    /// Returns the base URL for standard requests.
     fn get_base_url(&self) -> String;
 
-    /// Get the limit value.
+    /// Returns the pagination limit, if set.
     fn limit(&self) -> Option<usize>;
 
-    /// Get the offset value.
+    /// Returns the pagination offset, if set.
     fn offset(&self) -> Option<usize>;
 
-    /// Set the offset value.
+    /// Sets the pagination offset.
     fn set_offset(&mut self, offset: Option<usize>);
 }
 
-/// Pagination navigation links.
+/// Holds navigation links for paginated results.
 #[derive(Debug, Clone, Default, Template, PartialEq, Serialize, Deserialize)]
 #[template(path = "navigation_links.html")]
 pub(crate) struct NavigationLinks {
+    /// Link to the first page, if available.
     pub first: Option<NavigationLink>,
+    /// Link to the last page, if available.
     pub last: Option<NavigationLink>,
+    /// Link to the next page, if available.
     pub next: Option<NavigationLink>,
+    /// Link to the previous page, if available.
     pub prev: Option<NavigationLink>,
 }
 
 impl NavigationLinks {
-    /// Create a new `NavigationLinks` instance from the filters provided.
+    /// Builds navigation links from filters and total item count.
     pub(crate) fn from_filters<T>(filters: &T, total: usize) -> Result<Self>
     where
         T: Serialize + Clone + Pagination,
@@ -72,15 +76,17 @@ impl NavigationLinks {
     }
 }
 
-/// Navigation link.
+/// Represents a single navigation link for pagination.
 #[derive(Debug, Clone, Serialize, PartialEq, Deserialize)]
 pub(crate) struct NavigationLink {
+    /// URL for htmx requests.
     pub hx_url: String,
+    /// Standard URL for navigation.
     pub url: String,
 }
 
 impl NavigationLink {
-    /// Create a new `NavigationLink` instance from the filters provided.
+    /// Creates a navigation link from the given filters.
     pub(crate) fn new<T>(filters: &T) -> Result<Self>
     where
         T: Serialize + Pagination,
@@ -95,17 +101,21 @@ impl NavigationLink {
     }
 }
 
-/// Offsets used to build the navigation links.
+/// Holds offset values for building pagination navigation links.
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 struct NavigationLinksOffsets {
+    /// Offset for the first page.
     first: Option<usize>,
+    /// Offset for the last page.
     last: Option<usize>,
+    /// Offset for the next page.
     next: Option<usize>,
+    /// Offset for the previous page.
     prev: Option<usize>,
 }
 
 impl NavigationLinksOffsets {
-    /// Create a new `NavigationLinksOffsets` instance.
+    /// Calculates offsets for navigation links based on current state.
     fn new(offset: Option<usize>, limit: Option<usize>, total: usize) -> Self {
         let mut offsets = NavigationLinksOffsets::default();
 
@@ -139,7 +149,7 @@ impl NavigationLinksOffsets {
     }
 }
 
-/// Build URL that includes the filters as query parameters.
+/// Builds a URL with query parameters for the given filters.
 pub(crate) fn build_url<T>(base_url: &str, filters: &T) -> Result<String>
 where
     T: Serialize + Pagination,
@@ -155,7 +165,7 @@ where
     Ok(url)
 }
 
-/// Get the separator to use when joining the filters to the url.
+/// Determines the separator to use when appending filters to a URL.
 fn get_url_filters_separator(url: &str) -> &str {
     if url.contains('?') {
         if url.ends_with('?') || url.ends_with('&') {
@@ -172,6 +182,7 @@ fn get_url_filters_separator(url: &str) -> &str {
 mod tests {
     use super::{DEFAULT_PAGINATION_LIMIT, NavigationLinksOffsets, get_url_filters_separator};
 
+    // Macro for generating tests for NavigationLinksOffsets logic.
     macro_rules! navigation_links_offsets_tests {
         ($(
             $name:ident: {
@@ -349,6 +360,7 @@ mod tests {
         },
     }
 
+    // Macro for generating tests for get_url_filters_separator logic.
     macro_rules! get_url_filters_separator_tests {
         ($($name:ident: $value:expr,)*) => {
         $(

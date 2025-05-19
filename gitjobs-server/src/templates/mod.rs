@@ -1,5 +1,4 @@
-//! This module defines the templates used to render the different parts of the
-//! job board.
+//! This module defines templates for rendering various job board components.
 
 use serde::{Deserialize, Serialize};
 
@@ -14,7 +13,7 @@ pub(crate) mod misc;
 pub(crate) mod notifications;
 pub(crate) mod pagination;
 
-/// Subset of the server configuration used in some templates.
+/// Subset of the server configuration used in templates.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub(crate) struct Config {
     pub analytics: Option<AnalyticsConfig>,
@@ -28,7 +27,7 @@ impl From<HttpServerConfig> for Config {
     }
 }
 
-/// Identifier for a page.
+/// Enum representing unique identifiers for each page in the application.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub(crate) enum PageId {

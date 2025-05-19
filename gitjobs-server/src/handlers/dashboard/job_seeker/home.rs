@@ -1,5 +1,4 @@
-//! This module defines the HTTP handlers for the job seeker dashboard home
-//! page.
+//! This module defines the HTTP handlers for the job seeker dashboard home page.
 
 use std::collections::HashMap;
 
@@ -31,7 +30,7 @@ use crate::{
 
 // Pages handlers.
 
-/// Handler that returns the moderator dashboard home page.
+/// Handler that returns the job seeker dashboard home page.
 #[instrument(skip_all, err)]
 pub(crate) async fn page(
     auth_session: AuthSession,

@@ -1,4 +1,5 @@
-//! This module defines some database functionality used in the views tracker.
+//! This module defines database functionality used in the views tracker, including
+//! operations for updating job view counts.
 
 use std::sync::Arc;
 
@@ -14,18 +15,18 @@ use crate::{
     views::{Day, JobId, Total},
 };
 
-// Lock key used when updating the jobs views in the database.
+/// Lock key used to synchronize updates to job views in the database.
 const LOCK_KEY_UPDATE_JOBS_VIEWS: i64 = 1;
 
-/// Trait that defines some database operations used in the views tracker.
+/// Trait that defines database operations used in the views tracker.
 #[async_trait]
 #[cfg_attr(test, automock)]
 pub(crate) trait DBViews {
-    /// Update the number of views of the jobs provided.
+    /// Updates the number of views for the provided jobs and days.
     async fn update_jobs_views(&self, data: Vec<(JobId, Day, Total)>) -> Result<()>;
 }
 
-/// Type alias to represent a `DBViews` trait object.
+/// Type alias for a thread-safe, reference-counted `DBViews` trait object.
 pub(crate) type DynDBViews = Arc<dyn DBViews + Send + Sync>;
 
 #[async_trait]

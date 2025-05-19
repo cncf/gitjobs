@@ -1,4 +1,4 @@
-//! This module defines some HTTP handlers used across the site.
+//! HTTP handlers for miscellaneous endpoints used across the site.
 
 use std::collections::HashMap;
 
@@ -28,7 +28,7 @@ use crate::{
 
 use super::auth::AUTH_PROVIDER_KEY;
 
-/// Handler that returns the not found page.
+/// Handler for rendering the not found (404) page.
 #[instrument(skip_all, err)]
 pub(crate) async fn not_found(
     State(cfg): State<HttpServerConfig>,
@@ -47,7 +47,7 @@ pub(crate) async fn not_found(
     Ok((headers, Html(template.render()?)).into_response())
 }
 
-/// Handler that returns the locations search results.
+/// Handler for searching locations and returning results as JSON.
 #[instrument(skip_all, err)]
 pub(crate) async fn search_locations(
     State(db): State<DynDB>,
@@ -65,7 +65,7 @@ pub(crate) async fn search_locations(
     Ok((headers, Json(locations)).into_response())
 }
 
-/// Handler that returns the members search results.
+/// Handler for searching members and returning results as JSON.
 #[instrument(skip_all, err)]
 pub(crate) async fn search_members(
     State(db): State<DynDB>,
@@ -83,7 +83,7 @@ pub(crate) async fn search_members(
     Ok((headers, Json(members)).into_response())
 }
 
-/// Handler that returns the projects search results.
+/// Handler for searching projects and returning results as JSON.
 #[instrument(skip_all, err)]
 pub(crate) async fn search_projects(
     State(db): State<DynDB>,
@@ -101,7 +101,7 @@ pub(crate) async fn search_projects(
     Ok((headers, Json(projects)).into_response())
 }
 
-/// Handler that returns the header user menu section.
+/// Handler for rendering the user menu section in the header.
 #[instrument(skip_all, err)]
 pub(crate) async fn user_menu_section(
     auth_session: AuthSession,

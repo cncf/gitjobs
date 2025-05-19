@@ -1,4 +1,5 @@
-//! This module defines some database functionality used in tasks workers.
+//! This module defines database operations used by background task workers, such as
+//! archiving expired jobs.
 
 use anyhow::Result;
 use async_trait::async_trait;
@@ -6,10 +7,10 @@ use tracing::instrument;
 
 use crate::db::PgDB;
 
-/// Trait that defines some database operations used in tasks workers.
+/// Trait for database operations required by background tasks workers.
 #[async_trait]
 pub(crate) trait DBWorkers {
-    /// Archive expired jobs.
+    /// Archives jobs that have expired based on their published date.
     async fn archive_expired_jobs(&self) -> Result<()>;
 }
 

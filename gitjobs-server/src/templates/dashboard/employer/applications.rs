@@ -1,4 +1,4 @@
-//! This module defines some templates and types used in the applications page.
+//! Templates and types for the employer dashboard applications page.
 
 use anyhow::Result;
 use askama::Template;
@@ -16,13 +16,17 @@ use crate::templates::{
 
 // Pages templates.
 
-/// Applications page template.
+/// Applications page template for employer dashboard.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
 #[template(path = "dashboard/employer/applications/list.html")]
 pub(crate) struct ApplicationsPage {
+    /// List of job applications.
     pub applications: Vec<Application>,
+    /// Filters applied to the applications list.
     pub filters: Filters,
+    /// Available filter options for the page.
     pub filters_options: FiltersOptions,
+    /// Navigation links for pagination.
     pub navigation_links: NavigationLinks,
 }
 
@@ -38,19 +42,28 @@ impl ApplicationsPage {
 
 // Types.
 
-/// Application information.
+/// Application information for employer dashboard listings.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub(crate) struct Application {
+    /// Unique identifier for the application.
     application_id: Uuid,
+    /// Name of the applicant.
     name: String,
+    /// Timestamp when the application was submitted.
     applied_at: DateTime<Utc>,
+    /// Unique identifier for the job.
     job_id: Uuid,
+    /// Title of the job applied for.
     job_title: String,
+    /// Unique identifier for the job seeker profile.
     job_seeker_profile_id: Uuid,
+    /// Workplace type for the job.
     job_workplace: Workplace,
-
+    /// Location of the job, if specified.
     job_location: Option<Location>,
+    /// Last position held by the applicant, if any.
     last_position: Option<String>,
+    /// Photo identifier for the applicant, if available.
     photo_id: Option<Uuid>,
 }
 
@@ -58,8 +71,11 @@ pub(crate) struct Application {
 #[skip_serializing_none]
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 pub(crate) struct Filters {
+    /// Filter by job unique identifier.
     pub job_id: Option<Uuid>,
+    /// Limit the number of results.
     pub limit: Option<usize>,
+    /// Offset for pagination.
     pub offset: Option<usize>,
 }
 
@@ -93,8 +109,9 @@ impl Pagination for Filters {
     }
 }
 
-/// Filters options used in the applications page.
+/// Filter options used in the applications page.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub(crate) struct FiltersOptions {
+    /// List of job summaries for filter selection.
     pub jobs: Vec<JobSummary>,
 }

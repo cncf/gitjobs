@@ -1,5 +1,5 @@
-//! This module defines some database functionality used to manage
-//! notifications.
+//! This module defines database functionality used to manage notifications, including
+//! enqueueing, retrieving, and updating notification records.
 
 use anyhow::{Result, bail};
 use async_trait::async_trait;
@@ -12,16 +12,16 @@ use crate::{
     notifications::{NewNotification, Notification},
 };
 
-/// Trait that defines some database operations used to manage notifications.
+/// Trait that defines database operations used to manage notifications.
 #[async_trait]
 pub(crate) trait DBNotifications {
-    /// Enqueue a notification to be delivered.
+    /// Enqueues a notification to be delivered.
     async fn enqueue_notification(&self, notification: &NewNotification) -> Result<()>;
 
-    /// Get a pending notification to deliver it.
+    /// Retrieves a pending notification for delivery.
     async fn get_pending_notification(&self, client_id: Uuid) -> Result<Option<Notification>>;
 
-    /// Update notification (after trying to deliver it).
+    /// Updates a notification after a delivery attempt.
     async fn update_notification(
         &self,
         client_id: Uuid,
@@ -94,6 +94,8 @@ impl DBNotifications for PgDB {
         Ok(notification)
     }
 
+    /// Updates the notification record after processing, marking it as processed and
+    /// recording any error.
     #[instrument(skip(self, notification), err)]
     async fn update_notification(
         &self,

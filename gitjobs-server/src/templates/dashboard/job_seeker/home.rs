@@ -1,5 +1,4 @@
-//! This module defines some templates and types used in the job seeker
-//! dashboard home page.
+//! Templates and types for the job seeker dashboard home page.
 
 use askama::Template;
 use axum_messages::{Level, Message};
@@ -14,27 +13,35 @@ use crate::templates::{
 
 // Pages templates.
 
-/// Home page template.
+/// Home page template for the job seeker dashboard.
 #[derive(Debug, Clone, Template)]
 #[template(path = "dashboard/job_seeker/home.html")]
 pub(crate) struct Page {
+    /// Application configuration.
     pub cfg: Config,
+    /// Content section for the dashboard.
     pub content: Content,
+    /// Identifier for the current page.
     pub page_id: PageId,
+    /// Flash or status messages to display.
     pub messages: Vec<Message>,
+    /// Authenticated user information.
     pub user: User,
-
+    /// Name of the authentication provider, if any.
     pub auth_provider: Option<String>,
 }
 
 // Types.
 
-/// Content section.
+/// Content section for the job seeker dashboard home page.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[allow(clippy::large_enum_variant)]
 pub(crate) enum Content {
+    /// Account update page content.
     Account(auth::UpdateUserPage),
+    /// Applications list page content.
     Applications(job_seeker::applications::ApplicationsPage),
+    /// Profile update page content.
     Profile(job_seeker::profile::UpdatePage),
 }
 
@@ -66,12 +73,15 @@ impl std::fmt::Display for Content {
     }
 }
 
-/// Tab selected.
+/// Tab selection for the job seeker dashboard home page.
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize, strum::Display, strum::EnumString)]
 #[strum(serialize_all = "kebab-case")]
 pub(crate) enum Tab {
+    /// Account tab.
     Account,
+    /// Applications tab.
     Applications,
+    /// Profile tab (default).
     #[default]
     Profile,
 }

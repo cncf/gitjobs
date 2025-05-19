@@ -1,4 +1,4 @@
-//! This module defines the HTTP handlers for the embeds.
+//! HTTP handlers for job board embed endpoints, including jobs and job card embeds.
 
 use anyhow::Result;
 use askama::Template;
@@ -21,7 +21,7 @@ use crate::{
     },
 };
 
-/// Handler that returns the jobs embed page.
+/// Returns the jobs embed page for external integration.
 #[instrument(skip_all, err)]
 pub(crate) async fn jobs_page(
     State(cfg): State<HttpServerConfig>,
@@ -43,7 +43,7 @@ pub(crate) async fn jobs_page(
     Ok((headers, Html(template.render()?)))
 }
 
-/// Handler that returns the job card embed image.
+/// Returns the job card embed as an SVG image for sharing or embedding.
 #[instrument(skip_all, err)]
 pub(crate) async fn job_card(
     State(cfg): State<HttpServerConfig>,

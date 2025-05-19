@@ -1,5 +1,4 @@
-//! This module defines some database functionality for the job seeker
-//! dashboard.
+//! This module defines database operations for the job seeker dashboard.
 
 use anyhow::Result;
 use async_trait::async_trait;
@@ -11,20 +10,19 @@ use crate::{
     templates::dashboard::job_seeker::{applications::Application, profile::JobSeekerProfile},
 };
 
-/// Trait that defines some database operations used in the job seeker
-/// dashboard.
+/// Trait for job seeker dashboard database operations.
 #[async_trait]
 pub(crate) trait DBDashBoardJobSeeker {
-    /// Cancel application.
+    /// Cancels a job application for the given user.
     async fn cancel_application(&self, application_id: &Uuid, user_id: &Uuid) -> Result<()>;
 
-    /// Get job seeker profile.
+    /// Retrieves the job seeker profile for the given user.
     async fn get_job_seeker_profile(&self, user_id: &Uuid) -> Result<Option<JobSeekerProfile>>;
 
-    /// List job seeker applications.
+    /// Lists all job applications for the given user.
     async fn list_job_seeker_applications(&self, user_id: &Uuid) -> Result<Vec<Application>>;
 
-    /// Update job seeker profile.
+    /// Updates the job seeker profile for the given user.
     async fn update_job_seeker_profile(&self, user_id: &Uuid, profile: &JobSeekerProfile) -> Result<()>;
 }
 

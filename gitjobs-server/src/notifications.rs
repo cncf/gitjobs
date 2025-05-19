@@ -1,5 +1,4 @@
-//! This module defines some types and functionality to manage and send
-//! notifications.
+//! This module defines types and logic to manage and send user notifications.
 
 use std::{sync::Arc, time::Duration};
 
@@ -23,35 +22,33 @@ use crate::{
     templates::notifications::{EmailVerification, TeamInvitation},
 };
 
-/// Number of workers to deliver notifications.
+/// Number of concurrent workers that deliver notifications.
 const NUM_WORKERS: usize = 1;
 
-/// Amount of time to sleep when there is an error delivering a notification.
+/// Time to wait after a delivery error before retrying.
 const PAUSE_ON_ERROR: Duration = Duration::from_secs(30);
 
-/// Amount of time to sleep when there are no notifications to deliver.
+/// Time to wait when there are no notifications to deliver.
 const PAUSE_ON_NONE: Duration = Duration::from_secs(15);
 
-/// Abstraction layer over the notifications manager. This trait defines some
-/// operations that a notifications manager implementation must support.
-///
-/// A notifications manager is in charge of delivering notifications to users.
+/// Trait for a notifications manager, responsible for delivering notifications.
 #[async_trait]
 pub(crate) trait NotificationsManager {
-    /// Enqueue a notification to be sent.
+    /// Enqueue a notification for delivery.
     async fn enqueue(&self, notification: &NewNotification) -> Result<()>;
 }
 
-/// Type alias to represent a notifications manager trait object.
+/// Shared trait object for a notifications manager.
 pub(crate) type DynNotificationsManager = Arc<dyn NotificationsManager + Send + Sync>;
 
-/// Notifications manager backed by `PostgreSQL`.
+/// PostgreSQL-backed notifications manager implementation.
 pub(crate) struct PgNotificationsManager {
+    /// Handle to the database for notification operations.
     db: DynDB,
 }
 
 impl PgNotificationsManager {
-    /// Create a new `PgNotificationsManager` instance.
+    /// Create a new `PgNotificationsManager`.
     pub(crate) fn new(
         db: DynDB,
         cfg: &EmailConfig,
@@ -85,21 +82,26 @@ impl PgNotificationsManager {
 
 #[async_trait]
 impl NotificationsManager for PgNotificationsManager {
+    /// Enqueue a notification for delivery.
     async fn enqueue(&self, notification: &NewNotification) -> Result<()> {
         self.db.enqueue_notification(notification).await
     }
 }
 
-/// Worker in charge of delivering notifications.
+/// Worker responsible for delivering notifications from the queue.
 struct Worker {
+    /// Database handle for notification queries.
     db: DynDB,
+    /// Email configuration for sending notifications.
     cfg: EmailConfig,
+    /// SMTP client for sending emails.
     smtp_client: AsyncSmtpTransport<Tokio1Executor>,
+    /// Token to signal worker shutdown.
     cancellation_token: CancellationToken,
 }
 
 impl Worker {
-    /// Run the worker.
+    /// Main worker loop: delivers notifications until cancelled.
     async fn run(&mut self) {
         loop {
             // Try to deliver a pending notification
@@ -132,7 +134,7 @@ impl Worker {
         }
     }
 
-    /// Deliver pending notification (if any).
+    /// Attempt to deliver a pending notification, if available.
     #[instrument(skip(self), err)]
     async fn deliver_notification(&mut self) -> Result<bool> {
         // Begin transaction
@@ -177,7 +179,7 @@ impl Worker {
         Ok(notification_delivered)
     }
 
-    /// Prepare notification subject and body.
+    /// Prepare the subject and body for a notification email.
     fn prepare_content(notification: &Notification) -> Result<(String, String)> {
         let template_data = notification
             .template_data
@@ -202,7 +204,7 @@ impl Worker {
         Ok((subject.to_string(), body))
     }
 
-    /// Send email to the given address.
+    /// Send an email to the specified address with the given subject and body.
     async fn send_email(&self, to_address: &str, subject: &str, body: String) -> Result<()> {
         // Prepare message
         let message = MessageBuilder::new()
@@ -222,30 +224,37 @@ impl Worker {
     }
 }
 
-/// Information required to create a new notification.
+/// Data required to create a new notification for a user.
 #[derive(Debug, Clone)]
 pub(crate) struct NewNotification {
+    /// The type of notification to send.
     pub kind: NotificationKind,
+    /// The user ID to notify.
     pub user_id: Uuid,
-
+    /// Optional template data for the notification content.
     pub template_data: Option<serde_json::Value>,
 }
 
-/// Information required to deliver a notification.
+/// Data required to deliver a notification to a user.
 #[derive(Debug, Clone)]
 pub(crate) struct Notification {
+    /// Unique identifier for the notification.
     pub notification_id: Uuid,
+    /// Email address to send the notification to.
     pub email: String,
+    /// The type of notification.
     pub kind: NotificationKind,
-
+    /// Optional template data for the notification content.
     pub template_data: Option<serde_json::Value>,
 }
 
-/// Notification kind.
+/// Supported notification types.
 #[derive(Debug, Clone, Serialize, Deserialize, strum::Display, strum::EnumString)]
 #[serde(rename_all = "kebab-case")]
 #[strum(serialize_all = "kebab-case")]
 pub(crate) enum NotificationKind {
+    /// Notification for email verification.
     EmailVerification,
+    /// Notification for a team invitation.
     TeamInvitation,
 }

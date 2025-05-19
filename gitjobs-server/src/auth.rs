@@ -1,4 +1,4 @@
-//! This module contains the authentication and authorization functionality.
+//! This module contains authentication and authorization logic for the server.
 
 use std::{collections::HashMap, sync::Arc};
 
@@ -24,7 +24,7 @@ use crate::{
     db::DynDB,
 };
 
-/// Type alias for the auth layer.
+/// Type alias for the authentication layer used in the router.
 pub(crate) type AuthLayer = AuthManagerLayer<AuthnBackend, SessionStore>;
 
 /// Setup router authentication/authorization layer.
@@ -51,19 +51,19 @@ pub(crate) async fn setup_layer(cfg: &HttpServerConfig, db: DynDB) -> Result<Aut
 
 // Session store.
 
-/// Store used to manage user sessions.
+/// Store for managing user sessions in the database.
 #[derive(Clone)]
 pub(crate) struct SessionStore {
     db: DynDB,
 }
 
 impl SessionStore {
-    /// Create a new `SessionStore` instance.
+    /// Create a new `SessionStore` with the given database handle.
     pub fn new(db: DynDB) -> Self {
         Self { db }
     }
 
-    /// Convert an `anyhow::Error` to a `tower_sessions::session_store::Error`.
+    /// Convert an `anyhow::Error` to a session store error.
     #[allow(clippy::needless_pass_by_value)]
     fn to_session_store_error(err: anyhow::Error) -> session_store::Error {
         session_store::Error::Backend(err.to_string())
@@ -72,6 +72,7 @@ impl SessionStore {
 
 #[async_trait]
 impl tower_sessions::SessionStore for SessionStore {
+    /// Create a new session record in the database.
     async fn create(&self, record: &mut session::Record) -> session_store::Result<()> {
         self.db
             .create_session(record)
@@ -79,6 +80,7 @@ impl tower_sessions::SessionStore for SessionStore {
             .map_err(Self::to_session_store_error)
     }
 
+    /// Save (update) a session record in the database.
     async fn save(&self, record: &session::Record) -> session_store::Result<()> {
         self.db
             .update_session(record)
@@ -86,6 +88,7 @@ impl tower_sessions::SessionStore for SessionStore {
             .map_err(Self::to_session_store_error)
     }
 
+    /// Load a session record by session ID from the database.
     async fn load(&self, session_id: &session::Id) -> session_store::Result<Option<session::Record>> {
         self.db
             .get_session(session_id)
@@ -93,6 +96,7 @@ impl tower_sessions::SessionStore for SessionStore {
             .map_err(Self::to_session_store_error)
     }
 
+    /// Delete a session record by session ID from the database.
     async fn delete(&self, session_id: &session::Id) -> session_store::Result<()> {
         self.db
             .delete_session(session_id)
@@ -109,12 +113,14 @@ impl std::fmt::Debug for SessionStore {
 
 // Authentication backend.
 
-/// Backend used to authenticate users.
+/// Backend for authenticating users via `OAuth2`, `Oidc`, or password.
 #[derive(Clone)]
 pub(crate) struct AuthnBackend {
     db: DynDB,
     http_client: reqwest::Client,
+    /// Registered `OAuth2` providers.
     pub oauth2_providers: OAuth2Providers,
+    /// Registered `Oidc` providers.
     pub oidc_providers: OidcProviders,
 }
 
@@ -135,7 +141,7 @@ impl AuthnBackend {
         })
     }
 
-    /// Authenticate user using `OAuth2` credentials.
+    /// Authenticate a user using `OAuth2` credentials.
     async fn authenticate_oauth2(&self, creds: OAuth2Credentials) -> Result<Option<User>> {
         // Exchange the authorization code for an access token
         let Some(oauth2_provider) = self.oauth2_providers.get(&creds.provider) else {
@@ -164,7 +170,7 @@ impl AuthnBackend {
         Ok(Some(user))
     }
 
-    /// Authenticate user using `Oidc` credentials.
+    /// Authenticate a user using `Oidc` credentials.
     async fn authenticate_oidc(&self, creds: OidcCredentials) -> Result<Option<User>> {
         // Exchange the authorization code for an access and id token
         let Some(oidc_provider) = self.oidc_providers.get(&creds.provider) else {
@@ -176,7 +182,7 @@ impl AuthnBackend {
             .request_async(&self.http_client)
             .await?;
 
-        // Extract and verify id token claims
+        // Extract and verify ID token claims.
         let id_token_verifier = oidc_provider.client.id_token_verifier();
         let Some(id_token) = token_response.extra_fields().id_token() else {
             bail!("id token missing")
@@ -222,7 +228,7 @@ impl AuthnBackend {
         Ok(None)
     }
 
-    /// Setup `OAuth2` providers.
+    /// Set up `OAuth2` providers from configuration.
     fn setup_oauth2_providers(oauth2_cfg: &OAuth2Config) -> Result<OAuth2Providers> {
         let mut providers: OAuth2Providers = HashMap::new();
 
@@ -245,7 +251,7 @@ impl AuthnBackend {
         Ok(providers)
     }
 
-    /// Setup `Oidc` providers.
+    /// Set up `Oidc` providers from configuration.
     async fn setup_oidc_providers(
         oidc_cfg: &OidcConfig,
         http_client: reqwest::Client,
@@ -280,6 +286,7 @@ impl axum_login::AuthnBackend for AuthnBackend {
     type Credentials = Credentials;
     type Error = AuthError;
 
+    /// Authenticate a user using the provided credentials.
     async fn authenticate(&self, creds: Self::Credentials) -> Result<Option<Self::User>, Self::Error> {
         match creds {
             Credentials::OAuth2(creds) => self.authenticate_oauth2(creds).await.map_err(AuthError),
@@ -288,21 +295,22 @@ impl axum_login::AuthnBackend for AuthnBackend {
         }
     }
 
+    /// Retrieve a user by user ID from the database.
     async fn get_user(&self, user_id: &axum_login::UserId<Self>) -> Result<Option<Self::User>, Self::Error> {
-        // Get user from database
         self.db.get_user_by_id(user_id).await.map_err(AuthError)
     }
 }
 
-/// Type alias for `AuthSession` that includes our authentication backend.
+/// Type alias for an authentication session using our backend.
 pub(crate) type AuthSession = axum_login::AuthSession<AuthnBackend>;
 
-/// Type alias for the structure that holds the `OAuth2` providers.
+/// Type alias for a map of `OAuth2` providers.
 pub(crate) type OAuth2Providers = HashMap<OAuth2Provider, Arc<OAuth2ProviderDetails>>;
 
-/// `OAuth2` provider client and scopes.
+/// Details for an `OAuth2` provider, including client and scopes.
 #[derive(Clone)]
 pub(crate) struct OAuth2ProviderDetails {
+    /// `OAuth2` client for this provider.
     pub client: oauth2::basic::BasicClient<
         oauth2::EndpointSet,
         oauth2::EndpointNotSet,
@@ -310,15 +318,17 @@ pub(crate) struct OAuth2ProviderDetails {
         oauth2::EndpointNotSet,
         oauth2::EndpointSet,
     >,
+    /// Scopes requested from the provider.
     pub scopes: Vec<String>,
 }
 
-/// Type alias for the structure that holds the `Oidc` providers.
+/// Type alias for a map of `Oidc` providers.
 pub(crate) type OidcProviders = HashMap<OidcProvider, Arc<OidcProviderDetails>>;
 
-/// `Oidc` provider client and scopes.
+/// Details for an `Oidc` provider, including client and scopes.
 #[derive(Clone)]
 pub(crate) struct OidcProviderDetails {
+    /// `Oidc` client for this provider.
     pub client: oidc::core::CoreClient<
         oidc::EndpointSet,
         oidc::EndpointNotSet,
@@ -327,69 +337,91 @@ pub(crate) struct OidcProviderDetails {
         oidc::EndpointMaybeSet,
         oidc::EndpointMaybeSet,
     >,
+    /// Scopes requested from the provider.
     pub scopes: Vec<String>,
 }
 
-/// Wrapper around `anyhow::Error` to represent auth errors.
+/// Wrapper for authentication errors, based on `anyhow::Error`.
 #[derive(thiserror::Error, Debug)]
 #[error(transparent)]
 pub(crate) struct AuthError(#[from] anyhow::Error);
 
-/// Credentials used to authenticate a user.
+/// Credentials for authenticating a user.
 #[derive(Clone, Serialize, Deserialize)]
 pub enum Credentials {
+    /// `OAuth2` credentials.
     OAuth2(OAuth2Credentials),
+    /// `Oidc` credentials.
     Oidc(OidcCredentials),
+    /// Username and password credentials.
     Password(PasswordCredentials),
 }
 
-/// `OAuth2` credentials.
+/// Credentials for `OAuth2` authentication.
 #[derive(Clone, Serialize, Deserialize)]
 pub(crate) struct OAuth2Credentials {
+    /// Authorization code from the `OAuth2` provider.
     pub code: String,
+    /// The `OAuth2` provider to use.
     pub provider: OAuth2Provider,
 }
 
-/// `Oidc` credentials.
+/// Credentials for `Oidc` authentication.
 #[derive(Clone, Serialize, Deserialize)]
 pub(crate) struct OidcCredentials {
+    /// Authorization code from the `Oidc` provider.
     pub code: String,
+    /// Nonce used for ID token verification.
     pub nonce: oidc::Nonce,
+    /// The `Oidc` provider to use.
     pub provider: OidcProvider,
 }
 
-/// Password credentials.
+/// Credentials for password authentication.
 #[derive(Clone, Serialize, Deserialize)]
 pub(crate) struct PasswordCredentials {
+    /// Username for authentication.
     pub username: String,
+    /// Password for authentication.
     pub password: String,
 }
 
 // User types and implementations.
 
-/// User information.
+/// Represents a user in the system.
 #[derive(Clone, Serialize, Deserialize)]
 pub(crate) struct User {
+    /// Unique user ID.
     pub user_id: Uuid,
+    /// Authentication hash for session validation.
     pub auth_hash: Vec<u8>,
+    /// User's email address.
     pub email: String,
+    /// Whether the user's email is verified.
     pub email_verified: bool,
+    /// Whether the user has a profile.
     pub has_profile: bool,
+    /// Whether the user is a moderator.
     pub moderator: bool,
+    /// User's display name.
     pub name: String,
+    /// User's username.
     pub username: String,
-
+    /// Whether the user has a password set.
     pub has_password: Option<bool>,
+    /// User's password hash (if present).
     pub password: Option<String>,
 }
 
 impl axum_login::AuthUser for User {
     type Id = Uuid;
 
+    /// Get the user's unique ID.
     fn id(&self) -> Self::Id {
         self.user_id
     }
 
+    /// Get the session authentication hash.
     fn session_auth_hash(&self) -> &[u8] {
         &self.auth_hash
     }
@@ -404,27 +436,31 @@ impl std::fmt::Debug for User {
     }
 }
 
-/// User information summary.
+/// Summary of user information.
 #[skip_serializing_none]
 #[derive(Clone, Serialize, Deserialize)]
 pub(crate) struct UserSummary {
+    /// User's email address.
     pub email: String,
+    /// User's display name.
     pub name: String,
+    /// User's username.
     pub username: String,
-
+    /// Whether the user has a password set.
     pub has_password: Option<bool>,
+    /// User's password (if present).
     pub password: Option<String>,
 }
 
 impl UserSummary {
     /// Create a `UserSummary` instance from a GitHub profile.
     async fn from_github_profile(access_token: &str) -> Result<Self> {
-        // Setup headers for GitHub API requests
+        // Setup headers for GitHub API requests.
         let mut headers = HeaderMap::new();
         headers.insert(USER_AGENT, "gitjobs".parse()?);
         headers.insert(AUTHORIZATION, format!("Bearer {access_token}").as_str().parse()?);
 
-        // Get user profile from GitHub
+        // Get user profile from GitHub.
         let profile = reqwest::Client::new()
             .get("https://api.github.com/user")
             .headers(headers.clone())
@@ -433,7 +469,7 @@ impl UserSummary {
             .json::<GitHubProfile>()
             .await?;
 
-        // Get user emails from GitHub
+        // Get user emails from GitHub.
         let emails = reqwest::Client::new()
             .get("https://api.github.com/user/emails")
             .headers(headers)
@@ -442,7 +478,7 @@ impl UserSummary {
             .json::<Vec<GitHubUserEmail>>()
             .await?;
 
-        // Get primary email and check it is verified
+        // Get primary, verified email.
         let email = emails
             .into_iter()
             .find(|email| email.primary && email.verified)
@@ -457,16 +493,15 @@ impl UserSummary {
         })
     }
 
-    /// Create a `UserSummary` instance from an oidc id token claims.
+    /// Create a `UserSummary` from `Oidc` Id token claims.
     fn from_oidc_id_token_claims(
         claims: &oidc::IdTokenClaims<oidc::EmptyAdditionalClaims, oidc::core::CoreGenderClaim>,
     ) -> Result<Self> {
-        // Check if the email is verified
+        // Ensure email is verified and extract user info.
         if !claims.email_verified().unwrap_or(false) {
             bail!("email not verified");
         }
 
-        // Collect some information from the claims
         let email = claims.email().ok_or_else(|| anyhow!("email missing"))?.to_string();
         let name = get_localized_claim(claims.name()).ok_or_else(|| anyhow!("name missing"))?;
         let username = get_localized_claim(claims.nickname()).ok_or_else(|| anyhow!("nickname missing"))?;
@@ -482,6 +517,7 @@ impl UserSummary {
 }
 
 impl From<User> for UserSummary {
+    /// Convert a `User` into a `UserSummary`.
     fn from(user: User) -> Self {
         Self {
             email: user.email,
@@ -503,7 +539,7 @@ impl std::fmt::Debug for UserSummary {
     }
 }
 
-/// Get the first localized claim value.
+/// Get the first value from a localized claim, if present.
 fn get_localized_claim<T>(claim: Option<&LocalizedClaim<T>>) -> Option<T>
 where
     T: Clone,
@@ -517,24 +553,31 @@ where
     })
 }
 
-/// GitHub profile information.
+/// GitHub user profile information.
 #[derive(Debug, Deserialize)]
 struct GitHubProfile {
+    /// GitHub username.
     login: String,
+    /// GitHub display name.
     name: String,
 }
 
-/// GitHub user email.
+/// GitHub user email information.
 #[derive(Debug, Deserialize)]
 struct GitHubUserEmail {
+    /// Email address.
     email: String,
+    /// Whether this is the primary email.
     primary: bool,
+    /// Whether this email is verified.
     verified: bool,
 }
 
-/// User password update input.
+/// Input for updating a user's password.
 #[derive(Clone, Serialize, Deserialize)]
 pub(crate) struct PasswordUpdateInput {
+    /// The user's current password.
     pub old_password: String,
+    /// The new password to set.
     pub new_password: String,
 }

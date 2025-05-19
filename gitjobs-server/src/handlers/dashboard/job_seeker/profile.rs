@@ -1,4 +1,5 @@
-//! This module defines the HTTP handlers for the profile page.
+//! This module defines the HTTP handlers for previewing, updating, and saving job
+//! seeker profiles.
 
 use askama::Template;
 use axum::{
@@ -56,7 +57,7 @@ pub(crate) async fn update_page(
 
 // Actions handlers.
 
-/// Handler that updates a profile.
+/// Handler that updates a job seeker's profile in the database.
 #[instrument(skip_all, err)]
 pub(crate) async fn update(
     State(db): State<DynDB>,

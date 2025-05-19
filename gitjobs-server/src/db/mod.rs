@@ -32,39 +32,40 @@ pub(crate) mod workers;
 /// Error message when a transaction client is not found.
 const TX_CLIENT_NOT_FOUND: &str = "transaction client not found, it probably timed out";
 
-/// How often the transaction cleaner should run (in seconds).
+/// Frequency at which the transaction cleaner process runs, in seconds.
 const TXS_CLEANER_FREQUENCY: Duration = Duration::from_secs(10);
 
-/// How long a transaction client should be kept alive.
+/// Duration for which a transaction client is kept alive before timing out.
 const TXS_CLIENT_TIMEOUT: TimeDelta = TimeDelta::seconds(10);
 
-/// Abstraction layer over the database. Trait that defines some operations a
-/// DB implementation must support.
+/// Abstraction layer over the database. Defines required operations for a DB implementation.
 #[async_trait]
 pub(crate) trait DB:
     DBJobBoard + DBDashBoard + DBAuth + DBImage + DBNotifications + DBWorkers + DBViews + DBMisc
 {
-    /// Begin transaction.
+    /// Begins a new transaction and returns a unique transaction identifier.
     async fn tx_begin(&self) -> Result<Uuid>;
 
-    /// Commit transaction.
+    /// Commits the transaction associated with the given client identifier.
     async fn tx_commit(&self, client_id: Uuid) -> Result<()>;
 
-    /// Rollback transaction.
+    /// Rolls back the transaction associated with the given client identifier.
     async fn tx_rollback(&self, client_id: Uuid) -> Result<()>;
 }
 
-/// Type alias to represent a DB trait object.
+/// Type alias for a thread-safe, reference-counted database trait object.
 pub(crate) type DynDB = Arc<dyn DB + Send + Sync>;
 
 /// DB implementation backed by `PostgreSQL`.
 pub(crate) struct PgDB {
+    /// Connection pool for `PostgreSQL` clients.
     pool: Pool,
+    /// Map of transaction client IDs to their client and the timestamp it was created.
     txs_clients: RwLock<HashMap<Uuid, (Client, DateTime<Utc>)>>,
 }
 
 impl PgDB {
-    /// Create a new `PgDB` instance.
+    /// Creates a new `PgDB` instance with the provided connection pool.
     pub(crate) fn new(pool: Pool) -> Self {
         Self {
             pool,
@@ -72,7 +73,7 @@ impl PgDB {
         }
     }
 
-    /// Process that cleans up transactions clients that have timed out.
+    /// Periodically cleans up transaction clients that have timed out.
     pub(crate) async fn tx_cleaner(&self, cancellation_token: CancellationToken) {
         loop {
             // Check if we've been asked to stop or pause until next run

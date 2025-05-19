@@ -1,4 +1,4 @@
-//! This module defines the HTTP handlers for the jobs pages.
+//! This module defines the HTTP handlers for the jobs moderation dashboard pages.
 
 use askama::Template;
 use axum::{
@@ -26,7 +26,7 @@ use crate::{
 
 // Pages handlers.
 
-/// Handler that returns the live jobs page.
+/// Returns the page listing all live (published) jobs for moderation.
 #[instrument(skip_all, err)]
 pub(crate) async fn live_page(State(db): State<DynDB>) -> Result<impl IntoResponse, HandlerError> {
     let jobs = db.list_jobs_for_moderation(JobStatus::Published).await?;
@@ -35,7 +35,7 @@ pub(crate) async fn live_page(State(db): State<DynDB>) -> Result<impl IntoRespon
     Ok(Html(template.render()?))
 }
 
-/// Handler that returns the pending jobs page.
+/// Returns the page listing all jobs pending approval for moderation.
 #[instrument(skip_all, err)]
 pub(crate) async fn pending_page(State(db): State<DynDB>) -> Result<impl IntoResponse, HandlerError> {
     let jobs = db.list_jobs_for_moderation(JobStatus::PendingApproval).await?;
@@ -44,7 +44,7 @@ pub(crate) async fn pending_page(State(db): State<DynDB>) -> Result<impl IntoRes
     Ok(Html(template.render()?))
 }
 
-/// Handler that returns the job preview page.
+/// Returns the preview page for a specific job and its employer.
 #[instrument(skip_all, err)]
 pub(crate) async fn preview_page(
     State(db): State<DynDB>,
@@ -58,7 +58,7 @@ pub(crate) async fn preview_page(
 
 // Actions.
 
-/// Handler that approves a job.
+/// Approves a job as a moderator and triggers a table refresh in the UI.
 #[instrument(skip_all, err)]
 pub(crate) async fn approve(
     auth_session: AuthSession,
@@ -80,7 +80,8 @@ pub(crate) async fn approve(
         .into_response())
 }
 
-/// Handler that rejects a job.
+/// Rejects a job as a moderator, optionally including review notes, and triggers a table
+/// refresh.
 #[instrument(skip_all, err)]
 pub(crate) async fn reject(
     auth_session: AuthSession,
@@ -106,9 +107,10 @@ pub(crate) async fn reject(
 
 // Types.
 
-/// Reject information.
+/// Input data for rejecting a job, including optional review notes.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub(crate) struct RejectInput {
+    /// Optional review notes provided by the moderator when rejecting a job.
     #[serde(skip_serializing_if = "option_is_none_or_default")]
     pub review_notes: Option<String>,
 }

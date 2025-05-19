@@ -1,5 +1,4 @@
-//! This module defines some database functionality used for authentication and
-//! authorization.
+//! This module provides database operations for authentication and authorization.
 
 use anyhow::{Result, anyhow};
 use async_trait::async_trait;
@@ -14,66 +13,67 @@ use crate::{
     db::PgDB,
 };
 
-/// Trait that defines some database operations used for authentication and
-/// authorization.
+/// Trait for database operations related to authentication and authorization.
 #[async_trait]
 pub(crate) trait DBAuth {
-    /// Create a new session.
+    /// Creates a new session in the database.
     async fn create_session(&self, record: &session::Record) -> Result<()>;
 
-    /// Delete session.
+    /// Deletes a session from the database.
     async fn delete_session(&self, session_id: &session::Id) -> Result<()>;
 
-    /// Get session.
+    /// Retrieves a session by its ID.
     async fn get_session(&self, session_id: &session::Id) -> Result<Option<session::Record>>;
 
-    /// Get user by email.
+    /// Retrieves a user by their email address.
     async fn get_user_by_email(&self, email: &str) -> Result<Option<User>>;
 
-    /// Get user by id.
+    /// Retrieves a user by their unique ID.
     async fn get_user_by_id(&self, user_id: &Uuid) -> Result<Option<User>>;
 
-    /// Get user by username.
+    /// Retrieves a user by their username.
     async fn get_user_by_username(&self, username: &str) -> Result<Option<User>>;
 
-    /// Get user password.
+    /// Retrieves the password hash for a user.
     async fn get_user_password(&self, user_id: &Uuid) -> Result<Option<String>>;
 
-    /// Check if the image is public.
+    /// Checks if an image is public.
     async fn is_image_public(&self, image_id: &Uuid) -> Result<bool>;
 
-    /// Sign up a new user.
+    /// Registers a new user in the database.
     async fn sign_up_user(
         &self,
         user_summary: &UserSummary,
         email_verified: bool,
     ) -> Result<(User, Option<VerificationCode>)>;
 
-    /// Update session.
+    /// Updates an existing session in the database.
     async fn update_session(&self, record: &session::Record) -> Result<()>;
 
-    /// Update user details.
+    /// Updates user details in the database.
     async fn update_user_details(&self, user_id: &Uuid, user_summary: &UserSummary) -> Result<()>;
 
-    /// Update user password.
+    /// Updates a user's password in the database.
     async fn update_user_password(&self, user_id: &Uuid, new_password: &str) -> Result<()>;
 
-    /// Check if the user has access to the image.
+    /// Checks if a user has access to a specific image.
     async fn user_has_image_access(&self, user_id: &Uuid, image_id: &Uuid) -> Result<bool>;
 
-    /// Check if the user has access to the profile.
+    /// Checks if a user has access to a specific job seeker profile.
     async fn user_has_profile_access(&self, user_id: &Uuid, job_seeker_profile_id: &Uuid) -> Result<bool>;
 
-    /// Check if the user owns the employer.
+    /// Checks if a user owns a specific employer.
     async fn user_owns_employer(&self, user_id: &Uuid, employer_id: &Uuid) -> Result<bool>;
 
-    /// Check if the user owns the job
+    /// Checks if a user owns a specific job.
     async fn user_owns_job(&self, user_id: &Uuid, job_id: &Uuid) -> Result<bool>;
 
-    /// Verify email.
+    /// Verifies a user's email address using a verification code.
     async fn verify_email(&self, code: &Uuid) -> Result<()>;
 }
 
+/// Implementation of DBAuth for PgDB, providing all authentication and authorization
+/// related database operations.
 #[async_trait]
 impl DBAuth for PgDB {
     #[instrument(skip(self, record), err)]
@@ -586,5 +586,5 @@ impl DBAuth for PgDB {
     }
 }
 
-/// Type alias for the email verification code.
+/// Type alias for the email verification code (UUID).
 pub(crate) type VerificationCode = Uuid;

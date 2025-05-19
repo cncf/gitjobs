@@ -1,5 +1,4 @@
-//! This module defines the HTTP handlers for the moderator dashboard home
-//! page.
+//! This module defines the HTTP handlers for the moderator dashboard home page.
 
 use std::collections::HashMap;
 
@@ -34,6 +33,10 @@ use crate::{
 // Pages handlers.
 
 /// Handler that returns the moderator dashboard home page.
+///
+/// This function handles the HTTP request for the moderator dashboard home page.
+/// It retrieves the user from the session, determines the selected tab, fetches
+/// the relevant data from the database, and renders the appropriate template.
 #[instrument(skip_all, err)]
 pub(crate) async fn page(
     auth_session: AuthSession,

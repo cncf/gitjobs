@@ -1,5 +1,4 @@
-//! This module defines some database functionality for the moderator
-//! dashboard.
+//! This module defines database operations for the moderator dashboard.
 
 use anyhow::Result;
 use async_trait::async_trait;
@@ -11,17 +10,16 @@ use crate::{
     templates::dashboard::{employer::jobs::JobStatus, moderator::jobs::JobSummary},
 };
 
-/// Trait that defines some database operations used in the moderator
-/// dashboard.
+/// Trait for moderator dashboard database operations.
 #[async_trait]
 pub(crate) trait DBDashBoardModerator {
-    /// Approve job.
+    /// Approves a job and updates its status and review metadata.
     async fn approve_job(&self, job_id: &Uuid, reviewer: &Uuid) -> Result<()>;
 
-    /// List jobs that match the given status.
+    /// Lists jobs for moderation filtered by the given status.
     async fn list_jobs_for_moderation(&self, status: JobStatus) -> Result<Vec<JobSummary>>;
 
-    /// Reject job.
+    /// Rejects a job, optionally adding review notes and updating review metadata.
     async fn reject_job(&self, job_id: &Uuid, reviewer: &Uuid, review_notes: Option<&String>) -> Result<()>;
 }
 

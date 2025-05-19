@@ -1,4 +1,4 @@
-//! Some helpers for templates.
+//! Helpers for formatting, normalization, and data conversion in templates.
 
 use std::{collections::HashMap, sync::LazyLock, time::Duration};
 
@@ -10,26 +10,26 @@ use uuid::Uuid;
 
 use crate::templates::dashboard::employer::employers::EmployerSummary;
 
-/// The date format used in the templates.
+/// The date format used in the templates (YYYY-MM-DD).
 pub(crate) const DATE_FORMAT: &str = "%Y-%m-%d";
 
-/// The date format used in the jobseeker preview.
+/// The date format used in the jobseeker preview (Month Year).
 pub(crate) const DATE_FORMAT_2: &str = "%B %Y";
 
-/// The date format used in the jobboard jobs page.
+/// The date format used in the jobboard jobs page (Abbreviated Month Day).
 pub(crate) const DATE_FORMAT_3: &str = "%b %e";
 
-/// Build dashboard url for an image version.
+/// Build dashboard image URL for a specific image version.
 pub(crate) fn build_dashboard_image_url(image_id: &Uuid, version: &str) -> String {
     format!("/dashboard/images/{image_id}/{version}")
 }
 
-/// Build job board url for an image version.
+/// Build job board image URL for a specific image version.
 pub(crate) fn build_jobboard_image_url(image_id: &Uuid, version: &str) -> String {
     format!("/jobboard/images/{image_id}/{version}")
 }
 
-/// Find the employer with the given id in the list of employers.
+/// Find an employer by id in a list of employers.
 pub(crate) fn find_employer<'a>(
     employer_id: Option<&'a Uuid>,
     employers: &'a [EmployerSummary],
@@ -38,7 +38,7 @@ pub(crate) fn find_employer<'a>(
     employers.iter().find(|e| e.employer_id == *employer_id)
 }
 
-/// Format location string from the location information provided.
+/// Format a location string from city, state, and country information.
 pub(crate) fn format_location(
     city: Option<&str>,
     state: Option<&str>,
@@ -67,7 +67,7 @@ pub(crate) fn format_location(
     None
 }
 
-/// Check if the value provided is none or some and default.
+/// Returns true if the option is None or contains the default value.
 #[allow(clippy::ref_option)]
 pub(crate) fn option_is_none_or_default<T: Default + PartialEq>(v: &Option<T>) -> bool {
     if let Some(value) = v {
@@ -76,18 +76,17 @@ pub(crate) fn option_is_none_or_default<T: Default + PartialEq>(v: &Option<T>) -
     true
 }
 
-/// Regular expression to match multiple hyphens.
+/// Regex for matching multiple consecutive hyphens in a string.
 static MULTIPLE_HYPHENS: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"-{2,}").expect("exprs in MULTIPLE_HYPHENS should be valid"));
 
-/// Normalize string.
+/// Normalize a string: lowercase, replace spaces with hyphens, collapse multiple hyphens.
 pub(crate) fn normalize(s: &str) -> String {
     let normalized = s.to_lowercase().replace(' ', "-");
-    let normalized = MULTIPLE_HYPHENS.replace(&normalized, "-").to_string();
-    normalized
+    MULTIPLE_HYPHENS.replace(&normalized, "-").to_string()
 }
 
-/// Convert salary to USD yearly.
+/// Convert a salary to a yearly USD value using exchange rates and period.
 pub(crate) async fn normalize_salary(
     salary: Option<i64>,
     currency: Option<&String>,
@@ -147,7 +146,7 @@ async fn get_exchange_rates() -> HashMap<String, f64> {
     exchange_rates
 }
 
-/// Download current exchange rates.
+/// Download current exchange rates from a public API.
 #[tracing::instrument(skip_all, err)]
 async fn download_exchange_rates() -> Result<HashMap<String, f64>> {
     debug!("downloading current exchange rates");
@@ -159,7 +158,7 @@ async fn download_exchange_rates() -> Result<HashMap<String, f64>> {
     Ok(exchange_rates.usd)
 }
 
-/// Response from the exchange rates API.
+/// Structure for the exchange rates API response.
 #[derive(Debug, Clone, PartialEq, serde::Deserialize)]
 struct ExchangeRatesApiResponse {
     pub usd: HashMap<String, f64>,

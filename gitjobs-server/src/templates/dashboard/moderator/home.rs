@@ -1,5 +1,4 @@
-//! This module defines some templates and types used in the moderator
-//! dashboard home page.
+//! Templates and types for the moderator dashboard home page.
 
 use askama::Template;
 use axum_messages::{Level, Message};
@@ -9,25 +8,32 @@ use crate::templates::{Config, PageId, auth::User, dashboard::moderator::jobs, f
 
 // Pages templates.
 
-/// Home page template.
+/// Template for the moderator dashboard home page.
 #[derive(Debug, Clone, Template)]
 #[template(path = "dashboard/moderator/home.html")]
 pub(crate) struct Page {
+    /// Application configuration.
     pub cfg: Config,
+    /// Content section for the dashboard.
     pub content: Content,
+    /// Identifier for the current page.
     pub page_id: PageId,
+    /// Flash or status messages to display.
     pub messages: Vec<Message>,
+    /// Authenticated user information.
     pub user: User,
-
+    /// Name of the authentication provider, if any.
     pub auth_provider: Option<String>,
 }
 
 // Types.
 
-/// Content section.
+/// Content section for the moderator dashboard home page.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub(crate) enum Content {
+    /// Live jobs page content.
     LiveJobs(jobs::LivePage),
+    /// Pending jobs page content.
     PendingJobs(jobs::PendingPage),
 }
 
@@ -52,11 +58,13 @@ impl std::fmt::Display for Content {
     }
 }
 
-/// Tab selected.
+/// Tab selection for the moderator dashboard home page.
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize, strum::Display, strum::EnumString)]
 #[strum(serialize_all = "kebab-case")]
 pub(crate) enum Tab {
+    /// Live jobs tab.
     LiveJobs,
+    /// Pending jobs tab (default).
     #[default]
     PendingJobs,
 }

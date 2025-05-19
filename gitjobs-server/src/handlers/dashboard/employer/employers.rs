@@ -21,7 +21,7 @@ use crate::{
 
 // Pages handlers.
 
-/// Handler that returns the page to add a new employer.
+/// Displays the page to add a new employer.
 #[instrument(skip_all, err)]
 pub(crate) async fn add_page(State(db): State<DynDB>) -> Result<impl IntoResponse, HandlerError> {
     let foundations = db.list_foundations().await?;
@@ -30,7 +30,7 @@ pub(crate) async fn add_page(State(db): State<DynDB>) -> Result<impl IntoRespons
     Ok(Html(template.render()?))
 }
 
-/// Handler that returns the page to update an employer.
+/// Displays the page to update an employer.
 #[instrument(skip_all, err)]
 pub(crate) async fn update_page(
     State(db): State<DynDB>,
@@ -48,7 +48,7 @@ pub(crate) async fn update_page(
 
 // Actions handlers.
 
-/// Handler that adds an employer.
+/// Adds a new employer to the database and sets it as selected in the session.
 #[instrument(skip_all, err)]
 pub(crate) async fn add(
     auth_session: AuthSession,
@@ -86,7 +86,7 @@ pub(crate) async fn add(
         .into_response())
 }
 
-/// Handler that selects an employer.
+/// Sets the selected employer in the session for the current user.
 #[instrument(skip_all, err)]
 pub(crate) async fn select(
     session: Session,
@@ -105,7 +105,7 @@ pub(crate) async fn select(
         .into_response())
 }
 
-/// Handler that updates an employer.
+/// Updates an existing employer's information in the database.
 #[instrument(skip_all, err)]
 pub(crate) async fn update(
     messages: Messages,

@@ -1,5 +1,4 @@
-//! This module defines the router used to dispatch HTTP requests to the
-//! corresponding handler.
+//! This module defines the router used to dispatch HTTP requests to handlers.
 
 use anyhow::Result;
 use axum::{
@@ -37,23 +36,29 @@ use crate::{
     views::DynViewsTracker,
 };
 
-/// Embed static files in the binary.
+/// Embeds static files from the "static" folder into the binary.
 #[derive(Embed)]
 #[folder = "static"]
 struct StaticFile;
 
-/// Router's state.
+/// Holds shared state for the router, including config and service handles.
 #[derive(Clone, FromRef)]
 pub(crate) struct State {
+    /// HTTP server configuration.
     pub cfg: HttpServerConfig,
+    /// Database handle.
     pub db: DynDB,
+    /// Image store handle.
     pub image_store: DynImageStore,
+    /// `serde_qs` config for query string parsing.
     pub serde_qs_de: serde_qs::Config,
+    /// Notifications manager handle.
     pub notifications_manager: DynNotificationsManager,
+    /// Views tracker handle.
     pub views_tracker: DynViewsTracker,
 }
 
-/// Setup router.
+/// Sets up the main application router and all sub-routers.
 #[instrument(skip_all, err)]
 pub(crate) async fn setup(
     cfg: HttpServerConfig,
@@ -165,7 +170,7 @@ pub(crate) async fn setup(
     Ok(router.with_state(state))
 }
 
-/// Setup employer dashboard router.
+/// Sets up the employer dashboard router and its routes.
 fn setup_employer_dashboard_router(state: &State) -> Router<State> {
     // Setup middleware
     let check_user_has_profile_access =
@@ -252,7 +257,7 @@ fn setup_employer_dashboard_router(state: &State) -> Router<State> {
         )
 }
 
-/// Setup job seeker dashboard router.
+/// Sets up the job seeker dashboard router and its routes.
 fn setup_job_seeker_dashboard_router() -> Router<State> {
     Router::new()
         .route("/", get(dashboard::job_seeker::home::page))
@@ -274,7 +279,7 @@ fn setup_job_seeker_dashboard_router() -> Router<State> {
         )
 }
 
-/// Setup moderator dashboard router.
+/// Sets up the moderator dashboard router and its routes.
 fn setup_moderator_dashboard_router(state: &State) -> Router<State> {
     // Setup middleware
     let user_is_moderator = middleware::from_fn_with_state(state.clone(), auth::user_is_moderator);
@@ -293,7 +298,7 @@ fn setup_moderator_dashboard_router(state: &State) -> Router<State> {
         .route_layer(user_is_moderator)
 }
 
-/// Setup dashboard images router.
+/// Sets up the dashboard images router for authenticated image access.
 fn setup_dashboard_images_router(state: &State) -> Router<State> {
     // Setup middleware
     let check_user_has_image_access =
@@ -306,7 +311,7 @@ fn setup_dashboard_images_router(state: &State) -> Router<State> {
     )
 }
 
-/// Setup job board images router.
+/// Sets up the job board images router for public image access.
 fn setup_jobboard_images_router(state: &State) -> Router<State> {
     // Setup middleware
     let check_image_is_public = middleware::from_fn_with_state(state.clone(), auth::image_is_public);
@@ -318,12 +323,12 @@ fn setup_jobboard_images_router(state: &State) -> Router<State> {
     )
 }
 
-/// Handler that takes care of health check requests.
+/// Responds to health check requests with HTTP 200 OK.
 async fn health_check() -> impl IntoResponse {
     StatusCode::OK
 }
 
-/// Handler that serves static files.
+/// Serves static files embedded in the binary, with cache headers.
 async fn static_handler(uri: Uri) -> impl IntoResponse {
     // Extract file path from URI
     let mut path = uri.path().trim_start_matches('/').to_string();

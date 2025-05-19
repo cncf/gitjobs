@@ -9,16 +9,16 @@ use crate::{
     templates::misc::{Location, Member, Project},
 };
 
-/// Trait that defines some common database operations used across the site.
+/// Trait that defines common database operations used across the site.
 #[async_trait]
 pub(crate) trait DBMisc {
-    /// Search locations.
+    /// Searches for locations matching the provided query string.
     async fn search_locations(&self, ts_query: &str) -> Result<Vec<Location>>;
 
-    /// Search members.
+    /// Searches for members in a foundation matching the provided member name.
     async fn search_members(&self, foundation: &str, member: &str) -> Result<Vec<Member>>;
 
-    /// Search projects.
+    /// Searches for projects in a foundation matching the provided project name.
     async fn search_projects(&self, foundation: &str, project: &str) -> Result<Vec<Project>>;
 }
 

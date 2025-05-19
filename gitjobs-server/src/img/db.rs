@@ -9,8 +9,9 @@ use crate::{
     img::{ImageFormat, ImageStore, ImageVersion, generate_versions, is_svg},
 };
 
-/// Database-backed image store.
+/// Database-backed image store implementation.
 pub(crate) struct DbImageStore {
+    /// Database image interface for storing and retrieving images.
     db: DynDBImage,
 }
 
@@ -23,10 +24,12 @@ impl DbImageStore {
 
 #[async_trait]
 impl ImageStore for DbImageStore {
+    /// Retrieve an image version by its ID and version name.
     async fn get(&self, image_id: Uuid, version: &str) -> Result<Option<(Vec<u8>, ImageFormat)>> {
         self.db.get_image_version(image_id, version).await
     }
 
+    /// Save an image and its generated versions to the database.
     async fn save(&self, user_id: &Uuid, filename: &str, data: Vec<u8>) -> Result<Uuid> {
         // Prepare image versions
         let versions = if is_svg(filename) {

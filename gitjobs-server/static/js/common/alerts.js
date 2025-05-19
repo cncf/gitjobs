@@ -1,4 +1,8 @@
-const getCommonAlertOptions = () => {
+/**
+ * Returns the default SweetAlert2 options for consistent styling.
+ * @returns {Object} SweetAlert2 options object.
+ */
+const getAlertOptions = () => {
   return {
     position: "top-end",
     buttonsStyling: false,
@@ -16,54 +20,76 @@ const getCommonAlertOptions = () => {
   };
 };
 
+/**
+ * Shows a success alert with a custom message.
+ * @param {string} message - The message to display in the alert.
+ */
 export const showSuccessAlert = (message) => {
   Swal.fire({
     text: message,
     icon: "success",
     showConfirmButton: true,
     timer: 5000,
-    ...getCommonAlertOptions(),
+    ...getAlertOptions(),
   });
 };
 
+/**
+ * Shows an error alert with a custom message.
+ * @param {string} message - The message to display in the alert.
+ */
 export const showErrorAlert = (message) => {
   Swal.fire({
     text: message,
     icon: "error",
     showConfirmButton: true,
     timer: 30000,
-    ...getCommonAlertOptions(),
+    ...getAlertOptions(),
   });
 };
 
+/**
+ * Shows an informational alert with a custom message.
+ * @param {string} message - The message to display in the alert.
+ */
 export const showInfoAlert = (message) => {
   Swal.fire({
     text: message,
     icon: "info",
     showConfirmButton: true,
     timer: 10000,
-    ...getCommonAlertOptions(),
+    ...getAlertOptions(),
   });
 };
 
-export const showInfoAlertWithHtml = (message) => {
+/**
+ * Shows an informational alert with custom HTML content.
+ * @param {string} message - The HTML content to display in the alert.
+ */
+export const showHtmlInfoAlert = (message) => {
   Swal.fire({
     html: message,
     icon: "info",
     showConfirmButton: true,
     timer: 10000,
-    ...getCommonAlertOptions(),
+    ...getAlertOptions(),
   });
 };
 
-export const showConfirmAlert = (message, btnId, confirmText) => {
+/**
+ * Shows a confirmation alert with custom text and triggers an event if confirmed.
+ * @param {string} message - The message to display in the alert.
+ * @param {string} btnId - The ID of the element to trigger if confirmed.
+ * @param {string} confirmText - The text to display on the confirmation button.
+ */
+export const showConfirmationAlert = (message, btnId, confirmText) => {
   Swal.fire({
     text: message,
     icon: "warning",
     showCancelButton: true,
     confirmButtonText: confirmText,
     cancelButtonText: "No",
-    ...getCommonAlertOptions(),
+    ...getAlertOptions(),
   }).then((result) => {
     if (result.isConfirmed) {
       htmx.trigger(`#${btnId}`, "confirmed");

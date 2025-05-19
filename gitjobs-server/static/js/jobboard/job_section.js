@@ -1,7 +1,7 @@
 import {
-  showConfirmAlert,
+  showConfirmationAlert,
   showErrorAlert,
-  showInfoAlertWithHtml,
+  showHtmlInfoAlert,
   showSuccessAlert,
 } from "/static/js/common/alerts.js";
 import { isSuccessfulXHRStatus } from "/static/js/common/common.js";
@@ -20,7 +20,7 @@ export const applyButton = () => {
 
   if (isUserLoggedIn === "false") {
     applyButton.addEventListener("click", () => {
-      showInfoAlertWithHtml(
+      showHtmlInfoAlert(
         "You need to be <a href='/log-in' class='underline font-medium' hx-boost='true'>logged in</a> to apply.",
       );
     });
@@ -33,7 +33,7 @@ export const applyButton = () => {
     } else {
       if (hasProfile === "false") {
         applyButton.addEventListener("click", () => {
-          showInfoAlertWithHtml(
+          showHtmlInfoAlert(
             "You need to <a href='/dashboard/job-seeker' class='underline font-medium' hx-boost='true'>set up</a> your job seeker profile to apply.",
           );
         });
@@ -43,7 +43,7 @@ export const applyButton = () => {
         applyButton.setAttribute("hx-trigger", "confirmed");
         htmx.process(applyButton);
         applyButton.addEventListener("click", () => {
-          showConfirmAlert("Are you sure you want to apply to this job?", "apply-button", "Yes");
+          showConfirmationAlert("Are you sure you want to apply to this job?", "apply-button", "Yes");
         });
 
         applyButton.addEventListener("htmx:afterRequest", (e) => {

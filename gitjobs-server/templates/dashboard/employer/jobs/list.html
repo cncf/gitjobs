@@ -201,9 +201,9 @@
                         </button>
                         <script type="module">
                           import {
-                            showConfirmAlert,
+                            showConfirmationAlert,
                             showErrorAlert,
-                            showInfoAlertWithHtml,
+                            showHtmlInfoAlert,
                             showSuccessAlert,
                           } from "/static/js/common/alerts.js";
                           import {
@@ -211,7 +211,7 @@
                           } from "/static/js/common/common.js";
                           const deleteJobButton = document.getElementById('delete-job-{{ job.job_id }}');
                           deleteJobButton.addEventListener('click', (event) => {
-                            showConfirmAlert("Are you sure you wish to delete this job?", "delete-job-{{ job.job_id }}", "Yes");
+                            showConfirmationAlert("Are you sure you wish to delete this job?", "delete-job-{{ job.job_id }}", "Yes");
                           });
 
                           deleteJobButton.addEventListener("htmx:afterRequest", (e) => {

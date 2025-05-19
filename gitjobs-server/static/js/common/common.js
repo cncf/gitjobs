@@ -70,7 +70,7 @@ export const isObjectValuesEmpty = (object) => {
   // Remove the id key from the object
   const objectWithoutId = { ...object };
   delete objectWithoutId.id;
-  return Object.values(objectWithoutId).every((x) => x === null || x === "" || typeof x === "undefined");
+  return Object.values(objectWithoutId).every((x) => x === null || x === "" || x === undefined);
 };
 
 /**
@@ -90,9 +90,6 @@ export const unnormalize = (inputText) => {
  */
 export const setQueryParam = (paramName, paramValue, stateObj) => {
   const searchParams = new URLSearchParams(window.location.search);
-  if (searchParams.has(paramName)) {
-    searchParams.delete(paramName);
-  }
   searchParams.set(paramName, paramValue);
   updateBrowserUrl(searchParams.toString(), stateObj);
 };
@@ -163,7 +160,7 @@ export const shouldShowJobPreviewModal = (onPageLoad = false) => {
  */
 export const registerJobView = async (jobId) => {
   try {
-    fetch(`/jobs/${jobId}/views`, {
+    await fetch(`/jobs/${jobId}/views`, {
       method: "POST",
     });
   } catch (error) {

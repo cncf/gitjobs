@@ -105,7 +105,7 @@ export class InputRange extends LitWrapper {
    * Handles input change events, updates value and styles.
    * @param {Event} event
    */
-  _onInputChange(event) {
+  _handleInputChange(event) {
     const newValue = event.target.value;
     this.value = newValue;
     this._updateStyles(newValue);
@@ -196,7 +196,7 @@ export class InputRange extends LitWrapper {
           form="${this.form || nothing}"
           name="${this.name}"
           type="range"
-          @input=${this._onInputChange}
+          @input=${this._handleInputChange}
           @mousedown=${() => this._setTooltipVisibility(true)}
           @mouseup=${this._onMouseUp}
           @touchstart=${() => this._setTooltipVisibility(true)}

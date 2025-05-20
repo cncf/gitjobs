@@ -102,7 +102,7 @@ export class MultiSelect extends LitWrapper {
    * Updates inputValue and filters items.
    * @param {Event} event - Input event from the search box.
    */
-  _onInputChange(event) {
+  _handleInputChange(event) {
     const { value } = event.target;
     this.inputValue = value;
     this._filterVisibleItems();
@@ -172,7 +172,7 @@ export class MultiSelect extends LitWrapper {
             )}
             <input
               type="text"
-              @input=${this._onInputChange}
+              @input=${this._handleInputChange}
               @focus=${() => (this.isDropdownOpen = true)}
               .value="${this.inputValue}"
               placeholder="Type to search"

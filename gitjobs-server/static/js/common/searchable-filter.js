@@ -73,7 +73,7 @@ export class SearchableFilter extends LitWrapper {
     }
   }
 
-  _onInputChange(event) {
+  _handleInputChange(event) {
     this.enteredValue = event.target.value;
     this._filterOptions();
   }
@@ -167,7 +167,7 @@ export class SearchableFilter extends LitWrapper {
       <input
         type="text"
         @keydown="${this._handleKeyDown}"
-        @input=${this._onInputChange}
+        @input=${this._handleInputChange}
         @focus=${() => (this.visibleDropdown = true)}
         .value="${this.enteredValue}"
         class="input-primary py-0.5 peer ps-9 rounded-lg text-[0.775rem]/6 text-stone-700"

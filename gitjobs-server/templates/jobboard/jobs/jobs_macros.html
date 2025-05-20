@@ -132,7 +132,7 @@
               // Clean search projects input field
               const searchProjects = document.getElementsByTagName("search-projects");
               for (let i = 0; i < searchProjects.length; i++) {
-                searchProjects[i].cleanSelected();
+                searchProjects[i].clearSelectedProjects();
               }
             }
           });
@@ -144,7 +144,7 @@
     {# Projects -#}
     <div>
       <div class="text-xs/6 text-stone-500/75 -mt-2 mb-2">or select specific projects</div>
-      <search-projects foundations="{{ filters_options.foundations|json }}" viewType="rows" form="{{ device }}-jobs-form" {%- if let Some(filters_projects) = filters.projects %}selected="{{ filters_projects|json }}"{%- endif -%}></search-projects>
+      <search-projects foundations="{{ filters_options.foundations|json }}" formId="{{ device }}-jobs-form" {%- if let Some(filters_projects) = filters.projects %}selectedProjects="{{ filters_projects|json }}"{%- endif -%}></search-projects>
     </div>
     {# End projects -#}
 

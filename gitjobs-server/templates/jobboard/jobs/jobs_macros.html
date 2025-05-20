@@ -187,7 +187,7 @@
   {# Benefits -#}
   <div>
     {% call filters_subtitle(text = "Benefits") -%}
-    <searchable-filter name="benefits" viewType="rows" form="{{ device }}-jobs-form" {%- if let Some(filters_benefits) = filters.benefits %}selected="{{ filters_benefits|json }}"{%- endif -%}></searchable-filter>
+    <searchable-filter name="benefits" layout="rows" formId="{{ device }}-jobs-form" {%- if let Some(filters_benefits) = filters.benefits %}selectedOptions="{{ filters_benefits|json }}"{%- endif -%}></searchable-filter>
   </div>
   {# End benefits -#}
 </div>

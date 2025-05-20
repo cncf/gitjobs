@@ -91,7 +91,7 @@ export const resetForm = async (formId) => {
     // Clean selected options in collapsible filters
     const searchableFilters = document.getElementsByTagName("searchable-filter");
     for (let i = 0; i < searchableFilters.length; i++) {
-      await searchableFilters[i].cleanSelected();
+      await searchableFilters[i].clearSelectedOptions();
     }
 
     // Clean search projects input field

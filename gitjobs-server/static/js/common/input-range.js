@@ -1,12 +1,11 @@
-/**
- * InputRange web component for a customizable range slider with tooltip and legend.
- * Extends LitWrapper and uses Lit for rendering.
- */
 import { html, createRef, ref, nothing } from "/static/vendor/js/lit-all.v3.2.1.min.js";
 import { LitWrapper } from "/static/js/common/lit-wrapper.js";
 import { triggerActionOnForm } from "/static/js/jobboard/filters.js";
 
 /**
+ * InputRange web component for a customizable range slider with tooltip and legend.
+ * Extends LitWrapper and uses Lit for rendering.
+ *
  * @class InputRange
  * @property {string} form - Form ID to trigger on change (optional).
  * @property {string} name - Name attribute for the input.
@@ -21,6 +20,7 @@ import { triggerActionOnForm } from "/static/js/jobboard/filters.js";
  * @property {string} colorType - Color theme key ("type-1", "type-2", "type-3").
  * @method resetRange - Resets the slider to its minimum value and hides the tooltip.
  */
+
 export class InputRange extends LitWrapper {
   static properties = {
     form: { type: String | undefined },

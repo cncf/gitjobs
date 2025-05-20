@@ -109,7 +109,7 @@ export const resetForm = async (formId) => {
     // Clean search location input field
     const locationInputs = document.getElementsByTagName("search-location");
     for (let i = 0; i < locationInputs.length; i++) {
-      await locationInputs[i].cleanLocation();
+      await locationInputs[i].resetLocationFields();
     }
 
     // Clean ts_query input field

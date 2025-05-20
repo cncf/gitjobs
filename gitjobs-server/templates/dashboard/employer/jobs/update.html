@@ -72,7 +72,7 @@
         <div class="col-span-full lg:col-span-3">
           <label for="ts_query" class="form-label">Location</label>
           {% if let Some(location) = job.location -%}
-            <search-location location_id="{{ location.location_id }}" city="{{ location.city }}" state="{{ location.state|display_some }}" country="{{ location.country }}"></search-location>
+            <search-location locationId="{{ location.location_id }}" city="{{ location.city }}" state="{{ location.state|display_some }}" country="{{ location.country }}"></search-location>
           {% else -%}
             <search-location></search-location>
           {% endif -%}

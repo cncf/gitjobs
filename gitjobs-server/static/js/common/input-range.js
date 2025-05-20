@@ -1,8 +1,42 @@
+/**
+ * InputRange Web Component
+ *
+ * A customizable range slider component built with Lit, supporting:
+ * - Custom min, max, step, and value
+ * - Optional prefix and unit display
+ * - Dynamic color themes
+ * - Tooltip showing the current value
+ * - Legend steps for visual scale
+ * - Integration with forms and external triggers
+ *
+ * Properties:
+ *   - form: (string) The form ID to trigger on change (optional)
+ *   - name: (string) The input name attribute
+ *   - min: (number) Minimum value of the range
+ *   - max: (number) Maximum value of the range
+ *   - step: (number) Step size for the range
+ *   - value: (number) Current value of the range
+ *   - prefix: (string) Text to display before the value in the tooltip
+ *   - unit: (string) Text to display after the value in the tooltip
+ *   - legendCount: (number) Number of legend steps to display
+ *   - visibleTooltip: (boolean) Whether the tooltip is visible
+ *   - colorType: (string) Color theme key ("type-1", "type-2", "type-3")
+ *
+ * Public methods:
+ *   - resetRange(): Resets the slider to its minimum value and hides the tooltip.
+ *
+ * Example usage:
+ *   <input-range name="salary" min="0" max="200000" step="10" unit="$"></input-range>
+ */
+
 import { html, createRef, ref, nothing } from "/static/vendor/js/lit-all.v3.2.1.min.js";
 import { LitWrapper } from "/static/js/common/lit-wrapper.js";
 import { triggerActionOnForm } from "/static/js/jobboard/filters.js";
 
 export class InputRange extends LitWrapper {
+  /**
+   * Lit properties for the component.
+   */
   static properties = {
     form: { type: String | undefined },
     name: { type: String | undefined },
@@ -12,13 +46,19 @@ export class InputRange extends LitWrapper {
     value: { type: Number },
     prefix: { type: String },
     unit: { type: String },
-    legendsNumber: { type: Number },
+    legendCount: { type: Number },
     visibleTooltip: { type: Boolean },
-    type: { type: String },
+    colorType: { type: String },
   };
 
+  /**
+   * Reference to the input element.
+   */
   inputRef = createRef();
 
+  /**
+   * Initializes default property values and color themes.
+   */
   constructor() {
     super();
     this.form = undefined;
@@ -29,13 +69,13 @@ export class InputRange extends LitWrapper {
     this.value = 0;
     this.prefix = "";
     this.unit = "%";
-    this.percentValue = 0;
-    this.offset = 0;
-    this.legendsNumber = 5;
+    this.percentFilled = 0;
+    this.thumbOffset = 0;
+    this.legendCount = 5;
     this.visibleTooltip = false;
-    this.steps = [];
-    this.type = "type-1";
-    this.colors = {
+    this.legendSteps = [];
+    this.colorType = "type-1";
+    this.colorStyles = {
       "type-1": {
         "progress-line": "var(--color-primary-500)",
         thumb: "accent-primary-600",
@@ -57,61 +97,98 @@ export class InputRange extends LitWrapper {
     };
   }
 
+  /**
+   * Lifecycle: Called when the component is added to the DOM.
+   * Prepares legend steps and updates styles if value is set.
+   */
   connectedCallback() {
     super.connectedCallback();
-
-    this.steps = this._range(this.min, this.max, this.max / (this.legendsNumber - 1));
-
+    this._prepareSteps();
     if (this.value > 0) {
-      this._refreshStyles(this.value);
+      this._updateStyles(this.value);
     }
   }
 
+  /**
+   * Prepares the legend steps for the slider scale.
+   */
+  _prepareSteps() {
+    this.legendSteps = this._generateRange(this.min, this.max, this.max / (this.legendCount - 1));
+  }
+
+  /**
+   * Handles input change events, updates value and styles.
+   * @param {Event} event
+   */
   _onInputChange(event) {
-    const value = event.target.value;
-    this.value = value;
-    this._refreshStyles(value);
+    const newValue = event.target.value;
+    this.value = newValue;
+    this._updateStyles(newValue);
   }
 
-  _refreshStyles(value) {
-    this.percentValue = parseInt((value * 100) / this.max, 10);
+  /**
+   * Updates the filled percentage and thumb offset for the slider.
+   * @param {number} value
+   */
+  _updateStyles(value) {
+    this.percentFilled = parseInt((value * 100) / this.max, 10);
     const thumbSize = 17;
-    this.offset = thumbSize * (0.5 - this.percentValue / 100);
+    this.thumbOffset = thumbSize * (0.5 - this.percentFilled / 100);
   }
 
-  _updateTooltipVisibility(status) {
-    this.visibleTooltip = status;
+  /**
+   * Sets the tooltip visibility.
+   * @param {boolean} isVisible
+   */
+  _setTooltipVisibility(isVisible) {
+    this.visibleTooltip = isVisible;
   }
 
-  _range(start, stop, step = 1) {
+  /**
+   * Generates an array of numbers for the legend steps.
+   * @param {number} start
+   * @param {number} stop
+   * @param {number} step
+   * @returns {number[]}
+   */
+  _generateRange(start, stop, step = 1) {
     return Array(Math.ceil((stop - start) / step))
       .fill(start)
       .map((x, y) => x + y * step);
   }
 
-  _prettyNumber(value) {
+  /**
+   * Formats large numbers for display in the tooltip and legend.
+   * @param {number} value
+   * @returns {number}
+   */
+  _prettifyNumber(value) {
     if (value > 1000) {
       return parseInt(value / 1000);
     }
     return value;
   }
 
-  async _mouseup() {
-    this._updateTooltipVisibility(false);
+  /**
+   * Handles mouse up and touch end events, hides tooltip and triggers form action.
+   */
+  async _onMouseUp() {
+    this._setTooltipVisibility(false);
 
     // Wait for the update to complete
     await this.updateComplete;
-
-    // Trigger change event on the form
     if (this.form !== "") {
       triggerActionOnForm(this.form, "submit");
     }
   }
 
-  async cleanRange() {
+  /**
+   * Resets the slider to its minimum value and hides the tooltip.
+   */
+  async resetRange() {
     this.value = 0;
-    this.percentValue = 0;
-    this.offset = 0;
+    this.percentFilled = 0;
+    this.thumbOffset = 0;
     this.visibleTooltip = false;
     const input = this.inputRef.value;
     if (input) {
@@ -122,6 +199,10 @@ export class InputRange extends LitWrapper {
     await this.updateComplete;
   }
 
+  /**
+   * Renders the range input, tooltip, and legend.
+   * @returns {import("lit").TemplateResult}
+   */
   render() {
     return html`
       <div class="relative">
@@ -131,47 +212,53 @@ export class InputRange extends LitWrapper {
           name="${this.name}"
           type="range"
           @input=${this._onInputChange}
-          @mousedown=${() => this._updateTooltipVisibility(true)}
-          @mouseup=${this._mouseup}
-          @touchstart=${() => this._updateTooltipVisibility(true)}
-          @touchend=${this._mouseup}
+          @mousedown=${() => this._setTooltipVisibility(true)}
+          @mouseup=${this._onMouseUp}
+          @touchstart=${() => this._setTooltipVisibility(true)}
+          @touchend=${this._onMouseUp}
           min="${this.min}"
           max="${this.max}"
           step="${this.step}"
           value="${this.value}"
-          class="w-full h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer ${this.colors[this.type]
-            .thumb}"
-          style="background-image: linear-gradient(90deg, ${this.colors[this.type][
+          aria-label="${this.name}"
+          class="w-full h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer ${this.colorStyles[
+            this.colorType
+          ].thumb}"
+          style="background-image: linear-gradient(90deg, ${this.colorStyles[this.colorType][
             "progress-line"
-          ]} 0%, ${this.colors[this.type]["progress-line"]} ${this
-            .percentValue}%, rgb(231 229 228 / var(--tw-bg-opacity, 1)) ${this
-            .percentValue}%, rgb(231 229 228 / var(--tw-bg-opacity, 1)) 100%);"
+          ]} 0%, ${this.colorStyles[this.colorType]["progress-line"]} ${this
+            .percentFilled}%, rgb(231 229 228 / var(--tw-bg-opacity, 1)) ${this
+            .percentFilled}%, rgb(231 229 228 / var(--tw-bg-opacity, 1)) 100%);"
         />
         <div
           role="tooltip"
+          aria-hidden="${!this.visibleTooltip}"
           class="duration-100 transition-opacity ${this.visibleTooltip
             ? ""
             : "opacity-0"} absolute z-10 inline-block px-2 py-1 text-sm font-medium text-white text-center ${this
-            .colors[this.type]["bg-color"]} rounded-lg shadow-xs tooltip top-8 start-[8.5px] -ms-8 w-16"
-          style="left: calc(${this.percentValue}% + ${this.offset}px);"
+            .colorStyles[this.colorType][
+            "bg-color"
+          ]} rounded-lg shadow-xs tooltip top-8 start-[8.5px] -ms-8 w-16"
+          style="left: calc(${this.percentFilled}% + ${this.thumbOffset}px);"
         >
-          <small>${this.prefix}</small><span>${this._prettyNumber(this.value)}</span
+          <small>${this.prefix}</small><span>${this._prettifyNumber(this.value)}</span
           ><small>${this.unit}</small>
           <div
-            class="h-0 w-0 border-x-[6px] border-x-transparent border-b-[6px] ${this.colors[this.type]
-              .peak} absolute -top-1.5 start-[calc(50%-6px)]"
+            class="h-0 w-0 border-x-[6px] border-x-transparent border-b-[6px] ${this.colorStyles[
+              this.colorType
+            ].peak} absolute -top-1.5 start-[calc(50%-6px)]"
           ></div>
         </div>
         <div class="mx-[15px]">
           <ul class="flex justify-between w-full h-5">
-            ${this.steps.map(
+            ${this.legendSteps.map(
               (i) =>
                 html`<li class="flex justify-center relative text-xs text-stone-500">
-                  <span class="absolute -start-[10px]">${this._prettyNumber(i)}</span>
+                  <span class="absolute -start-[10px]">${this._prettifyNumber(i)}</span>
                 </li>`,
             )}
             <li class="flex justify-center relative text-xs text-stone-500">
-              <span class="absolute -start-[15px]">${this._prettyNumber(this.max)}${this.unit}</span>
+              <span class="absolute -start-[15px]">${this._prettifyNumber(this.max)}${this.unit}</span>
             </li>
           </ul>
         </div>

@@ -424,7 +424,7 @@
 
         {# Projects -#}
         <dashboard-search foundations="{{ foundations|json }}"
-        {% if let Some(projects) = job.projects -%}selected="{{ projects|json }}"{%- endif %} class="col-span-full"></dashboard-search>
+        {% if let Some(projects) = job.projects -%}selectedOptions="{{ projects|json }}"{%- endif %} class="col-span-full"></dashboard-search>
           {# End projects -#}
         </div>
       </div>

@@ -152,7 +152,7 @@ class Project extends LitWrapper {
     this.isObjectValuesEmpty = isObjectValuesEmpty(this.data);
   }
 
-  _onInputChange = (e) => {
+  _handleInputChange = (e) => {
     const value = e.target.value;
     const name = e.target.dataset.name;
 
@@ -175,7 +175,7 @@ class Project extends LitWrapper {
         <label class="form-label"> Title <span class="asterisk">*</span> </label>
         <div class="mt-2">
           <input
-            @input=${(e) => this._onInputChange(e)}
+            @input=${(e) => this._handleInputChange(e)}
             data-name="title"
             type="text"
             name="projects[${this.index}][title]"
@@ -196,7 +196,7 @@ class Project extends LitWrapper {
         <label class="form-label"> URL <span class="asterisk">*</span> </label>
         <div class="mt-2">
           <input
-            @input=${(e) => this._onInputChange(e)}
+            @input=${(e) => this._handleInputChange(e)}
             data-name="url"
             type="url"
             name="projects[${this.index}][url]"
@@ -215,7 +215,7 @@ class Project extends LitWrapper {
         <label class="form-label"> Source URL </label>
         <div class="mt-2">
           <input
-            @input=${(e) => this._onInputChange(e)}
+            @input=${(e) => this._handleInputChange(e)}
             data-name="source_url"
             type="url"
             name="projects[${this.index}][source_url]"

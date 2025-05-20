@@ -79,7 +79,7 @@ export class DashboardSearch extends LitWrapper {
     }
   }
 
-  _onInputChange(event) {
+  _handleInputChange(event) {
     this.enteredValue = event.target.value;
     this._filterOptions();
   }
@@ -190,7 +190,7 @@ export class DashboardSearch extends LitWrapper {
               <input
                 type="text"
                 @keydown="${this._handleKeyDown}"
-                @input=${this._onInputChange}
+                @input=${this._handleInputChange}
                 .value="${this.enteredValue}"
                 class="input-primary peer ps-10"
                 placeholder="Search ${this.type}"

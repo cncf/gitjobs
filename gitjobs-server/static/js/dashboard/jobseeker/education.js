@@ -154,7 +154,7 @@ class EducationItem extends LitWrapper {
     this.isObjectValuesEmpty = isObjectValuesEmpty(this.data);
   }
 
-  _onInputChange = (e) => {
+  _handleInputChange = (e) => {
     const value = e.target.value;
     const name = e.target.dataset.name;
 
@@ -177,7 +177,7 @@ class EducationItem extends LitWrapper {
         <label class="form-label"> Title <span class="asterisk">*</span> </label>
         <div class="mt-2">
           <input
-            @input=${(e) => this._onInputChange(e)}
+            @input=${(e) => this._handleInputChange(e)}
             data-name="title"
             type="text"
             name="education[${this.index}][title]"
@@ -196,7 +196,7 @@ class EducationItem extends LitWrapper {
         <label class="form-label"> Educational institution <span class="asterisk">*</span> </label>
         <div class="mt-2">
           <input
-            @input=${(e) => this._onInputChange(e)}
+            @input=${(e) => this._handleInputChange(e)}
             data-name="educational_institution"
             type="text"
             name="education[${this.index}][educational_institution]"
@@ -230,7 +230,7 @@ class EducationItem extends LitWrapper {
         <div class="mt-2">
           <input
             type="date"
-            @input=${(e) => this._onInputChange(e)}
+            @input=${(e) => this._handleInputChange(e)}
             data-name="start_date"
             name="education[${this.index}][start_date]"
             class="input-primary"
@@ -245,7 +245,7 @@ class EducationItem extends LitWrapper {
         <div class="mt-2">
           <input
             type="date"
-            @input=${(e) => this._onInputChange(e)}
+            @input=${(e) => this._handleInputChange(e)}
             data-name="end_date"
             name="education[${this.index}][end_date]"
             class="input-primary"

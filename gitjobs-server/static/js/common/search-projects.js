@@ -1,3 +1,8 @@
+/**
+ * SearchProjects web component for searching and selecting projects by foundation.
+ * Extends LitWrapper and uses Lit for rendering.
+ */
+
 import { html } from "/static/vendor/js/lit-all.v3.2.1.min.js";
 import { unnormalize } from "/static/js/common/common.js";
 import { triggerActionOnForm } from "/static/js/jobboard/filters.js";
@@ -5,59 +10,80 @@ import { LitWrapper } from "/static/js/common/lit-wrapper.js";
 import { debounce } from "/static/js/common/common.js";
 
 export class SearchProjects extends LitWrapper {
+  /**
+   * Component reactive properties.
+   * @property {Array} foundations - List of available foundations.
+   * @property {Array} selectedProjects - Array of selected project objects.
+   * @property {String} inputValue - Current value of the search input field.
+   * @property {Array|null} visibleOptions - Project options shown in the dropdown.
+   * @property {Boolean} visibleDropdown - Dropdown visibility state.
+   * @property {String} formId - Associated form ID.
+   * @property {Number|null} highlightedIndex - Highlighted dropdown index.
+   * @property {String|null} selectedFoundation - Selected foundation name.
+   */
   static properties = {
     foundations: { type: Array },
-    selected: { type: Array },
-    enteredValue: { type: String },
-    viewType: { type: String },
+    selectedProjects: { type: Array },
+    inputValue: { type: String },
     visibleOptions: { type: Array | null },
     visibleDropdown: { type: Boolean },
-    form: { type: String },
-    alignment: { type: String },
-    activeIndex: { type: Number | null },
+    formId: { type: String },
+    highlightedIndex: { type: Number | null },
     selectedFoundation: { type: String | null },
   };
 
+  /**
+   * Initializes component state.
+   */
   constructor() {
     super();
     this.foundations = [];
-    this.selected = [];
-    this.enteredValue = "";
-    this.viewType = "cols";
+    this.selectedProjects = [];
+    this.inputValue = "";
     this.visibleOptions = null;
     this.visibleDropdown = false;
-    this.form = "";
-    this.alignment = "bottom";
-    this.activeIndex = null;
+    this.formId = "";
+    this.highlightedIndex = null;
     this.selectedFoundation = null;
   }
 
+  /**
+   * Adds event listener for outside clicks when component is attached.
+   */
   connectedCallback() {
     super.connectedCallback();
     window.addEventListener("mousedown", this._handleOutsideClick);
   }
 
+  /**
+   * Removes event listener for outside clicks when component is detached.
+   */
   disconnectedCallback() {
     super.disconnectedCallback();
-    window.addEventListener("mousedown", this._handleOutsideClick);
+    window.removeEventListener("mousedown", this._handleOutsideClick);
   }
 
-  async cleanSelected() {
-    this.selected = [];
+  /**
+   * Clears all selected projects and resets the selected foundation.
+   * Awaits update completion.
+   */
+  async clearSelectedProjects() {
+    this.selectedProjects = [];
     this.selectedFoundation = null;
-
-    // Wait for the update to complete
     await this.updateComplete;
   }
 
-  async _getProjects() {
-    const url = `/projects/search?project=${encodeURIComponent(this.enteredValue)}&foundation=${this.selectedFoundation}`;
+  /**
+   * Fetches project options from the server based on input and foundation.
+   * Updates visibleOptions and shows dropdown.
+   */
+  async _fetchProjects() {
+    const url = `/projects/search?project=${encodeURIComponent(this.inputValue)}&foundation=${this.selectedFoundation}`;
     try {
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error(`Response status: ${response.status}`);
       }
-
       const json = await response.json();
       this.visibleOptions = json;
     } catch (error) {
@@ -67,6 +93,11 @@ export class SearchProjects extends LitWrapper {
     }
   }
 
+  /**
+   * Handles foundation dropdown change event.
+   * Resets input and options when foundation changes.
+   * @param {Event} event - The change event.
+   */
   _handleFoundationChange(event) {
     const selectedFoundation = event.target.value;
     if (selectedFoundation === "") {
@@ -75,57 +106,79 @@ export class SearchProjects extends LitWrapper {
       this.selectedFoundation = selectedFoundation;
     }
     this.visibleOptions = null;
-    this.enteredValue = "";
+    this.inputValue = "";
     this.visibleDropdown = false;
   }
 
-  _filterOptions() {
-    if (this.enteredValue.length > 2) {
-      debounce(this._getProjects(this.enteredValue), 300);
+  /**
+   * Filters project options based on input length.
+   * Triggers debounced fetch if input is long enough.
+   */
+  _filterProjectOptions() {
+    if (this.inputValue.length > 2) {
+      debounce(this._fetchProjects(this.inputValue), 300);
     } else {
       this.visibleOptions = null;
       this.visibleDropdown = false;
-      this.activeIndex = null;
+      this.highlightedIndex = null;
     }
   }
 
-  _onInputChange(event) {
-    this.enteredValue = event.target.value;
-    this._filterOptions();
+  /**
+   * Handles input change event for the search field.
+   * @param {Event} event - The input event.
+   */
+  _handleInputChange(event) {
+    this.inputValue = event.target.value;
+    this._filterProjectOptions();
   }
 
-  _cleanEnteredValue() {
-    this.enteredValue = "";
+  /**
+   * Clears the search input and hides the dropdown.
+   */
+  _cleanInputValue() {
+    this.inputValue = "";
     this.visibleDropdown = false;
     this.visibleOptions = null;
-    this.activeIndex = null;
+    this.highlightedIndex = null;
   }
 
-  // Check if the clicked element is outside the component
+  /**
+   * Handles clicks outside the component to close the dropdown.
+   * @param {MouseEvent} e - The mouse event.
+   */
   _handleOutsideClick = (e) => {
     if (!this.contains(e.target)) {
-      this._cleanEnteredValue();
+      this._cleanInputValue();
     }
   };
 
+  /**
+   * Handles keyboard navigation and selection in the dropdown.
+   * Supports ArrowDown, ArrowUp, and Enter keys.
+   * @param {KeyboardEvent} event - The keyboard event.
+   */
   _handleKeyDown(event) {
     switch (event.key) {
       // Highlight the next item in the list
       case "ArrowDown":
-        this._highlightItem("down");
+        this._highlightProjectOption("down");
         break;
       // Highlight the previous item in the list
       case "ArrowUp":
-        this._highlightItem("up");
+        this._highlightProjectOption("up");
         break;
       // Select the highlighted item
       case "Enter":
         event.preventDefault();
-        if (this.activeIndex !== null && this.visibleOptions !== null && this.visibleOptions.length > 0) {
-          const activeItem = this.visibleOptions[this.activeIndex];
+        if (
+          this.highlightedIndex !== null &&
+          this.visibleOptions !== null &&
+          this.visibleOptions.length > 0
+        ) {
+          const activeItem = this.visibleOptions[this.highlightedIndex];
           if (activeItem) {
-            const activeItem = this.visibleOptions[this.activeIndex];
-            this._onSelect(activeItem);
+            this._selectProject(activeItem);
           }
         }
         break;
@@ -134,29 +187,39 @@ export class SearchProjects extends LitWrapper {
     }
   }
 
-  _highlightItem(direction) {
+  /**
+   * Highlights the next or previous project option in the dropdown.
+   * Wraps around if at the end or beginning.
+   * @param {"up"|"down"} direction - Direction to move highlight.
+   */
+  _highlightProjectOption(direction) {
     if (this.visibleOptions && this.visibleOptions.length > 0) {
-      if (this.activeIndex === null) {
-        this.activeIndex = direction === "down" ? 0 : this.visibleOptions.length - 1;
+      if (this.highlightedIndex === null) {
+        this.highlightedIndex = direction === "down" ? 0 : this.visibleOptions.length - 1;
       } else {
-        let newIndex = direction === "down" ? this.activeIndex + 1 : this.activeIndex - 1;
+        let newIndex = direction === "down" ? this.highlightedIndex + 1 : this.highlightedIndex - 1;
         if (newIndex >= this.visibleOptions.length) {
           newIndex = 0;
         }
         if (newIndex < 0) {
           newIndex = this.visibleOptions.length - 1;
         }
-        this.activeIndex = newIndex;
+        this.highlightedIndex = newIndex;
       }
     }
   }
 
-  async _onSelect(value) {
-    this.selected.push(value);
-    this.enteredValue = "";
+  /**
+   * Adds a project to the selectedProjects array and resets input.
+   * Triggers form action after update.
+   * @param {Object} value - The selected project object.
+   */
+  async _selectProject(value) {
+    this.selectedProjects.push(value);
+    this.inputValue = "";
     this.visibleDropdown = false;
     this.visibleOptions = null;
-    this.activeIndex = null;
+    this.highlightedIndex = null;
 
     // Remove selected foundation on select out of this component
     const foundationSelects = document.getElementsByName("foundation");
@@ -170,19 +233,28 @@ export class SearchProjects extends LitWrapper {
     await this.updateComplete;
 
     // Trigger change event on the form
-    triggerActionOnForm(this.form, "submit");
+    triggerActionOnForm(this.formId, "submit");
   }
 
-  async _onRemove(name) {
-    this.selected = this.selected.filter((item) => item.name !== name);
+  /**
+   * Removes a project from the selectedProjects array by name.
+   * Triggers form action after update.
+   * @param {string} name - The name of the project to remove.
+   */
+  async _removeProject(name) {
+    this.selectedProjects = this.selectedProjects.filter((item) => item.name !== name);
 
     // Wait for the update to complete
     await this.updateComplete;
 
     // Trigger change event on the form
-    triggerActionOnForm(this.form, "submit");
+    triggerActionOnForm(this.formId, "submit");
   }
 
+  /**
+   * Renders the component UI: foundation select, search input, dropdown, and selected projects.
+   * @returns {TemplateResult} The rendered HTML template.
+   */
   render() {
     const isDisabled = this.selectedFoundation === null;
 
@@ -206,9 +278,10 @@ export class SearchProjects extends LitWrapper {
         </div>
         <input
           @keydown="${this._handleKeyDown}"
-          @input=${this._onInputChange}
+          @input=${this._handleInputChange}
           type="text"
-          .value="${this.enteredValue}"
+          aria-label="Search projects"
+          .value="${this.inputValue}"
           class="input-primary py-0.5 peer ps-9 rounded-lg text-[0.8rem]/6 ${isDisabled ? "opacity-50" : ""}"
           placeholder="Search projects"
           autocomplete="off"
@@ -219,30 +292,30 @@ export class SearchProjects extends LitWrapper {
           ?disabled="${isDisabled}"
         />
         <div class="absolute end-1.5 top-0.5 peer-placeholder-shown:hidden">
-          <button @click=${this._cleanEnteredValue} type="button" class="cursor-pointer mt-[2px]">
+          <button @click=${this._cleanInputValue} type="button" class="cursor-pointer mt-[2px]">
             <div class="svg-icon size-5 bg-stone-400 hover:bg-stone-700 icon-close"></div>
           </button>
         </div>
-        <div class="absolute z-10 start-0 end-0 ${this.alignment === "top" ? "-top-[193px] h-[186px]" : ""}">
+        <div class="absolute z-10 start-0 end-0">
           <div
-            class="${this.alignment === "top" ? "h-full" : ""} ${!this.visibleDropdown
+            class="${!this.visibleDropdown
               ? "hidden"
               : ""} bg-white divide-y divide-stone-100 rounded-lg shadow w-full border border-stone-200 mt-1"
           >
             ${this.visibleOptions !== null && this.visibleOptions.length > 0 && this.visibleDropdown
               ? html`<ul class="text-sm text-stone-700 overflow-auto max-h-[180px]">
                   ${this.visibleOptions.map((option, index) => {
-                    const isSelected = this.selected.some(
+                    const isSelected = this.selectedProjects.some(
                       (item) => item.name === option.name && item.foundation === option.foundation,
                     );
                     return html`<li
-                      class="group ${this.activeIndex === index ? "active" : ""}"
+                      class="group ${this.highlightedIndex === index ? "active" : ""}"
                       data-index="${index}"
                     >
                       <button
                         type="button"
-                        @click=${() => this._onSelect(option)}
-                        @mouseover=${() => (this.activeIndex = index)}
+                        @click=${() => this._selectProject(option)}
+                        @mouseover=${() => (this.highlightedIndex = index)}
                         class=${`group-[.active]:bg-stone-100 ${
                           isSelected ? "bg-stone-100 opacity-50" : "cursor-pointer hover:bg-stone-100"
                         } capitalize block w-full text-left px-3 py-1`}
@@ -279,13 +352,13 @@ export class SearchProjects extends LitWrapper {
               : html`<div class="px-8 py-4 text-sm/6 text-stone-600 italic">No projects found</div>`}
           </div>
         </div>
-        ${this.selected.length > 0
-          ? html`<div class="flex gap-2 mt-4 ${this.viewType === "rows" ? "flex-col" : "flex-wrap"}">
-              ${this.selected.map(
+        ${this.selectedProjects.length > 0
+          ? html`<div class="flex gap-2 mt-4 flex-col">
+              ${this.selectedProjects.map(
                 (opt, index) =>
                   html` <button
                       type="button"
-                      @click=${() => this._onRemove(opt.name)}
+                      @click=${() => this._removeProject(opt.name)}
                       class="inline-flex items-center justify-between ps-2 pe-1 py-1 bg-white border rounded-lg cursor-pointer select-none border-primary-500 text-primary-500 max-w-full group"
                     >
                       <div class="flex items-center justify-between space-x-3 w-full">
@@ -302,13 +375,13 @@ export class SearchProjects extends LitWrapper {
                     </button>
                     <input
                       type="hidden"
-                      form="${this.form}"
+                      form="${this.formId}"
                       name="projects[${index}][name]"
                       value="${opt.name}"
                     />
                     <input
                       type="hidden"
-                      form="${this.form}"
+                      form="${this.formId}"
                       name="projects[${index}][foundation]"
                       value="${opt.foundation}"
                     />`,
@@ -318,4 +391,8 @@ export class SearchProjects extends LitWrapper {
       </div>`;
   }
 }
+
+/**
+ * Registers the SearchProjects component as a custom element.
+ */
 customElements.define("search-projects", SearchProjects);

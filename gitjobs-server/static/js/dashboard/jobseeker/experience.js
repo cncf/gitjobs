@@ -156,7 +156,7 @@ class ExperienceRecord extends LitWrapper {
     this.isObjectValuesEmpty = isObjectValuesEmpty(this.data);
   }
 
-  _onInputChange = (e) => {
+  _handleInputChange = (e) => {
     const value = e.target.value;
     const name = e.target.dataset.name;
 
@@ -180,7 +180,7 @@ class ExperienceRecord extends LitWrapper {
           <label class="form-label"> Title <span class="asterisk">*</span> </label>
           <div class="mt-2">
             <input
-              @input=${(e) => this._onInputChange(e)}
+              @input=${(e) => this._handleInputChange(e)}
               data-name="title"
               type="text"
               name="experience[${this.index}][title]"
@@ -199,7 +199,7 @@ class ExperienceRecord extends LitWrapper {
           <label class="form-label"> Company <span class="asterisk">*</span> </label>
           <div class="mt-2">
             <input
-              @input=${(e) => this._onInputChange(e)}
+              @input=${(e) => this._handleInputChange(e)}
               data-name="company"
               type="text"
               name="experience[${this.index}][company]"
@@ -233,7 +233,7 @@ class ExperienceRecord extends LitWrapper {
           <div class="mt-2">
             <input
               type="date"
-              @input=${(e) => this._onInputChange(e)}
+              @input=${(e) => this._handleInputChange(e)}
               data-name="start_date"
               name="experience[${this.index}][start_date]"
               class="input-primary placeholder-stone-300"
@@ -248,7 +248,7 @@ class ExperienceRecord extends LitWrapper {
           <div class="mt-2">
             <input
               type="date"
-              @input=${(e) => this._onInputChange(e)}
+              @input=${(e) => this._handleInputChange(e)}
               data-name="end_date"
               name="experience[${this.index}][end_date]"
               class="input-primary"

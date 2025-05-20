@@ -220,8 +220,8 @@ class ExperienceRecord extends LitWrapper {
             <markdown-editor
               id="experience[${this.index}][description]"
               name="description"
-              .content="${this.data.description}"
-              .onChange="${(value) => this._onTextareaChange(value)}"
+              content="${this.data.description}"
+              .onContentChange="${(value) => this._onTextareaChange(value)}"
               mini
               ?required=${!this.isObjectValuesEmpty}
             ></markdown-editor>

@@ -1,4 +1,4 @@
-//! This module defines some types to represent the syncer configuration.
+//! This module defines types for the syncer configuration.
 
 use std::path::PathBuf;
 
@@ -14,7 +14,9 @@ use tracing::instrument;
 /// Server configuration.
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub(crate) struct Config {
+    /// Database configuration.
     pub db: DbConfig,
+    /// Logging configuration.
     pub log: LogConfig,
 }
 
@@ -36,15 +38,22 @@ impl Config {
 }
 
 /// Logs configuration.
+///
+/// Specifies the format for application logs.
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
 pub(crate) struct LogConfig {
+    /// Format to use for logs.
     pub format: LogFormat,
 }
 
 /// Format to use in logs.
+///
+/// Supported formats for log output.
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub(crate) enum LogFormat {
+    /// JSON log format.
     Json,
+    /// Human-readable pretty log format.
     Pretty,
 }

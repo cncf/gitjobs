@@ -22,7 +22,7 @@ use crate::templates::{
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
 #[template(path = "jobboard/jobs/jobs.html")]
 pub(crate) struct JobsPage {
-    /// Application configuration.
+    /// Server configuration.
     pub cfg: Config,
     /// Explore section containing filters and results.
     pub explore_section: ExploreSection,

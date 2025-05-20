@@ -17,14 +17,16 @@ mod config;
 mod db;
 mod syncer;
 
+/// Command-line arguments for the application.
 #[derive(Debug, Parser)]
 #[clap(author, version, about)]
 struct Args {
-    /// Config file path
+    /// Optional path to the configuration file.
     #[clap(short, long)]
     config_file: Option<PathBuf>,
 }
 
+/// Main entry point for the application.
 #[tokio::main]
 async fn main() -> Result<()> {
     // Setup configuration

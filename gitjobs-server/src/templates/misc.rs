@@ -12,7 +12,7 @@ use crate::templates::{Config, PageId, auth::User, filters, helpers::format_loca
 #[derive(Debug, Clone, Template, PartialEq, Serialize, Deserialize)]
 #[template(path = "misc/not_found.html")]
 pub(crate) struct NotFoundPage {
-    /// Application configuration.
+    /// Server configuration.
     pub cfg: Config,
     /// Identifier for the current page.
     pub page_id: PageId,

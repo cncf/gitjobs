@@ -144,6 +144,7 @@ pub(crate) async fn setup(
         .route("/section/jobs/results", get(jobboard::jobs::results_section))
         .route("/section/user-menu", get(user_menu_section))
         .route("/sign-up", get(auth::sign_up_page))
+        .route("/stats", get(jobboard::stats::page))
         .route_layer(MessagesManagerLayer)
         .route_layer(auth_layer)
         .route_layer(ServiceBuilder::new().layer(TraceLayer::new_for_http()))

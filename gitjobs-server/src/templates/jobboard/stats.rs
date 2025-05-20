@@ -3,18 +3,16 @@
 use askama::Template;
 use serde::{Deserialize, Serialize};
 
-use crate::templates::{Config, PageId, auth::User, filters};
+use crate::templates::{Config, PageId, auth::User};
 
 // Pages templates.
 
-/// Template for the about page.
+/// Template for the stats page.
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
-#[template(path = "jobboard/about/page.html")]
+#[template(path = "jobboard/stats/page.html")]
 pub(crate) struct Page {
     /// Server configuration.
     pub cfg: Config,
-    /// About page content (rendered from markdown source).
-    pub content: String,
     /// Identifier for the current page.
     pub page_id: PageId,
     /// Authenticated user information.

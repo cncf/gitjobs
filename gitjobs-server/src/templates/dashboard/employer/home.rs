@@ -19,7 +19,7 @@ use crate::templates::{
 #[derive(Debug, Clone, Template)]
 #[template(path = "dashboard/employer/home.html")]
 pub(crate) struct Page {
-    /// Application configuration.
+    /// Server configuration.
     pub cfg: Config,
     /// Main content section for the page.
     pub content: Content,

@@ -16,9 +16,9 @@ use crate::{
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
 #[template(path = "auth/log_in.html")]
 pub(crate) struct LogInPage {
-    /// Application configuration.
+    /// Server configuration.
     pub cfg: Config,
-    /// Login options and providers.
+    /// Login options.
     pub login: LoginOptions,
     /// Identifier for the current page.
     pub page_id: PageId,
@@ -36,9 +36,9 @@ pub(crate) struct LogInPage {
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
 #[template(path = "auth/sign_up.html")]
 pub(crate) struct SignUpPage {
-    /// Application configuration.
+    /// Server configuration.
     pub cfg: Config,
-    /// Login options and providers.
+    /// Login options.
     pub login: LoginOptions,
     /// Identifier for the current page.
     pub page_id: PageId,

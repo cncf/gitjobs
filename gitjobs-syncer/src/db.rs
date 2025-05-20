@@ -9,48 +9,48 @@ use tracing::{instrument, trace};
 
 use crate::syncer::{Foundation, Member, Project};
 
-/// Abstraction layer over the database. Trait that defines some operations a
-/// DB implementation must support.
+/// Abstraction layer over the database. Trait that defines operations a `DB` must support.
 #[async_trait]
 pub(crate) trait DB {
-    /// Add foundation member.
+    /// Adds a new member to a foundation.
     async fn add_member(&self, member: &Member) -> Result<()>;
 
-    /// Add foundation project.
+    /// Adds a new project to a foundation.
     async fn add_project(&self, project: &Project) -> Result<()>;
 
-    /// List foundations.
+    /// Lists all foundations present in the database.
     async fn list_foundations(&self) -> Result<Vec<Foundation>>;
 
-    /// List foundation members.
+    /// Lists all members of a given foundation.
     async fn list_members(&self, foundation: &str) -> Result<Vec<Member>>;
 
-    /// List foundation projects.
+    /// Lists all projects of a given foundation.
     async fn list_projects(&self, foundation: &str) -> Result<Vec<Project>>;
 
-    /// Remove foundation member.
+    /// Removes a member from a foundation.
     async fn remove_member(&self, foundation: &str, member_name: &str) -> Result<()>;
 
-    /// Remove foundation project.
+    /// Removes a project from a foundation.
     async fn remove_project(&self, foundation: &str, project_name: &str) -> Result<()>;
 
-    /// Update foundation member.
+    /// Updates an existing member's information.
     async fn update_member(&self, member: &Member) -> Result<()>;
 
-    /// Update foundation project.
+    /// Updates an existing project's information.
     async fn update_project(&self, project: &Project) -> Result<()>;
 }
 
-/// Type alias to represent a DB trait object.
+/// Type alias for a thread-safe, reference-counted `DB` trait object.
 pub(crate) type DynDB = Arc<dyn DB + Send + Sync>;
 
 /// DB implementation backed by `PostgreSQL`.
 pub(crate) struct PgDB {
+    /// Connection pool for `PostgreSQL` database access.
     pool: Pool,
 }
 
 impl PgDB {
-    /// Create a new `PgDB` instance.
+    /// Creates a new `PgDB` instance.
     pub(crate) fn new(pool: Pool) -> Self {
         Self { pool }
     }

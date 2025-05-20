@@ -1,5 +1,5 @@
-//! This module defines some types and the logic to synchronize the members and
-//! projects of the foundations with the `GitJobs` database.
+//! This module defines types and logic to synchronize foundation members and projects
+//! with the `GitJobs` database.
 
 use std::{sync::LazyLock, time::Duration};
 
@@ -12,13 +12,15 @@ use tracing::{debug, info, instrument};
 
 use crate::db::DynDB;
 
-/// Maximum time that can take synchronizing a foundation.
+/// Maximum time, in seconds, allowed for synchronizing a foundation.
 const FOUNDATION_TIMEOUT: u64 = 300;
 
-/// A syncer is responsible for synchronizing the members and projects of all
-/// registered foundations. It feeds from the landscape API.
+/// Responsible for synchronizing members and projects of all registered foundations.
+/// Feeds from the landscape API and updates the `GitJobs` database accordingly.
 pub(crate) struct Syncer {
+    /// Database handle for storing and retrieving foundation data.
     db: DynDB,
+    /// HTTP client used to fetch data from the landscape API.
     http_client: reqwest::Client,
 }
 
@@ -256,7 +258,7 @@ impl Syncer {
     }
 }
 
-/// Regular expression that matches the member kind in the name.
+/// Regular expression that matches the member kind in the member name, e.g. " (Platinum)".
 static MEMBER_KIND: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r" \(.*\)").expect("exprs in MEMBER_KIND should be valid"));
 
@@ -265,40 +267,56 @@ static MEMBER_KIND: LazyLock<Regex> =
 /// Foundation details.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub(crate) struct Foundation {
+    /// Name of the foundation.
     pub name: String,
+    /// Base URL of the foundation's landscape API.
     pub landscape_url: String,
 }
 
-/// Landscape member details.
+/// Details of a member as returned by the landscape API.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 struct LandscapeMember {
+    /// Name of the member, possibly including kind (e.g. " (Platinum)").
     name: String,
+    /// Subcategory or level of the member (e.g. "Platinum", "Gold").
     subcategory: String,
+    /// URL to the member's logo image.
     logo_url: String,
 }
 
-/// Landscape project details.
+/// Details of a project as returned by the landscape API.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 struct LandscapeProject {
+    /// Name of the project.
     name: String,
+    /// URL to the project's logo image.
     logo_url: String,
+    /// Project maturity level (e.g. "sandbox", "incubating", "graduated", "archived").
     maturity: String,
 }
 
-/// Member details.
+/// Member details as stored in the database.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub(crate) struct Member {
+    /// Name of the foundation this member belongs to.
     pub foundation: String,
+    /// Name of the member (without kind suffix).
     pub name: String,
+    /// Level or subcategory of the member (e.g. "Platinum").
     pub level: String,
+    /// URL to the member's logo image.
     pub logo_url: String,
 }
 
-/// Project details.
+/// Project details as stored in the database.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub(crate) struct Project {
+    /// Name of the foundation this project belongs to.
     pub foundation: String,
+    /// Name of the project.
     pub name: String,
+    /// Project maturity level (e.g. "sandbox", "incubating", "graduated", "archived").
     pub maturity: String,
+    /// URL to the project's logo image.
     pub logo_url: String,
 }

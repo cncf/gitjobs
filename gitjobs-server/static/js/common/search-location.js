@@ -1,11 +1,33 @@
+/**
+ * SearchLocation web component for searching and selecting locations with optional distance.
+ * Extends LitWrapper and uses Lit for rendering.
+ */
+
 import { html, nothing } from "/static/vendor/js/lit-all.v3.2.1.min.js";
 import { LitWrapper } from "/static/js/common/lit-wrapper.js";
 import { debounce } from "/static/js/common/common.js";
 import { triggerActionOnForm } from "/static/js/jobboard/filters.js";
 
+/**
+ * @class SearchLocation
+ * @property {string} locationId - Selected location's unique ID.
+ * @property {string} city - Selected location's city.
+ * @property {string} state - Selected location's state.
+ * @property {string} country - Selected location's country.
+ * @property {string} size - Input size ("normal" or "small").
+ * @property {boolean} required - If true, input is required.
+ * @property {string} device - Device type ("desktop" or "mobile").
+ * @property {string} form - Form identifier for submission.
+ * @property {string} inputValue - Current value in the input field.
+ * @property {Array|null} locationOptions - List of location search results.
+ * @property {boolean} isLoading - True if fetching location options.
+ * @property {boolean} withDistance - Show distance selector if true.
+ * @property {string} distance - Selected max distance.
+ * @property {number|null} highlightedIndex - Index of highlighted option.
+ */
 export class SearchLocation extends LitWrapper {
   static properties = {
-    location_id: { type: String },
+    locationId: { type: String },
     city: { type: String },
     state: { type: String },
     country: { type: String },
@@ -13,58 +35,78 @@ export class SearchLocation extends LitWrapper {
     required: { type: Boolean },
     device: { type: String },
     form: { type: String },
-    value: { type: String },
-    options: { type: Array | null },
+    inputValue: { type: String },
+    locationOptions: { type: Array | null },
     isLoading: { type: Boolean },
     withDistance: { type: Boolean },
     distance: { type: String },
-    activeIndex: { type: Number | null },
+    highlightedIndex: { type: Number | null },
   };
 
+  /**
+   * Initializes default state for the component.
+   */
   constructor() {
     super();
-    this.location_id = "";
+    this.locationId = "";
     this.city = "";
     this.state = "";
     this.country = "";
     this.size = "normal";
     this.required = false;
     this.device = "desktop";
-    this.value = "";
+    this.inputValue = "";
     this.form = "";
-    this.options = null;
+    this.locationOptions = null;
     this.withDistance = false;
     this.distance = "";
     this.isLoading = false;
-    this.activeIndex = null;
+    this.highlightedIndex = null;
     this.defaultDistance = "100000";
   }
 
+  /**
+   * Adds outside click listener and sets input value on connect.
+   */
   connectedCallback() {
     super.connectedCallback();
     window.addEventListener("mousedown", this._handleOutsideClick);
-    this.value = this._formatLocation(this.city, this.state, this.country);
+    this.inputValue = this._formatLocation(this.city, this.state, this.country);
   }
 
+  /**
+   * Removes outside click listener on disconnect.
+   */
   disconnectedCallback() {
     super.disconnectedCallback();
     window.removeEventListener("mousedown", this._handleOutsideClick);
   }
 
-  async cleanLocation() {
-    this.location_id = "";
+  /**
+   * Resets all location-related fields to their default values.
+   * @returns {Promise<void>}
+   */
+  async resetLocationFields() {
+    this.locationId = "";
     this.city = "";
     this.state = "";
     this.country = "";
-    this.value = "";
+    this.inputValue = "";
     this.distance = this.defaultDistance;
-    this.options = null;
-    this.activeIndex = null;
+    this.locationOptions = null;
+    this.highlightedIndex = null;
 
     // Wait for the update to complete
     await this.updateComplete;
   }
 
+  /**
+   * Formats city, state, and country into a single string.
+   * @param {string} city
+   * @param {string} state
+   * @param {string} country
+   * @returns {string}
+   */
   _formatLocation(city, state, country) {
     if (!city && !state && !country) {
       return "";
@@ -72,19 +114,27 @@ export class SearchLocation extends LitWrapper {
     return [city, state, country].join(", ");
   }
 
+  /**
+   * Handles clicks outside the component to close dropdown and reset input.
+   * @param {MouseEvent} e
+   */
   _handleOutsideClick = (e) => {
     if (!this.contains(e.target)) {
-      if (this.location_id !== "") {
-        this.value = this._formatLocation(this.city, this.state, this.country);
+      if (this.locationId !== "") {
+        this.inputValue = this._formatLocation(this.city, this.state, this.country);
       } else {
-        this.value = "";
+        this.inputValue = "";
       }
-      this.options = null;
-      this.activeIndex = null;
+      this.locationOptions = null;
+      this.highlightedIndex = null;
     }
   };
 
-  // Fetch locations
+  /**
+   * Fetches location options from the server based on input value.
+   * @param {string} value
+   * @returns {Promise<void>}
+   */
   async _fetchData(value) {
     const url = `/locations/search?ts_query=${encodeURIComponent(value)}`;
     try {
@@ -92,9 +142,8 @@ export class SearchLocation extends LitWrapper {
       if (!response.ok) {
         throw new Error(`Response status: ${response.status}`);
       }
-
       const json = await response.json();
-      this.options = json;
+      this.locationOptions = json;
     } catch (error) {
       // TODO - Handle error
     } finally {
@@ -102,47 +151,56 @@ export class SearchLocation extends LitWrapper {
     }
   }
 
-  _onInputChange(event) {
+  /**
+   * Handles input changes, updates value, and triggers debounced fetch.
+   * @param {InputEvent} event
+   */
+  _handleInputChange(event) {
     this._isLoading = true;
     const value = event.target.value;
-    this.value = value;
+    this.inputValue = value;
     if (value.length > 2) {
       debounce(this._fetchData(value), 300);
     }
   }
 
-  _highlightItem(direction) {
-    if (this.options && this.options.length > 0) {
-      if (this.activeIndex === null) {
-        this.activeIndex = direction === "down" ? 0 : this.options.length - 1;
+  /**
+   * Updates the highlighted index for keyboard navigation.
+   * @param {"up"|"down"} direction
+   */
+  _updateHighlightedIndex(direction) {
+    if (this.locationOptions && this.locationOptions.length > 0) {
+      if (this.highlightedIndex === null) {
+        this.highlightedIndex = direction === "down" ? 0 : this.locationOptions.length - 1;
       } else {
-        let newIndex = direction === "down" ? this.activeIndex + 1 : this.activeIndex - 1;
-        if (newIndex >= this.options.length) {
+        let newIndex = direction === "down" ? this.highlightedIndex + 1 : this.highlightedIndex - 1;
+        if (newIndex >= this.locationOptions.length) {
           newIndex = 0;
         }
         if (newIndex < 0) {
-          newIndex = this.options.length - 1;
+          newIndex = this.locationOptions.length - 1;
         }
-        this.activeIndex = newIndex;
+        this.highlightedIndex = newIndex;
       }
     }
   }
 
+  /**
+   * Handles keyboard navigation and selection in the input field.
+   * @param {KeyboardEvent} event
+   */
   _handleKeyDown(event) {
     switch (event.key) {
-      // Highlight the next item in the list
       case "ArrowDown":
-        this._highlightItem("down");
+        this._updateHighlightedIndex("down");
         break;
-      // Highlight the previous item in the list
       case "ArrowUp":
-        this._highlightItem("up");
+        this._updateHighlightedIndex("up");
         break;
-      // Select the highlighted item
       case "Enter":
         event.preventDefault();
-        if (this.activeIndex !== null && this.options) {
-          const activeItem = this.options[this.activeIndex];
+        if (this.highlightedIndex !== null && this.locationOptions) {
+          const activeItem = this.locationOptions[this.highlightedIndex];
           if (activeItem) {
             this._selectLocation(activeItem);
           }
@@ -153,76 +211,81 @@ export class SearchLocation extends LitWrapper {
     }
   }
 
+  /**
+   * Selects a location from the options and updates fields. Triggers form submit if applicable.
+   * @param {Object} location
+   * @returns {Promise<void>}
+   */
   async _selectLocation(location) {
-    this.location_id = location.location_id;
+    this.locationId = location.location_id;
     this.city = location.city;
     this.state = location.state;
     this.country = location.country;
-    this.value = this._formatLocation(location.city, location.state, location.country);
-    this.options = null;
-    this.activeIndex = null;
+    this.inputValue = this._formatLocation(location.city, location.state, location.country);
+    this.locationOptions = null;
+    this.highlightedIndex = null;
     if (this.distance === "") {
       this.distance = this.defaultDistance;
     }
-
-    // Wait for the update to complete
     await this.updateComplete;
-
-    // Trigger change event on the form
     if (this.form !== "") {
       triggerActionOnForm(this.form, "submit");
     }
   }
 
+  /**
+   * Handles changes to the distance selector and triggers form submit if applicable.
+   * @param {Event} event
+   * @returns {Promise<void>}
+   */
   async _handleDistanceChange(event) {
     this.distance = event.target.value;
-
-    // Wait for the update to complete
     await this.updateComplete;
-
-    // Trigger change event on the form
     if (this.form !== "") {
       triggerActionOnForm(this.form, "submit");
     }
   }
 
-  async _cleanInput() {
-    this.location_id = "";
+  /**
+   * Clears all input and selection, resets fields, and triggers form submit if applicable.
+   * @returns {Promise<void>}
+   */
+  async _clearInputAndSelection() {
+    this.locationId = "";
     this.city = "";
     this.state = "";
     this.country = "";
-    this.value = "";
+    this.inputValue = "";
     this.distance = this.defaultDistance;
-    this.options = null;
-    this.activeIndex = null;
-
-    // Wait for the update to complete
+    this.locationOptions = null;
+    this.highlightedIndex = null;
     await this.updateComplete;
-
-    // Trigger change event on the form
     if (this.form !== "") {
       triggerActionOnForm(this.form, "submit");
     }
   }
 
-  _addFormName() {
-    return this.form && this.location_id !== "" ? `form="${this.form}"` : "";
-  }
-
-  _renderOptions() {
+  /**
+   * Renders the dropdown list of location options.
+   * @returns {import("lit").TemplateResult}
+   */
+  _renderLocationOptions() {
     return html` <div
       class="bg-white divide-y divide-stone-100 rounded-lg shadow w-full border border-stone-200 mt-1"
     >
-      ${this.options.length === 0
+      ${this.locationOptions.length === 0
         ? html`<div class="px-8 py-4 text-sm/6 text-stone-600 italic">No locations found</div>`
         : html`<ul class="py-2 text-stone-700 overflow-auto max-h-[180px]">
-            ${this.options.map(
+            ${this.locationOptions.map(
               (l, index) =>
-                html` <li class="group ${this.activeIndex === index ? "active" : ""}" data-index="${index}">
+                html` <li
+                  class="group ${this.highlightedIndex === index ? "active" : ""}"
+                  data-index="${index}"
+                >
                   <button
                     type="button"
                     @click=${() => this._selectLocation(l)}
-                    @mouseover=${() => (this.activeIndex = index)}
+                    @mouseover=${() => (this.highlightedIndex = index)}
                     class="btn-location cursor-pointer flex items-center px-4 py-2 w-full hover:bg-stone-100 group-[.active]:bg-stone-100"
                   >
                     <div class="me-2">
@@ -238,6 +301,10 @@ export class SearchLocation extends LitWrapper {
     </div>`;
   }
 
+  /**
+   * Main render function for the component UI.
+   * @returns {import("lit").TemplateResult}
+   */
   render() {
     return html`
       <div class="mt-2 relative location-container">
@@ -250,9 +317,9 @@ export class SearchLocation extends LitWrapper {
         </div>
         <input
           @keydown="${this._handleKeyDown}"
-          @input=${this._onInputChange}
+          @input=${this._handleInputChange}
           type="text"
-          .value=${this.value}
+          .value=${this.inputValue}
           class="input-primary peer ${this.size === "small"
             ? "py-0.5 peer px-9 rounded-lg text-[0.775rem]/6 text-stone-700"
             : "px-10"}"
@@ -263,12 +330,12 @@ export class SearchLocation extends LitWrapper {
           spellcheck="false"
           ?required=${this.required}
         />
-        ${this.location_id !== ""
+        ${this.locationId !== ""
           ? html`<input
                 type="hidden"
                 form=${this.form || nothing}
                 name="location[location_id]"
-                .value=${this.location_id}
+                .value=${this.locationId}
                 ?required=${this.required}
               />
               <input type="hidden" form=${this.form || nothing} name="location[city]" .value=${this.city} />
@@ -305,7 +372,7 @@ export class SearchLocation extends LitWrapper {
           : ""}
 
         <div class="absolute end-1.5 top-1.5 peer-placeholder-shown:hidden">
-          <button @click=${this._cleanInput} type="button" class="cursor-pointer mt-[2px]">
+          <button @click=${this._clearInputAndSelection} type="button" class="cursor-pointer mt-[2px]">
             <div
               class="svg-icon bg-stone-400 hover:bg-stone-700 icon-close ${this.size === "small"
                 ? "size-4"
@@ -314,7 +381,7 @@ export class SearchLocation extends LitWrapper {
           </button>
         </div>
         <div class="absolute z-10 start-0 end-0 text-${this.size === "small" ? "[0.8rem]" : "sm"}">
-          ${this.options !== null ? this._renderOptions() : ""}
+          ${this.locationOptions !== null ? this._renderLocationOptions() : ""}
         </div>
       </div>
       ${this.withDistance
@@ -327,9 +394,9 @@ export class SearchLocation extends LitWrapper {
                   name="max_distance"
                   @change=${this._handleDistanceChange}
                   class="select-primary py-0.5 text-[0.775rem]/6 text-stone-700"
-                  ?disabled=${this.location_id === ""}
+                  ?disabled=${this.locationId === ""}
                 >
-                  ${this.location_id === ""
+                  ${this.locationId === ""
                     ? html`<option value="" selected></option>`
                     : html`${["10000", "50000", "100000", "500000"].map((d) => {
                         return html`<option value=${d} ?selected=${this.distance === d}>
@@ -344,4 +411,8 @@ export class SearchLocation extends LitWrapper {
     `;
   }
 }
+
+/**
+ * Registers the SearchLocation component as a custom element.
+ */
 customElements.define("search-location", SearchLocation);

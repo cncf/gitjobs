@@ -1,42 +1,27 @@
 /**
- * InputRange Web Component
- *
- * A customizable range slider component built with Lit, supporting:
- * - Custom min, max, step, and value
- * - Optional prefix and unit display
- * - Dynamic color themes
- * - Tooltip showing the current value
- * - Legend steps for visual scale
- * - Integration with forms and external triggers
- *
- * Properties:
- *   - form: (string) The form ID to trigger on change (optional)
- *   - name: (string) The input name attribute
- *   - min: (number) Minimum value of the range
- *   - max: (number) Maximum value of the range
- *   - step: (number) Step size for the range
- *   - value: (number) Current value of the range
- *   - prefix: (string) Text to display before the value in the tooltip
- *   - unit: (string) Text to display after the value in the tooltip
- *   - legendCount: (number) Number of legend steps to display
- *   - visibleTooltip: (boolean) Whether the tooltip is visible
- *   - colorType: (string) Color theme key ("type-1", "type-2", "type-3")
- *
- * Public methods:
- *   - resetRange(): Resets the slider to its minimum value and hides the tooltip.
- *
- * Example usage:
- *   <input-range name="salary" min="0" max="200000" step="10" unit="$"></input-range>
+ * InputRange web component for a customizable range slider with tooltip and legend.
+ * Extends LitWrapper and uses Lit for rendering.
  */
-
 import { html, createRef, ref, nothing } from "/static/vendor/js/lit-all.v3.2.1.min.js";
 import { LitWrapper } from "/static/js/common/lit-wrapper.js";
 import { triggerActionOnForm } from "/static/js/jobboard/filters.js";
 
+/**
+ * @class InputRange
+ * @property {string} form - Form ID to trigger on change (optional).
+ * @property {string} name - Name attribute for the input.
+ * @property {number} min - Minimum value of the range.
+ * @property {number} max - Maximum value of the range.
+ * @property {number} step - Step size for the range.
+ * @property {number} value - Current value of the range.
+ * @property {string} prefix - Text to display before the value in the tooltip.
+ * @property {string} unit - Text to display after the value in the tooltip.
+ * @property {number} legendCount - Number of legend steps to display.
+ * @property {boolean} visibleTooltip - Whether the tooltip is visible.
+ * @property {string} colorType - Color theme key ("type-1", "type-2", "type-3").
+ * @method resetRange - Resets the slider to its minimum value and hides the tooltip.
+ */
 export class InputRange extends LitWrapper {
-  /**
-   * Lit properties for the component.
-   */
   static properties = {
     form: { type: String | undefined },
     name: { type: String | undefined },

@@ -1,24 +1,21 @@
+/**
+ * MarkdownEditor web component for editing markdown content with EasyMDE and Lit.
+ * Extends LitWrapper and uses Lit for rendering.
+ */
+
 import { html, createRef, ref } from "/static/vendor/js/lit-all.v3.2.1.min.js";
 import { LitWrapper } from "/static/js/common/lit-wrapper.js";
 
 /**
- * MarkdownEditor Web Component
- *
- * Provides a markdown editor using EasyMDE and Lit.
- * Supports custom content, required state, and change callbacks.
- *
- * Properties:
- *   - id: (string) The unique identifier for the editor.
- *   - name: (string) The name attribute for the textarea.
- *   - content: (string) Initial markdown content.
- *   - required: (boolean) Whether the textarea is required.
- *   - onContentChange: (function) Callback for content changes.
- *   - mini: (boolean) If true, renders a compact editor.
+ * @class MarkdownEditor
+ * @property {string} id - Unique identifier for the editor.
+ * @property {string} name - Name attribute for the textarea.
+ * @property {string} content - Initial markdown content.
+ * @property {boolean} required - If true, textarea is required.
+ * @property {function} onContentChange - Callback for content changes.
+ * @property {boolean} mini - If true, renders a compact editor.
  */
 export class MarkdownEditor extends LitWrapper {
-  /**
-   * Lit properties for the component.
-   */
   static properties = {
     id: { type: String },
     name: { type: String },

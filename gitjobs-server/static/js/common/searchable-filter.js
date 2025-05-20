@@ -5,11 +5,11 @@ import { LitWrapper } from "/static/js/common/lit-wrapper.js";
 import { getBenefits } from "/static/js/common/data.js";
 
 /**
- * SearchableFilter
- *
- * Custom element for a multi-select filter with search and dropdown.
+ * SearchableFilter web component for a multi-select filter with search functionality.
  * Used for filtering lists with selectable options, supporting keyboard navigation.
+ * Extends LitWrapper for reactive rendering.
  *
+ * @class SearchableFilter
  * @property {string} name - The filter name, used for input and option source.
  * @property {Array} options - All available options for selection.
  * @property {Array} selectedOptions - Currently selected options.

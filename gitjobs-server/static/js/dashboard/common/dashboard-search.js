@@ -2,60 +2,96 @@ import { html } from "/static/vendor/js/lit-all.v3.2.1.min.js";
 import { LitWrapper } from "/static/js/common/lit-wrapper.js";
 import { debounce } from "/static/js/common/common.js";
 
+/**
+ * DashboardSearch web component for searching and selecting projects or foundation members.
+ * Extends LitWrapper for reactive rendering.
+ *
+ * @class DashboardSearch
+ * @property {string} type - Type of search ("projects" or "members").
+ * @property {Array} foundations - List of available foundations for filtering.
+ * @property {Array} selectedOptions - Currently selected projects or members.
+ * @property {string} inputValue - Current value of the search input.
+ * @property {string} layout - Layout style for the component (e.g., "cols").
+ * @property {Array} visibleOptions - Options currently visible in the dropdown.
+ * @property {boolean} isDropdownOpen - Whether the dropdown is open.
+ * @property {number|null} highlightedIndex - Index of the highlighted dropdown option.
+ * @property {string} selectedFoundation - Currently selected foundation filter.
+ */
 export class DashboardSearch extends LitWrapper {
   static properties = {
     type: { type: String },
     foundations: { type: Array },
-    selected: { type: Array },
-    enteredValue: { type: String },
+    selectedOptions: { type: Array },
+    inputValue: { type: String },
+    layout: { type: String },
     visibleOptions: { type: Array },
-    visibleDropdown: { type: Boolean },
-    activeIndex: { type: Number | null },
+    isDropdownOpen: { type: Boolean },
+    highlightedIndex: { type: Number | null },
     selectedFoundation: { type: String },
   };
 
+  // Default foundation filter value
   defaultFoundation = "cncf";
 
+  /**
+   * Initializes component state and default property values.
+   */
   constructor() {
     super();
     this.type = "projects";
     this.foundations = [];
-    this.selected = [];
-    this.enteredValue = "";
-    this.viewType = "cols";
+    this.selectedOptions = [];
+    this.inputValue = "";
+    this.layout = "cols";
     this.visibleOptions = [];
-    this.visibleDropdown = false;
-    this.activeIndex = null;
+    this.isDropdownOpen = false;
+    this.highlightedIndex = null;
     this.selectedFoundation = this.defaultFoundation;
   }
 
+  /**
+   * Lifecycle: Called when component is added to the DOM.
+   * Adds event listener for outside clicks to close dropdown.
+   */
   connectedCallback() {
     super.connectedCallback();
     window.addEventListener("mousedown", this._handleOutsideClick);
   }
 
+  /**
+   * Lifecycle: Called when component is removed from the DOM.
+   * Removes event listener for outside clicks.
+   */
   disconnectedCallback() {
     super.disconnectedCallback();
-    window.addEventListener("mousedown", this._handleOutsideClick);
+    window.removeEventListener("mousedown", this._handleOutsideClick);
   }
 
-  async _getProjects() {
-    const url = `${this.type === "members" ? "/dashboard/members/search?member=" : "/projects/search?project="}${encodeURIComponent(this.enteredValue)}&foundation=${this.selectedFoundation}`;
+  /**
+   * Fetches search options from the server based on input and foundation filter if applicable.
+   * Updates visibleOptions with the fetched results.
+   */
+  async _fetchOptions() {
+    const url = `${this.type === "members" ? "/dashboard/members/search?member=" : "/projects/search?project="}${encodeURIComponent(this.inputValue)}&foundation=${this.selectedFoundation}`;
     try {
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error(`Response status: ${response.status}`);
       }
-
       const json = await response.json();
       this.visibleOptions = json;
     } catch (error) {
-      // TODO - Handle error
+      // TODO - Handle error (e.g., show notification)
     } finally {
-      this.visibleDropdown = true;
+      this.isDropdownOpen = true;
     }
   }
 
+  /**
+   * Handles changes to the foundation filter dropdown.
+   * Resets search input and visible options.
+   * @param {Event} event - Change event from foundation select.
+   */
   _handleFoundationChange(event) {
     const selectedFoundation = event.target.value;
     if (selectedFoundation === "") {
@@ -64,59 +100,79 @@ export class DashboardSearch extends LitWrapper {
       this.selectedFoundation = selectedFoundation;
     }
     this.visibleOptions = [];
-    this.enteredValue = "";
-    this.visibleDropdown = false;
-    this.activeIndex = null;
+    this.inputValue = "";
+    this.isDropdownOpen = false;
+    this.highlightedIndex = null;
   }
 
+  /**
+   * Filters options based on input value.
+   * Triggers fetch if input length > 2, otherwise clears options.
+   * Uses debounce to limit fetch frequency.
+   */
   _filterOptions() {
-    if (this.enteredValue.length > 2) {
-      debounce(this._getProjects(this.enteredValue), 300);
+    if (this.inputValue.length > 2) {
+      debounce(this._fetchOptions(), 300);
     } else {
       this.visibleOptions = [];
-      this.visibleDropdown = false;
-      this.activeIndex = null;
+      this.isDropdownOpen = false;
+      this.highlightedIndex = null;
     }
   }
 
+  /**
+   * Handles input changes in the search box.
+   * Updates inputValue and triggers filtering.
+   * @param {Event} event - Input event from search box.
+   */
   _handleInputChange(event) {
-    this.enteredValue = event.target.value;
+    this.inputValue = event.target.value;
     this._filterOptions();
   }
 
-  _cleanEnteredValue() {
-    this.enteredValue = "";
-    this.visibleDropdown = false;
+  /**
+   * Clears the search input and resets dropdown/options.
+   */
+  _cleanInputValue() {
+    this.inputValue = "";
+    this.isDropdownOpen = false;
     this.visibleOptions = [];
-    this.activeIndex = null;
+    this.highlightedIndex = null;
     this.selectedFoundation = this.defaultFoundation;
   }
 
-  // Check if the clicked element is outside the component
+  /**
+   * Handles clicks outside the component to close dropdown and reset input.
+   * @param {MouseEvent} e - Mouse event.
+   */
   _handleOutsideClick = (e) => {
     if (!this.contains(e.target)) {
-      this._cleanEnteredValue();
+      this._cleanInputValue();
     }
   };
 
+  /**
+   * Handles keyboard navigation in the dropdown.
+   * Supports ArrowDown, ArrowUp, and Enter for selection.
+   * @param {KeyboardEvent} event - Keyboard event.
+   */
   _handleKeyDown(event) {
     switch (event.key) {
       // Highlight the next item in the list
       case "ArrowDown":
-        this._highlightItem("down");
+        this._highlightOption("down");
         break;
       // Highlight the previous item in the list
       case "ArrowUp":
-        this._highlightItem("up");
+        this._highlightOption("up");
         break;
       // Select the highlighted item
       case "Enter":
         event.preventDefault();
-        if (this.activeIndex !== null && this.visibleOptions.length > 0) {
-          const activeItem = this.visibleOptions[this.activeIndex];
+        if (this.highlightedIndex !== null && this.visibleOptions.length > 0) {
+          const activeItem = this.visibleOptions[this.highlightedIndex];
           if (activeItem) {
-            const activeItem = this.visibleOptions[this.activeIndex];
-            this._onSelect(activeItem);
+            this._selectOption(activeItem);
           }
         }
         break;
@@ -125,44 +181,60 @@ export class DashboardSearch extends LitWrapper {
     }
   }
 
-  _highlightItem(direction) {
+  /**
+   * Highlights the next or previous option in the dropdown.
+   * @param {String} direction - "down" or "up"
+   */
+  _highlightOption(direction) {
     if (this.visibleOptions.length > 0) {
-      if (this.activeIndex === null) {
-        this.activeIndex = direction === "down" ? 0 : this.visibleOptions.length - 1;
+      if (this.highlightedIndex === null) {
+        this.highlightedIndex = direction === "down" ? 0 : this.visibleOptions.length - 1;
       } else {
-        let newIndex = direction === "down" ? this.activeIndex + 1 : this.activeIndex - 1;
+        let newIndex = direction === "down" ? this.highlightedIndex + 1 : this.highlightedIndex - 1;
         if (newIndex >= this.visibleOptions.length) {
           newIndex = 0;
         }
         if (newIndex < 0) {
           newIndex = this.visibleOptions.length - 1;
         }
-        this.activeIndex = newIndex;
+        this.highlightedIndex = newIndex;
       }
     }
   }
 
-  _onSelect(item) {
+  /**
+   * Selects an option from the dropdown.
+   * Adds to selectedOptions and resets input/dropdown.
+   * @param {Object} item - Selected project or member.
+   */
+  _selectOption(item) {
     if (this.type === "projects") {
-      this.selected.push(item);
+      this.selectedOptions.push(item);
     } else {
-      this.selected = [item];
+      this.selectedOptions = [item];
     }
-    this.enteredValue = "";
-    this.visibleDropdown = false;
+    this.inputValue = "";
+    this.isDropdownOpen = false;
     this.visibleOptions = [];
-    this.activeIndex = null;
+    this.highlightedIndex = null;
   }
 
-  _onRemove(id) {
-    this.selected = this.selected.filter((item) => {
+  /**
+   * Removes a selected option by its ID.
+   * @param {String|Number} id - ID of the option to remove.
+   */
+  _removeOption(id) {
+    this.selectedOptions = this.selectedOptions.filter((item) => {
       const itemId = this.type === "members" ? item.member_id : item.project_id;
-      if (itemId !== id) {
-        return item;
-      }
+      return itemId !== id;
     });
   }
 
+  /**
+   * Renders the dashboard-search component UI.
+   * Includes foundation filter, search input, dropdown, and selected options.
+   * @returns {TemplateResult}
+   */
   render() {
     return html`<div>
         <label for="project" class="form-label"
@@ -191,42 +263,41 @@ export class DashboardSearch extends LitWrapper {
                 type="text"
                 @keydown="${this._handleKeyDown}"
                 @input=${this._handleInputChange}
-                .value="${this.enteredValue}"
+                .value="${this.inputValue}"
                 class="input-primary peer ps-10"
                 placeholder="Search ${this.type}"
                 autocomplete="off"
                 autocorrect="off"
                 autocapitalize="off"
                 spellcheck="false"
-                autocomplete="off"
               />
               <div class="absolute end-1.5 top-1.5 peer-placeholder-shown:hidden">
-                <button @click=${this._cleanEnteredValue} type="button" class="cursor-pointer mt-[2px]">
+                <button @click=${this._cleanInputValue} type="button" class="cursor-pointer mt-[2px]">
                   <div class="svg-icon size-5 bg-stone-400 hover:bg-stone-700 icon-close"></div>
                 </button>
               </div>
               <div class="absolute z-10 start-0 end-0">
                 <div
-                  class="${!this.visibleDropdown
+                  class="${!this.isDropdownOpen
                     ? "hidden"
                     : ""} bg-white rounded-lg shadow w-full border border-stone-200 mt-1"
                 >
-                  ${this.visibleOptions.length > 0 && this.visibleDropdown
+                  ${this.visibleOptions.length > 0 && this.isDropdownOpen
                     ? html`<ul class="text-sm text-stone-700 overflow-auto max-h-[180px]">
                         ${this.visibleOptions.map((option, index) => {
-                          const isSelected = this.selected.some(
+                          const isSelected = this.selectedOptions.some(
                             (item) => item.name === option.name && item.foundation === option.foundation,
                           );
                           return html`<li
                             class="group ${index > 0 ? "border-t border-stone-200" : ""} ${this
-                              .activeIndex === index
+                              .highlightedIndex === index
                               ? "active"
                               : ""}"
                           >
                             <button
                               type="button"
-                              @click=${() => this._onSelect(option)}
-                              @mouseover=${() => (this.activeIndex = index)}
+                              @click=${() => this._selectOption(option)}
+                              @mouseover=${() => (this.highlightedIndex = index)}
                               class=${`px-4 py-2 w-full ${
                                 isSelected
                                   ? "bg-stone-100 opacity-50"
@@ -278,13 +349,14 @@ export class DashboardSearch extends LitWrapper {
         </p>
       </div>
       <div class="col-span-full mt-4">
-        ${this.selected.length > 0
+        ${this.selectedOptions.length > 0
           ? html` <div class="flex flex-wrap gap-5 w-full">
-              ${this.selected.map(
+              ${this.selectedOptions.map(
                 (opt, index) =>
                   html`<div class="relative border border-stone-200 rounded-lg p-4 pe-10 bg-white min-w-64">
                     <button
-                      @click=${() => this._onRemove(this.type === "members" ? opt.member_id : opt.project_id)}
+                      @click=${() =>
+                        this._removeOption(this.type === "members" ? opt.member_id : opt.project_id)}
                       type="button"
                       class="rounded-full cursor-pointer bg-stone-100 hover:bg-stone-200 absolute top-1 end-1"
                     >
@@ -338,4 +410,8 @@ export class DashboardSearch extends LitWrapper {
       </div>`;
   }
 }
+
+/**
+ * Registers the DashboardSearch component as a custom element.
+ */
 customElements.define("dashboard-search", DashboardSearch);

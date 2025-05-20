@@ -8,7 +8,7 @@ import { debounce } from "/static/js/common/common.js";
  * SearchProjects web component for searching and selecting projects by foundation.
  * Extends LitWrapper and uses Lit for rendering.
  *
- * Component reactive properties.
+ * @class SearchProjects
  * @property {Array} foundations - List of available foundations.
  * @property {Array} selectedProjects - Array of selected project objects.
  * @property {String} inputValue - Current value of the search input field.

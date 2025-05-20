@@ -218,7 +218,7 @@ class EducationItem extends LitWrapper {
             id="education[${this.index}][description]"
             name="description"
             content="${this.data.description}"
-            .onChange="${(value) => this._onTextareaChange(value)}"
+            .onContentChange="${(value) => this._onTextareaChange(value)}"
             mini
             ?required=${!this.isObjectValuesEmpty}
           ></markdown-editor>

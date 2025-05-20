@@ -1,6 +1,6 @@
 /**
  * Returns the default SweetAlert2 options for consistent styling.
- * @returns {Object} SweetAlert2 options object.
+ * @returns {Object} SweetAlert2 options object for consistent alert appearance.
  */
 const getAlertOptions = () => {
   return {
@@ -23,6 +23,7 @@ const getAlertOptions = () => {
 /**
  * Shows a success alert with a custom message.
  * @param {string} message - The message to display in the alert.
+ * @returns {void}
  */
 export const showSuccessAlert = (message) => {
   Swal.fire({
@@ -37,6 +38,7 @@ export const showSuccessAlert = (message) => {
 /**
  * Shows an error alert with a custom message.
  * @param {string} message - The message to display in the alert.
+ * @returns {void}
  */
 export const showErrorAlert = (message) => {
   Swal.fire({
@@ -51,6 +53,7 @@ export const showErrorAlert = (message) => {
 /**
  * Shows an informational alert with a custom message.
  * @param {string} message - The message to display in the alert.
+ * @returns {void}
  */
 export const showInfoAlert = (message) => {
   Swal.fire({
@@ -65,6 +68,7 @@ export const showInfoAlert = (message) => {
 /**
  * Shows an informational alert with custom HTML content.
  * @param {string} message - The HTML content to display in the alert.
+ * @returns {void}
  */
 export const showHtmlInfoAlert = (message) => {
   Swal.fire({
@@ -77,10 +81,11 @@ export const showHtmlInfoAlert = (message) => {
 };
 
 /**
- * Shows a confirmation alert with custom text and triggers an event if confirmed.
+ * Shows a confirmation alert and triggers an event if confirmed.
  * @param {string} message - The message to display in the alert.
  * @param {string} btnId - The ID of the element to trigger if confirmed.
- * @param {string} confirmationMessage - The message to display on the confirmation button.
+ * @param {string} confirmationMessage - The text for the confirmation button.
+ * @returns {void}
  */
 export const showConfirmationAlert = (message, btnId, confirmationMessage) => {
   Swal.fire({

@@ -1,12 +1,10 @@
-/**
- * MarkdownEditor web component for editing markdown content with EasyMDE and Lit.
- * Extends LitWrapper and uses Lit for rendering.
- */
-
 import { html, createRef, ref } from "/static/vendor/js/lit-all.v3.2.1.min.js";
 import { LitWrapper } from "/static/js/common/lit-wrapper.js";
 
 /**
+ * MarkdownEditor web component for editing markdown content with EasyMDE and Lit.
+ * Extends LitWrapper and uses Lit for rendering.
+
  * @class MarkdownEditor
  * @property {string} id - Unique identifier for the editor.
  * @property {string} name - Name attribute for the textarea.

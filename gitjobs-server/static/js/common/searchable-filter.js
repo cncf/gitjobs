@@ -4,53 +4,87 @@ import { triggerActionOnForm } from "/static/js/jobboard/filters.js";
 import { LitWrapper } from "/static/js/common/lit-wrapper.js";
 import { getBenefits } from "/static/js/common/data.js";
 
+/**
+ * SearchableFilter
+ *
+ * Custom element for a multi-select filter with search and dropdown.
+ * Used for filtering lists with selectable options, supporting keyboard navigation.
+ *
+ * @property {string} name - The filter name, used for input and option source.
+ * @property {Array} options - All available options for selection.
+ * @property {Array} selectedOptions - Currently selected options.
+ * @property {string} inputValue - Current value of the search input.
+ * @property {string} layout - Layout style for selected options ("cols" or "rows").
+ * @property {Array} filteredOptions - Options filtered by the search input.
+ * @property {boolean} isDropdownOpen - Whether the dropdown is visible.
+ * @property {string} formId - The form element's id for submitting changes.
+ * @property {string} dropdownAlignment - Dropdown position ("top" or "bottom").
+ * @property {number|null} highlightedIndex - Index of the highlighted option.
+ */
 export class SearchableFilter extends LitWrapper {
   static properties = {
     name: { type: String },
     options: { type: Array },
-    selected: { type: Array },
-    enteredValue: { type: String },
-    viewType: { type: String },
-    visibleOptions: { type: Array },
-    visibleDropdown: { type: Boolean },
-    form: { type: String },
-    alignment: { type: String },
-    activeIndex: { type: Number | null },
+    selectedOptions: { type: Array },
+    inputValue: { type: String },
+    layout: { type: String },
+    filteredOptions: { type: Array },
+    isDropdownOpen: { type: Boolean },
+    formId: { type: String },
+    dropdownAlignment: { type: String },
+    highlightedIndex: { type: Number | null },
   };
 
+  /**
+   * Initializes default property values.
+   */
   constructor() {
     super();
     this.name = "name";
     this.options = [];
-    this.selected = [];
-    this.enteredValue = "";
-    this.viewType = "cols";
-    this.visibleOptions = [];
-    this.visibleDropdown = false;
-    this.form = "";
-    this.alignment = "bottom";
-    this.activeIndex = null;
+    this.selectedOptions = [];
+    this.inputValue = "";
+    this.layout = "cols";
+    this.filteredOptions = [];
+    this.isDropdownOpen = false;
+    this.formId = "";
+    this.dropdownAlignment = "bottom";
+    this.highlightedIndex = null;
   }
 
+  /**
+   * Lifecycle: Called when element is added to the DOM.
+   * Sets up outside click handler and initializes options.
+   */
   connectedCallback() {
     super.connectedCallback();
     window.addEventListener("mousedown", this._handleOutsideClick);
-    this._getOptions();
+    this._initializeOptions();
   }
 
+  /**
+   * Lifecycle: Called when element is removed from the DOM.
+   * Removes outside click handler.
+   */
   disconnectedCallback() {
     super.disconnectedCallback();
-    window.addEventListener("mousedown", this._handleOutsideClick);
+    window.removeEventListener("mousedown", this._handleOutsideClick);
   }
 
-  async cleanSelected() {
-    this.selected = [];
-
-    // Wait for the update to complete
+  /**
+   * Clears all selected options and waits for update.
+   * @returns {Promise<void>}
+   */
+  async clearSelectedOptions() {
+    this.selectedOptions = [];
     await this.updateComplete;
   }
 
-  _getOptions() {
+  /**
+   * Initializes options based on filter name.
+   * For "benefits", loads options from getBenefits().
+   */
+  _initializeOptions() {
     switch (this.name) {
       case "benefits":
         this.options = getBenefits();
@@ -58,58 +92,73 @@ export class SearchableFilter extends LitWrapper {
       default:
         this.options = this.options;
     }
-
     this._filterOptions();
   }
 
+  /**
+   * Filters options based on inputValue.
+   * Updates filteredOptions with matching results.
+   */
   _filterOptions() {
-    if (this.enteredValue.length > 0) {
-      this.visibleOptions = this.options.filter((option) => {
+    if (this.inputValue.length > 0) {
+      this.filteredOptions = this.options.filter((option) => {
         const name = unnormalize(option);
-        return name.toLowerCase().includes(this.enteredValue.toLowerCase());
+        return name.toLowerCase().includes(this.inputValue.toLowerCase());
       });
     } else {
-      this.visibleOptions = this.options;
+      this.filteredOptions = this.options;
     }
   }
 
+  /**
+   * Handles input change event for the search box.
+   * Updates inputValue and filteredOptions.
+   * @param {Event} event - Input event
+   */
   _handleInputChange(event) {
-    this.enteredValue = event.target.value;
+    this.inputValue = event.target.value;
     this._filterOptions();
   }
 
-  _cleanEnteredValue() {
-    this.enteredValue = "";
-    this.visibleDropdown = false;
+  /**
+   * Clears the search input, closes dropdown, resets highlight and filters.
+   */
+  _cleanInputValue() {
+    this.inputValue = "";
+    this.isDropdownOpen = false;
     this._filterOptions();
-    this.activeIndex = null;
+    this.highlightedIndex = null;
   }
 
-  // Check if the clicked element is outside the component
+  /**
+   * Handles clicks outside the component to close dropdown and clear input.
+   * @param {MouseEvent} e - Mouse event
+   */
   _handleOutsideClick = (e) => {
     if (!this.contains(e.target)) {
-      this._cleanEnteredValue();
+      this._cleanInputValue();
     }
   };
 
+  /**
+   * Handles keyboard navigation and selection in the dropdown.
+   * Supports ArrowDown, ArrowUp, and Enter keys.
+   * @param {KeyboardEvent} event - Keydown event
+   */
   _handleKeyDown(event) {
     switch (event.key) {
-      // Highlight the next item in the list
       case "ArrowDown":
-        this._highlightItem("down");
+        this._highlightOption("down");
         break;
-      // Highlight the previous item in the list
       case "ArrowUp":
-        this._highlightItem("up");
+        this._highlightOption("up");
         break;
-      // Select the highlighted item
       case "Enter":
         event.preventDefault();
-        if (this.activeIndex !== null && this.visibleOptions.length > 0) {
-          const activeItem = this.visibleOptions[this.activeIndex];
+        if (this.highlightedIndex !== null && this.filteredOptions.length > 0) {
+          const activeItem = this.filteredOptions[this.highlightedIndex];
           if (activeItem) {
-            const activeItem = this.visibleOptions[this.activeIndex];
-            this._onSelect(activeItem);
+            this._selectOption(activeItem);
           }
         }
         break;
@@ -118,47 +167,58 @@ export class SearchableFilter extends LitWrapper {
     }
   }
 
-  _highlightItem(direction) {
+  /**
+   * Moves the highlight up or down in the filtered options list.
+   * @param {"up"|"down"} direction - Direction to move highlight
+   */
+  _highlightOption(direction) {
     if (this.options && this.options.length > 0) {
-      if (this.activeIndex === null) {
-        this.activeIndex = direction === "down" ? 0 : this.options.length - 1;
+      if (this.highlightedIndex === null) {
+        this.highlightedIndex = direction === "down" ? 0 : this.options.length - 1;
       } else {
-        let newIndex = direction === "down" ? this.activeIndex + 1 : this.activeIndex - 1;
+        let newIndex = direction === "down" ? this.highlightedIndex + 1 : this.highlightedIndex - 1;
         if (newIndex >= this.options.length) {
           newIndex = 0;
         }
         if (newIndex < 0) {
           newIndex = this.options.length - 1;
         }
-        this.activeIndex = newIndex;
+        this.highlightedIndex = newIndex;
       }
     }
   }
 
-  async _onSelect(value) {
-    this.selected.push(value);
-    this.enteredValue = "";
-    this.visibleDropdown = false;
+  /**
+   * Selects an option, adds it to selectedOptions, clears input, closes dropdown,
+   * and triggers form submit.
+   * @param {*} value - Option value to select
+   * @returns {Promise<void>}
+   */
+  async _selectOption(value) {
+    this.selectedOptions.push(value);
+    this.inputValue = "";
+    this.isDropdownOpen = false;
     this._filterOptions();
-    this.activeIndex = null;
-
-    // Wait for the update to complete
+    this.highlightedIndex = null;
     await this.updateComplete;
-
-    // Trigger change event on the form
-    triggerActionOnForm(this.form, "submit");
+    triggerActionOnForm(this.formId, "submit");
   }
 
-  async _onRemove(value) {
-    this.selected = this.selected.filter((item) => item !== value);
-
-    // Wait for the update to complete
+  /**
+   * Removes an option from selectedOptions and triggers form submit.
+   * @param {*} value - Option value to remove
+   * @returns {Promise<void>}
+   */
+  async _removeOption(value) {
+    this.selectedOptions = this.selectedOptions.filter((item) => item !== value);
     await this.updateComplete;
-
-    // Trigger change event on the form
-    triggerActionOnForm(this.form, "submit");
+    triggerActionOnForm(this.formId, "submit");
   }
 
+  /**
+   * Renders the searchable filter input, dropdown, and selected options.
+   * @returns {import("lit").TemplateResult}
+   */
   render() {
     return html`<div class="mt-2 relative">
       <div class="absolute top-2 start-0 flex items-center ps-3 pointer-events-none">
@@ -168,39 +228,42 @@ export class SearchableFilter extends LitWrapper {
         type="text"
         @keydown="${this._handleKeyDown}"
         @input=${this._handleInputChange}
-        @focus=${() => (this.visibleDropdown = true)}
-        .value="${this.enteredValue}"
+        @focus=${() => (this.isDropdownOpen = true)}
+        .value="${this.inputValue}"
         class="input-primary py-0.5 peer ps-9 rounded-lg text-[0.775rem]/6 text-stone-700"
         placeholder="Search ${this.name}"
         autocomplete="off"
         autocorrect="off"
         autocapitalize="off"
         spellcheck="false"
-        autocomplete="off"
       />
       <div class="absolute end-1.5 top-0.5 peer-placeholder-shown:hidden">
-        <button @click=${this._cleanEnteredValue} type="button" class="cursor-pointer mt-[2px]">
+        <button @click=${this._cleanInputValue} type="button" class="cursor-pointer mt-[2px]">
           <div class="svg-icon size-5 bg-stone-400 hover:bg-stone-700 icon-close"></div>
         </button>
       </div>
-      <div class="absolute z-10 start-0 end-0 ${this.alignment === "top" ? "-top-[193px] h-[186px]" : ""}">
+      <div
+        class="absolute z-10 start-0 end-0 ${this.dropdownAlignment === "top"
+          ? "-top-[193px] h-[186px]"
+          : ""}"
+      >
         <div
-          class="${this.alignment === "top" ? "h-full" : ""} ${!this.visibleDropdown
+          class="${this.dropdownAlignment === "top" ? "h-full" : ""} ${!this.isDropdownOpen
             ? "hidden"
             : ""} bg-white divide-y divide-stone-100 rounded-lg shadow w-full border border-stone-200 mt-1"
         >
-          ${this.visibleOptions.length > 0 && this.visibleDropdown
+          ${this.filteredOptions.length > 0 && this.isDropdownOpen
             ? html`<ul class="text-sm text-stone-700 overflow-auto max-h-[180px]">
-                ${this.visibleOptions.map((option, index) => {
-                  const isSelected = this.selected.includes(option);
+                ${this.filteredOptions.map((option, index) => {
+                  const isSelected = this.selectedOptions.includes(option);
                   return html`<li
-                    class="group ${this.activeIndex === index ? "active" : ""}"
+                    class="group ${this.highlightedIndex === index ? "active" : ""}"
                     data-index="${index}"
                   >
                     <button
                       type="button"
-                      @click=${() => this._onSelect(option)}
-                      @mouseover=${() => (this.activeIndex = index)}
+                      @click=${() => this._selectOption(option)}
+                      @mouseover=${() => (this.highlightedIndex = index)}
                       class=${`group-[.active]:bg-stone-100 ${
                         isSelected ? "bg-stone-100 opacity-50" : "cursor-pointer hover:bg-stone-100"
                       } capitalize block w-full text-left px-4 py-1`}
@@ -221,13 +284,13 @@ export class SearchableFilter extends LitWrapper {
             : html`<div class="px-8 py-4 text-sm/6 text-stone-600 italic">No ${this.name} found</div>`}
         </div>
       </div>
-      ${this.selected.length > 0
-        ? html`<div class="flex gap-2 mt-4 ${this.viewType === "rows" ? "flex-col" : "flex-wrap"}">
-            ${this.selected.map(
+      ${this.selectedOptions.length > 0
+        ? html`<div class="flex gap-2 mt-4 ${this.layout === "rows" ? "flex-col" : "flex-wrap"}">
+            ${this.selectedOptions.map(
               (opt) =>
                 html` <button
                     type="button"
-                    @click=${() => this._onRemove(opt)}
+                    @click=${() => this._removeOption(opt)}
                     class="inline-flex items-center justify-between ps-2 pe-1 py-1 bg-white border rounded-lg cursor-pointer select-none border-primary-500 text-primary-500 max-w-full group"
                   >
                     <div class="flex items-center justify-between space-x-3 w-full">
@@ -239,11 +302,15 @@ export class SearchableFilter extends LitWrapper {
                       ></div>
                     </div>
                   </button>
-                  <input type="hidden" form="${this.form}" name="${this.name}[]" value="${opt}" />`,
+                  <input type="hidden" form="${this.formId}" name="${this.name}[]" value="${opt}" />`,
             )}
           </div>`
         : ""}
     </div>`;
   }
 }
+
+/**
+ * Registers the SearchableFilter component as a custom element.
+ */
 customElements.define("searchable-filter", SearchableFilter);

@@ -1,32 +1,30 @@
-/**
- * SearchProjects web component for searching and selecting projects by foundation.
- * Extends LitWrapper and uses Lit for rendering.
- */
-
 import { html } from "/static/vendor/js/lit-all.v3.2.1.min.js";
 import { unnormalize } from "/static/js/common/common.js";
 import { triggerActionOnForm } from "/static/js/jobboard/filters.js";
 import { LitWrapper } from "/static/js/common/lit-wrapper.js";
 import { debounce } from "/static/js/common/common.js";
 
+/**
+ * SearchProjects web component for searching and selecting projects by foundation.
+ * Extends LitWrapper and uses Lit for rendering.
+ *
+ * Component reactive properties.
+ * @property {Array} foundations - List of available foundations.
+ * @property {Array} selectedProjects - Array of selected project objects.
+ * @property {String} inputValue - Current value of the search input field.
+ * @property {Array|null} visibleOptions - Project options shown in the dropdown.
+ * @property {Boolean} isDropdownOpen - Dropdown visibility state.
+ * @property {String} formId - Associated form ID.
+ * @property {Number|null} highlightedIndex - Highlighted dropdown index.
+ * @property {String|null} selectedFoundation - Selected foundation name.
+ */
 export class SearchProjects extends LitWrapper {
-  /**
-   * Component reactive properties.
-   * @property {Array} foundations - List of available foundations.
-   * @property {Array} selectedProjects - Array of selected project objects.
-   * @property {String} inputValue - Current value of the search input field.
-   * @property {Array|null} visibleOptions - Project options shown in the dropdown.
-   * @property {Boolean} visibleDropdown - Dropdown visibility state.
-   * @property {String} formId - Associated form ID.
-   * @property {Number|null} highlightedIndex - Highlighted dropdown index.
-   * @property {String|null} selectedFoundation - Selected foundation name.
-   */
   static properties = {
     foundations: { type: Array },
     selectedProjects: { type: Array },
     inputValue: { type: String },
     visibleOptions: { type: Array | null },
-    visibleDropdown: { type: Boolean },
+    isDropdownOpen: { type: Boolean },
     formId: { type: String },
     highlightedIndex: { type: Number | null },
     selectedFoundation: { type: String | null },
@@ -41,7 +39,7 @@ export class SearchProjects extends LitWrapper {
     this.selectedProjects = [];
     this.inputValue = "";
     this.visibleOptions = null;
-    this.visibleDropdown = false;
+    this.isDropdownOpen = false;
     this.formId = "";
     this.highlightedIndex = null;
     this.selectedFoundation = null;
@@ -89,7 +87,7 @@ export class SearchProjects extends LitWrapper {
     } catch (error) {
       // TODO - Handle error
     } finally {
-      this.visibleDropdown = true;
+      this.isDropdownOpen = true;
     }
   }
 
@@ -107,7 +105,7 @@ export class SearchProjects extends LitWrapper {
     }
     this.visibleOptions = null;
     this.inputValue = "";
-    this.visibleDropdown = false;
+    this.isDropdownOpen = false;
   }
 
   /**
@@ -119,7 +117,7 @@ export class SearchProjects extends LitWrapper {
       debounce(this._fetchProjects(this.inputValue), 300);
     } else {
       this.visibleOptions = null;
-      this.visibleDropdown = false;
+      this.isDropdownOpen = false;
       this.highlightedIndex = null;
     }
   }
@@ -138,7 +136,7 @@ export class SearchProjects extends LitWrapper {
    */
   _cleanInputValue() {
     this.inputValue = "";
-    this.visibleDropdown = false;
+    this.isDropdownOpen = false;
     this.visibleOptions = null;
     this.highlightedIndex = null;
   }
@@ -217,7 +215,7 @@ export class SearchProjects extends LitWrapper {
   async _selectProject(value) {
     this.selectedProjects.push(value);
     this.inputValue = "";
-    this.visibleDropdown = false;
+    this.isDropdownOpen = false;
     this.visibleOptions = null;
     this.highlightedIndex = null;
 
@@ -299,11 +297,11 @@ export class SearchProjects extends LitWrapper {
         </div>
         <div class="absolute z-10 start-0 end-0">
           <div
-            class="${!this.visibleDropdown
+            class="${!this.isDropdownOpen
               ? "hidden"
               : ""} bg-white divide-y divide-stone-100 rounded-lg shadow w-full border border-stone-200 mt-1"
           >
-            ${this.visibleOptions !== null && this.visibleOptions.length > 0 && this.visibleDropdown
+            ${this.visibleOptions !== null && this.visibleOptions.length > 0 && this.isDropdownOpen
               ? html`<ul class="text-sm text-stone-700 overflow-auto max-h-[180px]">
                   ${this.visibleOptions.map((option, index) => {
                     const isSelected = this.selectedProjects.some(

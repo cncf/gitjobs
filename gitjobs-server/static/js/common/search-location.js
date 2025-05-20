@@ -1,14 +1,12 @@
-/**
- * SearchLocation web component for searching and selecting locations with optional distance.
- * Extends LitWrapper and uses Lit for rendering.
- */
-
 import { html, nothing } from "/static/vendor/js/lit-all.v3.2.1.min.js";
 import { LitWrapper } from "/static/js/common/lit-wrapper.js";
 import { debounce } from "/static/js/common/common.js";
 import { triggerActionOnForm } from "/static/js/jobboard/filters.js";
 
 /**
+ * SearchLocation web component for searching and selecting locations with optional distance.
+ * Extends LitWrapper and uses Lit for rendering.
+ *
  * @class SearchLocation
  * @property {string} locationId - Selected location's unique ID.
  * @property {string} city - Selected location's city.

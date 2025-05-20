@@ -266,4 +266,8 @@ export class InputRange extends LitWrapper {
     `;
   }
 }
+
+/**
+ * Registers the InputRange component as a custom element.
+ */
 customElements.define("input-range", InputRange);

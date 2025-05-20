@@ -34,12 +34,12 @@ export class SearchProjects extends LitWrapper {
 
   connectedCallback() {
     super.connectedCallback();
-    window.addEventListener("mousedown", this._handleClickOutside);
+    window.addEventListener("mousedown", this._handleOutsideClick);
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
-    window.addEventListener("mousedown", this._handleClickOutside);
+    window.addEventListener("mousedown", this._handleOutsideClick);
   }
 
   async cleanSelected() {
@@ -102,7 +102,7 @@ export class SearchProjects extends LitWrapper {
   }
 
   // Check if the clicked element is outside the component
-  _handleClickOutside = (e) => {
+  _handleOutsideClick = (e) => {
     if (!this.contains(e.target)) {
       this._cleanEnteredValue();
     }

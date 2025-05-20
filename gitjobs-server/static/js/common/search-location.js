@@ -42,13 +42,13 @@ export class SearchLocation extends LitWrapper {
 
   connectedCallback() {
     super.connectedCallback();
-    window.addEventListener("mousedown", this._handleClickOutside);
+    window.addEventListener("mousedown", this._handleOutsideClick);
     this.value = this._formatLocation(this.city, this.state, this.country);
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
-    window.removeEventListener("mousedown", this._handleClickOutside);
+    window.removeEventListener("mousedown", this._handleOutsideClick);
   }
 
   async cleanLocation() {
@@ -72,7 +72,7 @@ export class SearchLocation extends LitWrapper {
     return [city, state, country].join(", ");
   }
 
-  _handleClickOutside = (e) => {
+  _handleOutsideClick = (e) => {
     if (!this.contains(e.target)) {
       if (this.location_id !== "") {
         this.value = this._formatLocation(this.city, this.state, this.country);

@@ -104,4 +104,7 @@ export class MarkdownEditor extends LitWrapper {
     `;
   }
 }
+/**
+ * Registers the MarkdownEditor component as a custom element.
+ */
 customElements.define("markdown-editor", MarkdownEditor);

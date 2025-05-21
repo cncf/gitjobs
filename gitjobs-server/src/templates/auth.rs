@@ -26,6 +26,7 @@ pub(crate) struct LogInPage {
     pub messages: Vec<Message>,
     /// Authenticated user information.
     pub user: User,
+
     /// Name of the authentication provider, if any.
     pub auth_provider: Option<String>,
     /// Next URL to redirect to after login, if any.
@@ -46,6 +47,7 @@ pub(crate) struct SignUpPage {
     pub messages: Vec<Message>,
     /// Authenticated user information.
     pub user: User,
+
     /// Name of the authentication provider, if any.
     pub auth_provider: Option<String>,
     /// Next URL to redirect to after sign up, if any.
@@ -71,6 +73,7 @@ pub(crate) struct User {
     pub logged_in: bool,
     /// Whether the user is a moderator.
     pub moderator: bool,
+
     /// Display name of the user, if any.
     pub name: Option<String>,
     /// Username, if any.

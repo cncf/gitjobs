@@ -53,6 +53,7 @@ pub(crate) struct Employer {
     pub company: String,
     /// Unique identifier for the employer.
     pub employer_id: Uuid,
+
     /// Optional logo identifier for the employer.
     pub logo_id: Option<Uuid>,
     /// Optional member information for the employer.

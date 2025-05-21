@@ -33,6 +33,7 @@ pub(crate) struct Page {
     pub pending_invitations: usize,
     /// Authenticated user information.
     pub user: User,
+
     /// Name of the authentication provider, if any.
     pub auth_provider: Option<String>,
     /// Selected employer's unique identifier, if any.

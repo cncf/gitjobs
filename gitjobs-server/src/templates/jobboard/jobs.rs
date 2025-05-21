@@ -30,6 +30,7 @@ pub(crate) struct JobsPage {
     pub page_id: PageId,
     /// Authenticated user information.
     pub user: User,
+
     /// Name of the authentication provider, if any.
     pub auth_provider: Option<String>,
 }
@@ -56,6 +57,7 @@ pub(crate) struct ResultsSection {
     pub navigation_links: NavigationLinks,
     /// Total number of jobs found.
     pub total: usize,
+
     /// Offset for pagination.
     pub offset: Option<usize>,
 }
@@ -239,6 +241,7 @@ pub(crate) struct JobSummary {
     pub title: String,
     /// Workplace type for the job.
     pub workplace: Workplace,
+
     /// Location of the job, if specified.
     pub location: Option<Location>,
     /// Open source status, if specified.
@@ -273,6 +276,7 @@ pub(crate) struct Employer {
     pub company: String,
     /// Unique identifier for the employer.
     pub employer_id: Uuid,
+
     /// Description of the employer, if any.
     pub description: Option<String>,
     /// Logo identifier, if any.
@@ -299,6 +303,7 @@ pub(crate) struct Job {
     pub title: String,
     /// Workplace type for the job.
     pub workplace: Workplace,
+
     /// Application instructions, if any.
     pub apply_instructions: Option<String>,
     /// Application URL, if any.

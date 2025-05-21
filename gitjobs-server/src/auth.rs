@@ -407,6 +407,7 @@ pub(crate) struct User {
     pub name: String,
     /// User's username.
     pub username: String,
+
     /// Whether the user has a password set.
     pub has_password: Option<bool>,
     /// User's password hash (if present).
@@ -446,6 +447,7 @@ pub(crate) struct UserSummary {
     pub name: String,
     /// User's username.
     pub username: String,
+
     /// Whether the user has a password set.
     pub has_password: Option<bool>,
     /// User's password (if present).

@@ -59,6 +59,7 @@ pub(crate) struct Application {
     job_seeker_profile_id: Uuid,
     /// Workplace type for the job.
     job_workplace: Workplace,
+
     /// Location of the job, if specified.
     job_location: Option<Location>,
     /// Last position held by the applicant, if any.

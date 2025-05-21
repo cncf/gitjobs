@@ -97,6 +97,7 @@ pub(crate) struct HttpServerConfig {
     pub oauth2: OAuth2Config,
     /// `Oidc` providers configuration.
     pub oidc: OidcConfig,
+
     /// Optional analytics configuration.
     pub analytics: Option<AnalyticsConfig>,
     /// Optional basic authentication configuration.

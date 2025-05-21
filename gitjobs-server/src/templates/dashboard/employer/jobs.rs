@@ -68,6 +68,7 @@ pub(crate) struct JobSummary {
     pub status: JobStatus,
     /// Workplace type for the job.
     pub workplace: Workplace,
+
     /// Timestamp when the job was archived, if applicable.
     pub archived_at: Option<DateTime<Utc>>,
     /// City where the job is located, if specified.
@@ -94,6 +95,7 @@ pub(crate) struct Job {
     pub kind: JobKind,
     /// Workplace type for the job.
     pub workplace: Workplace,
+
     /// Application instructions, if provided.
     pub apply_instructions: Option<String>,
     /// External application URL, if provided.

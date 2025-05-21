@@ -32,6 +32,7 @@ pub(crate) struct Application {
     pub job_title: String,
     /// Workplace type for the job.
     pub job_workplace: Workplace,
+
     /// Location of the job, if specified.
     pub job_location: Option<Location>,
 }

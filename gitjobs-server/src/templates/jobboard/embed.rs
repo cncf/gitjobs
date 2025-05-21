@@ -26,6 +26,7 @@ pub(crate) struct JobsPage {
 pub(crate) struct JobCard {
     /// Base URL for job links.
     pub base_url: String,
+
     /// Job data to display in the card.
     pub job: Option<Job>,
 }

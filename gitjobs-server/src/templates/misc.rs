@@ -18,6 +18,7 @@ pub(crate) struct NotFoundPage {
     pub page_id: PageId,
     /// Authenticated user information.
     pub user: User,
+
     /// Name of the authentication provider, if any.
     pub auth_provider: Option<String>,
 }
@@ -28,6 +29,7 @@ pub(crate) struct NotFoundPage {
 pub(crate) struct UserMenuSection {
     /// Authenticated user information.
     pub user: User,
+
     /// Name of the authentication provider, if any.
     pub auth_provider: Option<String>,
 }
@@ -50,6 +52,7 @@ pub(crate) struct Location {
     pub city: String,
     /// Country name.
     pub country: String,
+
     /// State or region, if any.
     pub state: Option<String>,
 }

@@ -19,6 +19,7 @@ pub(crate) struct Page {
     pub page_id: PageId,
     /// Authenticated user information.
     pub user: User,
+
     /// Name of the authentication provider, if any.
     pub auth_provider: Option<String>,
 }

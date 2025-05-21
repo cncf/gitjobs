@@ -27,6 +27,7 @@ pub(crate) struct Page {
     pub messages: Vec<Message>,
     /// Authenticated user information.
     pub user: User,
+
     /// Name of the authentication provider, if any.
     pub auth_provider: Option<String>,
 }

@@ -46,6 +46,7 @@ pub(crate) struct EmployerSummary {
     pub employer_id: Uuid,
     /// Company name.
     pub company: String,
+
     /// Logo image identifier, if available.
     pub logo_id: Option<Uuid>,
 }
@@ -60,6 +61,7 @@ pub(crate) struct Employer {
     pub description: String,
     /// Whether the employer profile is public.
     pub public: bool,
+
     /// Location of the employer, if specified.
     pub location: Option<Location>,
     /// Logo image identifier, if available.

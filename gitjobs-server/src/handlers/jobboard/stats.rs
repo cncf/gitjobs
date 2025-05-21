@@ -13,6 +13,7 @@ use tracing::instrument;
 use crate::{
     auth::AuthSession,
     config::HttpServerConfig,
+    db::DynDB,
     handlers::{auth::AUTH_PROVIDER_KEY, error::HandlerError, prepare_headers},
     templates::{PageId, jobboard::stats::Page},
 };
@@ -23,12 +24,17 @@ pub(crate) async fn page(
     auth_session: AuthSession,
     session: Session,
     State(cfg): State<HttpServerConfig>,
+    State(db): State<DynDB>,
 ) -> Result<impl IntoResponse, HandlerError> {
+    // Get stats information from the database
+    let stats = db.get_stats().await?;
+
     // Prepare template
     let template = Page {
         auth_provider: session.get(AUTH_PROVIDER_KEY).await?,
         cfg: cfg.into(),
         page_id: PageId::About,
+        stats,
         user: auth_session.into(),
     };
 

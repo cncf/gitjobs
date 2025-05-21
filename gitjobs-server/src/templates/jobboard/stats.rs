@@ -15,6 +15,8 @@ pub(crate) struct Page {
     pub cfg: Config,
     /// Identifier for the current page.
     pub page_id: PageId,
+    /// Stats information in JSON format.
+    pub stats: String,
     /// Authenticated user information.
     pub user: User,
 

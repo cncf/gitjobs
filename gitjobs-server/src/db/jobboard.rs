@@ -14,6 +14,9 @@ use crate::{
     templates::jobboard::jobs::{Filters, FiltersOptions, Job, JobSummary},
 };
 
+/// Type alias to represent a json string.
+type JsonString = String;
+
 /// Trait for database operations used by the job board, such as applying and searching jobs.
 #[async_trait]
 pub(crate) trait DBJobBoard {
@@ -25,6 +28,9 @@ pub(crate) trait DBJobBoard {
 
     /// Retrieves available filter options for job searches.
     async fn get_jobs_filters_options(&self) -> Result<FiltersOptions>;
+
+    /// Retrieves statistics about the job board.
+    async fn get_stats(&self) -> Result<JsonString>;
 
     /// Searches for jobs using the provided filter criteria.
     async fn search_jobs(&self, filters: &Filters) -> Result<JobsSearchOutput>;
@@ -220,6 +226,20 @@ impl DBJobBoard for PgDB {
 
         let db = self.pool.get().await?;
         inner(db).await
+    }
+
+    #[instrument(skip(self))]
+    async fn get_stats(&self) -> Result<JsonString> {
+        trace!("db: get stats");
+
+        // Query database
+        let db = self.pool.get().await?;
+        let stats = db
+            .query_one("select get_stats()::text as stats;", &[])
+            .await?
+            .get("stats");
+
+        Ok(stats)
     }
 
     #[instrument(skip(self))]

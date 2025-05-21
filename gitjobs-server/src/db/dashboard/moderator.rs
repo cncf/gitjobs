@@ -35,6 +35,7 @@ impl DBDashBoardModerator for PgDB {
             update job
             set
                 status = 'published',
+                first_published_at = coalesce(first_published_at, current_timestamp),
                 published_at = current_timestamp,
                 reviewed_at = current_timestamp,
                 reviewed_by = $2

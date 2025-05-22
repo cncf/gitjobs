@@ -1,1 +1,72 @@
-<h1>Stats page</h1>
+{% extends "common_base.html" %}
+
+{% block main -%}
+  <script src="/static/vendor/js/echarts.v5.6.0.min.js"></script>
+  <div class="flex flex-col w-full">
+    <div class="text-center pt-2 lg:pt-5">
+      <h1 class="mb-2 lg:mb-6 mx-3 md:mx-5 text-[1.15rem] font-semibold tracking-tight leading-none md:text-2xl lg:text-4xl xl:text-5xl">
+        GitJobs statistics
+      </h1>
+    </div>
+    <div class="relative container mx-auto max-w-7xl p-4 pb-8 sm:p-6 lg:p-8 lg:pb-16 flex grow h-full"
+         id="stats"
+         data-stats="{{ stats|json }}">
+
+      <div class="bg-white border border-stone-200 rounded-lg p-5 pb-7 text-stone-700 md:p-16 md:pb-20 w-full">
+        <div class="font-semibold text-stone-700 text-center mb-5">Jobs published</div>
+        <div class="flex flex-row h-[300px]">
+          {# Published jobs total - line chart -#}
+          <div class="w-full h-full border border-stone-200" id="line-chart"></div>
+          {# End published jobs total - line chart -#}
+        </div>
+
+        <div class="flex flex-col gap-10">
+          <div>
+            <div class="font-semibold text-stone-700 text-center mb-5 mt-10">Jobs daily views</div>
+            {# Views daily - bar chart -#}
+            <div class="h-[300px] border border-stone-200" id="bar-daily"></div>
+            {# End views daily - bar chart -#}
+          </div>
+
+          <div>
+            <div class="font-semibold text-stone-700 text-center mb-5">Jobs monthly views</div>
+            {# Views monthly - bar chart -#}
+            <div class="h-[300px] border border-stone-200" id="bar-monthly"></div>
+            {# End views monthy - bar chart -#}
+          </div>
+
+          {# Foundations table -#}
+          <div>
+            <div class="font-semibold text-stone-700 text-center mb-5 mt-10">
+              Jobs that offer development time to work on any of the foundations projects
+            </div>
+            <table class="table-fixed w-full text-xs lg:text-sm text-left rtl:text-right text-stone-500">
+              <thead class="text-xs text-stone-700 uppercase bg-stone-100 border-b border-stone-200">
+                <tr>
+                  <th scope="col" class="px-3 xl:px-5 py-3">Foundation</th>
+                  <th scope="col" class="px-3 xl:px-5 py-3 w-40">Number of jobs</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for (foundation, jobs) in stats.jobs.published_per_foundation -%}
+                  <tr class="odd:bg-white even:bg-stone-50/50 border-b border-stone-200">
+                    <td class="px-3 xl:px-5 py-4 font-medium text-stone-900 uppercase">{{ foundation }}</td>
+                    <td class="px-3 xl:px-5 py-4 font-semibold text-stone-900 text-end">{{ jobs }}</td>
+                  </tr>
+                {% endfor -%}
+              </tbody>
+            </table>
+          </div>
+          {# End foundations table -#}
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="module">
+    import {
+      renderStats
+    } from '/static/js/jobboard/stats.js';
+
+    renderStats();
+  </script>
+{% endblock main -%}

@@ -588,6 +588,11 @@ select.aligned-right option {
   -webkit-mask-image: url("/static/images/icons/signature.svg");
 }
 
+.icon-stats {
+  mask-image: url("/static/images/icons/stats.svg");
+  -webkit-mask-image: url("/static/images/icons/stats.svg");
+}
+
 .icon-tasks {
   mask-image: url("/static/images/icons/tasks.svg");
   -webkit-mask-image: url("/static/images/icons/tasks.svg");

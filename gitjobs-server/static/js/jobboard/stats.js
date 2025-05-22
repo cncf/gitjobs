@@ -559,8 +559,6 @@ export const renderStats = () => {
   const stats = JSON.parse(data);
   if (!stats) return;
 
-  console.log("Stats data:", stats);
-
   echarts.registerTheme("gitjobs", gitjobs_theme);
 
   renderLineChart(stats.jobs.published_running_total);

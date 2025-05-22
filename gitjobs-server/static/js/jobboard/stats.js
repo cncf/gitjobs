@@ -395,6 +395,7 @@ const renderLineChart = (data) => {
     xAxis: {
       type: "category",
       axisLabel: {
+        hideOverlap: true,
         formatter: (value) => {
           const date = echarts.time.format(parseInt(value), "{dd} {MMM}");
           return date;
@@ -490,7 +491,7 @@ const renderBarDailyChart = (data, max, min) => {
     },
     xAxis: {
       ...getBarStatsOptions().xAxis,
-      axisLabel: { interval: 0, formatter: "{dd} {MMM}" },
+      axisLabel: { interval: 0, formatter: "{dd} {MMM}", hideOverlap: true },
       splitLine: {
         show: false,
       },
@@ -541,7 +542,7 @@ const renderBarMonthlyChart = (data, max, min) => {
     },
     xAxis: {
       ...getBarStatsOptions().xAxis,
-      axisLabel: { interval: 0, formatter: "{MMM}'{yy}" },
+      axisLabel: { interval: 0, formatter: "{MMM}'{yy}", hideOverlap: true },
       min: min,
       max: max,
     },

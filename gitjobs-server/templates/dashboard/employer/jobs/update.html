@@ -488,8 +488,8 @@
   <script type="module">
     import {
       triggerActionOnForm,
-      checkSalaryBeforeSubmit,
-      checkJobTitle
+      validateSalaryFields,
+      validateJobTitle
     } from '/static/js/dashboard/employer/jobs.js';
     import {
       setModalVisibility,
@@ -503,12 +503,12 @@
     const jobsForm = document.getElementById('jobs-form');
     const jobTitleInput = document.getElementById('title');
     jobTitleInput.addEventListener('input', () => {
-      checkJobTitle(jobTitleInput);
+      validateJobTitle(jobTitleInput);
     });
 
     // Before the form is submitted, check the salary option selected
     jobsForm.addEventListener('htmx:trigger', () => {
-      checkSalaryBeforeSubmit();
+      validateSalaryFields();
     });
 
     jobsForm.addEventListener('htmx:afterRequest', (e) => {

@@ -1,55 +1,71 @@
-// Trigger action on the form provided.
+/**
+ * Triggers a custom action on the specified form using htmx.
+ *
+ * @param {string} formId - The ID of the form element to trigger the action on.
+ * @param {string} action - The htmx event/action to trigger (e.g., "submit").
+ */
 export const triggerActionOnForm = (formId, action) => {
-  const form = document.getElementById(formId);
-  if (form) {
-    htmx.trigger(form, action);
+  const formElement = document.getElementById(formId);
+  if (formElement) {
+    htmx.trigger(formElement, action);
   }
 };
 
-export const checkSalaryBeforeSubmit = () => {
-  const salaryPeriod = document.querySelector('select[name="salary_period"]');
-  const salaryCurrency = document.querySelector('select[name="salary_currency"]');
-  const salary = document.querySelector('input[name="salary"]');
-  const salaryMin = document.querySelector('input[name="salary_min"]');
-  const salaryMax = document.querySelector('input[name="salary_max"]');
+/**
+ * Validates salary fields before form submission.
+ * Sets or removes required attributes based on the selected salary type (exact or range).
+ * Ensures only the relevant salary fields are required and clears unused fields.
+ */
+export const validateSalaryFields = () => {
+  const periodSelect = document.querySelector('select[name="salary_period"]');
+  const currencySelect = document.querySelector('select[name="salary_currency"]');
+  const exactSalaryInput = document.querySelector('input[name="salary"]');
+  const minSalaryInput = document.querySelector('input[name="salary_min"]');
+  const maxSalaryInput = document.querySelector('input[name="salary_max"]');
 
   // Remove required attributes from all salary fields
-  salaryPeriod.removeAttribute("required");
-  salaryCurrency.removeAttribute("required");
-  salary.removeAttribute("required");
-  salaryMin.removeAttribute("required");
-  salaryMax.removeAttribute("required");
+  periodSelect.removeAttribute("required");
+  currencySelect.removeAttribute("required");
+  exactSalaryInput.removeAttribute("required");
+  minSalaryInput.removeAttribute("required");
+  maxSalaryInput.removeAttribute("required");
 
-  const selectedSalaryOption = document.querySelector('input[name="salary_kind"]:checked');
-  // If the salary option is range, remove the salary value and set correct required attributes
-  // for min, max, period and currency
-  if (selectedSalaryOption.id === "range") {
-    salary.value = "";
+  const selectedSalaryType = document.querySelector('input[name="salary_kind"]:checked');
+  // If the salary type is range, clear exact salary and set required for min, max, period, currency
+  if (selectedSalaryType.id === "range") {
+    exactSalaryInput.value = "";
 
-    if (salaryMin.value !== "" || salaryMax.value !== "") {
-      salaryMin.setAttribute("required", "required");
-      salaryMax.setAttribute("required", "required");
-      salaryPeriod.setAttribute("required", "required");
-      salaryCurrency.setAttribute("required", "required");
+    if (minSalaryInput.value !== "" || maxSalaryInput.value !== "") {
+      minSalaryInput.setAttribute("required", "required");
+      maxSalaryInput.setAttribute("required", "required");
+      periodSelect.setAttribute("required", "required");
+      currencySelect.setAttribute("required", "required");
     }
-    // If the salary option is exact, remove the salary min and max values and set correct required attributes
-    // for salary, period and currency
+    // If the salary type is exact, clear min and max and set required for exact, period, currency
   } else {
-    salaryMin.value = "";
-    salaryMax.value = "";
+    minSalaryInput.value = "";
+    maxSalaryInput.value = "";
 
-    if (salary.value !== "") {
-      salary.setAttribute("required", "required");
-      salaryPeriod.setAttribute("required", "required");
-      salaryCurrency.setAttribute("required", "required");
+    if (exactSalaryInput.value !== "") {
+      exactSalaryInput.setAttribute("required", "required");
+      periodSelect.setAttribute("required", "required");
+      currencySelect.setAttribute("required", "required");
     }
   }
 };
 
-export const checkJobTitle = (input) => {
-  input.setCustomValidity("");
-  const jobTitle = input.value.trim();
+/**
+ * Validates the job title input field.
+ * Prevents the use of the word "remote" in the job title and suggests using the workplace field.
+ *
+ * @param {HTMLInputElement} inputElement - The job title input element to validate.
+ */
+export const validateJobTitle = (inputElement) => {
+  inputElement.setCustomValidity("");
+  const jobTitle = inputElement.value.trim();
   if (jobTitle.toLowerCase().includes("remote")) {
-    input.setCustomValidity("Please use the workplace field to indicate that a job is remote");
+    inputElement.setCustomValidity(
+      "Please use the workplace field to indicate that a job is remote"
+    );
   }
 };

@@ -18,18 +18,17 @@ returns json as $$
                 ) foundation_jobs
             ),
             'published_per_month', (
-                select json_agg(json_build_array(month, year, total))
+                select json_agg(json_build_array(year, month, total))
                 from (
                     select
-                        extract('year' from first_published_at) as year,
-                        extract('month' from first_published_at) as month,
+                        to_char(first_published_at, 'YYYY') as year,
+                        to_char(first_published_at, 'Mon') as month,
                         count(*) as total
                     from job
                     where first_published_at is not null
                     group by
-                        extract('year' from first_published_at),
-                        extract('month' from first_published_at)
-                    order by year desc, month desc
+                        to_char(first_published_at, 'YYYY'),
+                        to_char(first_published_at, 'Mon')
                 ) year_month_count
             ),
             'published_running_total', (

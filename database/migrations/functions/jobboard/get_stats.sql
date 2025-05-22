@@ -18,7 +18,7 @@ returns json as $$
                 ) foundation_jobs
             ),
             'published_per_month', (
-                select json_agg(row_to_json(year_month_count))
+                select json_agg(json_build_array(month, year, total))
                 from (
                     select
                         extract('year' from first_published_at) as year,

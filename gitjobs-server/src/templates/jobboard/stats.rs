@@ -46,6 +46,10 @@ pub(crate) struct JobsStats {
     /// Each entry is a tuple of (foundation, count).
     pub published_per_foundation: Vec<(String, Total)>,
 
+    /// Number of jobs published per month.
+    /// Each entry is a tuple of (month, year, count).
+    pub published_per_month: Vec<(String, String, Total)>,
+
     /// Running total of published jobs.
     /// Each entry is a tuple of (timestamp, count).
     pub published_running_total: Vec<(Timestamp, Total)>,

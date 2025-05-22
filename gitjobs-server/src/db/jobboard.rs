@@ -11,11 +11,11 @@ use uuid::Uuid;
 
 use crate::{
     PgDB,
-    templates::jobboard::jobs::{Filters, FiltersOptions, Job, JobSummary},
+    templates::jobboard::{
+        jobs::{Filters, FiltersOptions, Job, JobSummary},
+        stats::Stats,
+    },
 };
-
-/// Type alias to represent a json string.
-type JsonString = String;
 
 /// Trait for database operations used by the job board, such as applying and searching jobs.
 #[async_trait]
@@ -30,7 +30,7 @@ pub(crate) trait DBJobBoard {
     async fn get_jobs_filters_options(&self) -> Result<FiltersOptions>;
 
     /// Retrieves statistics about the job board.
-    async fn get_stats(&self) -> Result<JsonString>;
+    async fn get_stats(&self) -> Result<Stats>;
 
     /// Searches for jobs using the provided filter criteria.
     async fn search_jobs(&self, filters: &Filters) -> Result<JobsSearchOutput>;
@@ -229,15 +229,16 @@ impl DBJobBoard for PgDB {
     }
 
     #[instrument(skip(self))]
-    async fn get_stats(&self) -> Result<JsonString> {
+    async fn get_stats(&self) -> Result<Stats> {
         trace!("db: get stats");
 
         // Query database
         let db = self.pool.get().await?;
-        let stats = db
+        let json_data: String = db
             .query_one("select get_stats()::text as stats;", &[])
             .await?
             .get("stats");
+        let stats = serde_json::from_str(&json_data)?;
 
         Ok(stats)
     }

@@ -33,7 +33,7 @@ pub(crate) async fn page(
     let template = Page {
         auth_provider: session.get(AUTH_PROVIDER_KEY).await?,
         cfg: cfg.into(),
-        page_id: PageId::About,
+        page_id: PageId::Stats,
         stats,
         user: auth_session.into(),
     };

@@ -207,6 +207,34 @@
     <div id="dropdown-user"
          class="dropdown absolute hidden z-10 end-0 top-10 w-[250px] bg-white divide-y divide-stone-100 rounded-lg shadow border border-stone-200">
       <ul class="text-stone-700 my-2">
+        {# Stats page for mobile -#}
+        <li class="block xl:hidden">
+          <a hx-boost="true"
+             href="/stats"
+             hx-target="body"
+             class="inline-block w-full text-start px-4 py-2 hover:bg-stone-100">
+            <div class="flex items-center">
+              <div class="svg-icon size-4 icon-stats bg-stone-600"></div>
+              <div class="ms-2 text-xs/6">Stats</div>
+            </div>
+          </a>
+        </li>
+        {# End stats page for mobile -#}
+
+        {# About page for mobile -#}
+        <li class="border-b border-stone-200 mb-2 pb-2 block xl:hidden">
+          <a hx-boost="true"
+             href="/about"
+             hx-target="body"
+             class="inline-block w-full text-start px-4 py-2 hover:bg-stone-100">
+            <div class="flex items-center">
+              <div class="svg-icon size-4 icon-info bg-stone-600"></div>
+              <div class="ms-2 text-xs/6">About</div>
+            </div>
+          </a>
+        </li>
+        {# End about page for mobile -#}
+
         {# Sign up -#}
         <li>
           <a hx-boost="true"

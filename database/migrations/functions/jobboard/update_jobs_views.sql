@@ -6,11 +6,16 @@ returns void as $$
 
     -- Insert or update the corresponding views counters as needed
     insert into job_views (job_id, day, total)
-    select
-        (value->>0)::uuid as job_id,
-        (value->>1)::date as day,
-        (value->>2)::integer as total
-    from jsonb_array_elements(p_data)
+    select views_batch.*
+    from (
+        select
+            (value->>0)::uuid as job_id,
+            (value->>1)::date as day,
+            (value->>2)::integer as total
+        from jsonb_array_elements(p_data)
+    ) as views_batch
+    join job on job.job_id = views_batch.job_id
+    where job.status = 'published'
     on conflict (job_id, day) do
     update set total = job_views.total + excluded.total;
 $$ language sql;

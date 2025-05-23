@@ -125,13 +125,11 @@
     {# End company logo -#}
 
     {# Info -#}
-    <div class="grow min-w-0 flex flex-col content-between min-h-9">
+    <div class="grow min-w-0 flex flex-col content-between py-1">
       {# Company and member -#}
       <div class="flex justify-between items-center space-x-5">
         {# Company -#}
-        <div class="truncate leading-[0.7rem] md:leading-3 text-stone-500/75 text-[0.7rem] md:text-xs font-semibold tracking-wide uppercase">
-          {{ job.employer.company }}
-        </div>
+        <div class="truncate text-stone-500/75 text-[0.7rem] md:text-xs uppercase">{{ job.employer.company }}</div>
         {# End company -#}
 
         <div class="shrink-0 flex items-center md:space-x-16">
@@ -147,16 +145,14 @@
                        alt="Member badge logo">
                 </div>
 
-                <div class="leading-3 text-stone-600 text-xs font-semibold tracking-wide uppercase">
-                  {{ member.foundation }} member
-                </div>
+                <div class="leading-3 text-stone-600 text-xs tracking-wide uppercase">{{ member.foundation }} member</div>
               </div>
             {% endif -%}
             {# End member -#}
           </div>
 
           {# Published date -#}
-          <div class="truncate leading-[0.7rem] w-[50px] md:leading-3 text-[0.7rem] md:text-xs font-semibold tracking-wide uppercase text-end">
+          <div class="truncate w-[50px] text-[0.7rem] md:text-xs tracking-wide uppercase text-end">
             {{ job.published_at.format(DATE_FORMAT_3) }}
           </div>
           {# End published date -#}
@@ -164,199 +160,140 @@
       </div>
 
       <div class="flex space-x-3 items-center mt-auto">
-        <div class="flex items-center space-x-4 min-w-0 md:h-[22px] sm:-mb-[3px] md:-mb-[4px] relative">
+        <div class="flex items-center space-x-4 min-w-0 md:h-[22px]">
           {# Title -#}
-          <div class="leading-6 md:leading-5 text-base font-stretch-condensed font-medium text-stone-900 line-clamp-2 md:line-clamp-1 mt-4 md:mt-0">
+          <div class="text-base font-stretch-condensed font-medium text-stone-900 line-clamp-2 md:line-clamp-1 mt-4 md:mt-0">
             {# Truncate job title to 50 characters -#}
             {{ job.title|truncate(50) }}
           </div>
           {# End title -#}
-
-          {# Location -#}
-          {% if let Some(location) = job.location -%}
-            <div class="hidden lg:inline-flex">{% call location_badge(location) -%}</div>
-          {% endif -%}
-          {# End location -#}
         </div>
       </div>
     </div>
     {# End info -#}
   </div>
 
-  {# Location for mobile devices -#}
-  <div class="flex justify-between mt-5 md:mt-0 md:hidden sm:ps-14">
-    <div class="max-w-full min-w-0">
-      {% if job.workplace == Workplace::Remote -%}
-        {%- call badge(content = "Remote") -%}
-      {% else -%}
-        {% if let Some(location) = job.location -%}
-          {%- call location_badge(location) -%}
-        {% else -%}
-          {%- call badge(content = "No location provided") -%}
-        {% endif -%}
-      {% endif -%}
-    </div>
-  </div>
-
-  {# End location and salary for mobile devices -#}
-
-  <div class="flex justify-between items-end gap-x-2 md:gap-x-6 w-full mt-5 md:mt-8 sm:ps-14 md:ps-17">
+  <div class="flex justify-between items-end gap-x-2 md:gap-x-6 w-full mt-6 sm:ps-14 md:ps-17">
     {# Tags -#}
-    <div class="flex items-center gap-x-6 w-full text-[0.8rem] text-stone-600 leading-3 md:leading-normal relative -mb-px md:mb-0">
-      {# Tags -#}
+    <div class="flex flex-col md:flex-row gap-x-8 gap-y-6 lg:gap-10 w-full text-[0.8rem] text-stone-700">
       {% let kind = job.kind.to_string() -%}
       {% let workplace = job.workplace.to_string() -%}
 
-      {# Job type -#}
-      <div class="flex items-baseline space-x-1">
-        {% match job.kind -%}
-        {% when JobKind::FullTime -%}
-        {% call icon(name = "signature") -%}
-        {% when JobKind::PartTime -%}
-        {% call icon(name = "hour_glass") -%}
-        {% when JobKind::Contractor -%}
-        {% call icon(name = "clipboard") -%}
-        {% when JobKind::Internship -%}
-        {% call icon(name = "graduation_cap") -%}
-      {% endmatch -%}
-      <div class="capitalize text-nowrap">{{ kind|unnormalize }}</div>
+      <div class="flex items-center gap-x-8 lg:gap-x-10">
+        {# Job type -#}
+        <div class="flex flex-col space-y-1">
+          {% call mini_title("Job type") -%}
+          <div class="capitalize text-nowrap">{{ kind|unnormalize }}</div>
+        </div>
+        {# End job type -#}
+
+        {# Location -#}
+        <div class="flex flex-1 min-w-0 flex-col space-y-1">
+          {% call mini_title("Location") -%}
+          <div class="capitalize text-nowrap">
+            {% if let Some(location) = job.location -%}
+              {% let current_location = format!("{}, {}", location.city, location.country) -%}
+              {{ current_location|truncate(35) }}
+            {% else if job.workplace == Workplace::Remote -%}
+              Remote
+            {% else -%}
+              Not provided
+            {% endif -%}
+          </div>
+        </div>
+        {# End location -#}
+      </div>
+
+      <div class="flex items-center gap-x-8 lg:gap-x-10">
+        {# Seniority -#}
+        {% if let Some(seniority) = job.seniority -%}
+          <div class="flex flex-col space-y-1">
+            {% let seniority = seniority.to_string() -%}
+            {% call mini_title("Seniority") -%}
+            <div class="capitalize text-nowrap">{{ seniority|unnormalize }}</div>
+          </div>
+        {% endif -%}
+        {# End seniority -#}
+
+        {# Salary -#}
+        <div class="flex flex-col space-y-1">
+          {% call mini_title("Salary") -%}
+          <div class="capitalize text-nowrap">
+            {% if let Some(salary) = job.salary -%}
+              {% if let Some(salary_currency) = job.salary_currency -%}
+                {{ salary_currency }}
+              {% endif -%}
+              {{ salary|humanize_salary }}
+              {%- if let Some(salary_period) = job.salary_period -%}
+                <span class="lowercase">/ {{ salary_period }}</span>
+              {%- endif -%}
+            {% else if let Some(salary_min) = job.salary_min -%}
+              {% if let Some(salary_currency) = job.salary_currency -%}
+                {{ salary_currency }}
+              {% endif -%}
+              {{ salary_min|humanize_salary }}
+              {%- if let Some(salary_max) = job.salary_max -%}
+                -{{ salary_max|humanize_salary }}
+              {% endif -%}
+              {%- if let Some(salary_period) = job.salary_period -%}
+                <span class="lowercase">/ {{ salary_period }}</span>
+              {%- endif -%}
+            {% else -%}
+              Not provided
+            {% endif -%}
+          </div>
+        </div>
+        {# End salary -#}
+      </div>
     </div>
-    {# End job type -#}
-
-    {# Workplace -#}
-    <div class="hidden md:flex items-center space-x-1">
-      {% match job.workplace -%}
-      {% when Workplace::OnSite -%}
-      {% call icon(name = "office_chair") -%}
-      {% when Workplace::Remote -%}
-      {% call icon(name = "remote") -%}
-      {% when Workplace::Hybrid -%}
-      {% call icon(name = "buildings") -%}
-    {% endmatch -%}
-    <div class="capitalize text-nowrap">{{ workplace|unnormalize }}</div>
+    {# End tags -#}
   </div>
-  {# Workplace -#}
 
-  {# Seniority -#}
-  {% if let Some(seniority) = job.seniority -%}
-    <div class="hidden md:flex lg:hidden xl:flex">
-      {% let seniority = seniority.to_string() -%}
-      <div class="flex items-center space-x-1">
-        <div class="svg-icon size-3 icon-organigram bg-stone-500"></div>
-        <div class="capitalize text-nowrap">
-          {{ seniority|unnormalize }} <span class="hidden lg:inline">level</span>
+  {% if is_open_source -%}
+    <div class="hidden md:flex space-x-10 items-center mt-6 sm:ps-14 md:ps-17">
+      {# Open source -#}
+      <div class="block">
+        {% call mini_title(content = "Time working on open source") -%}
+        <div class="mt-2">
+          {% call macros_preview::badge_percentage_bar(percentage = open_source, bar_margin = "my-0") -%}
         </div>
       </div>
+      {# End open source -#}
+
+      {# Upstream commitment -#}
+      <div class="block">
+        {% call mini_title(content = "Time working on upstream projects") -%}
+        <div class="mt-2">
+          {% call macros_preview::badge_percentage_bar(percentage = upstream_commitment, type = "upstream_commitment", bar_margin = "my-0") -%}
+        </div>
+      </div>
+      {# End Upstream commitment -#}
     </div>
   {% endif -%}
-  {# End seniority -#}
 
-  {# Open source -#}
-  {% if is_open_source -%}
-    <div class="flex space-x-1 items-center justify-center">
-      <div class="svg-icon size-3 icon-check bg-lime-500"></div>
-      <div class="text-nowrap">Open source</div>
+  {% if let Some(skills) = job.skills -%}
+    {# Skills -#}
+    <div class="flex flex-col space-y-1 mt-6 sm:ps-14 md:ps-17">
+      {% call mini_title("Required skills") -%}
+      <div class="capitalize truncate text-[0.7rem] text-stone-700 uppercase">
+        {% for skill in skills.iter().take(12) -%}
+          {%- if !loop.first -%}
+            <span class="mx-1">·</span>
+          {% endif -%}
+          {{ skill|unnormalize }}
+        {% endfor -%}
+      </div>
     </div>
+    {# End skills -#}
   {% endif -%}
-  {# End open source -#}
-</div>
-{# End tags -#}
 
-{# Salary -#}
-<div class="hidden md:flex">{% call salary_badge(job = job) -%}</div>
-{# End salary -#}
-</div>
-
-{% if is_open_source -%}
-  <div class="hidden md:flex space-x-10 items-center mt-4 md:mt-2 md:ps-17">
-    {# Open source -#}
-    <div class="block">
-      {% call macros_preview::job_details_subheading(content = "Time working on open source", extra_styles = "text-stone-600 text-nowrap") -%}
-      <div class="mt-2">
-        {% call macros_preview::badge_percentage_bar(percentage = open_source, bar_margin = "my-0") -%}
-      </div>
-    </div>
-    {# End open source -#}
-
-    {# Upstream commitment -#}
-    <div class="block">
-      {% call macros_preview::job_details_subheading(content = "Time working on upstream projects", extra_styles = "text-stone-600 text-nowrap") -%}
-      <div class="mt-2">
-        {% call macros_preview::badge_percentage_bar(percentage = upstream_commitment, type = "upstream_commitment", bar_margin = "my-0") -%}
-      </div>
-    </div>
-    {# End Upstream commitment -#}
+  {# Spinner -#}
+  <div id="spinner-{{ job.job_id }}"
+       class="hx-spinner absolute rounded-lg top-0 left-0 h-full w-full rounded-lg box-animated {%- if upstream_commitment > 0 %} box-animated-lime{%- else if open_source > 0 %} box-animated-lime-light{%- endif -%}">
   </div>
-{% endif -%}
-
-{% if let Some(skills) = job.skills -%}
-  {# Skills -#}
-  <div class="flex mt-5 md:mt-8 sm:ps-14 md:ps-17 md:max-w-3/4 h-[22px] overflow-hidden">
-    <div class="flex flex-wrap gap-x-4">
-      {% for skill in skills.iter().take(10) -%}
-        {% call badge(content = skill|unnormalize, extra_styles = "uppercase") -%}
-      {% endfor -%}
-    </div>
-  </div>
-  {# End skills -#}
-{% endif -%}
-
-{# Spinner -#}
-<div id="spinner-{{ job.job_id }}"
-     class="hx-spinner absolute rounded-lg top-0 left-0 h-full w-full rounded-lg box-animated {%- if upstream_commitment > 0 %} box-animated-lime{%- else if open_source > 0 %} box-animated-lime-light{%- endif -%}">
-</div>
-{# End spinner -#}
+  {# End spinner -#}
 {% endmacro job_card -%}
 
-{% macro icon(name) -%}
-  <div class="svg-icon size-2.5 md:size-3 icon-{{ name }} bg-stone-500 shrink-0"></div>
-{% endmacro icon -%}
-
-{% macro salary_badge(job) -%}
-  <div class="text-sm/6 text-stone-600">
-    {% if let Some(salary) = job.salary -%}
-      {# Salary -#}
-      <div class="flex items-baseline space-x-1 border border-stone-200 bg-white rounded-md px-2 py-0.5 text-xs text-stone-500 font-normal">
-        {% if let Some(salary_currency) = job.salary_currency -%}
-          <div class="text-[0.7rem] text-stone-500">{{ salary_currency }}</div>
-        {% endif -%}
-        <div class="capitalize">{{ salary|humanize_salary }}</div>
-        {%- if let Some(salary_period) = job.salary_period -%}
-          <div class="text-[0.7rem] text-nowrap">/ {{ salary_period }}</div>
-        {%- endif -%}
-      </div>
-      {# End salary -#}
-    {% else if let Some(salary_min) = job.salary_min -%}
-      {# Salary range -#}
-      <div class="flex items-baseline space-x-1 border border-stone-200 bg-white rounded-md px-2 py-0.5 text-xs text-stone-500 font-normal">
-        {% if let Some(salary_currency) = job.salary_currency -%}
-          <div class="text-[0.7rem] text-stone-500">{{ salary_currency }}</div>
-        {% endif -%}
-        <div class="flex gap-x-1 capitalize text-nowrap">
-          <div>{{ salary_min|humanize_salary }}</div>
-          {%- if let Some(salary_max) = job.salary_max -%}
-            <div>-</div>
-            <div>{{ salary_max|humanize_salary }}</div>
-          {% endif -%}
-        </div>
-        {%- if let Some(salary_period) = job.salary_period -%}
-          <div class="text-[0.7rem] text-nowrap">/ {{ salary_period }}</div>
-        {%- endif -%}
-      </div>
-      {# End salary range -#}
-    {% endif -%}
-  </div>
-{% endmacro salary_badge -%}
-
-{% macro location_badge(location) -%}
-  <div class="flex border border-stone-200 bg-white rounded-md px-2 py-0.5 text-xs text-stone-500 font-normal items-center">
-    <div class="svg-icon size-2.5 icon-location bg-stone-500 me-1 shrink-0"></div>
-    <div class="text-nowrap truncate">{{ location.city }}, {{ location.country }}</div>
-  </div>
-{% endmacro location_badge -%}
-
-{% macro badge(content, extra_styles = "") -%}
-  <div class="flex border border-stone-200 bg-white rounded-md px-2 py-0.5 text-xs text-stone-500 font-normal items-center {{ extra_styles }}">
-    <div class="text-nowrap truncate">{{ content }}</div>
-  </div>
-{% endmacro badge -%}
+{% macro mini_title(content) -%}
+  <div class="text-stone-400 text-[0.65rem] uppercase text-nowrap">{{ content }}</div>
+{% endmacro mini_title -%}

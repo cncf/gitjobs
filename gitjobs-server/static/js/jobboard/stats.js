@@ -452,6 +452,20 @@ const getBarStatsOptions = () => {
       },
       datasetIndex: 1,
     },
+    media: [
+      {
+        query: {
+          maxWidth: 800,
+        },
+        option: {
+          series: {
+            label: {
+              show: false,
+            },
+          },
+        },
+      },
+    ],
   };
 };
 
@@ -562,7 +576,17 @@ export const renderStats = () => {
 
   echarts.registerTheme("gitjobs", gitjobs_theme);
 
+  const demo = [
+    [1747267200000, 52],
+    [1747353600000, 71],
+    [1747440000000, 63],
+    [1747526400000, 64],
+    [1747612800000, 99],
+    [1747699200000, 148],
+    [1747785600000, 30],
+  ];
+
   renderLineChart(stats.jobs.published_running_total);
-  renderBarDailyChart(stats.jobs.views_daily, stats.ts_now, stats.ts_one_month_ago);
+  renderBarDailyChart(demo, stats.ts_now, stats.ts_one_month_ago);
   renderBarMonthlyChart(stats.jobs.views_monthly, stats.ts_now, stats.ts_two_years_ago);
 };

@@ -46,7 +46,7 @@
               hx-target="#job-view"
               hx-trigger="click,open-modal,open-modal-on-popstate"
               hx-indicator="#spinner-{{ job.job_id }}"
-              class="relative md:mx-7 text-start bg-white enabled:cursor-pointer border-2 rounded-lg enabled:hover:outline enabled:hover:outline-1 p-5 md:p-7 {%- if upstream_commitment > 0 %} border-lime-500 bg-lime-50/20 enabled:hover:outline-lime-500{%- else if open_source > 0 %} border-lime-300 bg-lime-50/20 enabled:hover:outline-lime-300{%- else %} border-stone-200 enabled:hover:outline-stone-200{%- endif -%}"
+              class="relative md:mx-7 text-start bg-white enabled:cursor-pointer border rounded-lg enabled:hover:outline enabled:hover:outline-1 p-5 md:p-7 {%- if upstream_commitment > 0 %} border-lime-500 bg-lime-50/20 enabled:hover:outline-lime-500{%- else if open_source > 0 %} border-lime-300 bg-lime-50/20 enabled:hover:outline-lime-300{%- else %} border-stone-200 enabled:hover:outline-stone-200{%- endif -%}"
               hx-disabled-elt="[data-preview-job]"
               hx-boost="true">{% call job_card(job = job) -%}</button>
     {% endfor -%}
@@ -125,7 +125,7 @@
     {# End company logo -#}
 
     {# Info -#}
-    <div class="grow min-w-0 flex flex-col content-between py-1">
+    <div class="grow min-w-0 flex flex-col content-between lg:py-1">
       {# Company and member -#}
       <div class="flex justify-between items-center space-x-5">
         {# Company -#}
@@ -162,7 +162,7 @@
       <div class="flex space-x-3 items-center mt-auto">
         <div class="flex items-center space-x-4 min-w-0 md:h-[22px]">
           {# Title -#}
-          <div class="text-base font-stretch-condensed font-medium text-stone-900 line-clamp-2 md:line-clamp-1 mt-4 md:mt-0">
+          <div class="text-base font-stretch-condensed font-medium text-stone-900 line-clamp-2 md:line-clamp-1">
             {# Truncate job title to 50 characters -#}
             {{ job.title|truncate(50) }}
           </div>

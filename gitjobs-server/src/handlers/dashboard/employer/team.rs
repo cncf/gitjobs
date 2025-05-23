@@ -168,11 +168,18 @@ pub(crate) async fn delete_member(
         }
     }
 
+    // Prepare redirect path
+    let redirect_path = if user.user_id == member_user_id {
+        "/dashboard/employer?tab=jobs"
+    } else {
+        "/dashboard/employer?tab=team"
+    };
+
     Ok((
         StatusCode::NO_CONTENT,
         [(
             "HX-Location",
-            r#"{"path":"/dashboard/employer?tab=team", "target":"body"}"#,
+            format!(r#"{{"path":"{redirect_path}", "target":"body"}}"#),
         )],
     )
         .into_response())

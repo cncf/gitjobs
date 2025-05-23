@@ -165,14 +165,14 @@
 .markdown h5,
 .markdown h6 {
   color: var(--color-stone-800);
-  font-size: var(--text-base);
+  font-size: 0.95rem;
   font-weight: 600;
   margin-bottom: 0.5rem;
   margin-top: 1rem;
 }
 
 .markdown h1 {
-  font-size: var(--text-lg);
+  font-size: 1.075rem;
 }
 
 .markdown p:not(:last-child),
@@ -209,6 +209,10 @@
 
 .markdown hr {
   margin: 1rem 0;
+}
+
+.markdown strong {
+  font-weight: 600 !important;
 }
 
 /* End markdown */

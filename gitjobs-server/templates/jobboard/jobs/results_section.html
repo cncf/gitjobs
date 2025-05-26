@@ -175,11 +175,11 @@
 
   <div class="flex justify-between items-end gap-x-2 md:gap-x-6 w-full mt-6 sm:ps-14 md:ps-17">
     {# Tags -#}
-    <div class="flex flex-col md:flex-row gap-x-8 gap-y-6 lg:gap-10 w-full text-[0.8rem] text-stone-700">
+    <div class="flex flex-col md:flex-row gap-x-8 gap-y-6 xl:gap-10 w-full text-[0.8rem] text-stone-700">
       {% let kind = job.kind.to_string() -%}
       {% let workplace = job.workplace.to_string() -%}
 
-      <div class="flex items-center gap-x-8 lg:gap-x-10">
+      <div class="flex items-center gap-x-8 xl:gap-x-10 min-w-0">
         {# Job type -#}
         <div class="flex flex-col space-y-1">
           {% call mini_title("Job type") -%}
@@ -190,7 +190,7 @@
         {# Location -#}
         <div class="flex flex-1 min-w-0 flex-col space-y-1">
           {% call mini_title("Location") -%}
-          <div class="capitalize text-nowrap">
+          <div class="capitalize text-nowrap truncate">
             {% if let Some(location) = job.location -%}
               {% let current_location = format!("{}, {}", location.city, location.country) -%}
               {{ current_location|truncate(35) }}
@@ -204,7 +204,7 @@
         {# End location -#}
       </div>
 
-      <div class="flex items-center gap-x-8 lg:gap-x-10">
+      <div class="flex items-center gap-x-8 xl:gap-x-10">
         {# Seniority -#}
         {% if let Some(seniority) = job.seniority -%}
           <div class="flex flex-col space-y-1">

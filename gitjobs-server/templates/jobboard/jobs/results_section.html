@@ -282,7 +282,7 @@
     {# Skills -#}
     <div class="flex flex-col space-y-1 mt-6 sm:ps-14 md:ps-17">
       {% call mini_title("Required skills") -%}
-      <div class="flex flex-wrap capitalize text-[0.7rem] text-stone-700 uppercase max-h-[18px] overflow-hidden">
+      <div class="flex flex-wrap capitalize text-[0.7rem] text-stone-700 uppercase h-[16px] overflow-hidden">
         {% for skill in skills.iter().take(12) -%}
           <div>
             {%- if !loop.first -%}

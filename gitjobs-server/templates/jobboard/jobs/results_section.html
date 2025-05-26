@@ -181,7 +181,7 @@
 
       <div class="flex items-center gap-x-8 xl:gap-x-10 min-w-0">
         {# Job type -#}
-        <div class="flex flex-col space-y-1">
+        <div class="flex flex-col space-y-1 min-w-[70px] md:min-w-auto">
           {% call mini_title("Job type") -%}
           <div class="capitalize text-nowrap">{{ kind|unnormalize }}</div>
         </div>
@@ -207,7 +207,7 @@
       <div class="flex items-center gap-x-8 xl:gap-x-10">
         {# Seniority -#}
         {% if let Some(seniority) = job.seniority -%}
-          <div class="flex flex-col space-y-1">
+          <div class="flex flex-col space-y-1 min-w-[70px] md:min-w-auto">
             {% let seniority = seniority.to_string() -%}
             {% call mini_title("Seniority") -%}
             <div class="capitalize text-nowrap">{{ seniority|unnormalize }}</div>
@@ -250,7 +250,7 @@
   </div>
 
   {% if is_open_source -%}
-    <div class="hidden md:flex space-x-10 items-center mt-6 sm:ps-14 md:ps-17">
+    <div class="flex flex-col md:flex-row gap-y-6 gap-x-8 xl:gap-x-10 mt-6 sm:ps-14 md:ps-17">
       {# Open source -#}
       <div class="block">
         {% call mini_title(content = "Time working on open source") -%}

@@ -187,7 +187,7 @@ export class SearchProjects extends LitWrapper {
     const isDisabled = this.selectedFoundation === null;
 
     return html`<select
-        class="select-primary py-0.5 text-[0.8rem]/6 text-stone-500 mb-2"
+        class="select-primary py-0.5 text-[0.775rem]/6 text-stone-700 mb-2"
         @change=${this._handleFoundationChange}
       >
         <option value="" ?selected="${this.selectedFoundation === null}"></option>
@@ -209,7 +209,9 @@ export class SearchProjects extends LitWrapper {
           @input=${this._onInputChange}
           type="text"
           .value="${this.enteredValue}"
-          class="input-primary py-0.5 peer ps-9 rounded-lg text-[0.8rem]/6 ${isDisabled ? "opacity-50" : ""}"
+          class="input-primary py-0.5 peer ps-9 rounded-lg text-[0.775rem]/6 text-stone-700 ${isDisabled
+            ? "opacity-50"
+            : ""}"
           placeholder="Search projects"
           autocomplete="off"
           autocorrect="off"

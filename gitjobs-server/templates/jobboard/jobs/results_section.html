@@ -125,7 +125,7 @@
     {# End company logo -#}
 
     {# Info -#}
-    <div class="grow min-w-0 flex flex-col content-between lg:py-1">
+    <div class="grow min-w-0 flex flex-col content-between md:pt-1 md:pb-0.5">
       {# Company and member -#}
       <div class="flex justify-between items-center space-x-5">
         {# Company -#}
@@ -145,7 +145,9 @@
                        alt="Member badge logo">
                 </div>
 
-                <div class="leading-3 text-stone-600 text-xs tracking-wide uppercase">{{ member.foundation }} member</div>
+                <div class="leading-3 text-stone-600 text-xs tracking-wide font-semibold uppercase">
+                  {{ member.foundation }} member
+                </div>
               </div>
             {% endif -%}
             {# End member -#}
@@ -159,7 +161,7 @@
         </div>
       </div>
 
-      <div class="flex space-x-3 items-center mt-auto">
+      <div class="flex space-x-3 items-center mt-2 sm:mt-0 md:mt-auto">
         <div class="flex items-center space-x-4 min-w-0 md:h-[22px]">
           {# Title -#}
           <div class="text-base font-stretch-condensed font-medium text-stone-900 line-clamp-2 md:line-clamp-1">
@@ -193,7 +195,12 @@
           <div class="capitalize text-nowrap truncate">
             {% if let Some(location) = job.location -%}
               {% let current_location = format!("{}, {}", location.city, location.country) -%}
-              {{ current_location|truncate(35) }}
+              {{ current_location }}
+              {% if job.workplace == Workplace::Remote -%}
+                <span class="text-stone-500 text-[0.75rem] uppercase">(remote)</span>
+              {% else if job.workplace == Workplace::Hybrid %}
+                <span class="text-stone-500 text-[0.75rem] uppercase">(hybrid)</span>
+              {% endif -%}
             {% else if job.workplace == Workplace::Remote -%}
               Remote
             {% else -%}
@@ -232,8 +239,8 @@
                 {{ salary_currency }}
               {% endif -%}
               {{ salary_min|humanize_salary }}
-              {%- if let Some(salary_max) = job.salary_max -%}
-                -{{ salary_max|humanize_salary }}
+              {%- if let Some(salary_max) = job.salary_max %}
+                - {{ salary_max|humanize_salary }}
               {% endif -%}
               {%- if let Some(salary_period) = job.salary_period -%}
                 <span class="lowercase">/ {{ salary_period }}</span>
@@ -275,12 +282,14 @@
     {# Skills -#}
     <div class="flex flex-col space-y-1 mt-6 sm:ps-14 md:ps-17">
       {% call mini_title("Required skills") -%}
-      <div class="capitalize truncate text-[0.7rem] text-stone-700 uppercase">
+      <div class="flex flex-wrap capitalize text-[0.7rem] text-stone-700 uppercase max-h-[20px] overflow-hidden">
         {% for skill in skills.iter().take(12) -%}
-          {%- if !loop.first -%}
-            <span class="mx-1">·</span>
-          {% endif -%}
-          {{ skill|unnormalize }}
+          <div>
+            {%- if !loop.first -%}
+              <span class="mx-1">·</span>
+            {% endif -%}
+            {{ skill|unnormalize }}
+          </div>
         {% endfor -%}
       </div>
     </div>

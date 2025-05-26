@@ -170,7 +170,7 @@ export class SearchableFilter extends LitWrapper {
         @input=${this._onInputChange}
         @focus=${() => (this.visibleDropdown = true)}
         .value="${this.enteredValue}"
-        class="input-primary py-0.5 peer ps-9 rounded-lg text-[0.8rem]/6"
+        class="input-primary py-0.5 peer ps-9 rounded-lg text-[0.775rem]/6 text-stone-700"
         placeholder="Search ${this.name}"
         autocomplete="off"
         autocorrect="off"

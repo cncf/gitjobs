@@ -254,7 +254,7 @@ export class SearchLocation extends LitWrapper {
           type="text"
           .value=${this.value}
           class="input-primary peer ${this.size === "small"
-            ? "py-0.5 peer px-9 rounded-lg text-xs/6 text-stone-500"
+            ? "py-0.5 peer px-9 rounded-lg text-[0.775rem]/6 text-stone-700"
             : "px-10"}"
           placeholder="Search location"
           autocomplete="off"
@@ -326,7 +326,7 @@ export class SearchLocation extends LitWrapper {
                   form=${this.form}
                   name="max_distance"
                   @change=${this._handleDistanceChange}
-                  class="select-primary py-0.5 text-[0.8rem]/6"
+                  class="select-primary py-0.5 text-[0.775rem]/6 text-stone-700"
                   ?disabled=${this.location_id === ""}
                 >
                   ${this.location_id === ""

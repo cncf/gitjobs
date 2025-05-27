@@ -5,6 +5,8 @@ use serde::{Deserialize, Serialize};
 
 use super::jobboard::jobs::Job;
 
+use crate::templates::{dashboard::employer::jobs::Workplace, filters};
+
 // Emails templates.
 
 /// Template for email verification notification.

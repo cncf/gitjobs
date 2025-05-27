@@ -50,7 +50,7 @@ impl DBDashBoardModerator for PgDB {
                 &[job_id, reviewer],
             )
             .await?
-            .map(|row| row.get("first_published_at"));
+            .and_then(|row| row.get::<_, Option<DateTime<Utc>>>("first_published_at"));
 
         Ok(first_published_at)
     }

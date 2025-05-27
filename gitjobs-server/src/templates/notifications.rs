@@ -3,6 +3,8 @@
 use askama::Template;
 use serde::{Deserialize, Serialize};
 
+use super::jobboard::jobs::Job;
+
 // Emails templates.
 
 /// Template for email verification notification.
@@ -19,4 +21,14 @@ pub(crate) struct EmailVerification {
 pub(crate) struct TeamInvitation {
     /// Link to invitations page.
     pub link: String,
+}
+
+// Slack templates.
+
+/// Template for the new job published Slack notification.
+#[derive(Debug, Clone, Template, Serialize, Deserialize)]
+#[template(path = "notifications/slack_job_published.md")]
+pub(crate) struct JobPublished {
+    /// Job details.
+    pub job: Job,
 }

@@ -7,8 +7,9 @@ use axum::{
     extract::{Path, State},
     response::{Html, IntoResponse},
 };
-use reqwest::{StatusCode, header::CONTENT_TYPE};
+use reqwest::StatusCode;
 use serde::{Deserialize, Serialize};
+use serde_json::json;
 use tracing::{instrument, warn};
 use uuid::Uuid;
 
@@ -23,7 +24,7 @@ use crate::{
             moderator::jobs,
         },
         helpers::option_is_none_or_default,
-        jobboard::jobs::Job,
+        notifications::JobPublished,
     },
 };
 
@@ -82,8 +83,10 @@ pub(crate) async fn approve(
         if let Some(webhook_url) = &cfg.slack_webhook_url {
             if let Some(job) = db.get_job_jobboard(&job_id).await? {
                 let template = JobPublished { job };
-                let payload = template.render()?;
-                if let Err(err) = post_slack_notification(webhook_url, payload).await {
+                let payload = json!({
+                    "text": template.render()?,
+                });
+                if let Err(err) = reqwest::Client::new().post(webhook_url).json(&payload).send().await {
                     warn!("error posting slack notification: {}", err);
                 }
             }
@@ -130,26 +133,4 @@ pub(crate) struct RejectInput {
     /// Optional review notes provided by the moderator when rejecting a job.
     #[serde(skip_serializing_if = "option_is_none_or_default")]
     pub review_notes: Option<String>,
-}
-
-/// Template for the new job published Slack notification.
-#[derive(Debug, Clone, Template, Serialize, Deserialize)]
-#[template(path = "notifications/slack_job_published.json")]
-pub(crate) struct JobPublished {
-    /// Job details.
-    pub job: Job,
-}
-
-// Helper functions.
-
-/// Posts a Slack notification using the provided webhook URL and payload.
-async fn post_slack_notification(webhook_url: &str, payload: String) -> Result<()> {
-    let client = reqwest::Client::new();
-    client
-        .post(webhook_url)
-        .header(CONTENT_TYPE, "application/json")
-        .body(payload)
-        .send()
-        .await?;
-    Ok(())
 }

@@ -29,6 +29,8 @@ pub(crate) struct TeamInvitation {
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
 #[template(path = "notifications/slack_job_published.md")]
 pub(crate) struct JobPublished {
+    /// Base URL for the job board.
+    pub base_url: String,
     /// Job details.
     pub job: Job,
 }

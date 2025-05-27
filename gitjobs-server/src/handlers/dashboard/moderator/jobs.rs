@@ -82,7 +82,10 @@ pub(crate) async fn approve(
     if previous_first_published_at.is_none() {
         if let Some(webhook_url) = &cfg.slack_webhook_url {
             if let Some(job) = db.get_job_jobboard(&job_id).await? {
-                let template = JobPublished { job };
+                let template = JobPublished {
+                    base_url: cfg.base_url.strip_suffix('/').unwrap_or(&cfg.base_url).to_string(),
+                    job,
+                };
                 let payload = json!({
                     "text": template.render()?,
                 });

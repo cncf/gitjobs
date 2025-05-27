@@ -104,6 +104,8 @@ pub(crate) struct HttpServerConfig {
     pub basic_auth: Option<BasicAuth>,
     /// Optional cookie configuration.
     pub cookie: Option<CookieConfig>,
+    /// Optional Slack webhook URL to post new jobs published notifications.
+    pub slack_webhook_url: Option<String>,
 }
 
 /// Analytics integration configuration.

@@ -130,6 +130,9 @@ server:
         - profile
         - email
 
+  # Slack webhook URL to post new jobs published notifications
+  slackWebhookUrl: ""
+
   # Ingress configuration
   ingress:
     enabled: true

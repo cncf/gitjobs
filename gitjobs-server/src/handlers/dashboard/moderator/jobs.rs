@@ -1,18 +1,20 @@
 //! This module defines the HTTP handlers for the jobs moderation dashboard pages.
 
+use anyhow::Result;
 use askama::Template;
 use axum::{
     Form,
     extract::{Path, State},
     response::{Html, IntoResponse},
 };
-use reqwest::StatusCode;
+use reqwest::{StatusCode, header::CONTENT_TYPE};
 use serde::{Deserialize, Serialize};
-use tracing::instrument;
+use tracing::{instrument, warn};
 use uuid::Uuid;
 
 use crate::{
     auth::AuthSession,
+    config::HttpServerConfig,
     db::DynDB,
     handlers::error::HandlerError,
     templates::{
@@ -21,6 +23,7 @@ use crate::{
             moderator::jobs,
         },
         helpers::option_is_none_or_default,
+        jobboard::jobs::Job,
     },
 };
 
@@ -62,6 +65,7 @@ pub(crate) async fn preview_page(
 #[instrument(skip_all, err)]
 pub(crate) async fn approve(
     auth_session: AuthSession,
+    State(cfg): State<HttpServerConfig>,
     State(db): State<DynDB>,
     Path(job_id): Path<Uuid>,
 ) -> Result<impl IntoResponse, HandlerError> {
@@ -71,7 +75,20 @@ pub(crate) async fn approve(
     };
 
     // Approve job
-    db.approve_job(&job_id, &user.user_id).await?;
+    let previous_first_published_at = db.approve_job(&job_id, &user.user_id).await?;
+
+    // Post a Slack notification the first time a job is published
+    if previous_first_published_at.is_none() {
+        if let Some(webhook_url) = &cfg.slack_webhook_url {
+            if let Some(job) = db.get_job_jobboard(&job_id).await? {
+                let template = JobPublished { job };
+                let payload = template.render()?;
+                if let Err(err) = post_slack_notification(webhook_url, payload).await {
+                    warn!("error posting slack notification: {}", err);
+                }
+            }
+        }
+    }
 
     Ok((
         StatusCode::NO_CONTENT,
@@ -113,4 +130,26 @@ pub(crate) struct RejectInput {
     /// Optional review notes provided by the moderator when rejecting a job.
     #[serde(skip_serializing_if = "option_is_none_or_default")]
     pub review_notes: Option<String>,
+}
+
+/// Template for the new job published Slack notification.
+#[derive(Debug, Clone, Template, Serialize, Deserialize)]
+#[template(path = "notifications/slack_job_published.json")]
+pub(crate) struct JobPublished {
+    /// Job details.
+    pub job: Job,
+}
+
+// Helper functions.
+
+/// Posts a Slack notification using the provided webhook URL and payload.
+async fn post_slack_notification(webhook_url: &str, payload: String) -> Result<()> {
+    let client = reqwest::Client::new();
+    client
+        .post(webhook_url)
+        .header(CONTENT_TYPE, "application/json")
+        .body(payload)
+        .send()
+        .await?;
+    Ok(())
 }

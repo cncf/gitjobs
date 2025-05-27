@@ -2,3 +2,7 @@
 dirs = [
     "templates"
 ]
+
+[[escaper]]
+path = "askama::filters::Text"
+extensions = ["json"]

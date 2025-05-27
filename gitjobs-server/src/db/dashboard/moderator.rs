@@ -2,6 +2,7 @@
 
 use anyhow::Result;
 use async_trait::async_trait;
+use chrono::{DateTime, Utc};
 use tracing::{instrument, trace};
 use uuid::Uuid;
 
@@ -14,7 +15,7 @@ use crate::{
 #[async_trait]
 pub(crate) trait DBDashBoardModerator {
     /// Approves a job and updates its status and review metadata.
-    async fn approve_job(&self, job_id: &Uuid, reviewer: &Uuid) -> Result<()>;
+    async fn approve_job(&self, job_id: &Uuid, reviewer: &Uuid) -> Result<Option<DateTime<Utc>>>;
 
     /// Lists jobs for moderation filtered by the given status.
     async fn list_jobs_for_moderation(&self, status: JobStatus) -> Result<Vec<JobSummary>>;
@@ -26,26 +27,32 @@ pub(crate) trait DBDashBoardModerator {
 #[async_trait]
 impl DBDashBoardModerator for PgDB {
     #[instrument(skip(self), err)]
-    async fn approve_job(&self, job_id: &Uuid, reviewer: &Uuid) -> Result<()> {
+    async fn approve_job(&self, job_id: &Uuid, reviewer: &Uuid) -> Result<Option<DateTime<Utc>>> {
         trace!("db: approve job");
 
         let db = self.pool.get().await?;
-        db.execute(
-            "
-            update job
-            set
-                status = 'published',
-                first_published_at = coalesce(first_published_at, current_timestamp),
-                published_at = current_timestamp,
-                reviewed_at = current_timestamp,
-                reviewed_by = $2
-            where job_id = $1
-            ",
-            &[job_id, reviewer],
-        )
-        .await?;
+        let first_published_at = db
+            .query_opt(
+                "
+                with old as (
+                    select first_published_at from job where job_id = $1
+                )
+                update job
+                set
+                    status = 'published',
+                    first_published_at = coalesce(first_published_at, current_timestamp),
+                    published_at = current_timestamp,
+                    reviewed_at = current_timestamp,
+                    reviewed_by = $2
+                where job_id = $1
+                returning (select first_published_at from old);
+                ",
+                &[job_id, reviewer],
+            )
+            .await?
+            .map(|row| row.get("first_published_at"));
 
-        Ok(())
+        Ok(first_published_at)
     }
 
     #[instrument(skip(self), err)]

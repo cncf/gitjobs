@@ -10,9 +10,6 @@ import { LitWrapper } from "/static/js/common/lit-wrapper.js";
  * @property {Array} certifications - Array of certification objects.
  */
 export class CertificationsSection extends LitWrapper {
-  /**
-   * @property {Array} certifications - Array of certification objects.
-   */
   static properties = {
     certifications: { type: Array },
   };

@@ -35,7 +35,12 @@
                       hx-target="#preview-content"
                       hx-disabled-elt="this"
                       class="flex flex-col justify-between items-start cursor-pointer preview-button max-w-full min-w-0">
-                <div class="max-w-full text-black truncate">{{ application.job_title }}</div>
+                <div class="flex align-center gap-x-3 w-full">
+                  <div class="max-w-full text-black truncate">{{ application.job_title }}</div>
+                  {% if application.job_status == JobStatus::Deleted -%}
+                    <span class="bg-orange-100 text-orange-800 text-[0.65rem] text-nowrap h-[17px] px-2.5 pt-0.5 rounded-full">This job was deleted</span>
+                  {% endif -%}
+                </div>
                 <div class="text-xs/4 text-stone-500 max-w-full truncate">
                   {# Workplace -#}
                   {% if application.job_workplace == Workplace::Remote -%}

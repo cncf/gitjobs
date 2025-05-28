@@ -43,6 +43,7 @@ begin
         join job_seeker_profile p on a.job_seeker_profile_id = p.job_seeker_profile_id
         left join location l on j.location_id = l.location_id
         where j.employer_id = p_employer_id
+        and j.status <> 'deleted'
         and
             case when v_job_id is not null then
             a.job_id = v_job_id else true end

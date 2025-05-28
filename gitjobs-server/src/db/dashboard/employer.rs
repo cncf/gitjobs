@@ -39,7 +39,7 @@ pub(crate) trait DBDashBoardEmployer {
     /// Archives a job, marking it as no longer active.
     async fn archive_job(&self, job_id: &Uuid) -> Result<()>;
 
-    /// Deletes a job from the database.
+    /// Mark a job as deleted in the database (soft delete).
     async fn delete_job(&self, job_id: &Uuid) -> Result<()>;
 
     /// Deletes a team member from an employer's team.
@@ -361,8 +361,17 @@ impl DBDashBoardEmployer for PgDB {
         trace!("db: delete job");
 
         let db = self.pool.get().await?;
-        db.execute("delete from job where job_id = $1::uuid;", &[&job_id])
-            .await?;
+        db.execute(
+            "
+            update job
+            set
+                status = 'deleted',
+                deleted_at = current_timestamp
+            where job_id = $1::uuid;
+            ",
+            &[&job_id],
+        )
+        .await?;
 
         Ok(())
     }
@@ -453,6 +462,7 @@ impl DBDashBoardEmployer for PgDB {
                 from job j
                 left join location l using (location_id)
                 where employer_id = $1::uuid
+                and j.status <> 'deleted'
                 order by created_at desc;
                 ",
                 &[&employer_id],
@@ -592,7 +602,8 @@ impl DBDashBoardEmployer for PgDB {
                     ) as projects
                 from job j
                 left join location l using (location_id)
-                where job_id = $1::uuid;
+                where job_id = $1::uuid
+                and status <> 'deleted';
                 ",
                 &[&job_id],
             )
@@ -704,6 +715,7 @@ impl DBDashBoardEmployer for PgDB {
                 from job j
                 left join location l using (location_id)
                 where employer_id = $1::uuid
+                and j.status <> 'deleted'
                 order by published_at desc, created_at desc;
                 ",
                 &[&employer_id],
@@ -965,82 +977,86 @@ impl DBDashBoardEmployer for PgDB {
         let tx = db.transaction().await?;
 
         // Update job
-        tx.execute(
-            "
-            update job
-            set
-                kind = $2::text,
-                status = $3::text,
-                location_id = $4::uuid,
-                workplace = $5::text,
-                title = $6::text,
-                description = $7::text,
-                apply_instructions = $8::text,
-                apply_url = $9::text,
-                benefits = $10::text[],
-                open_source = $11::int,
-                qualifications = $12::text,
-                responsibilities = $13::text,
-                salary = $14::bigint,
-                salary_usd_year = $15::bigint,
-                salary_currency = $16::text,
-                salary_min = $17::bigint,
-                salary_min_usd_year = $18::bigint,
-                salary_max = $19::bigint,
-                salary_max_usd_year = $20::bigint,
-                salary_period = $21::text,
-                seniority = $22::text,
-                skills = $23::text[],
-                tz_end = $24::text,
-                tz_start = $25::text,
-                upstream_commitment = $26::int,
-                updated_at = current_timestamp
-            where job_id = $1::uuid;
-            ",
-            &[
-                &job_id,
-                &job.kind.to_string(),
-                &job.status.to_string(),
-                &job.location.as_ref().map(|l| l.location_id),
-                &job.workplace.to_string(),
-                &job.title,
-                &job.description,
-                &job.apply_instructions,
-                &job.apply_url,
-                &job.benefits,
-                &job.open_source,
-                &job.qualifications,
-                &job.responsibilities,
-                &job.salary,
-                &job.salary_usd_year,
-                &job.salary_currency,
-                &job.salary_min,
-                &job.salary_min_usd_year,
-                &job.salary_max,
-                &job.salary_max_usd_year,
-                &job.salary_period,
-                &job.seniority.as_ref().map(ToString::to_string),
-                &job.skills,
-                &job.tz_end,
-                &job.tz_start,
-                &job.upstream_commitment,
-            ],
-        )
-        .await?;
+        let rows_updated = tx
+            .execute(
+                "
+                update job
+                set
+                    kind = $2::text,
+                    status = $3::text,
+                    location_id = $4::uuid,
+                    workplace = $5::text,
+                    title = $6::text,
+                    description = $7::text,
+                    apply_instructions = $8::text,
+                    apply_url = $9::text,
+                    benefits = $10::text[],
+                    open_source = $11::int,
+                    qualifications = $12::text,
+                    responsibilities = $13::text,
+                    salary = $14::bigint,
+                    salary_usd_year = $15::bigint,
+                    salary_currency = $16::text,
+                    salary_min = $17::bigint,
+                    salary_min_usd_year = $18::bigint,
+                    salary_max = $19::bigint,
+                    salary_max_usd_year = $20::bigint,
+                    salary_period = $21::text,
+                    seniority = $22::text,
+                    skills = $23::text[],
+                    tz_end = $24::text,
+                    tz_start = $25::text,
+                    upstream_commitment = $26::int,
+                    updated_at = current_timestamp
+                where job_id = $1::uuid
+                and status <> 'deleted';
+                ",
+                &[
+                    &job_id,
+                    &job.kind.to_string(),
+                    &job.status.to_string(),
+                    &job.location.as_ref().map(|l| l.location_id),
+                    &job.workplace.to_string(),
+                    &job.title,
+                    &job.description,
+                    &job.apply_instructions,
+                    &job.apply_url,
+                    &job.benefits,
+                    &job.open_source,
+                    &job.qualifications,
+                    &job.responsibilities,
+                    &job.salary,
+                    &job.salary_usd_year,
+                    &job.salary_currency,
+                    &job.salary_min,
+                    &job.salary_min_usd_year,
+                    &job.salary_max,
+                    &job.salary_max_usd_year,
+                    &job.salary_period,
+                    &job.seniority.as_ref().map(ToString::to_string),
+                    &job.skills,
+                    &job.tz_end,
+                    &job.tz_start,
+                    &job.upstream_commitment,
+                ],
+            )
+            .await?;
 
         // Update job projects
-        tx.execute("delete from job_project where job_id = $1::uuid;", &[&job_id])
-            .await?;
-        if let Some(projects) = &job.projects {
-            for project in projects {
-                tx.execute(
-                    "
-                    insert into job_project (job_id, project_id)
-                    values ($1::uuid, $2::uuid);
-                    ",
-                    &[&job_id, &project.project_id],
-                )
+        if rows_updated == 1 {
+            tx.execute("delete from job_project where job_id = $1::uuid;", &[&job_id])
                 .await?;
+            if let Some(projects) = &job.projects {
+                for project in projects {
+                    tx.execute(
+                        "
+                        insert into job_project (job_id, project_id)
+                        values ($1::uuid, $2::uuid);
+                        ",
+                        &[&job_id, &project.project_id],
+                    )
+                    .await?;
+                }
             }
         }
 

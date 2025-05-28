@@ -152,6 +152,7 @@ impl DBDashBoardJobSeeker for PgDB {
                             'state', l.state
                         )), '{}'::jsonb)
                     ) as job_location,
+                    j.status as job_status,
                     j.workplace as job_workplace
                 from application a
                 join job j on a.job_id = j.job_id
@@ -168,10 +169,11 @@ impl DBDashBoardJobSeeker for PgDB {
                 application_id: row.get("application_id"),
                 applied_at: row.get("applied_at"),
                 job_id: row.get("job_id"),
-                job_title: row.get("job_title"),
                 job_location: row
                     .get::<_, Option<serde_json::Value>>("job_location")
                     .map(|v| serde_json::from_value(v).expect("job location should be valid json")),
+                job_status: row.get::<_, String>("job_status").parse().expect("valid job status"),
+                job_title: row.get("job_title"),
                 job_workplace: row
                     .get::<_, String>("job_workplace")
                     .parse()

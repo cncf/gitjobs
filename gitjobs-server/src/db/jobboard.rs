@@ -49,10 +49,13 @@ impl DBJobBoard for PgDB {
             insert into application (
                 job_id,
                 job_seeker_profile_id
-            ) values (
-                $1::uuid,
-                (select job_seeker_profile_id from job_seeker_profile where user_id = $2::uuid)
             )
+            select
+                job_id,
+                (select job_seeker_profile_id from job_seeker_profile where user_id = $2::uuid)
+            from job
+            where job_id = $1::uuid
+            and status <> 'deleted'
             on conflict (job_seeker_profile_id, job_id) do nothing;
             ",
             &[&job_id, &user_id],

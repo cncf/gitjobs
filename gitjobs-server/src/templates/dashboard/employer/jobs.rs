@@ -189,6 +189,8 @@ impl Job {
 pub(crate) enum JobStatus {
     /// Job is archived and not visible to users.
     Archived,
+    /// Job soft deleted and not visible to users.
+    Deleted,
     /// Job is a draft and not yet published.
     #[default]
     Draft,

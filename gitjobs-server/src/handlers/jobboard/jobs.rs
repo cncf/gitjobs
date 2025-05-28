@@ -129,7 +129,10 @@ pub(crate) async fn apply(
     };
 
     // Create job application entry in the database
-    db.apply_to_job(&job_id, &user.user_id).await?;
+    let applied = db.apply_to_job(&job_id, &user.user_id).await?;
+    if !applied {
+        return Ok(StatusCode::CONFLICT);
+    }
 
     Ok(StatusCode::NO_CONTENT)
 }

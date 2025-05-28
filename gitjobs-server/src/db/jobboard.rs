@@ -20,8 +20,9 @@ use crate::{
 /// Trait for database operations used by the job board, such as applying and searching jobs.
 #[async_trait]
 pub(crate) trait DBJobBoard {
-    /// Records a user's application to a job.
-    async fn apply_to_job(&self, job_id: &Uuid, user_id: &Uuid) -> Result<()>;
+    /// Records a user's application to a job. Returns `true` if the
+    /// application was successfully recorded or `false` otherwise.
+    async fn apply_to_job(&self, job_id: &Uuid, user_id: &Uuid) -> Result<bool>;
 
     /// Fetches a job for the job board by its unique identifier.
     async fn get_job_jobboard(&self, job_id: &Uuid) -> Result<Option<Job>>;
@@ -40,29 +41,30 @@ pub(crate) trait DBJobBoard {
 #[async_trait]
 impl DBJobBoard for PgDB {
     #[instrument(skip(self), err)]
-    async fn apply_to_job(&self, job_id: &Uuid, user_id: &Uuid) -> Result<()> {
+    async fn apply_to_job(&self, job_id: &Uuid, user_id: &Uuid) -> Result<bool> {
         trace!("db: apply to job");
 
         let db = self.pool.get().await?;
-        db.execute(
-            "
-            insert into application (
-                job_id,
-                job_seeker_profile_id
+        let num_rows_inserted = db
+            .execute(
+                "
+                insert into application (
+                    job_id,
+                    job_seeker_profile_id
+                )
+                select
+                    job_id,
+                    (select job_seeker_profile_id from job_seeker_profile where user_id = $2::uuid)
+                from job
+                where job_id = $1::uuid
+                and status = 'published'
+                on conflict (job_seeker_profile_id, job_id) do nothing;
+                ",
+                &[&job_id, &user_id],
             )
-            select
-                job_id,
-                (select job_seeker_profile_id from job_seeker_profile where user_id = $2::uuid)
-            from job
-            where job_id = $1::uuid
-            and status = 'published'
-            on conflict (job_seeker_profile_id, job_id) do nothing;
-            ",
-            &[&job_id, &user_id],
-        )
-        .await?;
+            .await?;
 
-        Ok(())
+        Ok(num_rows_inserted == 1)
     }
 
     #[instrument(skip(self), err)]

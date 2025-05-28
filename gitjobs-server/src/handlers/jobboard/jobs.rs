@@ -6,7 +6,6 @@ use axum::{
     extract::{Path, State},
     response::{Html, IntoResponse},
 };
-use axum_messages::Messages;
 use chrono::Duration;
 use reqwest::StatusCode;
 use serde_qs::axum::QsQuery;
@@ -94,14 +93,12 @@ pub(crate) async fn results_section(
 /// Returns the job details section for a specific job.
 #[instrument(skip_all, err)]
 pub(crate) async fn job_section(
-    messages: Messages,
     State(cfg): State<HttpServerConfig>,
     State(db): State<DynDB>,
     Path(job_id): Path<Uuid>,
 ) -> Result<impl IntoResponse, HandlerError> {
     // Get job information
     let Some(job) = db.get_job_jobboard(&job_id).await? else {
-        messages.error("This job is no longer available. It may have been removed recently.");
         return Ok(StatusCode::NOT_FOUND.into_response());
     };
 

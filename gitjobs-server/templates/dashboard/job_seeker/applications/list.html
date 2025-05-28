@@ -31,30 +31,36 @@
           <tr class="odd:bg-white even:bg-stone-50/50 border-b border-stone-200">
             {# Position -#}
             <td class="px-3 xl:px-5 py-4 font-medium text-stone-900">
-              <button hx-get="/section/jobs/{{ application.job_id }}"
-                      hx-target="#preview-content"
-                      hx-disabled-elt="this"
-                      class="flex flex-col justify-between items-start cursor-pointer preview-button max-w-full min-w-0">
-                <div class="flex align-center gap-x-3 w-full">
-                  <div class="max-w-full text-black truncate">{{ application.job_title }}</div>
-                  {% if application.job_status == JobStatus::Deleted -%}
-                    <span class="bg-orange-100 text-orange-800 text-[0.65rem] text-nowrap h-[17px] px-2.5 pt-0.5 rounded-full">This job was deleted</span>
-                  {% endif -%}
-                </div>
-                <div class="text-xs/4 text-stone-500 max-w-full truncate">
+              {% if application.job_status == JobStatus::Published -%}
+                <button hx-get="/section/jobs/{{ application.job_id }}"
+                        hx-target="#preview-content"
+                        hx-disabled-elt="this"
+                        class="flex flex-col justify-between items-start cursor-pointer preview-button max-w-full min-w-0">
+                  <div class="flex align-center gap-x-3 w-full">
+                    <div class="max-w-full text-black truncate">{{ application.job_title }}</div>
+                  </div>
                   {# Workplace -#}
-                  {% if application.job_workplace == Workplace::Remote -%}
-                    Remote
-                  {% else -%}
-                    {% if let Some(job_location) = application.job_location -%}
-                      {{ job_location.city }}, {{ job_location.country }}
-                    {% else -%}
-                      No location provided
-                    {% endif -%}
-                  {% endif -%}
+                  {% call workplace_content(workplace = application.job_workplace, job_location = application.job_location) %}
+                  {# End workplace -#}
+                </button>
+              {% else -%}
+                <div class="flex flex-col justify-between items-start max-w-full min-w-0">
+                  <div class="flex align-center gap-x-3 w-full">
+                    <div class="max-w-full text-black truncate">{{ application.job_title }}</div>
+                    <span class="bg-orange-100 text-orange-800 text-[0.65rem] text-nowrap h-[17px] px-2.5 pt-0.5 rounded-full">
+                      {% if application.job_status == JobStatus::PendingApproval -%}
+                        This job is awaiting moderators approval
+                      {% else -%}
+                        This job was {{ application.job_status.to_string() }}
+                      {% endif -%}
+                    </span>
+
+                  </div>
+                  {# Workplace -#}
+                  {% call workplace_content(workplace = application.job_workplace, job_location = application.job_location) %}
                   {# End workplace -#}
                 </div>
-              </button>
+              {% endif -%}
             </td>
             {# End postion -#}
 
@@ -132,3 +138,17 @@
     });
   });
 </script>
+
+{% macro workplace_content(workplace, job_location) -%}
+  <div class="text-xs/4 text-stone-500 max-w-full truncate">
+    {% if workplace == &Workplace::Remote -%}
+      Remote
+    {% else -%}
+      {% if let Some(job_location) = job_location -%}
+        {{ job_location.city }}, {{ job_location.country }}
+      {% else -%}
+        No location provided
+      {% endif -%}
+    {% endif -%}
+  </div>
+{% endmacro workplace_content -%}

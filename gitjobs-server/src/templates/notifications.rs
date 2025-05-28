@@ -55,7 +55,7 @@ mod tests {
     fn create_base_job() -> Job {
         Job {
             job_id: Uuid::parse_str("550e8400-e29b-41d4-a716-446655440000").unwrap(),
-            title: "Senior Rust Developer".to_string(),
+            title: "Software Engineer".to_string(),
             employer: Employer {
                 employer_id: Uuid::parse_str("550e8400-e29b-41d4-a716-446655440001").unwrap(),
                 company: "ACME Corp".to_string(),

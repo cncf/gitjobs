@@ -239,10 +239,10 @@
            {%- if let Some(active_filters) = active_filters -%} {%- if active_filters.contains(value) -%}checked{%- endif -%} {%- endif %}
            {% if required %}required{% endif %}>
     <label for="{%- if !device.is_empty() -%}{{ device }}-{%- endif -%}{{ name }}-{{ value }}"
-           class="inline-flex items-center justify-center w-full px-2 py-1 space-x-2 bg-white border border-stone-200 rounded-md cursor-pointer select-none peer-checked:border-primary-500 peer-checked:text-primary-500 hover:bg-stone-50">
+           class="inline-flex items-center justify-center w-full px-2 py-1 space-x-2 bg-white border border-stone-200 text-stone-700 rounded-md cursor-pointer select-none peer-checked:border-primary-500 peer-checked:text-primary-500 hover:bg-stone-50">
       <div class="svg-icon size-3 icon-{{ icon }} bg-stone-500 cursor-pointer group-has-[input:checked]:bg-primary-500">
       </div>
-      <div class="text-[0.775rem] text-stone-700 text-center text-nowrap relative md:-bottom-px">{{ label }}</div>
+      <div class="text-[0.775rem] text-center text-nowrap relative md:-bottom-px">{{ label }}</div>
     </label>
   </div>
 {% endmacro checkbox -%}

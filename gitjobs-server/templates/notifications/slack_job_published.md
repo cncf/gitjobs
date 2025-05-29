@@ -66,8 +66,8 @@ New job published!
 {# End upstream commitment -#}
 {# Skills -#}
 {% if let Some(skills) = job.skills -%}
-• _Required skills:_ {% for skill in skills -%}*`{{ skill|unnormalize|capitalize }}`* {% endfor -%}
-{% endif %}
+• _Required skills:_ {% for skill in skills.iter().take(5) -%}*` {{ skill|unnormalize|capitalize }} `*  {% endfor %}
+{% endif -%}
 {# End skills -#}
 {{ " " }}
 For more details please see: {{ base_url }}/?job_id={{ job.job_id }}

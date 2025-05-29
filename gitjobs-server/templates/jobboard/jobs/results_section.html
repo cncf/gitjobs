@@ -235,7 +235,7 @@
               {% endif -%}
               {{ salary|humanize_salary }}
               {%- if let Some(salary_period) = job.salary_period -%}
-                <span class="lowercase">/ {{ salary_period }}</span>
+                <span class="lowercase ms-1">/ {{ salary_period }}</span>
               {%- endif -%}
             {% else if let Some(salary_min) = job.salary_min -%}
               {% if let Some(salary_currency) = job.salary_currency -%}
@@ -246,7 +246,7 @@
                 - {{ salary_max|humanize_salary }}
               {% endif -%}
               {%- if let Some(salary_period) = job.salary_period -%}
-                <span class="lowercase">/ {{ salary_period }}</span>
+                <span class="lowercase ms-1">/ {{ salary_period }}</span>
               {%- endif -%}
             {% else -%}
               Not provided

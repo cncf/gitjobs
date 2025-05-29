@@ -1,3 +1,5 @@
+import { prettifyNumber } from "/static/js/common/common.js";
+
 const gitjobs_theme = {
   color: ["#fd4d12", "#5470c6", "#91cc75", "#fac858", "#ee6666", "#73c0de", "#3ba272", "#fc8452", "#9a60b4"],
   backgroundColor: "rgba(0,0,0,0)",
@@ -405,7 +407,12 @@ const renderLineChart = (data) => {
         show: false,
       },
     },
-    yAxis: {},
+    yAxis: {
+      type: "value",
+      axisLabel: {
+        formatter: (value) => `${prettifyNumber(value)}`,
+      },
+    },
     series: {
       type: "line",
       name: "Published jobs",
@@ -425,6 +432,18 @@ const renderLineChart = (data) => {
         ]),
       },
     },
+    media: [
+      {
+        query: {
+          maxWidth: 550,
+        },
+        option: {
+          grid: {
+            left: "60px",
+          },
+        },
+      },
+    ],
   };
 
   option && myChart.setOption(option);
@@ -441,11 +460,16 @@ const getBarStatsOptions = () => {
     xAxis: {
       type: "time",
     },
-    yAxis: {},
+    yAxis: {
+      type: "value",
+      axisLabel: {
+        formatter: (value) => `${prettifyNumber(value)}`,
+      },
+    },
     series: {
       type: "bar",
       name: "Views",
-      encode: { x: "timestamp", y: "jobs" },
+      encode: { x: "timestmp", y: "jobs" },
       label: {
         show: true,
         position: "top",
@@ -462,6 +486,16 @@ const getBarStatsOptions = () => {
             label: {
               show: false,
             },
+          },
+        },
+      },
+      {
+        query: {
+          maxWidth: 550,
+        },
+        option: {
+          grid: {
+            left: "60px",
           },
         },
       },

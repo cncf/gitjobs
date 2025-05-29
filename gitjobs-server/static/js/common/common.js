@@ -120,3 +120,28 @@ export const registerJobIdView = async (job_id) => {
     // Do not do anything
   }
 };
+
+const NUMBER_REGEX = /\.0+$|(\.[0-9]*[1-9])0+$/;
+
+export const prettifyNumber = (num, digits = 1) => {
+  if (num < 1000) {
+    return num;
+  }
+
+  const si = [
+    { value: 1, symbol: "" },
+    { value: 1e3, symbol: "k" },
+    { value: 1e6, symbol: "M" },
+    { value: 1e9, symbol: "B" },
+    { value: 1e12, symbol: "T" },
+    { value: 1e15, symbol: "P" },
+    { value: 1e18, symbol: "E" },
+  ];
+  let i;
+  for (i = si.length - 1; i > 0; i--) {
+    if (num >= si[i].value) {
+      break;
+    }
+  }
+  return (num / si[i].value).toFixed(digits).replace(NUMBER_REGEX, "$1") + si[i].symbol;
+};

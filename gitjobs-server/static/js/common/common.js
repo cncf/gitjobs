@@ -1,4 +1,9 @@
-// Show or hide the provided modal.
+/**
+ * Shows or hides a modal by ID.
+ * Controls body scroll behavior when modal is open/closed.
+ * @param {string} modalId - The ID of the modal element
+ * @param {'open'|'close'} status - Whether to open or close the modal
+ */
 export const toggleModalVisibility = (modalId, status) => {
   const modal = document.getElementById(modalId);
   if (status === "open" && modal) {
@@ -12,7 +17,13 @@ export const toggleModalVisibility = (modalId, status) => {
   }
 };
 
-// Function to delay the execution of a function
+/**
+ * Creates a debounced version of a function that delays execution.
+ * Useful for limiting API calls on user input.
+ * @param {Function} func - The function to debounce
+ * @param {number} [timeout=300] - Delay in milliseconds
+ * @returns {Function} The debounced function
+ */
 export const debounce = (func, timeout = 300) => {
   let timer;
   return (...args) => {
@@ -23,21 +34,31 @@ export const debounce = (func, timeout = 300) => {
   };
 };
 
-// Function to process new URL for htmx
-export const processNewHtmxUrl = (idEl, method, data) => {
-  const element = document.getElementById(idEl);
+/**
+ * Updates an element's HTMX URL attribute by replacing placeholders.
+ * Processes the element to enable HTMX functionality.
+ * @param {string} elementId - The ID of the element to update
+ * @param {string} method - The HTTP method (get, post, etc.)
+ * @param {string} data - The value to replace in the URL
+ */
+export const processNewHtmxUrl = (elementId, method, data) => {
+  const element = document.getElementById(elementId);
   if (element) {
     const url = element.dataset.url;
     if (url) {
       const newUrl = url.replace(`{:${element.dataset.replacement}}`, data);
       element.setAttribute(`hx-${method}`, newUrl);
       // Process new URL
-      htmx.process(`#${idEl}`);
+      htmx.process(`#${elementId}`);
     }
   }
 };
 
-// Function to check if the status of the XHR request is successful
+/**
+ * Checks if an HTTP status code indicates success (2xx range).
+ * @param {number} status - The HTTP status code
+ * @returns {boolean} True if status is between 200-299
+ */
 export const isSuccessfulXHRStatus = (status) => {
   if (status >= 200 && status < 300) {
     return true;
@@ -46,7 +67,11 @@ export const isSuccessfulXHRStatus = (status) => {
   }
 };
 
-// Function to check if an object is empty
+/**
+ * Checks if an object is empty after removing the 'id' property.
+ * @param {Object} obj - The object to check
+ * @returns {boolean} True if all properties (except id) are null/empty/undefined
+ */
 export const isObjectEmpty = (obj) => {
   // Remove the id key from the object
   const objectWithoutId = { ...obj };
@@ -54,11 +79,22 @@ export const isObjectEmpty = (obj) => {
   return Object.values(objectWithoutId).every((x) => x === null || x === "" || typeof x === "undefined");
 };
 
-// Function to unnormalize text
+/**
+ * Converts hyphenated text to space-separated text.
+ * Example: "hello-world" becomes "hello world"
+ * @param {string} text - The text to unnormalize
+ * @returns {string} The unnormalized text
+ */
 export const unnormalize = (text) => {
   return text.replace(/-/g, " ");
 };
 
+/**
+ * Adds or updates a parameter in the URL query string.
+ * @param {string} param - The parameter name
+ * @param {string} value - The parameter value
+ * @param {Object} [state] - Optional history state object
+ */
 export const addParamToQueryString = (param, value, state) => {
   const searchParams = new URLSearchParams(window.location.search);
   if (searchParams.has(param)) {
@@ -68,6 +104,11 @@ export const addParamToQueryString = (param, value, state) => {
   modifyCurrentUrl(searchParams.toString(), state);
 };
 
+/**
+ * Removes a parameter from the URL query string.
+ * @param {string} param - The parameter name to remove
+ * @param {Object} [state] - Optional history state object
+ */
 export const removeParamFromQueryString = (param, state) => {
   const searchParams = new URLSearchParams(window.location.search);
   if (searchParams.has(param)) {
@@ -76,53 +117,83 @@ export const removeParamFromQueryString = (param, state) => {
   }
 };
 
+/**
+ * Gets a parameter value from the URL query string.
+ * @param {string} param - The parameter name
+ * @returns {string|null} The parameter value or null if not found
+ */
 export const getParamFromQueryString = (param) => {
   const searchParams = new URLSearchParams(window.location.search);
   return searchParams.get(param);
 };
 
+/**
+ * Updates the current URL with new parameters without page reload.
+ * @param {string} params - The query string parameters
+ * @param {Object} [state] - Optional history state object
+ */
 export const modifyCurrentUrl = (params, state) => {
   const newUrl = `${window.location.pathname}${params ? `?${params}` : ""}`;
   history.pushState(state || {}, "new_url", newUrl);
 };
 
-// Detect if the job preview modal should be displayed
-export const shouldDisplayJobModal = (on_load = false) => {
-  // Check if the job_id parameter is present in the URL
-  const job_id = getParamFromQueryString("job_id");
-  if (job_id) {
-    const elId = `job-preview-${job_id}`;
-    // Check if the job preview button exists
-    const jobPreviewBtn = document.getElementById(elId);
-    if (jobPreviewBtn) {
-      // Process the button
-      htmx.process(jobPreviewBtn);
-      // Open the modal
-      if (on_load) {
-        // If the page is loaded, we need to trigger the modal
-        // with the open-modal event (register view)
-        htmx.trigger(jobPreviewBtn, "open-modal");
+/**
+ * Checks for job_id in URL and opens the job preview modal if found.
+ * Handles both initial page load and browser back/forward navigation.
+ * @param {boolean} [onLoad=false] - True if called on page load (registers view)
+ */
+export const shouldDisplayJobModal = (onLoad = false) => {
+  const jobId = getParamFromQueryString("job_id");
+  if (jobId) {
+    const elementId = `job-preview-${jobId}`;
+    const jobPreviewButton = document.getElementById(elementId);
+    if (jobPreviewButton) {
+      htmx.process(jobPreviewButton);
+      if (onLoad) {
+        // Page load: trigger with open-modal event (registers view)
+        htmx.trigger(jobPreviewButton, "open-modal");
       } else {
-        // If the page is not loaded, we need to trigger the modal
-        // with the open-modal-on-popstate event (do not register view)
-        htmx.trigger(jobPreviewBtn, "open-modal-on-popstate");
+        // Browser navigation: trigger without registering view
+        htmx.trigger(jobPreviewButton, "open-modal-on-popstate");
       }
     }
   }
 };
 
-export const registerJobIdView = async (job_id) => {
+/**
+ * Registers a view for a specific job by sending a POST request.
+ * Silently handles errors without user notification.
+ * @param {string} jobId - The ID of the job to register a view for
+ * @returns {Promise<void>}
+ */
+export const registerJobIdView = async (jobId) => {
   try {
-    fetch(`/jobs/${job_id}/views`, {
+    fetch(`/jobs/${jobId}/views`, {
       method: "POST",
     });
   } catch (error) {
-    // Do not do anything
+    // Silently ignore errors
   }
 };
 
 const NUMBER_REGEX = /\.0+$|(\.[0-9]*[1-9])0+$/;
 
+/**
+ * Converts large numbers into a more readable format using SI unit suffixes.
+ * Numbers under 1000 are returned as-is. Larger numbers are converted to use
+ * suffixes like 'k' (thousands), 'M' (millions), etc.
+ *
+ * @param {number} num - The number to format
+ * @param {number} [digits=1] - Number of decimal places to show (default: 1)
+ * @returns {string|number} Formatted number with suffix, or original number if < 1000
+ *
+ * @example
+ * prettifyNumber(500);        // Returns: 500
+ * prettifyNumber(1200);       // Returns: "1.2k"
+ * prettifyNumber(1500000);    // Returns: "1.5M"
+ * prettifyNumber(1200, 0);    // Returns: "1k" (no decimals)
+ * prettifyNumber(1234, 2);    // Returns: "1.23k" (2 decimal places)
+ */
 export const prettifyNumber = (num, digits = 1) => {
   if (num < 1000) {
     return num;

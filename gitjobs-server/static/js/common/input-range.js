@@ -2,7 +2,26 @@ import { html, createRef, ref, nothing } from "/static/vendor/js/lit-all.v3.2.1.
 import { LitWrapper } from "/static/js/common/lit-wrapper.js";
 import { triggerActionOnForm } from "/static/js/jobboard/filters.js";
 
+/**
+ * Custom range input component with visual feedback and legends.
+ * Supports custom styling, tooltips, and form integration.
+ * @extends LitWrapper
+ */
 export class InputRange extends LitWrapper {
+  /**
+   * Component properties definition
+   * @property {string} form - Form ID for input association
+   * @property {string} name - Input name attribute
+   * @property {number} min - Minimum value
+   * @property {number} max - Maximum value
+   * @property {number} step - Step increment
+   * @property {number} value - Current value
+   * @property {string} prefix - Value prefix (e.g., '$')
+   * @property {string} unit - Value unit (e.g., '%', 'k')
+   * @property {number} legendsNumber - Number of legend markers
+   * @property {boolean} visibleTooltip - Tooltip visibility state
+   * @property {string} type - Visual style type (type-1, type-2, type-3)
+   */
   static properties = {
     form: { type: String | undefined },
     name: { type: String | undefined },
@@ -17,6 +36,7 @@ export class InputRange extends LitWrapper {
     type: { type: String },
   };
 
+  /** @type {import('lit').Ref<HTMLInputElement>} Reference to input element */
   inputRef = createRef();
 
   constructor() {
@@ -33,7 +53,7 @@ export class InputRange extends LitWrapper {
     this.offset = 0;
     this.legendsNumber = 5;
     this.visibleTooltip = false;
-    this.steps = [];
+    this.legendSteps = [];
     this.type = "type-1";
     this.colors = {
       "type-1": {
@@ -60,35 +80,65 @@ export class InputRange extends LitWrapper {
   connectedCallback() {
     super.connectedCallback();
 
-    this.steps = this._range(this.min, this.max, this.max / (this.legendsNumber - 1));
+    this.legendSteps = this._range(this.min, this.max, this.max / (this.legendsNumber - 1));
 
     if (this.value > 0) {
       this._refreshStyles(this.value);
     }
   }
 
+  /**
+   * Handles input value changes and updates visual feedback.
+   * @param {Event} event - Input change event
+   * @private
+   */
   _onInputChange(event) {
     const value = event.target.value;
     this.value = value;
     this._refreshStyles(value);
   }
 
+  /**
+   * Updates the visual styles based on the current value.
+   * Calculates percentage and thumb offset for accurate positioning.
+   * @param {number} value - The current range value
+   * @private
+   */
   _refreshStyles(value) {
-    this.percentValue = parseInt((value * 100) / this.max, 10);
+    this.percentValue = Math.round((value * 100) / this.max);
     const thumbSize = 17;
     this.offset = thumbSize * (0.5 - this.percentValue / 100);
   }
 
+  /**
+   * Updates tooltip visibility state.
+   * @param {boolean} status - True to show, false to hide
+   * @private
+   */
   _updateTooltipVisibility(status) {
     this.visibleTooltip = status;
   }
 
+  /**
+   * Generates an array of numbers within a range.
+   * @param {number} start - Start value
+   * @param {number} stop - End value (exclusive)
+   * @param {number} [step=1] - Step increment
+   * @returns {number[]} Array of numbers in range
+   * @private
+   */
   _range(start, stop, step = 1) {
     return Array(Math.ceil((stop - start) / step))
       .fill(start)
       .map((x, y) => x + y * step);
   }
 
+  /**
+   * Formats large numbers for display (e.g., 1000 -> 1).
+   * @param {number} value - The number to format
+   * @returns {number} Formatted number
+   * @private
+   */
   _prettyNumber(value) {
     if (value > 1000) {
       return parseInt(value / 1000);
@@ -96,6 +146,11 @@ export class InputRange extends LitWrapper {
     return value;
   }
 
+  /**
+   * Handles mouse/touch release events.
+   * Hides tooltip and triggers form submission if configured.
+   * @private
+   */
   async _mouseup() {
     this._updateTooltipVisibility(false);
 
@@ -108,6 +163,10 @@ export class InputRange extends LitWrapper {
     }
   }
 
+  /**
+   * Resets the range input to its initial state.
+   * @returns {Promise<void>}
+   */
   async cleanRange() {
     this.value = 0;
     this.percentValue = 0;
@@ -164,7 +223,7 @@ export class InputRange extends LitWrapper {
         </div>
         <div class="mx-[15px]">
           <ul class="flex justify-between w-full h-5">
-            ${this.steps.map(
+            ${this.legendSteps.map(
               (i) =>
                 html`<li class="flex justify-center relative text-xs text-stone-500">
                   <span class="absolute -start-[10px]">${this._prettyNumber(i)}</span>

@@ -1,3 +1,8 @@
+/**
+ * Returns a list of available job benefits.
+ * Used for multiselect and filter components.
+ * @returns {string[]} Array of benefit identifiers
+ */
 export const getBenefits = () => {
   return [
     "401k",
@@ -15,6 +20,11 @@ export const getBenefits = () => {
   ];
 };
 
+/**
+ * Returns a list of available technical skills.
+ * Used for multiselect and filter components.
+ * @returns {string[]} Array of skill identifiers
+ */
 export const getSkills = () => {
   return [
     "kubernetes",

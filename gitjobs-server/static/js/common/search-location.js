@@ -3,9 +3,31 @@ import { LitWrapper } from "/static/js/common/lit-wrapper.js";
 import { debounce } from "/static/js/common/common.js";
 import { triggerActionOnForm } from "/static/js/jobboard/filters.js";
 
+/**
+ * Location search component with autocomplete and distance filter.
+ * Fetches location suggestions from server and manages selection.
+ * @extends LitWrapper
+ */
 export class SearchLocation extends LitWrapper {
+  /**
+   * Component properties definition
+   * @property {string} locationId - Selected location ID
+   * @property {string} city - Selected city name
+   * @property {string} state - Selected state/province
+   * @property {string} country - Selected country
+   * @property {'normal'|'small'} size - Component size variant
+   * @property {boolean} required - Whether selection is required
+   * @property {string} device - Device type for responsive design
+   * @property {string} form - Form ID for input association
+   * @property {string} value - Current input value
+   * @property {Array} options - Location suggestions from server
+   * @property {boolean} isLoading - Loading state indicator
+   * @property {boolean} withDistance - Show distance filter
+   * @property {string} distance - Selected max distance
+   * @property {number|null} activeIndex - Active suggestion index
+   */
   static properties = {
-    location_id: { type: String },
+    locationId: { type: String },
     city: { type: String },
     state: { type: String },
     country: { type: String },
@@ -23,7 +45,7 @@ export class SearchLocation extends LitWrapper {
 
   constructor() {
     super();
-    this.location_id = "";
+    this.locationId = "";
     this.city = "";
     this.state = "";
     this.country = "";
@@ -51,8 +73,12 @@ export class SearchLocation extends LitWrapper {
     window.removeEventListener("mousedown", this._handleClickOutside);
   }
 
+  /**
+   * Public method to reset location state.
+   * @returns {Promise<void>}
+   */
   async cleanLocation() {
-    this.location_id = "";
+    this.locationId = "";
     this.city = "";
     this.state = "";
     this.country = "";
@@ -65,6 +91,14 @@ export class SearchLocation extends LitWrapper {
     await this.updateComplete;
   }
 
+  /**
+   * Formats location components into display string.
+   * @param {string} city - City name
+   * @param {string} state - State/province name
+   * @param {string} country - Country name
+   * @returns {string} Formatted location string
+   * @private
+   */
   _formatLocation(city, state, country) {
     if (!city && !state && !country) {
       return "";
@@ -72,9 +106,14 @@ export class SearchLocation extends LitWrapper {
     return [city, state, country].join(", ");
   }
 
-  _handleClickOutside = (e) => {
-    if (!this.contains(e.target)) {
-      if (this.location_id !== "") {
+  /**
+   * Handles click outside to reset or restore location.
+   * @param {MouseEvent} event - The click event
+   * @private
+   */
+  _handleClickOutside = (event) => {
+    if (!this.contains(event.target)) {
+      if (this.locationId !== "") {
         this.value = this._formatLocation(this.city, this.state, this.country);
       } else {
         this.value = "";
@@ -84,7 +123,11 @@ export class SearchLocation extends LitWrapper {
     }
   };
 
-  // Fetch locations
+  /**
+   * Fetches location suggestions from server.
+   * @param {string} value - Search query
+   * @private
+   */
   async _fetchData(value) {
     const url = `/locations/search?ts_query=${encodeURIComponent(value)}`;
     try {
@@ -96,12 +139,17 @@ export class SearchLocation extends LitWrapper {
       const json = await response.json();
       this.options = json;
     } catch (error) {
-      // TODO - Handle error
+      // TODO: Implement error handling
     } finally {
       this.isLoading = false;
     }
   }
 
+  /**
+   * Handles search input changes with debouncing.
+   * @param {Event} event - Input event
+   * @private
+   */
   _onInputChange(event) {
     this._isLoading = true;
     const value = event.target.value;
@@ -111,6 +159,11 @@ export class SearchLocation extends LitWrapper {
     }
   }
 
+  /**
+   * Highlights suggestion item for keyboard navigation.
+   * @param {'up'|'down'} direction - Navigation direction
+   * @private
+   */
   _highlightItem(direction) {
     if (this.options && this.options.length > 0) {
       if (this.activeIndex === null) {
@@ -128,6 +181,11 @@ export class SearchLocation extends LitWrapper {
     }
   }
 
+  /**
+   * Handles keyboard navigation and selection.
+   * @param {KeyboardEvent} event - Keyboard event
+   * @private
+   */
   _handleKeyDown(event) {
     switch (event.key) {
       // Highlight the next item in the list
@@ -153,8 +211,13 @@ export class SearchLocation extends LitWrapper {
     }
   }
 
+  /**
+   * Selects a location and triggers form update.
+   * @param {Object} location - Location object with id, city, state, country
+   * @private
+   */
   async _selectLocation(location) {
-    this.location_id = location.location_id;
+    this.locationId = location.locationId;
     this.city = location.city;
     this.state = location.state;
     this.country = location.country;
@@ -174,6 +237,11 @@ export class SearchLocation extends LitWrapper {
     }
   }
 
+  /**
+   * Handles distance filter changes.
+   * @param {Event} event - Change event
+   * @private
+   */
   async _handleDistanceChange(event) {
     this.distance = event.target.value;
 
@@ -186,8 +254,12 @@ export class SearchLocation extends LitWrapper {
     }
   }
 
+  /**
+   * Clears input and resets location selection.
+   * @private
+   */
   async _cleanInput() {
-    this.location_id = "";
+    this.locationId = "";
     this.city = "";
     this.state = "";
     this.country = "";
@@ -205,10 +277,11 @@ export class SearchLocation extends LitWrapper {
     }
   }
 
-  _addFormName() {
-    return this.form && this.location_id !== "" ? `form="${this.form}"` : "";
-  }
-
+  /**
+   * Renders location suggestion dropdown.
+   * @returns {import('lit').TemplateResult} Dropdown template
+   * @private
+   */
   _renderOptions() {
     return html` <div
       class="bg-white divide-y divide-stone-100 rounded-lg shadow w-full border border-stone-200 mt-1"
@@ -263,12 +336,12 @@ export class SearchLocation extends LitWrapper {
           spellcheck="false"
           ?required=${this.required}
         />
-        ${this.location_id !== ""
+        ${this.locationId !== ""
           ? html`<input
                 type="hidden"
                 form=${this.form || nothing}
-                name="location[location_id]"
-                .value=${this.location_id}
+                name="location[locationId]"
+                .value=${this.locationId}
                 ?required=${this.required}
               />
               <input type="hidden" form=${this.form || nothing} name="location[city]" .value=${this.city} />
@@ -327,9 +400,9 @@ export class SearchLocation extends LitWrapper {
                   name="max_distance"
                   @change=${this._handleDistanceChange}
                   class="select-primary py-0.5 text-[0.775rem]/6 text-stone-700"
-                  ?disabled=${this.location_id === ""}
+                  ?disabled=${this.locationId === ""}
                 >
-                  ${this.location_id === ""
+                  ${this.locationId === ""
                     ? html`<option value="" selected></option>`
                     : html`${["10000", "50000", "100000", "500000"].map((d) => {
                         return html`<option value=${d} ?selected=${this.distance === d}>

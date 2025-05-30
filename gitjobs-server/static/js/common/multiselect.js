@@ -3,7 +3,23 @@ import { unnormalize } from "/static/js/common/common.js";
 import { LitWrapper } from "/static/js/common/lit-wrapper.js";
 import { getBenefits, getSkills } from "/static/js/common/data.js";
 
+/**
+ * Multi-select component with search and badge display.
+ * Supports predefined options (benefits, skills) or custom options.
+ * @extends LitWrapper
+ */
 export class MultiSelect extends LitWrapper {
+  /**
+   * Component properties definition
+   * @property {string} name - Input name for form submission
+   * @property {string} label - Field label text
+   * @property {string[]} options - Available options to select
+   * @property {string[]} selected - Currently selected options
+   * @property {string} enteredValue - Current search input value
+   * @property {string[]} visibleOptions - Filtered options based on search
+   * @property {boolean} visibleDropdown - Dropdown visibility state
+   * @property {string} legend - Helper text below input
+   */
   static properties = {
     name: { type: String },
     label: { type: String },
@@ -29,15 +45,19 @@ export class MultiSelect extends LitWrapper {
 
   connectedCallback() {
     super.connectedCallback();
-    window.addEventListener("mousedown", this.handleClickOutside);
+    window.addEventListener("mousedown", this._handleClickOutside);
     this._getOptions();
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
-    window.addEventListener("mousedown", this.handleClickOutside);
+    window.addEventListener("mousedown", this._handleClickOutside);
   }
 
+  /**
+   * Filters visible options based on search input.
+   * @private
+   */
   _filterOptions() {
     if (this.enteredValue.length > 0) {
       this.visibleOptions = this.options.filter((option) =>
@@ -48,6 +68,10 @@ export class MultiSelect extends LitWrapper {
     }
   }
 
+  /**
+   * Loads options based on component name (benefits/skills).
+   * @private
+   */
   _getOptions() {
     switch (this.name) {
       case "benefits":
@@ -63,11 +87,47 @@ export class MultiSelect extends LitWrapper {
     this._filterOptions();
   }
 
-  handleClickOutside = (e) => {
-    if (!this.contains(e.target)) {
+  /**
+   * Handles click outside to close dropdown.
+   * @param {MouseEvent} event - The click event
+   * @private
+   */
+  _handleClickOutside = (event) => {
+    if (!this.contains(event.target)) {
       this.visibleDropdown = false;
     }
   };
+
+  /**
+   * Handles search input changes.
+   * @param {Event} event - Input event
+   * @private
+   */
+  _onInputChange(event) {
+    this.enteredValue = event.target.value;
+    this._filterOptions();
+  }
+
+  /**
+   * Removes a selected option.
+   * @param {string} option - Option to remove
+   * @private
+   */
+  _onRemoveBadge(option) {
+    this.selected = this.selected.filter((selectedOption) => selectedOption !== option);
+  }
+
+  /**
+   * Adds an option to selected list.
+   * @param {string} option - Option to add, or uses entered value if empty
+   * @private
+   */
+  _onClickOption(option) {
+    this.selected.push(option || this.enteredValue);
+    this.enteredValue = "";
+    this.visibleDropdown = false;
+    this._filterOptions();
+  }
 
   render() {
     return html`
@@ -152,22 +212,6 @@ export class MultiSelect extends LitWrapper {
       </div>
       ${this.selected.map((option) => html`<input type="hidden" name="${this.name}[]" value="${option}" />`)}
     `;
-  }
-
-  _onInputChange(event) {
-    this.enteredValue = event.target.value;
-    this._filterOptions();
-  }
-
-  _onRemoveBadge(option) {
-    this.selected = this.selected.filter((selectedOption) => selectedOption !== option);
-  }
-
-  _onClickOption(option) {
-    this.selected.push(option || this.enteredValue);
-    this.enteredValue = "";
-    this.visibleDropdown = false;
-    this._filterOptions();
   }
 }
 customElements.define("multi-select", MultiSelect);

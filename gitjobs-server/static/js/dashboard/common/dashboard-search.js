@@ -2,7 +2,23 @@ import { html } from "/static/vendor/js/lit-all.v3.2.1.min.js";
 import { LitWrapper } from "/static/js/common/lit-wrapper.js";
 import { debounce } from "/static/js/common/common.js";
 
+/**
+ * Dashboard search component for projects and foundation members.
+ * Supports dropdown selection, autocomplete, and multi-select.
+ * @extends LitWrapper
+ */
 export class DashboardSearch extends LitWrapper {
+  /**
+   * Component properties definition
+   * @property {'projects'|'members'} type - Search type
+   * @property {Array} foundations - Available foundation options
+   * @property {Array} selected - Currently selected items
+   * @property {string} enteredValue - Current search input value
+   * @property {Array} visibleOptions - Filtered suggestions
+   * @property {boolean} visibleDropdown - Dropdown visibility state
+   * @property {number|null} activeIndex - Active suggestion index
+   * @property {string} selectedFoundation - Selected foundation filter
+   */
   static properties = {
     type: { type: String },
     foundations: { type: Array },
@@ -14,6 +30,7 @@ export class DashboardSearch extends LitWrapper {
     selectedFoundation: { type: String },
   };
 
+  /** @type {string} Default foundation when none selected */
   defaultFoundation = "cncf";
 
   constructor() {
@@ -39,6 +56,10 @@ export class DashboardSearch extends LitWrapper {
     window.addEventListener("mousedown", this._handleClickOutside);
   }
 
+  /**
+   * Fetches projects or members from server based on search criteria.
+   * @private
+   */
   async _getProjects() {
     const url = `${this.type === "members" ? "/dashboard/members/search?member=" : "/projects/search?project="}${encodeURIComponent(this.enteredValue)}&foundation=${this.selectedFoundation}`;
     try {
@@ -50,12 +71,17 @@ export class DashboardSearch extends LitWrapper {
       const json = await response.json();
       this.visibleOptions = json;
     } catch (error) {
-      // TODO - Handle error
+      // TODO: Implement error handling
     } finally {
       this.visibleDropdown = true;
     }
   }
 
+  /**
+   * Handles foundation filter selection changes.
+   * @param {Event} event - Change event
+   * @private
+   */
   _handleFoundationChange(event) {
     const selectedFoundation = event.target.value;
     if (selectedFoundation === "") {
@@ -69,6 +95,10 @@ export class DashboardSearch extends LitWrapper {
     this.activeIndex = null;
   }
 
+  /**
+   * Triggers search when input is long enough.
+   * @private
+   */
   _filterOptions() {
     if (this.enteredValue.length > 2) {
       debounce(this._getProjects(this.enteredValue), 300);
@@ -79,11 +109,20 @@ export class DashboardSearch extends LitWrapper {
     }
   }
 
+  /**
+   * Handles search input changes.
+   * @param {Event} event - Input event
+   * @private
+   */
   _onInputChange(event) {
     this.enteredValue = event.target.value;
     this._filterOptions();
   }
 
+  /**
+   * Resets search input and related state.
+   * @private
+   */
   _cleanEnteredValue() {
     this.enteredValue = "";
     this.visibleDropdown = false;
@@ -92,13 +131,22 @@ export class DashboardSearch extends LitWrapper {
     this.selectedFoundation = this.defaultFoundation;
   }
 
-  // Check if the clicked element is outside the component
-  _handleClickOutside = (e) => {
-    if (!this.contains(e.target)) {
+  /**
+   * Handles click outside to close dropdown.
+   * @param {MouseEvent} event - The click event
+   * @private
+   */
+  _handleClickOutside = (event) => {
+    if (!this.contains(event.target)) {
       this._cleanEnteredValue();
     }
   };
 
+  /**
+   * Handles keyboard navigation and selection.
+   * @param {KeyboardEvent} event - Keyboard event
+   * @private
+   */
   _handleKeyDown(event) {
     switch (event.key) {
       // Highlight the next item in the list
@@ -115,7 +163,6 @@ export class DashboardSearch extends LitWrapper {
         if (this.activeIndex !== null && this.visibleOptions.length > 0) {
           const activeItem = this.visibleOptions[this.activeIndex];
           if (activeItem) {
-            const activeItem = this.visibleOptions[this.activeIndex];
             this._onSelect(activeItem);
           }
         }
@@ -125,6 +172,11 @@ export class DashboardSearch extends LitWrapper {
     }
   }
 
+  /**
+   * Highlights suggestion item for keyboard navigation.
+   * @param {'up'|'down'} direction - Navigation direction
+   * @private
+   */
   _highlightItem(direction) {
     if (this.visibleOptions.length > 0) {
       if (this.activeIndex === null) {
@@ -142,6 +194,11 @@ export class DashboardSearch extends LitWrapper {
     }
   }
 
+  /**
+   * Selects an item from suggestions.
+   * @param {Object} item - Selected item object
+   * @private
+   */
   _onSelect(item) {
     if (this.type === "projects") {
       this.selected.push(item);
@@ -154,12 +211,15 @@ export class DashboardSearch extends LitWrapper {
     this.activeIndex = null;
   }
 
+  /**
+   * Removes a selected item.
+   * @param {string} id - Item ID to remove
+   * @private
+   */
   _onRemove(id) {
     this.selected = this.selected.filter((item) => {
       const itemId = this.type === "members" ? item.member_id : item.project_id;
-      if (itemId !== id) {
-        return item;
-      }
+      return itemId !== id;
     });
   }
 

@@ -4,7 +4,25 @@ import { triggerActionOnForm } from "/static/js/jobboard/filters.js";
 import { LitWrapper } from "/static/js/common/lit-wrapper.js";
 import { getBenefits } from "/static/js/common/data.js";
 
+/**
+ * Searchable filter component for selectable options.
+ * Supports search, multi-select, and keyboard navigation.
+ * @extends LitWrapper
+ */
 export class SearchableFilter extends LitWrapper {
+  /**
+   * Component properties definition
+   * @property {string} name - Filter name (e.g., 'benefits')
+   * @property {string[]} options - Available filter options
+   * @property {string[]} selected - Currently selected options
+   * @property {string} enteredValue - Current search input value
+   * @property {'cols'|'rows'} viewType - Display layout for selected items
+   * @property {string[]} visibleOptions - Filtered options based on search
+   * @property {boolean} visibleDropdown - Dropdown visibility state
+   * @property {string} form - Form ID for input association
+   * @property {'top'|'bottom'} alignment - Dropdown alignment
+   * @property {number|null} activeIndex - Active suggestion index
+   */
   static properties = {
     name: { type: String },
     options: { type: Array },
@@ -43,6 +61,10 @@ export class SearchableFilter extends LitWrapper {
     window.addEventListener("mousedown", this._handleClickOutside);
   }
 
+  /**
+   * Clears all selected options.
+   * @returns {Promise<void>}
+   */
   async cleanSelected() {
     this.selected = [];
 
@@ -50,6 +72,10 @@ export class SearchableFilter extends LitWrapper {
     await this.updateComplete;
   }
 
+  /**
+   * Loads options based on filter name.
+   * @private
+   */
   _getOptions() {
     switch (this.name) {
       case "benefits":
@@ -62,6 +88,10 @@ export class SearchableFilter extends LitWrapper {
     this._filterOptions();
   }
 
+  /**
+   * Filters visible options based on search input.
+   * @private
+   */
   _filterOptions() {
     if (this.enteredValue.length > 0) {
       this.visibleOptions = this.options.filter((option) => {
@@ -73,11 +103,20 @@ export class SearchableFilter extends LitWrapper {
     }
   }
 
+  /**
+   * Handles search input changes.
+   * @param {Event} event - Input event
+   * @private
+   */
   _onInputChange(event) {
     this.enteredValue = event.target.value;
     this._filterOptions();
   }
 
+  /**
+   * Clears search input and resets filter state.
+   * @private
+   */
   _cleanEnteredValue() {
     this.enteredValue = "";
     this.visibleDropdown = false;
@@ -85,13 +124,22 @@ export class SearchableFilter extends LitWrapper {
     this.activeIndex = null;
   }
 
-  // Check if the clicked element is outside the component
-  _handleClickOutside = (e) => {
-    if (!this.contains(e.target)) {
+  /**
+   * Handles click outside to close dropdown.
+   * @param {MouseEvent} event - The click event
+   * @private
+   */
+  _handleClickOutside = (event) => {
+    if (!this.contains(event.target)) {
       this._cleanEnteredValue();
     }
   };
 
+  /**
+   * Handles keyboard navigation and selection.
+   * @param {KeyboardEvent} event - Keyboard event
+   * @private
+   */
   _handleKeyDown(event) {
     switch (event.key) {
       // Highlight the next item in the list
@@ -118,23 +166,33 @@ export class SearchableFilter extends LitWrapper {
     }
   }
 
+  /**
+   * Highlights option for keyboard navigation.
+   * @param {'up'|'down'} direction - Navigation direction
+   * @private
+   */
   _highlightItem(direction) {
     if (this.options && this.options.length > 0) {
       if (this.activeIndex === null) {
-        this.activeIndex = direction === "down" ? 0 : this.options.length - 1;
+        this.activeIndex = direction === "down" ? 0 : this.visibleOptions.length - 1;
       } else {
         let newIndex = direction === "down" ? this.activeIndex + 1 : this.activeIndex - 1;
-        if (newIndex >= this.options.length) {
+        if (newIndex >= this.visibleOptions.length) {
           newIndex = 0;
         }
         if (newIndex < 0) {
-          newIndex = this.options.length - 1;
+          newIndex = this.visibleOptions.length - 1;
         }
         this.activeIndex = newIndex;
       }
     }
   }
 
+  /**
+   * Adds option to selected list and triggers form update.
+   * @param {string} value - Option to select
+   * @private
+   */
   async _onSelect(value) {
     this.selected.push(value);
     this.enteredValue = "";
@@ -149,6 +207,11 @@ export class SearchableFilter extends LitWrapper {
     triggerActionOnForm(this.form, "submit");
   }
 
+  /**
+   * Removes option from selected list.
+   * @param {string} value - Option to remove
+   * @private
+   */
   async _onRemove(value) {
     this.selected = this.selected.filter((item) => item !== value);
 

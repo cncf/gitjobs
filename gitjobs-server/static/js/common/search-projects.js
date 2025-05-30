@@ -4,7 +4,25 @@ import { triggerActionOnForm } from "/static/js/jobboard/filters.js";
 import { LitWrapper } from "/static/js/common/lit-wrapper.js";
 import { debounce } from "/static/js/common/common.js";
 
+/**
+ * Project search component with foundation filtering.
+ * Allows searching and selecting projects from different foundations.
+ * @extends LitWrapper
+ */
 export class SearchProjects extends LitWrapper {
+  /**
+   * Component properties definition
+   * @property {Array} foundations - Available foundation options
+   * @property {Array} selected - Currently selected projects
+   * @property {string} enteredValue - Current search input value
+   * @property {'cols'|'rows'} viewType - Display layout for selected items
+   * @property {Array|null} visibleOptions - Filtered project suggestions
+   * @property {boolean} visibleDropdown - Dropdown visibility state
+   * @property {string} form - Form ID for input association
+   * @property {'top'|'bottom'} alignment - Dropdown alignment
+   * @property {number|null} activeIndex - Active suggestion index
+   * @property {string|null} selectedFoundation - Selected foundation filter
+   */
   static properties = {
     foundations: { type: Array },
     selected: { type: Array },
@@ -42,6 +60,10 @@ export class SearchProjects extends LitWrapper {
     window.addEventListener("mousedown", this._handleClickOutside);
   }
 
+  /**
+   * Clears all selected projects.
+   * @returns {Promise<void>}
+   */
   async cleanSelected() {
     this.selected = [];
     this.selectedFoundation = null;
@@ -50,6 +72,10 @@ export class SearchProjects extends LitWrapper {
     await this.updateComplete;
   }
 
+  /**
+   * Fetches projects from server based on search and foundation.
+   * @private
+   */
   async _getProjects() {
     const url = `/projects/search?project=${encodeURIComponent(this.enteredValue)}&foundation=${this.selectedFoundation}`;
     try {
@@ -61,12 +87,17 @@ export class SearchProjects extends LitWrapper {
       const json = await response.json();
       this.visibleOptions = json;
     } catch (error) {
-      // TODO - Handle error
+      // TODO: Implement error handling
     } finally {
       this.visibleDropdown = true;
     }
   }
 
+  /**
+   * Handles foundation filter selection.
+   * @param {Event} event - Change event
+   * @private
+   */
   _handleFoundationChange(event) {
     const selectedFoundation = event.target.value;
     if (selectedFoundation === "") {
@@ -79,6 +110,10 @@ export class SearchProjects extends LitWrapper {
     this.visibleDropdown = false;
   }
 
+  /**
+   * Triggers project search when input is long enough.
+   * @private
+   */
   _filterOptions() {
     if (this.enteredValue.length > 2) {
       debounce(this._getProjects(this.enteredValue), 300);
@@ -89,11 +124,20 @@ export class SearchProjects extends LitWrapper {
     }
   }
 
+  /**
+   * Handles search input changes.
+   * @param {Event} event - Input event
+   * @private
+   */
   _onInputChange(event) {
     this.enteredValue = event.target.value;
     this._filterOptions();
   }
 
+  /**
+   * Clears search input and hides dropdown.
+   * @private
+   */
   _cleanEnteredValue() {
     this.enteredValue = "";
     this.visibleDropdown = false;
@@ -101,13 +145,22 @@ export class SearchProjects extends LitWrapper {
     this.activeIndex = null;
   }
 
-  // Check if the clicked element is outside the component
-  _handleClickOutside = (e) => {
-    if (!this.contains(e.target)) {
+  /**
+   * Handles click outside to close dropdown.
+   * @param {MouseEvent} event - The click event
+   * @private
+   */
+  _handleClickOutside = (event) => {
+    if (!this.contains(event.target)) {
       this._cleanEnteredValue();
     }
   };
 
+  /**
+   * Handles keyboard navigation and selection.
+   * @param {KeyboardEvent} event - Keyboard event
+   * @private
+   */
   _handleKeyDown(event) {
     switch (event.key) {
       // Highlight the next item in the list
@@ -134,6 +187,11 @@ export class SearchProjects extends LitWrapper {
     }
   }
 
+  /**
+   * Highlights suggestion item for keyboard navigation.
+   * @param {'up'|'down'} direction - Navigation direction
+   * @private
+   */
   _highlightItem(direction) {
     if (this.visibleOptions && this.visibleOptions.length > 0) {
       if (this.activeIndex === null) {
@@ -151,6 +209,11 @@ export class SearchProjects extends LitWrapper {
     }
   }
 
+  /**
+   * Selects a project and triggers form update.
+   * @param {Object} value - Selected project object
+   * @private
+   */
   async _onSelect(value) {
     this.selected.push(value);
     this.enteredValue = "";
@@ -158,7 +221,7 @@ export class SearchProjects extends LitWrapper {
     this.visibleOptions = null;
     this.activeIndex = null;
 
-    // Remove selected foundation on select out of this component
+    // Clear foundation filter when project is selected
     const foundationSelects = document.getElementsByName("foundation");
     foundationSelects.forEach((select) => {
       if (select.value !== "") {
@@ -173,6 +236,11 @@ export class SearchProjects extends LitWrapper {
     triggerActionOnForm(this.form, "submit");
   }
 
+  /**
+   * Removes a selected project.
+   * @param {string} name - Project name to remove
+   * @private
+   */
   async _onRemove(name) {
     this.selected = this.selected.filter((item) => item.name !== name);
 

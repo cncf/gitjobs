@@ -475,6 +475,9 @@ const getBarStatsOptions = () => {
       label: {
         show: true,
         position: "top",
+        formatter: (params) => {
+          return prettifyNumber(params.value[1]);
+        },
       },
       datasetIndex: 1,
     },
@@ -536,7 +539,7 @@ const renderBarDailyChart = (data, max, min) => {
       ...getBarStatsOptions().tooltip,
       formatter: (params) => {
         const chartdate = echarts.time.format(params.data[0], "{dd} {MMM}'{yy}");
-        return `${chartdate}<br />Jobs: ${params.data[1]}`;
+        return `${chartdate}<br />Jobs: ${prettifyNumber(params.data[1])}`;
       },
     },
     xAxis: {
@@ -587,7 +590,7 @@ const renderBarMonthlyChart = (data, max, min) => {
       ...getBarStatsOptions().tooltip,
       formatter: (params) => {
         const chartdate = echarts.time.format(params.data[0], "{MMM} {yyyy}");
-        return `${chartdate}<br />Views: ${params.data[1]}`;
+        return `${chartdate}<br />Views: ${prettifyNumber(params.data[1])}`;
       },
     },
     xAxis: {
@@ -611,8 +614,6 @@ export const renderStats = () => {
   if (!stats) return;
 
   echarts.registerTheme("gitjobs", gitjobs_theme);
-
-  console.log("Rendering stats", stats);
 
   if (!stats.jobs.published_running_total) {
     const chartDom = document.getElementById("line-chart");

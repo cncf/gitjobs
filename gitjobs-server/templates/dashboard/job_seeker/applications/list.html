@@ -143,13 +143,13 @@
   <div class="text-xs/4 text-stone-500 max-w-full truncate">
     {% if let Some(job_location) = job_location -%}
       {{ job_location.city }}, {{ job_location.country }}
-      {% if job_workplace != Workplace::OnSite -%}
-        ({{ job_workplace }})
+      {% if workplace != &Workplace::OnSite -%}
+        ({{ workplace }})
       {% endif -%}
-    {% else if job_workplace == Workplace::Remote -%}
+    {% else if workplace == &Workplace::Remote -%}
       Remote
     {% else -%}
       No location provided
     {% endif -%}
   </div>
-{% endmacro workplace_content -%}
+{% endmacro location_content -%}

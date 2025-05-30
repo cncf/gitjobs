@@ -461,6 +461,8 @@ const getBarStatsOptions = () => {
     },
     xAxis: {
       type: "time",
+      scale: true,
+      boundaryGap: false,
     },
     yAxis: {
       type: "value",
@@ -471,7 +473,8 @@ const getBarStatsOptions = () => {
     series: {
       type: "bar",
       name: "Views",
-      encode: { x: "timestmp", y: "jobs" },
+      encode: { x: "timestamp", y: "jobs" },
+      barMaxWidth: 35,
       label: {
         show: true,
         position: "top",
@@ -501,6 +504,9 @@ const getBarStatsOptions = () => {
         option: {
           grid: {
             left: "60px",
+          },
+          series: {
+            barMaxWidth: 10,
           },
         },
       },
@@ -570,10 +576,6 @@ const renderBarMonthlyChart = (data, max, min) => {
 
   const option = {
     ...getBarStatsOptions(),
-    series: {
-      ...getBarStatsOptions().series,
-      barWidth: "4%",
-    },
     dataset: [
       {
         dimensions: ["timestamp", "jobs"],

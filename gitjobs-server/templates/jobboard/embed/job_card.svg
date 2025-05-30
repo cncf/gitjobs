@@ -228,8 +228,13 @@ xmlns="http://www.w3.org/2000/svg">
         <g transform="translate(0, 22)">
           <text x="0" class="content">
             {% if let Some(location) = job.location -%}
-              {% let current_location = format!("{}, {}", location.city, location.country) -%}
-              {{ current_location|truncate(35) }}
+              {% if job.workplace == Workplace::OnSite -%}
+                {% let current_location = format!("{}, {}", location.city, location.country) -%}
+                {{ current_location|truncate(35) }}
+              {% else -%}
+                {% let current_location = format!("{}, {} ({})", location.country, location.city, job.workplace) -%}
+                {{ current_location|truncate(35) }}
+              {% endif -%}
             {% else if job.workplace == Workplace::Remote -%}
               Remote
             {% else -%}

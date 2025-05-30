@@ -80,36 +80,22 @@
         </tr>
       {% else -%}
         {% for job in jobs -%}
-          {% let location = &self::format_location(job.city.as_deref(), None, job.country.as_deref())|display_some_or("No location provided") -%}
-          {% let remote_location = &self::format_location(job.city.as_deref(), None, job.country.as_deref())|display_some_or("Remote") -%}
           <tr class="odd:bg-white even:bg-stone-50/50 border-b border-stone-200">
-            {# Title job -#}
             <th scope="row"
                 class="px-3 xl:px-5 py-4 font-medium text-stone-900 min-w-[100px] max-w-[200px] xl:max-w-auto">
+              {# Title job -#}
               <div class="max-w-full truncate">{{ job.title }}</div>
-              {# Workplace -#}
+              {# End title job -#}
+              {# Location -#}
               <div class="block xl:hidden text-xs text-stone-500 max-w-full truncate">
-                {% if job.workplace == Workplace::Remote -%}
-                  {{ remote_location }}
-                {% else -%}
-                  {{ location }}
-                {% endif -%}
+                {% call location_content(job) -%}
               </div>
-              {# End workplace -#}
+              {# End Location -#}
             </th>
-            {# End title job -#}
 
             {# Location -#}
             <td class="hidden xl:table-cell px-3 xl:px-5 py-4 whitespace-nowrap min-w-[100px] max-w-[100px] xl:max-w-[200px]">
-              <div class="max-w-full truncate">
-                {# Workplace -#}
-                {% if job.workplace == Workplace::Remote -%}
-                  {{ remote_location }}
-                {% else -%}
-                  {{ location }}
-                {% endif -%}
-                {# End workplace -#}
-              </div>
+              <div class="max-w-full truncate">{% call location_content(job) -%}</div>
             </td>
             {# End location -#}
 
@@ -276,3 +262,17 @@
   </table>
 </div>
 {# End Jobs Table -#}
+
+{% macro location_content(job) -%}
+  {% if let Some(city) = job.city -%}
+    {% let location_text = &self::format_location(job.city.as_deref(), None, job.country.as_deref())|display_some -%}
+    {{ location_text }}
+    {% if job.workplace != Workplace::OnSite -%}
+      ({{ job.workplace }})
+    {% endif -%}
+  {% else if job.workplace == Workplace::Remote -%}
+    Remote
+  {% else -%}
+    Not location provided
+  {% endif -%}
+{% endmacro location_content -%}

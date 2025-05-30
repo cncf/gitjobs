@@ -12,6 +12,7 @@ returns json as $$
                         from job j join job_project jp on j.job_id = jp.job_id
                         join project p on jp.project_id = p.project_id
                         join foundation f on p.foundation = f.name
+                        where j.first_published_at is not null
                     )
                     group by foundation
                     order by jobs desc

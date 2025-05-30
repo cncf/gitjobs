@@ -359,6 +359,8 @@ const gitjobs_theme = {
   },
 };
 
+const MESSAGE_EMPTY_STATS = "No data available yet";
+
 const renderLineChart = (data) => {
   const chartDom = document.getElementById("line-chart");
   if (!chartDom) return;
@@ -610,7 +612,32 @@ export const renderStats = () => {
 
   echarts.registerTheme("gitjobs", gitjobs_theme);
 
-  renderLineChart(stats.jobs.published_running_total);
-  renderBarDailyChart(stats.jobs.views_daily, stats.ts_now, stats.ts_one_month_ago);
-  renderBarMonthlyChart(stats.jobs.views_monthly, stats.ts_now, stats.ts_two_years_ago);
+  console.log("Rendering stats", stats);
+
+  if (!stats.jobs.published_running_total) {
+    const chartDom = document.getElementById("line-chart");
+    if (chartDom) {
+      chartDom.innerHTML = `<div>${MESSAGE_EMPTY_STATS}</div>`;
+    }
+  } else {
+    renderLineChart(stats.jobs.published_running_total);
+  }
+
+  if (!stats.jobs.views_daily) {
+    const chartDom = document.getElementById("bar-daily");
+    if (chartDom) {
+      chartDom.innerHTML = `<div>${MESSAGE_EMPTY_STATS}</div>`;
+    }
+  } else {
+    renderBarDailyChart(stats.jobs.views_daily, stats.ts_now, stats.ts_one_month_ago);
+  }
+
+  if (!stats.jobs.views_monthly) {
+    const chartDom = document.getElementById("bar-monthly");
+    if (chartDom) {
+      chartDom.innerHTML = `<div>${MESSAGE_EMPTY_STATS}</div>`;
+    }
+  } else {
+    renderBarMonthlyChart(stats.jobs.views_monthly, stats.ts_now, stats.ts_two_years_ago);
+  }
 };

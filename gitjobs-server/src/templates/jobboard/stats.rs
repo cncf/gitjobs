@@ -44,23 +44,23 @@ pub(crate) struct Stats {
 pub(crate) struct JobsStats {
     /// Number of jobs published per foundation.
     /// Each entry is a tuple of (foundation, count).
-    pub published_per_foundation: Vec<(String, Total)>,
+    pub published_per_foundation: Option<Vec<(String, Total)>>,
 
     /// Number of jobs published per month.
     /// Each entry is a tuple of (year, month, count).
-    pub published_per_month: Vec<(Year, Month, Total)>,
+    pub published_per_month: Option<Vec<(Year, Month, Total)>>,
 
     /// Running total of published jobs.
     /// Each entry is a tuple of (timestamp, count).
-    pub published_running_total: Vec<(Timestamp, Total)>,
+    pub published_running_total: Option<Vec<(Timestamp, Total)>>,
 
     /// Number of job views per day.
     /// Each entry is a tuple of (timestamp, count).
-    pub views_daily: Vec<(Timestamp, Total)>,
+    pub views_daily: Option<Vec<(Timestamp, Total)>>,
 
     /// Number of job views per month.
     /// Each entry is a tuple of (timestamp, count).
-    pub views_monthly: Vec<(Timestamp, Total)>,
+    pub views_monthly: Option<Vec<(Timestamp, Total)>>,
 }
 
 /// Type alias for a month.

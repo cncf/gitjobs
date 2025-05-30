@@ -20,7 +20,8 @@
         <div class="font-semibold text-stone-700 text-center mb-9 mt-10">Jobs published over time</div>
         <div class="flex flex-row h-[300px]">
           {# Published jobs total - line chart -#}
-          <div class="w-full h-full border border-stone-200" id="line-chart"></div>
+          <div class="flex items-center justify-center w-full h-full border border-stone-200 text-stone-500"
+               id="line-chart"></div>
           {# End published jobs total - line chart -#}
         </div>
 
@@ -28,39 +29,43 @@
           <div>
             <div class="font-semibold text-stone-700 text-center mb-9 mt-16">Jobs daily views</div>
             {# Views daily - bar chart -#}
-            <div class="h-[300px] border border-stone-200" id="bar-daily"></div>
+            <div class="flex items-center justify-center h-[300px] border border-stone-200 text-stone-500"
+                 id="bar-daily"></div>
             {# End views daily - bar chart -#}
           </div>
 
           <div>
             <div class="font-semibold text-stone-700 text-center mb-9">Jobs monthly views</div>
             {# Views monthly - bar chart -#}
-            <div class="h-[300px] border border-stone-200" id="bar-monthly"></div>
+            <div class="flex items-center justify-center h-[300px] border border-stone-200 text-stone-500"
+                 id="bar-monthly"></div>
             {# End views monthy - bar chart -#}
           </div>
 
           {# Foundations table -#}
-          <div>
-            <div class="font-semibold text-stone-700 text-center mb-9">
-              Jobs that offer development time to work on any of the foundations projects
-            </div>
-            <table class="table-fixed w-full text-xs lg:text-sm text-left rtl:text-right text-stone-500">
-              <thead class="text-xs text-stone-700 uppercase bg-stone-100 border-b border-stone-200">
-                <tr>
-                  <th scope="col" class="px-3 xl:px-5 py-3">Foundation</th>
-                  <th scope="col" class="px-3 xl:px-5 py-3 w-40 text-end">Number of jobs</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for (foundation, jobs) in stats.jobs.published_per_foundation -%}
-                  <tr class="odd:bg-white even:bg-stone-50/50 border-b border-stone-200">
-                    <td class="px-3 xl:px-5 py-4 font-medium text-stone-900 uppercase">{{ foundation }}</td>
-                    <td class="px-3 xl:px-5 py-4 font-semibold text-stone-900 text-end">{{ jobs }}</td>
+          {% if let Some(published_per_foundation) = stats.jobs.published_per_foundation -%}
+            <div>
+              <div class="font-semibold text-stone-700 text-center mb-9">
+                Jobs that offer development time to work on any of the foundations projects
+              </div>
+              <table class="table-fixed w-full text-xs lg:text-sm text-left rtl:text-right text-stone-500">
+                <thead class="text-xs text-stone-700 uppercase bg-stone-100 border-b border-stone-200">
+                  <tr>
+                    <th scope="col" class="px-3 xl:px-5 py-3">Foundation</th>
+                    <th scope="col" class="px-3 xl:px-5 py-3 w-40 text-end">Number of jobs</th>
                   </tr>
-                {% endfor -%}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {% for (foundation, jobs) in published_per_foundation -%}
+                    <tr class="odd:bg-white even:bg-stone-50/50 border-b border-stone-200">
+                      <td class="px-3 xl:px-5 py-4 font-medium text-stone-900 uppercase">{{ foundation }}</td>
+                      <td class="px-3 xl:px-5 py-4 font-semibold text-stone-900 text-end">{{ jobs }}</td>
+                    </tr>
+                  {% endfor -%}
+                </tbody>
+              </table>
+            </div>
+          {% endif -%}
           {# End foundations table -#}
         </div>
       </div>

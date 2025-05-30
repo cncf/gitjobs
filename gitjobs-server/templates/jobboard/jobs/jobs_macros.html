@@ -91,7 +91,7 @@
     <div>
       {% call filters_subtitle(text = "Location") -%}
       {% if let Some(location) = filters.location -%}
-        <search-location form="{{ form }}" device="{{ device }}" location_id="{{ location.location_id }}" city="{{ location.city }}" state="{{ location.state|display_some }}" country="{{ location.country }}" withDistance="true" distance="{{ filters.max_distance|display_some }}" size="small"></search-location>
+        <search-location form="{{ form }}" device="{{ device }}" locationId="{{ location.location_id }}" city="{{ location.city }}" state="{{ location.state|display_some }}" country="{{ location.country }}" withDistance="true" distance="{{ filters.max_distance|display_some }}" size="small"></search-location>
       {% else -%}
         <search-location form="{{ form }}" device="{{ device }}" withDistance="true" distance="{{ filters.max_distance|display_some }}" size="small"></search-location>
       {% endif -%}

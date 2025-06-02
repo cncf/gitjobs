@@ -2,7 +2,22 @@ import { html, repeat } from "/static/vendor/js/lit-all.v3.2.1.min.js";
 import { isObjectEmpty } from "/static/js/common/common.js";
 import { LitWrapper } from "/static/js/common/lit-wrapper.js";
 
+/**
+ * Component for managing project entries in job seeker profile.
+ * Supports adding, removing, and reordering project items.
+ * @extends LitWrapper
+ */
 export class ProjectsSection extends LitWrapper {
+  /**
+   * Component properties definition
+   * @property {Array} projects - List of project entries
+   * Each entry is an object with:
+   *  - id: Unique identifier
+   *  - title: Project title
+   *  - url: Project URL
+   *  - description: Project description (markdown)
+   *  - source_url: Source code URL (optional)
+   */
   static properties = {
     projects: { type: Array },
   };
@@ -14,10 +29,15 @@ export class ProjectsSection extends LitWrapper {
 
   connectedCallback() {
     super.connectedCallback();
-    this.addId();
+    this._initializeProjectsIds();
   }
 
-  addId() {
+  /**
+   * Assigns unique IDs to project entries.
+   * Creates initial entry if none exist.
+   * @private
+   */
+  _initializeProjectsIds() {
     if (this.projects === null) {
       this.projects = [this._getData()];
     } else {
@@ -27,6 +47,11 @@ export class ProjectsSection extends LitWrapper {
     }
   }
 
+  /**
+   * Creates a new empty project data object.
+   * @returns {Object} Empty project entry
+   * @private
+   */
   _getData = () => {
     let item = {
       id: this.projects ? this.projects.length : 0,
@@ -39,6 +64,11 @@ export class ProjectsSection extends LitWrapper {
     return item;
   };
 
+  /**
+   * Adds a new project entry at specified index.
+   * @param {number} index - Position to insert new entry
+   * @private
+   */
   _addProject(index) {
     const currentProjects = [...this.projects];
     currentProjects.splice(index, 0, this._getData());
@@ -46,16 +76,35 @@ export class ProjectsSection extends LitWrapper {
     this.projects = currentProjects;
   }
 
+  /**
+   * Removes project entry at specified index.
+   * Ensures at least one empty entry remains.
+   * @param {number} index - Position of entry to remove
+   * @private
+   */
   _removeProject(index) {
     const tmpProjects = this.projects.filter((_, i) => i !== index);
     // If there are no more projects, add a new one
     this.projects = tmpProjects.length === 0 ? [this._getData()] : tmpProjects;
   }
 
+  /**
+   * Updates project data at specified index.
+   * @param {Object} data - Updated project data
+   * @param {number} index - Index of entry to update
+   * @private
+   */
   _onDataChange = (data, index) => {
     this.projects[index] = data;
   };
 
+  /**
+   * Renders a project entry with controls.
+   * @param {number} index - Entry index
+   * @param {Object} project - Project data
+   * @returns {import('lit').TemplateResult} Entry template
+   * @private
+   */
   _getProject(index, project) {
     const hasSingleProject = this.projects.length === 1;
 
@@ -75,8 +124,8 @@ export class ProjectsSection extends LitWrapper {
           <div>
             <button
               @click=${() => this._addProject(index + 1)}
-              type="cursor-pointer button"
-              class="p-2 border border-stone-200 hover:bg-stone-100 rounded-full"
+              type="button"
+              class="cursor-pointer p-2 border border-stone-200 hover:bg-stone-100 rounded-full"
               title="Add below"
             >
               <div class="svg-icon size-4 icon-plus_bottom bg-stone-600"></div>
@@ -85,8 +134,8 @@ export class ProjectsSection extends LitWrapper {
           <div>
             <button
               @click=${() => this._removeProject(index)}
-              type="cursor-pointer button"
-              class="p-2 border border-stone-200 hover:bg-stone-100 rounded-full"
+              type="button"
+              class="cursor-pointer p-2 border border-stone-200 hover:bg-stone-100 rounded-full"
               title="${hasSingleProject ? "Clean" : "Delete"}"
             >
               <div class="svg-icon size-4 icon-${hasSingleProject ? "eraser" : "trash"} bg-stone-600"></div>
@@ -125,7 +174,24 @@ export class ProjectsSection extends LitWrapper {
 }
 customElements.define("projects-section", ProjectsSection);
 
-class Project extends LitWrapper {
+/**
+ * Individual project entry component.
+ * Handles form inputs and validation for a single project.
+ * @extends LitWrapper
+ */
+class ProjectEntry extends LitWrapper {
+  /**
+   * Component properties definition
+   * @property {Object} data - Project data object
+   *  - id: Unique identifier
+   *  - title: Project title
+   *  - url: Project URL
+   *  - description: Project description (markdown)
+   *  - source_url: Source code URL (optional)
+   * @property {number} index - Index of the project in the list
+   * @property {boolean} isObjectEmpty - True if all fields are empty
+   * @property {Function} onDataChange - Callback function to notify parent of data changes
+   */
   static properties = {
     data: { type: Object },
     index: { type: Number },
@@ -152,15 +218,25 @@ class Project extends LitWrapper {
     this.isObjectEmpty = isObjectEmpty(this.data);
   }
 
-  _onInputChange = (e) => {
-    const value = e.target.value;
-    const name = e.target.dataset.name;
+  /**
+   * Handles input field changes.
+   * @param {Event} event - Input event
+   * @private
+   */
+  _onInputChange = (event) => {
+    const value = event.target.value;
+    const name = event.target.dataset.name;
 
     this.data[name] = value;
     this.isObjectEmpty = isObjectEmpty(this.data);
     this.onDataChange(this.data, this.index);
   };
 
+  /**
+   * Handles markdown editor changes.
+   * @param {string} value - Updated markdown content
+   * @private
+   */
   _onTextareaChange = (value) => {
     this.data.description = value;
     this.isObjectEmpty = isObjectEmpty(this.data);
@@ -245,4 +321,4 @@ class Project extends LitWrapper {
     </div>`;
   }
 }
-customElements.define("project-entry", Project);
+customElements.define("project-entry", ProjectEntry);

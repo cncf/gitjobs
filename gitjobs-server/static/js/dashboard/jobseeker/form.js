@@ -1,18 +1,21 @@
-// Display the active section
+/**
+ * Displays the specified section and updates navigation state.
+ * @param {string} section - The section identifier to display
+ */
 export const displayActiveSection = (section) => {
-  const btn = document.querySelector(`[data-section=${section}]`);
-  const isActive = btn.getAttribute("data-active");
-  if (isActive === "false") {
-    const buttons = document.querySelectorAll("[data-section]");
-    buttons.forEach((secB) => {
-      secB.setAttribute("data-active", "false");
-      secB.classList.remove("active");
+  const navigationButton = document.querySelector(`[data-section=${section}]`);
+  const isActive = navigationButton.getAttribute("data-active");
+  if (isActive === "false" && navigationButton) {
+    const allButtons = document.querySelectorAll("[data-section]");
+    allButtons.forEach((button) => {
+      button.setAttribute("data-active", "false");
+      button.classList.remove("active");
     });
-    btn.setAttribute("data-active", "true");
-    btn.classList.add("active");
+    navigationButton.setAttribute("data-active", "true");
+    navigationButton.classList.add("active");
 
-    const sections = document.querySelectorAll("[data-content]");
-    sections.forEach((content) => {
+    const allSections = document.querySelectorAll("[data-content]");
+    allSections.forEach((content) => {
       if (content.getAttribute("data-content") !== section) {
         content.classList.add("hidden");
       } else {
@@ -22,17 +25,19 @@ export const displayActiveSection = (section) => {
   }
 };
 
-// Validate all forms
+/**
+ * Validates all job seeker profile forms.
+ * Shows first invalid section if validation fails.
+ * @returns {boolean} True if all forms are valid
+ */
 export const validateFormData = () => {
-  // List of forms to validate
-  const FORMS = ["profile", "experience", "education", "projects"];
+  const formSections = ["profile", "experience", "education", "projects"];
 
-  // Validate each form
-  for (const form of FORMS) {
-    const formElement = document.getElementById(`${form}-form`);
-    // If the form is not valid, show the section and return false
+  for (const formName of formSections) {
+    const formElement = document.getElementById(`${formName}-form`);
+
     if (!formElement.checkValidity()) {
-      displayActiveSection(form);
+      displayActiveSection(formName);
       formElement.reportValidity();
       return false;
     }

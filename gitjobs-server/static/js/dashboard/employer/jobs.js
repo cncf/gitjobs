@@ -1,4 +1,8 @@
-// Trigger action on the form provided.
+/**
+ * Triggers an HTMX action on a form element.
+ * @param {string} formId - The ID of the form element
+ * @param {string} action - The action to trigger
+ */
 export const triggerActionOnForm = (formId, action) => {
   const form = document.getElementById(formId);
   if (form) {
@@ -6,46 +10,53 @@ export const triggerActionOnForm = (formId, action) => {
   }
 };
 
+/**
+ * Validates and adjusts salary fields based on selected salary type.
+ * Ensures proper required attributes for range vs exact salary.
+ */
 export const checkSalaryBeforeSubmit = () => {
-  const salaryPeriod = document.querySelector('select[name="salary_period"]');
-  const salaryCurrency = document.querySelector('select[name="salary_currency"]');
-  const salary = document.querySelector('input[name="salary"]');
-  const salaryMin = document.querySelector('input[name="salary_min"]');
-  const salaryMax = document.querySelector('input[name="salary_max"]');
+  const salaryPeriodField = document.querySelector('select[name="salary_period"]');
+  const salaryCurrencyField = document.querySelector('select[name="salary_currency"]');
+  const salaryField = document.querySelector('input[name="salary"]');
+  const salaryMinField = document.querySelector('input[name="salary_min"]');
+  const salaryMaxField = document.querySelector('input[name="salary_max"]');
 
-  // Remove required attributes from all salary fields
-  salaryPeriod.removeAttribute("required");
-  salaryCurrency.removeAttribute("required");
-  salary.removeAttribute("required");
-  salaryMin.removeAttribute("required");
-  salaryMax.removeAttribute("required");
+  // Clear all required attributes initially
+  salaryPeriodField.removeAttribute("required");
+  salaryCurrencyField.removeAttribute("required");
+  salaryField.removeAttribute("required");
+  salaryMinField.removeAttribute("required");
+  salaryMaxField.removeAttribute("required");
 
-  const selectedSalaryOption = document.querySelector('input[name="salary_kind"]:checked');
-  // If the salary option is range, remove the salary value and set correct required attributes
-  // for min, max, period and currency
-  if (selectedSalaryOption.id === "range") {
-    salary.value = "";
+  const selectedSalaryType = document.querySelector('input[name="salary_kind"]:checked');
 
-    if (salaryMin.value !== "" || salaryMax.value !== "") {
-      salaryMin.setAttribute("required", "required");
-      salaryMax.setAttribute("required", "required");
-      salaryPeriod.setAttribute("required", "required");
-      salaryCurrency.setAttribute("required", "required");
+  if (selectedSalaryType.id === "range") {
+    // Range salary: clear exact value, set requirements for range fields
+    salaryField.value = "";
+
+    if (salaryMinField.value !== "" || salaryMaxField.value !== "") {
+      salaryMinField.setAttribute("required", "required");
+      salaryMaxField.setAttribute("required", "required");
+      salaryPeriodField.setAttribute("required", "required");
+      salaryCurrencyField.setAttribute("required", "required");
     }
-    // If the salary option is exact, remove the salary min and max values and set correct required attributes
-    // for salary, period and currency
   } else {
-    salaryMin.value = "";
-    salaryMax.value = "";
+    // Exact salary: clear range values, set requirements for exact fields
+    salaryMinField.value = "";
+    salaryMaxField.value = "";
 
-    if (salary.value !== "") {
-      salary.setAttribute("required", "required");
-      salaryPeriod.setAttribute("required", "required");
-      salaryCurrency.setAttribute("required", "required");
+    if (salaryField.value !== "") {
+      salaryField.setAttribute("required", "required");
+      salaryPeriodField.setAttribute("required", "required");
+      salaryCurrencyField.setAttribute("required", "required");
     }
   }
 };
 
+/**
+ * Validates job title to prevent "remote" in title.
+ * @param {HTMLInputElement} input - The job title input element
+ */
 export const checkJobTitle = (input) => {
   input.setCustomValidity("");
   const jobTitle = input.value.trim();

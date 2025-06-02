@@ -2,7 +2,23 @@ import { html, repeat } from "/static/vendor/js/lit-all.v3.2.1.min.js";
 import { isObjectEmpty } from "/static/js/common/common.js";
 import { LitWrapper } from "/static/js/common/lit-wrapper.js";
 
+/**
+ * Component for managing education entries in job seeker profile.
+ * Supports adding, removing, and reordering education items.
+ * @extends LitWrapper
+ */
 export class EducationSection extends LitWrapper {
+  /**
+   * Component properties definition
+   * @property {Array} education - List of education entries
+   * Each entry contains:
+   *  - id: Unique identifier
+   *  - title: Degree or qualification title
+   *  - educational_institution: Name of the institution
+   *  - description: Additional details (markdown format)
+   *  - start_date: Start date of education
+   *  - end_date: End date of education
+   */
   static properties = {
     education: { type: Array },
   };
@@ -14,10 +30,15 @@ export class EducationSection extends LitWrapper {
 
   connectedCallback() {
     super.connectedCallback();
-    this.addId();
+    this._initializeEducationIds();
   }
 
-  addId() {
+  /**
+   * Assigns unique IDs to education entries.
+   * Creates initial entry if none exist.
+   * @private
+   */
+  _initializeEducationIds() {
     if (this.education === null) {
       this.education = [this._getData()];
     } else {
@@ -27,6 +48,11 @@ export class EducationSection extends LitWrapper {
     }
   }
 
+  /**
+   * Creates a new empty education data object.
+   * @returns {Object} Empty education entry
+   * @private
+   */
   _getData = () => {
     let item = {
       id: this.education ? this.education.length : 0,
@@ -40,6 +66,11 @@ export class EducationSection extends LitWrapper {
     return item;
   };
 
+  /**
+   * Adds a new education entry at specified index.
+   * @param {number} index - Position to insert new entry
+   * @private
+   */
   _addEducationItem(index) {
     const currentEducation = [...this.education];
     currentEducation.splice(index, 0, this._getData());
@@ -47,16 +78,35 @@ export class EducationSection extends LitWrapper {
     this.education = currentEducation;
   }
 
+  /**
+   * Removes education entry at specified index.
+   * Ensures at least one empty entry remains.
+   * @param {number} index - Position of entry to remove
+   * @private
+   */
   _removeEducationItem(index) {
     const tmpEducation = this.education.filter((_, i) => i !== index);
     // If there are no more education items, add a new one
     this.education = tmpEducation.length === 0 ? [this._getData()] : tmpEducation;
   }
 
+  /**
+   * Updates education data at specified index.
+   * @param {Object} data - Updated education data
+   * @param {number} index - Index of entry to update
+   * @private
+   */
   _onDataChange = (data, index) => {
     this.education[index] = data;
   };
 
+  /**
+   * Renders an education entry with controls.
+   * @param {number} index - Entry index
+   * @param {Object} education - Education data
+   * @returns {import('lit').TemplateResult} Entry template
+   * @private
+   */
   _getEducationForm(index, education) {
     const hasSingleEducationItem = this.education.length === 1;
 
@@ -126,7 +176,26 @@ export class EducationSection extends LitWrapper {
 }
 customElements.define("education-section", EducationSection);
 
+/**
+ * Individual education entry component.
+ * Handles form inputs and validation for a single education item.
+ * @extends LitWrapper
+ */
 class EducationItem extends LitWrapper {
+  /**
+   * Component properties definition
+   * @property {Object} data - Education entry data
+   * Each entry contains:
+   *  - id: Unique identifier
+   *  - title: Degree or qualification title
+   *  - educational_institution: Name of the institution
+   *  - description: Additional details (markdown format)
+   *  - start_date: Start date of education
+   *  - end_date: End date of education
+   * @property {number} index - Position of the entry in the list
+   * @property {boolean} isObjectEmpty - Indicates if the data object is empty
+   * @property {Function} onDataChange - Callback function to notify parent component of changes
+   */
   static properties = {
     data: { type: Object },
     index: { type: Number },
@@ -154,15 +223,25 @@ class EducationItem extends LitWrapper {
     this.isObjectEmpty = isObjectEmpty(this.data);
   }
 
-  _onInputChange = (e) => {
-    const value = e.target.value;
-    const name = e.target.dataset.name;
+  /**
+   * Handles input field changes.
+   * @param {Event} event - Input event
+   * @private
+   */
+  _onInputChange = (event) => {
+    const value = event.target.value;
+    const name = event.target.dataset.name;
 
     this.data[name] = value;
     this.isObjectEmpty = isObjectEmpty(this.data);
     this.onDataChange(this.data, this.index);
   };
 
+  /**
+   * Handles markdown editor changes.
+   * @param {string} value - Updated markdown content
+   * @private
+   */
   _onTextareaChange = (value) => {
     this.data.description = value;
     this.isObjectEmpty = isObjectEmpty(this.data);

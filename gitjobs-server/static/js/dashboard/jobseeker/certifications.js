@@ -2,7 +2,23 @@ import { html, repeat } from "/static/vendor/js/lit-all.v3.2.1.min.js";
 import { isObjectEmpty } from "/static/js/common/common.js";
 import { LitWrapper } from "/static/js/common/lit-wrapper.js";
 
+/**
+ * Component for managing certification entries in job seeker profile.
+ * Supports adding, removing, and reordering certifications.
+ * @extends LitWrapper
+ */
 export class CertificationsSection extends LitWrapper {
+  /**
+   * Component properties definition
+   * @property {Array} certifications - List of certification entries
+   * Each entry contains:
+   *   - id: Unique identifier
+   *   - title: Certification title
+   *   - provider: Issuing organization
+   *   - description: Certification details
+   *   - start_date: Date when certification was obtained
+   *   - end_date: Date when certification expires (if applicable)
+   */
   static properties = {
     certifications: { type: Array },
   };
@@ -14,10 +30,15 @@ export class CertificationsSection extends LitWrapper {
 
   connectedCallback() {
     super.connectedCallback();
-    this.addId();
+    this._initializeCertificationIds();
   }
 
-  addId() {
+  /**
+   * Assigns unique IDs to certification entries.
+   * Creates initial entry if none exist.
+   * @private
+   */
+  _initializeCertificationIds() {
     if (this.certifications === null) {
       this.certifications = [this._getData()];
     } else {
@@ -27,6 +48,11 @@ export class CertificationsSection extends LitWrapper {
     }
   }
 
+  /**
+   * Creates a new empty certification data object.
+   * @returns {Object} Empty certification entry
+   * @private
+   */
   _getData = () => {
     let item = {
       id: this.certifications ? this.certifications.length : 0,
@@ -40,13 +66,24 @@ export class CertificationsSection extends LitWrapper {
     return item;
   };
 
+  /**
+   * Adds a new certification entry at specified index.
+   * @param {number} index - Position to insert new entry
+   * @private
+   */
   _addCertificationEntry(index) {
-    const currenCertifications = [...this.certifications];
-    currenCertifications.splice(index, 0, this._getData());
+    const currentCertifications = [...this.certifications];
+    currentCertifications.splice(index, 0, this._getData());
 
-    this.certifications = currenCertifications;
+    this.certifications = currentCertifications;
   }
 
+  /**
+   * Removes certification entry at specified index.
+   * Ensures at least one empty entry remains.
+   * @param {number} index - Position of entry to remove
+   * @private
+   */
   _removeCertificationEntry(index) {
     const tmpCertifications = this.certifications.filter((_, i) => i !== index);
 
@@ -54,10 +91,23 @@ export class CertificationsSection extends LitWrapper {
     this.certifications = tmpCertifications.length === 0 ? [this._getData()] : tmpCertifications;
   }
 
+  /**
+   * Updates certification data at specified index.
+   * @param {Object} data - Updated certification data
+   * @param {number} index - Index of entry to update
+   * @private
+   */
   _onDataChange = (data, index) => {
     this.certifications[index] = data;
   };
 
+  /**
+   * Renders a certification entry with controls.
+   * @param {number} index - Entry index
+   * @param {Object} certification - Certification data
+   * @returns {import('lit').TemplateResult} Entry template
+   * @private
+   */
   _getCertificationEntry(index, certification) {
     const hasSingleCertificationEntry = this.certifications.length === 1;
 
@@ -128,7 +178,26 @@ export class CertificationsSection extends LitWrapper {
 }
 customElements.define("certifications-section", CertificationsSection);
 
+/**
+ * Individual certification entry component.
+ * Handles form inputs and validation for a single certification.
+ * @extends LitWrapper
+ */
 class CertificationEntry extends LitWrapper {
+  /**
+   * Component properties definition
+   * @property {Object} data - Certification data object
+   * Contains:
+   *   - id: Unique identifier
+   *   - title: Certification title
+   *   - provider: Issuing organization
+   *   - description: Certification details
+   *   - start_date: Date when certification was obtained
+   *   - end_date: Date when certification expires (if applicable)
+   * @property {number} index - Index of the certification entry in the list
+   * @property {boolean} isObjectEmpty - Indicates if the certification data is empty
+   * @property {Function} onDataChange - Callback function to notify parent component of data changes
+   */
   static properties = {
     data: { type: Object },
     index: { type: Number },
@@ -156,15 +225,25 @@ class CertificationEntry extends LitWrapper {
     this.isObjectEmpty = isObjectEmpty(this.data);
   }
 
-  _onInputChange = (e) => {
-    const value = e.target.value;
-    const name = e.target.dataset.name;
+  /**
+   * Handles input field changes.
+   * @param {Event} event - Input event
+   * @private
+   */
+  _onInputChange = (event) => {
+    const value = event.target.value;
+    const name = event.target.dataset.name;
 
     this.data[name] = value;
     this.isObjectEmpty = isObjectEmpty(this.data);
     this.onDataChange(this.data, this.index);
   };
 
+  /**
+   * Handles markdown editor changes.
+   * @param {string} value - Updated markdown content
+   * @private
+   */
   _onTextareaChange = (value) => {
     this.data.description = value;
     this.isObjectEmpty = isObjectEmpty(this.data);
@@ -179,7 +258,7 @@ class CertificationEntry extends LitWrapper {
         <label class="form-label"> Title <span class="asterisk">*</span> </label>
         <div class="mt-2">
           <input
-            @input=${(e) => this._onInputChange(e)}
+            @input=${this._onInputChange}
             data-name="title"
             type="text"
             name="certifications[${this.index}][title]"
@@ -198,7 +277,7 @@ class CertificationEntry extends LitWrapper {
         <label class="form-label"> Provider <span class="asterisk">*</span> </label>
         <div class="mt-2">
           <input
-            @input=${(e) => this._onInputChange(e)}
+            @input=${this._onInputChange}
             data-name="provider"
             type="text"
             name="certifications[${this.index}][provider]"
@@ -232,7 +311,7 @@ class CertificationEntry extends LitWrapper {
         <div class="mt-2">
           <input
             type="date"
-            @input=${(e) => this._onInputChange(e)}
+            @input=${this._onInputChange}
             data-name="start_date"
             name="certifications[${this.index}][start_date]"
             class="input-primary"
@@ -247,7 +326,7 @@ class CertificationEntry extends LitWrapper {
         <div class="mt-2">
           <input
             type="date"
-            @input=${(e) => this._onInputChange(e)}
+            @input=${this._onInputChange}
             data-name="end_date"
             name="certifications[${this.index}][end_date]"
             class="input-primary"

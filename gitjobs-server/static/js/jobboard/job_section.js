@@ -6,7 +6,11 @@ import {
 } from "/static/js/common/alerts.js";
 import { isSuccessfulXHRStatus } from "/static/js/common/common.js";
 
-export const applyButton = () => {
+/**
+ * Initializes the job application button functionality.
+ * Handles different states: logged out, external URL, no profile.
+ */
+export const initializeApplyButton = () => {
   const applyButton = document.getElementById("apply-button");
   if (!applyButton) {
     return;
@@ -58,6 +62,10 @@ export const applyButton = () => {
   }
 };
 
+/**
+ * Generates and displays the embed code for job listings.
+ * Creates an iframe with current search parameters.
+ */
 export const renderEmbedCode = () => {
   const embedCode = document.getElementById("embed-code");
   const params = new URLSearchParams(window.location.search);
@@ -72,61 +80,72 @@ export const renderEmbedCode = () => {
 </script> -->`;
 };
 
-export const copyEmbedCodeToClipboard = (elId) => {
-  const embedCode = document.getElementById(elId);
+/**
+ * Copies embed code to clipboard and shows success message.
+ * @param {string} elementId - ID of element containing embed code
+ */
+export const copyEmbedCodeToClipboard = (elementId) => {
+  const embedCodeElement = document.getElementById(elementId);
 
-  // Copy the text inside the text field
-  navigator.clipboard.writeText(embedCode.textContent);
+  navigator.clipboard.writeText(embedCodeElement.textContent);
 
   showSuccessAlert("Embed code copied to clipboard!");
 };
 
+/**
+ * Sets up social media sharing links for a job posting.
+ * Configures share URLs for Twitter, Facebook, LinkedIn, and email.
+ */
 export const shareJob = () => {
   const socialLinks = document.getElementById("social-links");
-  const jobId = socialLinks.dataset.jobId;
-  const shareUrl = `${window.location.origin}?job_id=${jobId}`;
-  const subject = "Check out this job I found on GitJobs!";
-  const message = "Check out this job I found on GitJobs!";
+  if (socialLinks) {
+    const jobId = socialLinks.dataset.jobId;
+    const shareUrl = `${window.location.origin}?job_id=${jobId}`;
+    const subject = "Check out this job I found on GitJobs!";
+    const message = "Check out this job I found on GitJobs!";
 
-  const anchorTags = socialLinks.querySelectorAll("a");
-  anchorTags.forEach((anchorTag) => {
-    const platform = anchorTag.dataset.platform;
+    const anchorTags = socialLinks.querySelectorAll("a");
+    anchorTags.forEach((anchorTag) => {
+      const platform = anchorTag.dataset.platform;
 
-    switch (platform) {
-      case "twitter":
-        anchorTag.setAttribute(
-          "href",
-          `https://twitter.com/intent/tweet?text=${encodeURIComponent(message)}&url=${shareUrl}`,
-        );
-        break;
-      case "facebook":
-        anchorTag.setAttribute(
-          "href",
-          `https://www.facebook.com/sharer/sharer.php?u=${shareUrl}&quote=${encodeURIComponent(message)}`,
-        );
-        break;
-      case "linkedin":
-        anchorTag.setAttribute("href", `https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}`);
-        break;
-      case "email":
-        anchorTag.setAttribute(
-          "href",
-          `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(
-            `${message} ${shareUrl}`,
-          )}`,
-        );
-        break;
+      switch (platform) {
+        case "twitter":
+          anchorTag.setAttribute(
+            "href",
+            `https://twitter.com/intent/tweet?text=${encodeURIComponent(message)}&url=${shareUrl}`,
+          );
+          break;
+        case "facebook":
+          anchorTag.setAttribute(
+            "href",
+            `https://www.facebook.com/sharer/sharer.php?u=${shareUrl}&quote=${encodeURIComponent(message)}`,
+          );
+          break;
+        case "linkedin":
+          anchorTag.setAttribute("href", `https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}`);
+          break;
+        case "email":
+          anchorTag.setAttribute(
+            "href",
+            `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(
+              `${message} ${shareUrl}`,
+            )}`,
+          );
+          break;
+      }
+    });
+
+    // Copy link to clipboard
+    const copyLink = document.querySelector("#copy-link");
+    if (copyLink) {
+      copyLink.addEventListener("click", () => {
+        navigator.clipboard.writeText(shareUrl);
+        const tooltip = document.querySelector("#copy-link-tooltip");
+        tooltip.classList.add("opacity-100", "z-10");
+        setTimeout(() => {
+          tooltip.classList.remove("opacity-100", "z-10");
+        }, 3000);
+      });
     }
-  });
-
-  // Copy link to clipboard
-  const copyLink = document.querySelector("#copy-link");
-  copyLink.addEventListener("click", () => {
-    navigator.clipboard.writeText(shareUrl);
-    const tooltip = document.querySelector("#copy-link-tooltip");
-    tooltip.classList.add("opacity-100", "z-10");
-    setTimeout(() => {
-      tooltip.classList.remove("opacity-100", "z-10");
-    }, 3000);
-  });
+  }
 };

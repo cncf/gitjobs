@@ -1,31 +1,49 @@
-// Open filters view (only for mobile).
-export const open = () => {
-  const drawer = document.getElementById("drawer-filters");
-  drawer.classList.add("transition-transform");
-  drawer.classList.remove("-translate-x-full");
-  drawer.dataset.open = "true";
+/**
+ * Opens the mobile filters drawer.
+ * Adds transition effects and manages backdrop visibility.
+ */
+export const openFiltersDrawer = () => {
+  const filtersDrawer = document.getElementById("drawer-filters");
+  if (filtersDrawer) {
+    filtersDrawer.classList.add("transition-transform");
+    filtersDrawer.classList.remove("-translate-x-full");
+    filtersDrawer.dataset.open = "true";
+  }
   const backdrop = document.getElementById("drawer-backdrop");
-  backdrop.classList.remove("hidden");
+  if (backdrop) {
+    backdrop.classList.remove("hidden");
+  }
 };
 
-// Close filters view (only for mobile).
-export const close = () => {
-  const drawer = document.getElementById("drawer-filters");
-  drawer.classList.add("-translate-x-full");
-  drawer.classList.remove("transition-transform");
-  drawer.dataset.open = "false";
-  drawer.scrollTop = 0;
+/**
+ * Closes the mobile filters drawer.
+ * Removes transition effects and resets scroll position.
+ */
+export const closeFiltersDrawer = () => {
+  const filtersDrawer = document.getElementById("drawer-filters");
+  if (filtersDrawer) {
+    filtersDrawer.classList.add("-translate-x-full");
+    filtersDrawer.classList.remove("transition-transform");
+    filtersDrawer.dataset.open = "false";
+    filtersDrawer.scrollTop = 0;
+  }
   const backdrop = document.getElementById("drawer-backdrop");
-  backdrop.classList.add("hidden");
+  if (backdrop) {
+    backdrop.classList.add("hidden");
+  }
 };
 
-// Trigger action on the form provided.
+/**
+ * Triggers an action on the specified form.
+ * @param {string} formId - The ID of the form element
+ * @param {string} action - The action to trigger
+ * @param {boolean} [fromSearch] - Whether triggered from search input
+ */
 export const triggerActionOnForm = (formId, action, fromSearch) => {
-  // Prevent form submission if the search input is empty, and it is triggered
-  // from the search input
+  // Prevent empty search submissions
   if (fromSearch) {
-    const input = document.getElementById("searchbar");
-    if (input.value === "") {
+    const searchInput = document.getElementById("searchbar");
+    if (searchInput.value === "") {
       return;
     }
   }
@@ -36,24 +54,32 @@ export const triggerActionOnForm = (formId, action, fromSearch) => {
   }
 };
 
-// Search on enter key press.
-export const searchOnEnter = (e, formId) => {
-  if (e.key === "Enter") {
+/**
+ * Handles enter key press for search functionality.
+ * @param {KeyboardEvent} event - Keyboard event
+ * @param {string} [formId] - Form ID to submit, or redirects if not provided
+ */
+export const searchOnEnter = (event, formId) => {
+  if (event.key === "Enter") {
     if (formId) {
       triggerActionOnForm(formId, "submit");
     } else {
-      const value = e.currentTarget.value;
-      if (value !== "") {
-        document.location.href = `/jobs?ts_query=${value}`;
+      const searchValue = event.currentTarget.value;
+      if (searchValue !== "") {
+        document.location.href = `/jobs?ts_query=${searchValue}`;
       }
     }
-    e.currentTarget.blur();
+    event.currentTarget.blur();
   }
 };
 
-// Clean input field and trigger change on form.
-export const cleanInputField = (id, formId) => {
-  const input = document.getElementById(id);
+/**
+ * Clears an input field and optionally triggers form submission.
+ * @param {string} inputId - The ID of the input field
+ * @param {string} [formId] - Optional form ID to submit after clearing
+ */
+export const cleanInputField = (inputId, formId) => {
+  const input = document.getElementById(inputId);
   input.value = "";
 
   if (formId) {
@@ -61,64 +87,80 @@ export const cleanInputField = (id, formId) => {
   }
 };
 
-// Update results on DOM with the given content.
+/**
+ * Updates the results section with new content.
+ * @param {string} content - HTML content to display
+ */
 export const updateResults = (content) => {
-  const results = document.getElementById("results");
-  results.innerHTML = content;
+  const resultsContainer = document.getElementById("results");
+  resultsContainer.innerHTML = content;
 };
 
-// Reset form.
+/**
+ * Resets all form fields to their default values.
+ * Handles various input types and custom components.
+ * @param {string} formId - The ID of the form to reset
+ * @returns {Promise<void>}
+ */
 export const resetForm = async (formId) => {
   const form = document.getElementById(formId);
   if (form) {
-    // Clean selects
-    document.querySelectorAll(`select[form=${formId}]`).forEach((el) => {
-      if (el.name === "date_range") {
-        el.value = "last30-days";
+    // Reset select elements
+    document.querySelectorAll(`select[form=${formId}]`).forEach((selectElement) => {
+      if (selectElement.name === "date_range") {
+        selectElement.value = "last30-days";
       } else {
-        el.value = "";
+        selectElement.value = "";
       }
     });
 
-    // Clean radio/checkbox input fields
-    document.querySelectorAll(`input[form=${formId}][type=checkbox]`).forEach((el) => (el.checked = false));
-    document.querySelectorAll(`input[form=${formId}][type=radio]`).forEach((el) => (el.checked = false));
+    // Clear checkboxes and radio buttons
+    document
+      .querySelectorAll(`input[form=${formId}][type=checkbox]`)
+      .forEach((checkbox) => (checkbox.checked = false));
+    document
+      .querySelectorAll(`input[form=${formId}][type=radio]`)
+      .forEach((radio) => (radio.checked = false));
 
-    // Clean text input fields
-    document.querySelectorAll(`input[form=${formId}][type=text]`).forEach((el) => (el.value = ""));
-    document.querySelectorAll(`input[form=${formId}][type=hidden]`).forEach((el) => (el.value = ""));
+    // Clear text and hidden inputs
+    document
+      .querySelectorAll(`input[form=${formId}][type=text]`)
+      .forEach((textInput) => (textInput.value = ""));
+    document
+      .querySelectorAll(`input[form=${formId}][type=hidden]`)
+      .forEach((hiddenInput) => (hiddenInput.value = ""));
 
-    // Clean selected options in collapsible filters
+    // Reset custom filter components
     const searchableFilters = document.getElementsByTagName("searchable-filter");
     for (let i = 0; i < searchableFilters.length; i++) {
       await searchableFilters[i].cleanSelected();
     }
 
-    // Clean search projects input field
+    // Reset project search components
     const searchProjects = document.getElementsByTagName("search-projects");
     for (let i = 0; i < searchProjects.length; i++) {
       await searchProjects[i].cleanSelected();
     }
 
-    // Clean range inputs
+    // Reset range input components
     const rangeFilters = document.getElementsByTagName("input-range");
     for (let i = 0; i < rangeFilters.length; i++) {
       await rangeFilters[i].cleanRange();
     }
 
-    // Clean search location input field
+    // Reset location search components
     const locationInputs = document.getElementsByTagName("search-location");
     for (let i = 0; i < locationInputs.length; i++) {
       await locationInputs[i].cleanLocation();
     }
 
-    // Clean ts_query input field
-    const input = document.getElementById("searchbar");
-    if (input) {
-      input.value = "";
+    // Clear main search input
+    const searchBar = document.getElementById("searchbar");
+    if (searchBar) {
+      searchBar.value = "";
     }
 
-    // Trigger change on form
+    // Submit form with cleared values
     triggerActionOnForm(formId, "submit");
   }
 };

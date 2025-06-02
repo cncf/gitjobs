@@ -1,6 +1,11 @@
 import { prettifyNumber } from "/static/js/common/common.js";
 
-const gitjobs_theme = {
+/**
+ * ECharts theme configuration for GitJobs charts.
+ * Defines color schemes, styles, and visual properties.
+ * @type {Object}
+ */
+const gitjobsChartTheme = {
   color: ["#fd4d12", "#5470c6", "#91cc75", "#fac858", "#ee6666", "#73c0de", "#3ba272", "#fc8452", "#9a60b4"],
   backgroundColor: "rgba(0,0,0,0)",
   textStyle: {},
@@ -361,6 +366,11 @@ const gitjobs_theme = {
 
 const MESSAGE_EMPTY_STATS = "No data available yet";
 
+/**
+ * Renders a line chart showing job publication trends.
+ * @param {Array} data - Time series data with timestamps and job counts
+ * @private
+ */
 const renderLineChart = (data) => {
   const chartDom = document.getElementById("line-chart");
   if (!chartDom) return;
@@ -451,6 +461,11 @@ const renderLineChart = (data) => {
   option && myChart.setOption(option);
 };
 
+/**
+ * Returns common configuration options for bar charts.
+ * @returns {Object} Base bar chart configuration
+ * @private
+ */
 const getBarStatsOptions = () => {
   return {
     dataset: [],
@@ -514,6 +529,13 @@ const getBarStatsOptions = () => {
   };
 };
 
+/**
+ * Renders a bar chart showing daily job statistics.
+ * @param {Array} data - Daily statistics data
+ * @param {number} max - Maximum date value for x-axis
+ * @param {number} min - Minimum date value for x-axis
+ * @private
+ */
 const renderBarDailyChart = (data, max, min) => {
   const chartDom = document.getElementById("bar-daily");
   if (!chartDom) return;
@@ -561,6 +583,13 @@ const renderBarDailyChart = (data, max, min) => {
   option && myChart.setOption(option);
 };
 
+/**
+ * Renders a bar chart showing monthly job statistics.
+ * @param {Array} data - Monthly statistics data
+ * @param {number} max - Maximum date value for x-axis
+ * @param {number} min - Minimum date value for x-axis
+ * @private
+ */
 const renderBarMonthlyChart = (data, max, min) => {
   const chartDom = document.getElementById("bar-monthly");
   if (!chartDom) return;
@@ -605,6 +634,10 @@ const renderBarMonthlyChart = (data, max, min) => {
   option && myChart.setOption(option);
 };
 
+/**
+ * Initializes and renders all statistics charts.
+ * Reads data from DOM element and creates visualizations.
+ */
 export const renderStats = () => {
   const container = document.getElementById("stats");
   if (!container) return;
@@ -615,7 +648,7 @@ export const renderStats = () => {
   const stats = JSON.parse(data);
   if (!stats) return;
 
-  echarts.registerTheme("gitjobs", gitjobs_theme);
+  echarts.registerTheme("gitjobs", gitjobsChartTheme);
 
   if (!stats.jobs.published_running_total) {
     const chartDom = document.getElementById("line-chart");

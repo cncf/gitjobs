@@ -2,7 +2,23 @@ import { html, repeat } from "/static/vendor/js/lit-all.v3.2.1.min.js";
 import { isObjectEmpty } from "/static/js/common/common.js";
 import { LitWrapper } from "/static/js/common/lit-wrapper.js";
 
+/**
+ * Component for managing work experience entries in job seeker profile.
+ * Supports adding, removing, and reordering experience records.
+ * @extends LitWrapper
+ */
 export class ExperienceSection extends LitWrapper {
+  /**
+   * Component properties definition
+   * @property {Array} experience - List of work experience entries
+   * Each entry is an object with:
+   *  - id: Unique identifier
+   *  - title: Job title
+   *  - company: Employer name
+   *  - description: Job description in markdown format
+   *  - start_date: Start date of employment
+   *  - end_date: End date of employment (optional)
+   */
   static properties = {
     experience: { type: Array },
   };
@@ -14,10 +30,15 @@ export class ExperienceSection extends LitWrapper {
 
   connectedCallback() {
     super.connectedCallback();
-    this._addId();
+    this._initializeExperienceIds();
   }
 
-  _addId() {
+  /**
+   * Assigns unique IDs to experience entries.
+   * Creates initial entry if none exist.
+   * @private
+   */
+  _initializeExperienceIds() {
     if (this.experience === null) {
       this.experience = [this._getData()];
     } else {
@@ -27,6 +48,11 @@ export class ExperienceSection extends LitWrapper {
     }
   }
 
+  /**
+   * Creates a new empty experience data object.
+   * @returns {Object} Empty experience entry
+   * @private
+   */
   _getData = () => {
     let item = {
       id: this.experience ? this.experience.length : 0,
@@ -40,6 +66,11 @@ export class ExperienceSection extends LitWrapper {
     return item;
   };
 
+  /**
+   * Adds a new experience entry at specified index.
+   * @param {number} index - Position to insert new entry
+   * @private
+   */
   _addExperienceRecord(index) {
     const currentExperience = [...this.experience];
     currentExperience.splice(index, 0, this._getData());
@@ -47,16 +78,35 @@ export class ExperienceSection extends LitWrapper {
     this.experience = currentExperience;
   }
 
+  /**
+   * Removes experience entry at specified index.
+   * Ensures at least one empty entry remains.
+   * @param {number} index - Position of entry to remove
+   * @private
+   */
   _removeExperienceRecord(index) {
     const tmpExperience = this.experience.filter((_, i) => i !== index);
     // If there are no more records, add a new one
     this.experience = tmpExperience.length === 0 ? [this._getData()] : tmpExperience;
   }
 
+  /**
+   * Updates experience data at specified index.
+   * @param {Object} data - Updated experience data
+   * @param {number} index - Index of entry to update
+   * @private
+   */
   _onDataChange = (data, index) => {
     this.experience[index] = data;
   };
 
+  /**
+   * Renders an experience entry with controls.
+   * @param {Object} experience - Experience data
+   * @param {number} index - Entry index
+   * @returns {import('lit').TemplateResult} Entry template
+   * @private
+   */
   _getExperienceRecord(experience, index) {
     const hasSingleExperienceRecord = this.experience.length === 1;
 
@@ -128,7 +178,25 @@ export class ExperienceSection extends LitWrapper {
 }
 customElements.define("experience-section", ExperienceSection);
 
+/**
+ * Individual experience record component.
+ * Handles form inputs and validation for a single experience entry.
+ * @extends LitWrapper
+ */
 class ExperienceRecord extends LitWrapper {
+  /**
+   * Component properties definition
+   * @property {Object} data - Experience entry data
+   *  - id: Unique identifier
+   *  - title: Job title
+   *  - company: Employer name
+   *  - description: Job description in markdown format
+   *  - start_date: Start date of employment
+   *  - end_date: End date of employment (optional)
+   * @property {number} index - Index of the experience entry in the list
+   * @property {boolean} isObjectEmpty - Indicates if the data object is empty
+   * @property {Function} onDataChange - Callback function to notify parent component of data changes
+   */
   static properties = {
     data: { type: Object },
     index: { type: Number },
@@ -156,15 +224,25 @@ class ExperienceRecord extends LitWrapper {
     this.isObjectEmpty = isObjectEmpty(this.data);
   }
 
-  _onInputChange = (e) => {
-    const value = e.target.value;
-    const name = e.target.dataset.name;
+  /**
+   * Handles input field changes.
+   * @param {Event} event - Input event
+   * @private
+   */
+  _onInputChange = (event) => {
+    const value = event.target.value;
+    const name = event.target.dataset.name;
 
     this.data[name] = value;
     this.isObjectEmpty = isObjectEmpty(this.data);
     this.onDataChange(this.data, this.index);
   };
 
+  /**
+   * Handles markdown editor changes.
+   * @param {string} value - Updated markdown content
+   * @private
+   */
   _onTextareaChange = (value) => {
     this.data.description = value;
     this.isObjectEmpty = isObjectEmpty(this.data);

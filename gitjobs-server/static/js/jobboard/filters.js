@@ -100,7 +100,6 @@ export const updateResults = (content) => {
  * Resets all form fields to their default values.
  * Handles various input types and custom components.
  * @param {string} formId - The ID of the form to reset
- * @returns {Promise<void>}
  */
 export const resetForm = async (formId) => {
   const form = document.getElementById(formId);

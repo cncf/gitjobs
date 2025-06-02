@@ -61,8 +61,7 @@ export class SearchProjects extends LitWrapper {
   }
 
   /**
-   * Clears all selected projects.
-   * @returns {Promise<void>}
+   * Public method to clear all selected projects and foundation.
    */
   async cleanSelected() {
     this.selected = [];

@@ -75,7 +75,6 @@ export class SearchLocation extends LitWrapper {
 
   /**
    * Public method to reset location state.
-   * @returns {Promise<void>}
    */
   async cleanLocation() {
     this.locationId = "";

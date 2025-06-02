@@ -164,7 +164,6 @@ export const shouldDisplayJobModal = (onLoad = false) => {
  * Registers a view for a specific job by sending a POST request.
  * Silently handles errors without user notification.
  * @param {string} jobId - The ID of the job to register a view for
- * @returns {Promise<void>}
  */
 export const registerJobIdView = async (jobId) => {
   try {

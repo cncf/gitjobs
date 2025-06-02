@@ -164,8 +164,7 @@ export class InputRange extends LitWrapper {
   }
 
   /**
-   * Resets the range input to its initial state.
-   * @returns {Promise<void>}
+   * Public method to reset the range input to its initial state.
    */
   async cleanRange() {
     this.value = 0;

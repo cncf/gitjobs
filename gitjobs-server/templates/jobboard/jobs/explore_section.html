@@ -263,8 +263,8 @@
 
 <script type="module">
   import {
-    open,
-    close,
+    openFiltersDrawer,
+    closeFiltersDrawer,
     searchOnEnter,
     cleanInputField,
     resetForm,
@@ -280,13 +280,13 @@
   } from '/static/js/jobboard/job_section.js';
 
   const openFiltersBtn = document.getElementById('open-filters');
-  openFiltersBtn.addEventListener('click', open);
+  openFiltersBtn.addEventListener('click', openFiltersDrawer);
 
   const closeFiltersBtn = document.getElementById('close-filters');
-  closeFiltersBtn.addEventListener('click', close);
+  closeFiltersBtn.addEventListener('click', closeFiltersDrawer);
 
   const backdropFilters = document.getElementById('drawer-backdrop');
-  backdropFilters.addEventListener('click', close);
+  backdropFilters.addEventListener('click', closeFiltersDrawer);
 
   const searchInput = document.getElementById('searchbar');
   searchInput.addEventListener('keydown', () => searchOnEnter(event, 'desktop-jobs-form'));

@@ -62,8 +62,7 @@ export class SearchableFilter extends LitWrapper {
   }
 
   /**
-   * Clears all selected options.
-   * @returns {Promise<void>}
+   * Public method to clear all selected options.
    */
   async cleanSelected() {
     this.selected = [];

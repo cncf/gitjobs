@@ -41,14 +41,18 @@
 
   <script type="module">
     const addJobButton = document.getElementById('add-job-button');
-    addJobButton.addEventListener('htmx:afterRequest', () => {
-      history.pushState({}, "Jobs list", '/dashboard/employer?tab=jobs');
-    });
+    if (addJobButton) {
+      addJobButton.addEventListener('htmx:afterRequest', () => {
+        history.pushState({}, "Jobs list", '/dashboard/employer?tab=jobs');
+      });
+    }
 
     const cleanSearchJobs = document.getElementById('clean-search-jobs');
-    cleanSearchJobs.addEventListener('click', () => {
-      document.getElementById('search_jobs').value = '';
-    });
+    if (cleanSearchJobs) {
+      cleanSearchJobs.addEventListener('click', () => {
+        document.getElementById('search_jobs').value = '';
+      });
+    }
   </script>
 </div>
 
@@ -196,17 +200,19 @@
                             isSuccessfulXHRStatus
                           } from "/static/js/common/common.js";
                           const deleteJobButton = document.getElementById('delete-job-{{ job.job_id }}');
-                          deleteJobButton.addEventListener('click', (event) => {
-                            showConfirmAlert("Are you sure you wish to delete this job?", "delete-job-{{ job.job_id }}", "Yes");
-                          });
+                          if (deleteJobButton) {
+                            deleteJobButton.addEventListener('click', (event) => {
+                              showConfirmAlert("Are you sure you wish to delete this job?", "delete-job-{{ job.job_id }}", "Yes");
+                            });
 
-                          deleteJobButton.addEventListener("htmx:afterRequest", (e) => {
-                            if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
-                              showSuccessAlert("You have successfully deleted the job.");
-                            } else {
-                              showErrorAlert("An error occurred deleting this job, please try again later.");
-                            }
-                          });
+                            deleteJobButton.addEventListener("htmx:afterRequest", (e) => {
+                              if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
+                                showSuccessAlert("You have successfully deleted the job.");
+                              } else {
+                                showErrorAlert("An error occurred deleting this job, please try again later.");
+                              }
+                            });
+                          }
                         </script>
                       </li>
                       {% if job.status == JobStatus::Published -%}

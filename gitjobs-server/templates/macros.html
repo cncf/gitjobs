@@ -193,29 +193,31 @@
     const inputHidden = document.getElementById('{{ name }}');
     const placeholderImage = document.getElementById('placeholder-image');
 
-    // On image upload, show the image and enable clear button, and hide the placeholder
-    imagesForm.addEventListener('htmx:afterRequest', (e) => {
-      if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
-        showSuccessAlert('Image added successfully.');
-        const imageId = e.detail.xhr.response;
-        inputHidden.value = imageId;
-        image.setAttribute('src', `/dashboard/images/${imageId}/small`);
-        image.classList.remove('hidden');
-        placeholderImage.classList.add('hidden');
-        cleanImage.removeAttribute('disabled');
-      } else {
-        showErrorAlert('Something went wrong adding the image, please try again later.');
-      }
-    });
+    if (imagesForm && image && inputHidden && placeholderImage) {
+      // On image upload, show the image and enable clear button, and hide the placeholder
+      imagesForm.addEventListener('htmx:afterRequest', (e) => {
+        if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
+          showSuccessAlert('Image added successfully.');
+          const imageId = e.detail.xhr.response;
+          inputHidden.value = imageId;
+          image.setAttribute('src', `/dashboard/images/${imageId}/small`);
+          image.classList.remove('hidden');
+          placeholderImage.classList.add('hidden');
+          cleanImage.removeAttribute('disabled');
+        } else {
+          showErrorAlert('Something went wrong adding the image, please try again later.');
+        }
+      });
 
-    // On clean image button click, remove the image and the clear button, and show the placeholder
-    cleanImage.addEventListener('click', () => {
-      inputHidden.value = "";
-      cleanImage.disabled = true;
-      placeholderImage.classList.remove('hidden');
-      image.setAttribute('src', '');
-      image.classList.add('hidden');
-    });
+      // On clean image button click, remove the image and the clear button, and show the placeholder
+      cleanImage.addEventListener('click', () => {
+        inputHidden.value = "";
+        cleanImage.disabled = true;
+        placeholderImage.classList.remove('hidden');
+        image.setAttribute('src', '');
+        image.classList.add('hidden');
+      });
+    }
   </script>
 {% endmacro images_form -%}
 {# End form image #}
@@ -265,14 +267,14 @@
     {# djlint:off #}
       <script type="module">
         import {
-          close
+          closeNavigationDrawer
         } from '/static/js/dashboard/base.js';
 
         const cookiesBtn = document.getElementById("{{ id }}");
         if (cookiesBtn) {
           cookiesBtn.addEventListener('click', () => {
             {% if close_drawer -%}
-            close();
+            closeNavigationDrawer();
             {% endif -%}
             Osano.cm.showDrawer('osano-cm-dom-info-dialog-open');
           });

@@ -10,11 +10,13 @@
     </button>
     <script type="module">
       import {
-        open
+        openNavigationDrawer
       } from '/static/js/dashboard/base.js';
 
       const openMenuButton = document.getElementById('open-menu-button');
-      openMenuButton.addEventListener('click', open);
+      if (openMenuButton) {
+        openMenuButton.addEventListener('click', openNavigationDrawer);
+      }
     </script>
   </div>
   {# End mobile filters button -#}

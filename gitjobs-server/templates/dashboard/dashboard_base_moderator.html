@@ -78,14 +78,18 @@
 
   <script type="module">
     import {
-      close
+      closeNavigationDrawer
     } from '/static/js/dashboard/base.js';
 
     const closeMenuBtn = document.getElementById('close-menu');
-    closeMenuBtn.addEventListener('click', close);
+    if (closeMenuBtn) {
+      closeMenuBtn.addEventListener('click', closeNavigationDrawer);
+    }
 
     const backdropMenu = document.getElementById('drawer-backdrop');
-    backdropMenu.addEventListener('click', close);
+    if (backadropMenu) {
+      backdropMenu.addEventListener('click', closeNavigationDrawer);
+    }
   </script>
 
   {# Main Content -#}

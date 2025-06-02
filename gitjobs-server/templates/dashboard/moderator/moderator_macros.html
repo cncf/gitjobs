@@ -240,13 +240,18 @@
 
     // Close reject modal
     const closeRejectModal = document.getElementById('close-reject-modal');
-    closeRejectModal.addEventListener('click', () => {
-      toggleModalVisibility('reject-modal', "close");
-    });
+    if (closeRejectModal) {
+      closeRejectModal.addEventListener('click', () => {
+        toggleModalVisibility('reject-modal', "close");
+      });
+    }
+
     const rejectModalBackdrop = document.getElementById('backdrop-reject-modal');
-    rejectModalBackdrop.addEventListener('click', () => {
-      toggleModalVisibility('reject-modal', "close");
-    });
+    if (rejectModalBackdrop) {
+      rejectModalBackdrop.addEventListener('click', () => {
+        toggleModalVisibility('reject-modal', "close");
+      });
+    }
   </script>
 {% endmacro reject_modal -%}
 

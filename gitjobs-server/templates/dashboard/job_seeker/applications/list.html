@@ -89,17 +89,19 @@
                     isSuccessfulXHRStatus
                   } from "/static/js/common/common.js";
                   const cancelApplicationButton = document.getElementById('cancel-application-{{ application.application_id }}');
-                  cancelApplicationButton.addEventListener('click', (event) => {
-                    showConfirmAlert("Are you sure you wish to cancel this application?", "cancel-application-{{ application.application_id }}", "Yes");
-                  });
+                  if (cancelApplicationButton) {
+                    cancelApplicationButton.addEventListener('click', (event) => {
+                      showConfirmAlert("Are you sure you wish to cancel this application?", "cancel-application-{{ application.application_id }}", "Yes");
+                    });
 
-                  cancelApplicationButton.addEventListener("htmx:afterRequest", (e) => {
-                    if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
-                      showSuccessAlert("You have successfully canceled the application.");
-                    } else {
-                      showErrorAlert("An error occurred canceling this application, please try again later.");
-                    }
-                  });
+                    cancelApplicationButton.addEventListener("htmx:afterRequest", (e) => {
+                      if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
+                        showSuccessAlert("You have successfully canceled the application.");
+                      } else {
+                        showErrorAlert("An error occurred canceling this application, please try again later.");
+                      }
+                    });
+                  }
                 </script>
               </div>
             </td>

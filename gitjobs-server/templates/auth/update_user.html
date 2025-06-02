@@ -163,11 +163,13 @@
   const userDetailsForm = document.getElementById('user-details-form');
   const passwordForm = document.getElementById('password-form');
 
-  userDetailsForm.addEventListener('htmx:afterRequest', (e) => {
-    if (!isSuccessfulXHRStatus(e.detail.xhr.status)) {
-      showErrorAlert('Something went wrong updating the user details, please try again later.');
-    }
-  });
+  if (userDetailsForm) {
+    userDetailsForm.addEventListener('htmx:afterRequest', (e) => {
+      if (!isSuccessfulXHRStatus(e.detail.xhr.status)) {
+        showErrorAlert('Something went wrong updating the user details, please try again later.');
+      }
+    });
+  }
 
   if (passwordForm) {
     const password = document.getElementById('new_password');

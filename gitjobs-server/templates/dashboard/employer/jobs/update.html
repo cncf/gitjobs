@@ -502,42 +502,48 @@
 
     const jobsForm = document.getElementById('jobs-form');
     const jobTitleInput = document.getElementById('title');
-    jobTitleInput.addEventListener('input', () => {
-      checkJobTitle(jobTitleInput);
-    });
+    if (jobTitleInput) {
+      jobTitleInput.addEventListener('input', () => {
+        checkJobTitle(jobTitleInput);
+      });
+    }
 
-    // Before the form is submitted, check the salary option selected
-    jobsForm.addEventListener('htmx:trigger', () => {
-      checkSalaryBeforeSubmit();
-    });
+    if (jobsForm) {
+      // Before the form is submitted, check the salary option selected
+      jobsForm.addEventListener('htmx:trigger', () => {
+        checkSalaryBeforeSubmit();
+      });
 
-    jobsForm.addEventListener('htmx:afterRequest', (e) => {
-      // Check if the form is the jobs form and not the input ts_query requesting locations
-      if (e.detail.elt.id === 'jobs-form') {
-        // Update hx-spinner
-        jobsForm.setAttribute('hx-indicator', '#dashboard-spinner, #save-spinner');
+      jobsForm.addEventListener('htmx:afterRequest', (e) => {
+        // Check if the form is the jobs form and not the input ts_query requesting locations
+        if (e.detail.elt.id === 'jobs-form') {
+          // Update hx-spinner
+          jobsForm.setAttribute('hx-indicator', '#dashboard-spinner, #save-spinner');
 
-        if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
-          showSuccessAlert('Job updated successfully.');
-        } else {
-          showErrorAlert('Something went wrong updating the job, please try again later.');
+          if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
+            showSuccessAlert('Job updated successfully.');
+          } else {
+            showErrorAlert('Something went wrong updating the job, please try again later.');
+          }
         }
-      }
-    });
+      });
+    }
 
     // On preview button click, show the preview modal
     const previewButton = document.getElementById('preview-button');
-    previewButton.addEventListener('htmx:afterRequest', (e) => {
-      if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
-        toggleModalVisibility('preview-modal', "open");
-      } else {
-        // When the preview is not available, show an error message
-        if (e.detail.xhr.status == 422) {
-          showErrorAlert('You must fill in all required fields to be able to preview the job.');
+    if (previewButton) {
+      previewButton.addEventListener('htmx:afterRequest', (e) => {
+        if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
+          toggleModalVisibility('preview-modal', "open");
         } else {
-          showErrorAlert('Something went wrong previewing the data, please try again later.');
+          // When the preview is not available, show an error message
+          if (e.detail.xhr.status == 422) {
+            showErrorAlert('You must fill in all required fields to be able to preview the job.');
+          } else {
+            showErrorAlert('Something went wrong previewing the data, please try again later.');
+          }
         }
-      }
-    });
+      });
+    }
   </script>
   {# End Jobs form -#}

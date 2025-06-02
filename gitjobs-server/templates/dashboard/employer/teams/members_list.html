@@ -67,15 +67,17 @@
                   isSuccessfulXHRStatus
                 } from "/static/js/common/common.js";
                 const removeMemberButton = document.getElementById('remove-member-{{ member.user_id }}');
-                removeMemberButton.addEventListener('click', (event) => {
-                  showConfirmAlert("Are you sure you would like to delete this team member?", "remove-member-{{ member.user_id }}", "Yes");
-                });
+                if (removeMemberButton) {
+                  removeMemberButton.addEventListener('click', (event) => {
+                    showConfirmAlert("Are you sure you would like to delete this team member?", "remove-member-{{ member.user_id }}", "Yes");
+                  });
 
-                removeMemberButton.addEventListener("htmx:afterRequest", (e) => {
-                  if (!isSuccessfulXHRStatus(e.detail.xhr.status)) {
-                    showErrorAlert("Something went wrong deleting this team member. Please try again later.");
-                  }
-                });
+                  removeMemberButton.addEventListener("htmx:afterRequest", (e) => {
+                    if (!isSuccessfulXHRStatus(e.detail.xhr.status)) {
+                      showErrorAlert("Something went wrong deleting this team member. Please try again later.");
+                    }
+                  });
+                }
               </script>
             </div>
           </td>
@@ -165,13 +167,17 @@
 
   // Close the add member modal on backdrop click
   const backdropAddMemberModal = document.querySelector('#backdrop-add-member-modal');
-  backdropAddMemberModal.addEventListener('click', () => {
-    toggleModalVisibility('add-member-modal', "close");
-  });
+  if (backdropAddMemberModal) {
+    backdropAddMemberModal.addEventListener('click', () => {
+      toggleModalVisibility('add-member-modal', "close");
+    });
+  }
 
   // Close the add member modal on close button click
   const closeAddMemberModal = document.querySelector('#close-add-member-modal');
-  closeAddMemberModal.addEventListener('click', () => {
-    toggleModalVisibility('add-member-modal', "close");
-  });
+  if (closeAddMemberModal) {
+    closeAddMemberModal.addEventListener('click', () => {
+      toggleModalVisibility('add-member-modal', "close");
+    });
+  }
 </script>

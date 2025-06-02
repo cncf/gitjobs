@@ -20,6 +20,7 @@ export const initializeApplyButton = () => {
   const userButton = document.getElementById("user-dropdown-button");
   const isUserLoggedIn = userButton.dataset.loggedIn;
   const hasProfile = userButton.dataset.hasProfile;
+
   applyButton.removeAttribute("disabled");
 
   if (isUserLoggedIn === "false") {
@@ -141,10 +142,12 @@ export const shareJob = () => {
       copyLink.addEventListener("click", () => {
         navigator.clipboard.writeText(shareUrl);
         const tooltip = document.querySelector("#copy-link-tooltip");
-        tooltip.classList.add("opacity-100", "z-10");
-        setTimeout(() => {
-          tooltip.classList.remove("opacity-100", "z-10");
-        }, 3000);
+        if (tooltip) {
+          tooltip.classList.add("opacity-100", "z-10");
+          setTimeout(() => {
+            tooltip.classList.remove("opacity-100", "z-10");
+          }, 3000);
+        }
       });
     }
   }

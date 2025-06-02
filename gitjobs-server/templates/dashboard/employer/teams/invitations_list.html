@@ -66,15 +66,17 @@
                       isSuccessfulXHRStatus
                     } from "/static/js/common/common.js";
                     const rejectEmployerButton = document.getElementById('reject-employer-{{ invitation.employer_id }}');
-                    rejectEmployerButton.addEventListener('click', (event) => {
-                      showConfirmAlert("Are you sure you would like to reject this invitation?", "reject-employer-{{ invitation.employer_id }}", "Yes");
-                    });
+                    if (rejectEmployerButton) {
+                      rejectEmployerButton.addEventListener('click', (event) => {
+                        showConfirmAlert("Are you sure you would like to reject this invitation?", "reject-employer-{{ invitation.employer_id }}", "Yes");
+                      });
 
-                    rejectEmployerButton.addEventListener("htmx:afterRequest", (e) => {
-                      if (!isSuccessfulXHRStatus(e.detail.xhr.status)) {
-                        showErrorAlert("Something went wrong rejecting this invitation. Please try again later.");
-                      }
-                    });
+                      rejectEmployerButton.addEventListener("htmx:afterRequest", (e) => {
+                        if (!isSuccessfulXHRStatus(e.detail.xhr.status)) {
+                          showErrorAlert("Something went wrong rejecting this invitation. Please try again later.");
+                        }
+                      });
+                    }
                   </script>
                 </div>
               </div>

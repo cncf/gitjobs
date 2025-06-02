@@ -156,11 +156,15 @@
 
   // Close the preview modal on backdrop click
   const backdropPreviewModal = document.querySelector('#backdrop-preview-modal');
-  backdropPreviewModal.addEventListener('click', onCloseModal);
+  if (backdropPreviewModal) {
+    backdropPreviewModal.addEventListener('click', onCloseModal);
+  }
 
   // Close the preview modal on close button click
   const closePreviewModal = document.querySelector('#close-preview-modal');
-  closePreviewModal.addEventListener('click', onCloseModal);
+  if (closePreviewModal) {
+    closePreviewModal.addEventListener('click', onCloseModal);
+  }
 
   const tabs = document.querySelectorAll('.tab');
   tabs.forEach((tab) => {
@@ -187,19 +191,26 @@
 
   // Open embed code modal
   const embedCodeButton = document.getElementById('embed-code-button');
-  embedCodeButton.addEventListener('click', () => {
-    toggleModalVisibility('embed-code-modal', "open");
-  });
+  if (embedCodeButton) {
+    embedCodeButton.addEventListener('click', () => {
+      toggleModalVisibility('embed-code-modal', "open");
+    });
+  }
 
   // Close embed code modal
   const closeEmbedCodeModal = document.getElementById('close-embed-code-modal');
-  closeEmbedCodeModal.addEventListener('click', () => {
-    toggleModalVisibility('embed-code-modal', "close");
-  });
+  if (closeEmbedCodeModal) {
+    closeEmbedCodeModal.addEventListener('click', () => {
+      toggleModalVisibility('embed-code-modal', "close");
+    });
+  }
+
   const embedCodeModalBackdrop = document.getElementById('backdrop-embed-code-modal');
-  embedCodeModalBackdrop.addEventListener('click', () => {
-    toggleModalVisibility('embed-code-modal', "close");
-  });
+  if (embedCodeModalBackdrop) {
+    embedCodeModalBackdrop.addEventListener('click', () => {
+      toggleModalVisibility('embed-code-modal', "close");
+    });
+  }
 </script>
 
 {% macro copy_button(name, content = "") -%}
@@ -223,14 +234,18 @@
   {# djlint:off #}
   <script type="module">
     const copyButton = document.getElementById("copy-btn-{{ name }}");
-    copyButton.addEventListener("click", () => {
-      navigator.clipboard.writeText('{{ content|safe }}');
-      const tooltip = document.querySelector("#copy-btn-{{ name }}-tooltip");
-      tooltip.classList.add("opacity-100", "z-10");
-      setTimeout(() => {
-        tooltip.classList.remove("opacity-100", "z-10");
-      }, 3000);
-    });
+    if (copyButton) {
+      copyButton.addEventListener("click", () => {
+        navigator.clipboard.writeText('{{ content|safe }}');
+        const tooltip = document.querySelector("#copy-btn-{{ name }}-tooltip");
+        if (tooltip) {
+          tooltip.classList.add("opacity-100", "z-10");
+          setTimeout(() => {
+            tooltip.classList.remove("opacity-100", "z-10");
+          }, 3000);
+        }
+      });
+    }
 </script>
   {# djlint:on #}
 {% endmacro copy_button -%}

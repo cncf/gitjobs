@@ -20,6 +20,19 @@ export const checkSalaryBeforeSubmit = () => {
   const salaryField = document.querySelector('input[name="salary"]');
   const salaryMinField = document.querySelector('input[name="salary_min"]');
   const salaryMaxField = document.querySelector('input[name="salary_max"]');
+  const selectedSalaryType = document.querySelector('input[name="salary_kind"]:checked');
+
+  // Ensure all fields are present before proceeding
+  if (
+    !salaryPeriodField ||
+    !salaryCurrencyField ||
+    !salaryField ||
+    !salaryMinField ||
+    !salaryMaxField ||
+    !selectedSalaryType
+  ) {
+    return;
+  }
 
   // Clear all required attributes initially
   salaryPeriodField.removeAttribute("required");
@@ -27,8 +40,6 @@ export const checkSalaryBeforeSubmit = () => {
   salaryField.removeAttribute("required");
   salaryMinField.removeAttribute("required");
   salaryMaxField.removeAttribute("required");
-
-  const selectedSalaryType = document.querySelector('input[name="salary_kind"]:checked');
 
   if (selectedSalaryType.id === "range") {
     // Range salary: clear exact value, set requirements for range fields

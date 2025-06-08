@@ -18,7 +18,7 @@ use rust_embed::Embed;
 use serde_qs::axum::{QsQueryConfig, QsQueryRejection};
 use tower::ServiceBuilder;
 use tower_http::{
-    set_header::SetResponseHeaderLayer, trace::TraceLayer, validate_request::ValidateRequestHeaderLayer,
+    limit::RequestBodyLimitLayer, set_header::SetResponseHeaderLayer, trace::TraceLayer, validate_request::ValidateRequestHeaderLayer,
 };
 use tracing::instrument;
 
@@ -305,11 +305,13 @@ fn setup_dashboard_images_router(state: &State) -> Router<State> {
     let check_user_has_image_access =
         middleware::from_fn_with_state(state.clone(), auth::user_has_image_access);
 
-    // Setup router
-    Router::new().route("/", post(img::upload)).route(
-        "/{image_id}/{version}",
-        get(img::get).layer(check_user_has_image_access),
-    )
+    // Setup router with increased body limit for image uploads (3MB)
+    Router::new()
+        .route("/", post(img::upload).layer(RequestBodyLimitLayer::new(3 * 1024 * 1024)))
+        .route(
+            "/{image_id}/{version}",
+            get(img::get).layer(check_user_has_image_access),
+        )
 }
 
 /// Sets up the job board images router for public image access.

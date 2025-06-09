@@ -150,7 +150,7 @@
 
       <div class="flex flex-col justify-between self-stretch">
         <p class="form-legend">
-          Images must be at least 400x400, preferably in square format. Formats supported: SVG, PNG, JPEG, GIF, WEBP and TIFF.
+          Images must be at least 400x400, preferably in square format. Maximum file size: 2MB. Formats supported: SVG, PNG, JPEG, GIF, WEBP and TIFF.
         </p>
 
         <div class="flex items-center gap-x-3">
@@ -205,7 +205,7 @@
           placeholderImage.classList.add('hidden');
           cleanImage.removeAttribute('disabled');
         } else {
-          showErrorAlert('Something went wrong adding the image, please try again later.');
+          showErrorAlert('Something went wrong adding the image, please try again later.<br /><br /><div class="text-sm text-stone-500">Images must be at least 400x400, preferably in square format. Maximum file size: 2MB. Formats supported: SVG, PNG, JPEG, GIF, WEBP and TIFF.</div>', true);
         }
       });
 

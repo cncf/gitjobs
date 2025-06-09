@@ -40,15 +40,21 @@ export const showSuccessAlert = (message) => {
  * Displays an error alert with the given message.
  * Auto-dismisses after 30 seconds to ensure user sees errors.
  * @param {string} message - The error message to display
+ * @param {boolean} withHtml - Whether to display the message as HTML content
  */
-export const showErrorAlert = (message) => {
-  Swal.fire({
+export const showErrorAlert = (message, withHtml = false) => {
+  const alertOptions = {
     text: message,
     icon: "error",
     showConfirmButton: true,
     timer: 30000,
     ...getCommonAlertOptions(),
-  });
+  };
+  if (withHtml) {
+    alertOptions.html = message; // Use HTML content if specified
+  }
+
+  Swal.fire(alertOptions);
 };
 
 /**

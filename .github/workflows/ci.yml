@@ -50,7 +50,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Run prettier
-        uses: creyD/prettier_action@v4.3
+        uses: creyD/prettier_action@v4.6
         with:
           dry: true
           prettier_options: --check gitjobs-server/static/js/**/*.js --config gitjobs-server/static/js/.prettierrc.yaml

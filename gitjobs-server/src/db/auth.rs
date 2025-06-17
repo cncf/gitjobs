@@ -289,6 +289,7 @@ impl DBAuth for PgDB {
     #[instrument(skip(self), err)]
     async fn is_image_public(&self, image_id: &Uuid) -> Result<bool> {
         #[cached(
+            time = 86400,
             key = "Uuid",
             convert = r#"{ image_id.clone() }"#,
             sync_writes = "by_key",
@@ -305,7 +306,8 @@ impl DBAuth for PgDB {
                         from employer e
                         join job j using (employer_id)
                         where e.logo_id = $1::uuid
-                        and j.status = 'published'
+                        and j.first_published_at is not null
+                        limit 1
                     ) as is_public;
                     ",
                     &[&image_id],

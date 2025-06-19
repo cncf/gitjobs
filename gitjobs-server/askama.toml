@@ -1,4 +1,4 @@
 [general]
 dirs = [
-    "templates"
+    "dist/templates"
 ]

@@ -38,7 +38,7 @@ use crate::{
 
 /// Embeds static files from the "static" folder into the binary.
 #[derive(Embed)]
-#[folder = "static"]
+#[folder = "dist/static"]
 struct StaticFile;
 
 /// Holds shared state for the router, including config and service handles.
@@ -332,14 +332,14 @@ async fn health_check() -> impl IntoResponse {
 /// Serves static files embedded in the binary, with cache headers.
 async fn static_handler(uri: Uri) -> impl IntoResponse {
     // Extract file path from URI
-    let mut path = uri.path().trim_start_matches('/').to_string();
-    if path.starts_with("static/") {
-        path = path.replace("static/", "");
-    }
+    let path = uri.path().trim_start_matches("/static/");
 
     // Set cache duration based on resource type
     #[cfg(not(debug_assertions))]
-    let cache_max_age = if path.starts_with("images/") {
+    let cache_max_age = if path.starts_with("js/") || path.starts_with("css/") {
+        // These assets are hashed, so we can cache them for a long time
+        60 * 60 * 24 * 365 // 1 year
+    } else if path.starts_with("images/") {
         60 * 60 * 24 * 7 // 1 week
     } else if path.starts_with("vendor/") {
         60 * 60 * 24 * 30 // 1 month
@@ -351,7 +351,7 @@ async fn static_handler(uri: Uri) -> impl IntoResponse {
     let cache_max_age = 0;
 
     // Get file content and return it (if available)
-    match StaticFile::get(path.as_str()) {
+    match StaticFile::get(path) {
         Some(file) => {
             let mime = mime_guess::from_path(path).first_or_octet_stream();
             let cache = format!("max-age={cache_max_age}");

@@ -47,7 +47,7 @@
             <a href="{{ base_url }}/?job_id={{ job.job_id }}"
                target="_blank"
                rel="noopener noreferrer"
-               class="relative mx-4 md:mx-7 text-start bg-white enabled:cursor-pointer border rounded-lg enabled:hover:outline enabled:hover:outline-1 p-5 md:p-7 {%- if upstream_commitment > 0 %} border-lime-500 bg-lime-50/20 enabled:hover:outline-lime-500{%- else if open_source > 0 %} border-lime-300 bg-lime-50/20 enabled:hover:outline-lime-300{%- else %} border-stone-200 enabled:hover:outline-stone-200{%- endif -%}">{% call macros::job_card(job = job) -%}</a>
+               class="relative mx-4 md:mx-7 text-start bg-white cursor-pointer border rounded-lg hover:outline hover:outline-1 p-5 md:p-7 {%- if upstream_commitment > 0 %} border-lime-500 bg-lime-50/20 hover:outline-lime-500{%- else if open_source > 0 %} border-lime-300 bg-lime-50/20 hover:outline-lime-300{%- else %} border-stone-200 hover:outline-stone-200{%- endif -%}">{% call macros::job_card(job = job) -%}</a>
           {% endfor -%}
         {% endif -%}
       </div>

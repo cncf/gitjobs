@@ -216,7 +216,7 @@ export class SearchLocation extends LitWrapper {
    * @private
    */
   async _selectLocation(location) {
-    this.locationId = location.locationId;
+    this.locationId = location.location_id;
     this.city = location.city;
     this.state = location.state;
     this.country = location.country;
@@ -339,7 +339,7 @@ export class SearchLocation extends LitWrapper {
           ? html`<input
                 type="hidden"
                 form=${this.form || nothing}
-                name="location[locationId]"
+                name="location[location_id]"
                 .value=${this.locationId}
                 ?required=${this.required}
               />

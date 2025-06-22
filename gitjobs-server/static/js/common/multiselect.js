@@ -1,4 +1,4 @@
-import { html } from "/static/vendor/js/lit-all.v3.2.1.min.js";
+import { html, createRef, ref } from "/static/vendor/js/lit-all.v3.2.1.min.js";
 import { unnormalize } from "/static/js/common/common.js";
 import { LitWrapper } from "/static/js/common/lit-wrapper.js";
 import { getBenefits, getSkills } from "/static/js/common/data.js";
@@ -19,6 +19,7 @@ export class MultiSelect extends LitWrapper {
    * @property {string[]} visibleOptions - Filtered options based on search
    * @property {boolean} visibleDropdown - Dropdown visibility state
    * @property {string} legend - Helper text below input
+   * @property {number|null} activeIndex - Index of currently highlighted option for keyboard navigation
    */
   static properties = {
     name: { type: String },
@@ -29,7 +30,11 @@ export class MultiSelect extends LitWrapper {
     visibleOptions: { type: Array },
     visibleDropdown: { type: Boolean },
     legend: { type: String },
+    activeIndex: { type: Number | null },
   };
+
+  /** @type {import('lit').Ref<HTMLInputElement>} Reference to input element */
+  inputRef = createRef();
 
   constructor() {
     super();
@@ -41,6 +46,7 @@ export class MultiSelect extends LitWrapper {
     this.visibleOptions = [];
     this.visibleDropdown = false;
     this.legend = undefined;
+    this.activeIndex = null;
   }
 
   connectedCallback() {
@@ -66,6 +72,7 @@ export class MultiSelect extends LitWrapper {
     } else {
       this.visibleOptions = this.options;
     }
+    this.activeIndex = null;
   }
 
   /**
@@ -95,6 +102,7 @@ export class MultiSelect extends LitWrapper {
   _handleClickOutside = (event) => {
     if (!this.contains(event.target)) {
       this.visibleDropdown = false;
+      this.activeIndex = null;
     }
   };
 
@@ -118,6 +126,58 @@ export class MultiSelect extends LitWrapper {
   }
 
   /**
+   * Highlights suggestion item for keyboard navigation.
+   * @param {'up'|'down'} direction - Navigation direction
+   * @private
+   */
+  _highlightItem(direction) {
+    if (this.visibleOptions && this.visibleOptions.length > 0) {
+      if (this.activeIndex === null) {
+        this.activeIndex = direction === "down" ? 0 : this.visibleOptions.length - 1;
+      } else {
+        let newIndex = direction === "down" ? this.activeIndex + 1 : this.activeIndex - 1;
+        if (newIndex >= this.visibleOptions.length) {
+          newIndex = 0;
+        }
+        if (newIndex < 0) {
+          newIndex = this.visibleOptions.length - 1;
+        }
+        this.activeIndex = newIndex;
+      }
+    }
+  }
+
+  /**
+   * Handles keyboard navigation and selection.
+   * @param {KeyboardEvent} event - Keyboard event
+   * @private
+   */
+  _handleKeyDown(event) {
+    switch (event.key) {
+      // Highlight the next item in the list
+      case "ArrowDown":
+        this._highlightItem("down");
+        break;
+      // Highlight the previous item in the list
+      case "ArrowUp":
+        this._highlightItem("up");
+        break;
+      // Select the highlighted item
+      case "Enter":
+        event.preventDefault();
+        if (this.activeIndex !== null && this.visibleOptions) {
+          const activeItem = this.visibleOptions[this.activeIndex];
+          if (activeItem) {
+            this._onClickOption(activeItem);
+          }
+        }
+        break;
+      default:
+        break;
+    }
+  }
+
+  /**
    * Adds an option to selected list.
    * @param {string} option - Option to add, or uses entered value if empty
    * @private
@@ -126,7 +186,12 @@ export class MultiSelect extends LitWrapper {
     this.selected.push(option || this.enteredValue);
     this.enteredValue = "";
     this.visibleDropdown = false;
+    this.activeIndex = null;
     this._filterOptions();
+    const input = this.inputRef.value;
+    if (input) {
+      input.blur(); // Remove focus from input after selection
+    }
   }
 
   render() {
@@ -157,7 +222,9 @@ export class MultiSelect extends LitWrapper {
                 </span> `,
             )}
             <input
+              ${ref(this.inputRef)}
               type="text"
+              @keydown="${this._handleKeyDown}"
               @input=${this._onInputChange}
               @focus=${() => (this.visibleDropdown = true)}
               .value="${this.enteredValue}"
@@ -179,14 +246,20 @@ export class MultiSelect extends LitWrapper {
           }`}
         >
           <ul class="text-sm text-stone-700 overflow-x-auto max-h-[150px]">
-            ${this.visibleOptions.map((option) => {
+            ${this.visibleOptions.map((option, index) => {
               const isSelected = this.selected.includes(option);
-              return html`<li>
+              return html`<li
+                class="group ${this.activeIndex === index ? "active" : ""}"
+                data-index="${index}"
+              >
                 <button
                   @click=${() => this._onClickOption(option)}
+                  @mouseover=${() => (this.activeIndex = index)}
                   type="button"
                   class=${`${
-                    isSelected ? "bg-stone-100 opacity-50" : "cursor-pointer hover:bg-stone-100"
+                    isSelected
+                      ? "bg-stone-100 opacity-50"
+                      : "cursor-pointer hover:bg-stone-100 group-[.active]:bg-stone-100"
                   } capitalize block w-full text-left px-4 py-2`}
                   ?disabled="${isSelected}"
                 >

@@ -776,17 +776,7 @@ select.aligned-right option {
 }
 
 .osano-cm-widget {
-  height: 30px !important;
-  width: 30px !important;
-  right: 30px !important;
-  bottom: 30px !important;
-  position: absolute !important;
   display: none;
-}
-
-/* Osano widget is only visible on pages with footer */
-body:has(footer) .osano-cm-widget {
-  display: block;
 }
 
 .osano-cm-widget svg {

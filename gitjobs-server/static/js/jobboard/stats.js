@@ -567,7 +567,7 @@ const renderBarDailyChart = (data, max, min) => {
       ...getBarStatsOptions().tooltip,
       formatter: (params) => {
         const chartdate = echarts.time.format(params.data[0], "{dd} {MMM}'{yy}");
-        return `${chartdate}<br />Jobs: ${prettifyNumber(params.data[1])}`;
+        return `${chartdate}<br />Views: ${prettifyNumber(params.data[1])}`;
       },
     },
     xAxis: {

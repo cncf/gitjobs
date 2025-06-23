@@ -54,6 +54,14 @@ export const checkSalaryBeforeSubmit = () => {
         parseInt(salaryMaxField.value) < parseInt(salaryMinField.value)
       ) {
         salaryMaxField.setCustomValidity("Maximum salary cannot be less than minimum salary.");
+
+        // Clear error when user interacts with fields
+        salaryMaxField.addEventListener("input", () => {
+          salaryMaxField.setCustomValidity(""); // Clear error on input
+        });
+        salaryMinField.addEventListener("input", () => {
+          salaryMaxField.setCustomValidity(""); // Clear error on input
+        });
       }
 
       salaryMinField.setAttribute("required", "required");
@@ -72,6 +80,9 @@ export const checkSalaryBeforeSubmit = () => {
       salaryCurrencyField.setAttribute("required", "required");
     }
   }
+
+  const jobsForm = document.getElementById("jobs-form");
+  jobsForm.reportValidity(); // Trigger validation on the form
 };
 
 /**

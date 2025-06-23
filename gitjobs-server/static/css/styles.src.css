@@ -282,6 +282,15 @@ select.aligned-right option {
 /* End select styles */
 
 
+/* Input styles */
+
+input[type="range"]:focus-visible {
+  outline: 0;
+}
+
+/* End input styles */
+
+
 /* Icons */
 
 .svg-icon {

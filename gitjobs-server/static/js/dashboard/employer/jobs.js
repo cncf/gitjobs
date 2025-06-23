@@ -40,12 +40,22 @@ export const checkSalaryBeforeSubmit = () => {
   salaryField.removeAttribute("required");
   salaryMinField.removeAttribute("required");
   salaryMaxField.removeAttribute("required");
+  salaryMaxField.setCustomValidity(""); // Clear any previous error
 
   if (selectedSalaryType.id === "range") {
     // Range salary: clear exact value, set requirements for range fields
     salaryField.value = "";
 
     if (salaryMinField.value !== "" || salaryMaxField.value !== "") {
+      // If min and max are set, validate that max is not less than min
+      if (
+        salaryMaxField.value &&
+        salaryMinField.value &&
+        parseInt(salaryMaxField.value) < parseInt(salaryMinField.value)
+      ) {
+        salaryMaxField.setCustomValidity("Maximum salary cannot be less than minimum salary.");
+      }
+
       salaryMinField.setAttribute("required", "required");
       salaryMaxField.setAttribute("required", "required");
       salaryPeriodField.setAttribute("required", "required");

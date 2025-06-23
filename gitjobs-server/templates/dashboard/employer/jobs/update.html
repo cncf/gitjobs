@@ -489,6 +489,7 @@
     import {
       triggerActionOnForm,
       checkSalaryBeforeSubmit,
+      checkOpenSourceValues,
       checkJobTitle
     } from '/static/js/dashboard/employer/jobs.js';
     import {
@@ -506,6 +507,18 @@
       jobTitleInput.addEventListener('input', () => {
         checkJobTitle(jobTitleInput);
       });
+    }
+
+    // Check open source values on input change
+    const openSourceInput = document.querySelector('input[name="open_source"]');
+    if (openSourceInput) {
+      openSourceInput.addEventListener('input', checkOpenSourceValues);
+    }
+
+    // Check upstream commitment values on input change
+    const upstreamCommitmentInput = document.querySelector('input[name="upstream_commitment"]');
+    if (upstreamCommitmentInput) {
+      upstreamCommitmentInput.addEventListener('input', checkOpenSourceValues);
     }
 
     if (jobsForm) {

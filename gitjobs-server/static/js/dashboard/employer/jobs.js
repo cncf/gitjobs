@@ -86,6 +86,30 @@ export const checkSalaryBeforeSubmit = () => {
 };
 
 /**
+ * Validates open source and upstream commitment values.
+ * Ensures that upstream commitment is not greater than open source value.
+ */
+export const checkOpenSourceValues = () => {
+  const openSource = document.querySelector('input[name="open_source"]');
+  const upstreamCommitment = document.querySelector('input[name="upstream_commitment"]');
+
+  // Ensure both fields are present before proceeding
+  if (!openSource || !upstreamCommitment) {
+    return;
+  }
+
+  // Clear any previous custom validity messages
+  upstreamCommitment.setCustomValidity("");
+
+  if (openSource.value && upstreamCommitment.value) {
+    // If both fields are filled, validate that upstream commitment is not greater than open source
+    if (parseInt(upstreamCommitment.value) > parseInt(openSource.value)) {
+      upstreamCommitment.setCustomValidity("Upstream commitment cannot be greater than open source value.");
+    }
+  }
+};
+
+/**
  * Validates job title to prevent "remote" in title.
  * @param {HTMLInputElement} input - The job title input element
  */

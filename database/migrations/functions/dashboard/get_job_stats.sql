@@ -9,10 +9,10 @@ returns json as $$
             and day >= current_date - '1 month'::interval
         ),
         'views_daily', (
-            select json_agg(json_build_array(
+            select coalesce(json_agg(json_build_array(
                 floor(extract(epoch from day) * 1000),
                 total
-            ))
+            )), '[]'::json)
             from (
                 select day, total
                 from job_views

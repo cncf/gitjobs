@@ -141,8 +141,37 @@
             {# End archived date -#}
 
             {# Actions -#}
-            <td class="px-3 xl:px-5 py-4 w-24">
+            <td class="px-3 xl:px-5 py-4 w-40">
               <div class="flex items-center gap-x-2 xl:gap-x-3">
+                {# Views job button -#}
+                <div>
+                  <button id="btn-stats-{{ job.job_id }}" class="btn-tertiary p-2 relative">
+                    <div class="svg-icon size-4 icon-stats"></div>
+                    <div class="hidden" id="spinner-stats-{{ job.job_id }}">
+                      {# Spinner for loading stats -#}
+                      {% call macros::btn_spinner(id = "spinner-{{ job.job_id }}", size = "size-6.5", htmx = false) -%}
+                    </div>
+                  </button>
+                  <script type="module">
+                    import {
+                      fetchStats
+                    } from '/static/js/dashboard/jobs/list.js';
+
+                    const btnStats = document.getElementById('btn-stats-{{ job.job_id }}');
+                    if (btnStats) {
+                      btnStats.addEventListener('click', () => {
+                        const spinnerStats = document.getElementById(`spinner-stats-{{ job.job_id }}`);
+                        if (spinnerStats) {
+                          spinnerStats.classList.remove('hidden');
+                        }
+                        fetchStats("{{job.job_id}}");
+                      });
+                    }
+                  </script>
+                </div>
+                {# End views job button -#}
+
+                {# Update job button -#}
                 <div>
                   <button hx-get="/dashboard/employer/jobs/{{ job.job_id }}/update"
                           hx-target="#dashboard-content"
@@ -152,6 +181,7 @@
                     <div class="svg-icon size-4 icon-pencil"></div>
                   </button>
                 </div>
+                {# End update job button -#}
 
                 <div class="group relative">
                   <button data-job-id="{{ job.job_id }}"
@@ -164,6 +194,7 @@
                        class="dropdown absolute hidden z-10 end-0 top-8 w-[200px] bg-white divide-y divide-stone-100 rounded-lg shadow border border-stone-200">
                     <ul class="py-2 text-sm text-stone-700"
                         aria-labelledby="dropdownDefaultButton">
+                      {# Publish button -#}
                       {% if job.status != JobStatus::Published && job.status != JobStatus::PendingApproval -%}
                         <li>
                           <button hx-put="/dashboard/employer/jobs/{{ job.job_id }}/publish"
@@ -177,6 +208,8 @@
                           </button>
                         </li>
                       {% endif -%}
+                      {# End publish button -#}
+                      {# Delete button -#}
                       <li>
                         <button id="delete-job-{{ job.job_id }}"
                                 hx-delete="/dashboard/employer/jobs/{{ job.job_id }}/delete"
@@ -215,6 +248,7 @@
                           }
                         </script>
                       </li>
+                      {# Archive button -#}
                       {% if job.status == JobStatus::Published -%}
                         <li>
                           <button hx-put="/dashboard/employer/jobs/{{ job.job_id }}/archive"
@@ -228,6 +262,7 @@
                           </button>
                         </li>
                       {% endif -%}
+                      {# End archive button -#}
                     </ul>
                   </div>
                   {# End dropdown actions -#}
@@ -268,6 +303,80 @@
   </table>
 </div>
 {# End Jobs Table -#}
+
+{# Stats modal -#}
+<div id="stats-modal"
+     tabindex="-1"
+     aria-hidden="true"
+     class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-full max-h-full flex">
+  <div id="backdrop-stats-modal"
+       class="modal-overlay absolute w-full h-full bg-stone-950 opacity-[.35]"></div>
+  <div class="relative p-4 w-full max-w-4xl max-h-full">
+    <div class="relative bg-white rounded-lg shadow">
+      {# Modal header -#}
+      <div class="flex items-center justify-between p-4 md:p-5 border-b border-stone-200 rounded-t">
+        {# Title -#}
+        <h3 class="text-xl font-semibold text-stone-900">Stats</h3>
+        {# End title -#}
+
+        {# Close button -#}
+        <button id="close-stats-modal"
+                type="button"
+                class="group bg-transparent hover:bg-stone-200 rounded-full text-sm size-8 ms-auto inline-flex justify-center items-center cursor-pointer">
+          <div class="svg-icon size-5 bg-stone-400 group-hover:bg-stone-700 icon-close"></div>
+          <span class="sr-only">Close modal</span>
+        </button>
+        {# End close button -#}
+      </div>
+      {# End modal header -#}
+
+      {# Modal content -#}
+      <div class="p-4 md:p-8">
+        <div class="flex flex-row items-baseline mb-4">
+          <div class="fw-semibold text-md text-stone-500 uppercase">Last month total views:</div>
+          <div id="total-views" class="fw-bold text-stone-900 ms-1 text-lg"></div>
+        </div>
+
+        <div class="text-lg fw-semibold mb-4">Views over the last 30 days</div>
+
+        <div class="flex items-center justify-center h-[300px] border border-stone-200 text-stone-500"
+             id="job-stats"></div>
+      </div>
+      {# End modal content -#}
+    </div>
+  </div>
+</div>
+
+{# End stats modal -#}
+<script type="module">
+  import {
+    closeStatsModal,
+  } from '/static/js/dashboard/jobs/list.js';
+
+  const closeStatsModalBtn = document.getElementById('close-stats-modal');
+  const backdropStatsModal = document.getElementById('backdrop-stats-modal');
+
+  if (closeStatsModalBtn) {
+    closeStatsModalBtn.addEventListener('click', () => {
+      closeStatsModal();
+    });
+  }
+
+  if (backdropStatsModal) {
+    backdropStatsModal.addEventListener('click', () => {
+      closeStatsModal();
+    });
+  }
+</script>
+
+<script type="module">
+  import {
+    registerEchartsTheme
+  } from '/static/js/dashboard/jobs/list.js';
+
+  // Register the GitJobs theme for ECharts
+  registerEchartsTheme();
+</script>
 
 {% macro location_content(job) -%}
   {% if let Some(city) = job.city -%}

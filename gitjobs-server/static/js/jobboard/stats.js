@@ -5,7 +5,7 @@ import { prettifyNumber } from "/static/js/common/common.js";
  * Defines color schemes, styles, and visual properties.
  * @type {Object}
  */
-const gitjobsChartTheme = {
+export const gitjobsChartTheme = {
   color: ["#fd4d12", "#5470c6", "#91cc75", "#fac858", "#ee6666", "#73c0de", "#3ba272", "#fc8452", "#9a60b4"],
   backgroundColor: "rgba(0,0,0,0)",
   textStyle: {},
@@ -464,9 +464,8 @@ const renderLineChart = (data) => {
 /**
  * Returns common configuration options for bar charts.
  * @returns {Object} Base bar chart configuration
- * @private
  */
-const getBarStatsOptions = () => {
+export const getBarStatsOptions = () => {
   return {
     dataset: [],
     tooltip: {
@@ -477,7 +476,6 @@ const getBarStatsOptions = () => {
     xAxis: {
       type: "time",
       scale: true,
-      boundaryGap: false,
     },
     yAxis: {
       type: "value",
@@ -648,6 +646,7 @@ export const renderStats = () => {
   const stats = JSON.parse(data);
   if (!stats) return;
 
+  // Register the GitJobs theme for ECharts
   echarts.registerTheme("gitjobs", gitjobsChartTheme);
 
   if (!stats.jobs.published_running_total) {

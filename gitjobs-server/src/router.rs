@@ -233,6 +233,10 @@ fn setup_employer_dashboard_router(state: &State) -> Router<State> {
             put(dashboard::employer::jobs::publish).layer(check_user_owns_job.clone()),
         )
         .route(
+            "/jobs/{job_id}/stats",
+            get(dashboard::employer::jobs::stats).layer(check_user_owns_job.clone()),
+        )
+        .route(
             "/jobs/{job_id}/update",
             get(dashboard::employer::jobs::update_page)
                 .layer(check_user_owns_job.clone())

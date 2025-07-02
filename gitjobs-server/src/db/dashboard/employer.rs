@@ -13,7 +13,7 @@ use crate::{
         dashboard::employer::{
             applications::{self, Application},
             employers::{Employer, EmployerSummary},
-            jobs::{Job, JobSummary},
+            jobs::{Job, JobStats, JobSummary},
             team::{TeamInvitation, TeamMember},
         },
         helpers::normalize_salary,
@@ -61,6 +61,9 @@ pub(crate) trait DBDashBoardEmployer {
 
     /// Retrieves the user ID for a job seeker profile.
     async fn get_job_seeker_user_id(&self, job_seeker_profile_id: &Uuid) -> Result<Option<Uuid>>;
+
+    /// Retrieves a job's statistics.
+    async fn get_job_stats(&self, job_id: &Uuid) -> Result<JobStats>;
 
     /// Retrieves the count of invitations for a user.
     async fn get_user_invitations_count(&self, user_id: &Uuid) -> Result<usize>;
@@ -669,6 +672,21 @@ impl DBDashBoardEmployer for PgDB {
             .map(|row| row.get("user_id"));
 
         Ok(user_id)
+    }
+
+    #[instrument(skip(self), err)]
+    async fn get_job_stats(&self, job_id: &Uuid) -> Result<JobStats> {
+        trace!("db: get job stats");
+
+        // Query database
+        let db = self.pool.get().await?;
+        let json_data: String = db
+            .query_one("select get_job_stats($1::uuid)::text as stats", &[&job_id])
+            .await?
+            .get("stats");
+        let stats: JobStats = serde_json::from_str(&json_data)?;
+
+        Ok(stats)
     }
 
     #[instrument(skip(self), err)]

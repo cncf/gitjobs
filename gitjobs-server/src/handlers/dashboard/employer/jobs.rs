@@ -9,15 +9,15 @@ use askama::Template;
 use axum::{
     extract::{Path, State},
     http::StatusCode,
-    response::{Html, IntoResponse},
+    response::{Html, IntoResponse, Json},
 };
-use chrono::Utc;
+use chrono::{Duration, Utc};
 use tracing::instrument;
 use uuid::Uuid;
 
 use crate::{
     db::DynDB,
-    handlers::{error::HandlerError, extractors::SelectedEmployerIdRequired},
+    handlers::{error::HandlerError, extractors::SelectedEmployerIdRequired, prepare_headers},
     templates::dashboard::employer::jobs::{self, Job, JobStatus},
 };
 
@@ -153,6 +153,21 @@ pub(crate) async fn publish(
     db.publish_job(&job_id).await?;
 
     Ok((StatusCode::NO_CONTENT, [("HX-Trigger", "refresh-jobs-table")]))
+}
+
+/// Returns statistics for a specific job.
+#[instrument(skip_all, err)]
+pub(crate) async fn stats(
+    State(db): State<DynDB>,
+    Path(job_id): Path<Uuid>,
+) -> Result<impl IntoResponse, HandlerError> {
+    // Get stats information from the database
+    let stats = db.get_job_stats(&job_id).await?;
+
+    // Prepare response headers
+    let headers = prepare_headers(Duration::hours(1), &[])?;
+
+    Ok((headers, Json(stats)))
 }
 
 /// Updates an existing job with new data.

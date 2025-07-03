@@ -1,7 +1,8 @@
+import { showInfoAlert } from "../common/alerts";
 import {
   showConfirmAlert,
   showErrorAlert,
-  showInfoAlertWithHtml,
+  showInfoAlert,
   showSuccessAlert,
 } from "/static/js/common/alerts.js";
 import { isSuccessfulXHRStatus } from "/static/js/common/common.js";
@@ -25,8 +26,9 @@ export const initializeApplyButton = () => {
 
   if (isUserLoggedIn === "false") {
     applyButton.addEventListener("click", () => {
-      showInfoAlertWithHtml(
+      showInfoAlert(
         "You need to be <a href='/log-in' class='underline font-medium' hx-boost='true'>logged in</a> to apply.",
+        true,
       );
     });
   } else {
@@ -38,8 +40,9 @@ export const initializeApplyButton = () => {
     } else {
       if (hasProfile === "false") {
         applyButton.addEventListener("click", () => {
-          showInfoAlertWithHtml(
+          showInfoAlert(
             "You need to <a href='/dashboard/job-seeker' class='underline font-medium' hx-boost='true'>set up</a> your job seeker profile to apply.",
+            true,
           );
         });
       } else {

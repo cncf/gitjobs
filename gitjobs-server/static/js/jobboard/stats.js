@@ -476,6 +476,9 @@ export const getBarStatsOptions = () => {
     xAxis: {
       type: "time",
       scale: true,
+      axisTick: {
+        alignWithLabel: true,
+      },
     },
     yAxis: {
       type: "value",

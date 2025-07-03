@@ -1,6 +1,6 @@
 import { getBarStatsOptions, gitjobsChartTheme } from "/static/js/jobboard/stats.js";
 import { prettifyNumber, toggleModalVisibility } from "/static/js/common/common.js";
-import { showErrorAlert } from "/static/js/common/alerts.js";
+import { showErrorAlert, showInfoAlert } from "/static/js/common/alerts.js";
 
 /**
  * Function to render the statistics chart for a job
@@ -92,20 +92,23 @@ export const fetchStats = async (id) => {
     spinnerStats.classList.add("hidden");
   }
   if (data) {
-    toggleModalVisibility(`stats-modal`, "open");
     if (data.views_daily.length > 0) {
+      // Show the stats modal
+      toggleModalVisibility(`stats-modal`, "open");
+
+      // Render the stats chart
       renderStat(data.views_daily);
+      if (data.views_total_last_month !== undefined) {
+        const totalViewsElement = document.getElementById("total-views");
+        if (totalViewsElement) {
+          totalViewsElement.textContent = prettifyNumber(data.views_total_last_month);
+        }
+      }
     } else {
-      const chartDom = document.getElementById(`job-stats`);
-      if (chartDom) {
-        chartDom.textContent = "No data available on last month";
-      }
-    }
-    if (data.views_total_last_month !== undefined) {
-      const totalViewsElement = document.getElementById(`total-views`);
-      if (totalViewsElement) {
-        totalViewsElement.textContent = prettifyNumber(data.views_total_last_month);
-      }
+      showInfoAlert(
+        'We don\'t have views data for this job yet.<div class="mt-2">Please check again later.</div>',
+        true,
+      );
     }
   }
 };
@@ -114,15 +117,12 @@ export const fetchStats = async (id) => {
  * Closes the stats modal and clears its content
  */
 export const closeStatsModal = () => {
-  const chartDom = document.getElementById(`job-stats`);
+  const chartDom = document.getElementById("job-stats");
   if (chartDom) {
     const chartInstance = echarts.getInstanceByDom(chartDom);
     // Dispose of the chart instance before closing modal
     if (chartInstance) {
       chartInstance.dispose();
-      // Clear the chart content
-    } else {
-      chartDom.textContent = "";
     }
   }
   // Close the stats modal

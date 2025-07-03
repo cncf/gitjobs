@@ -141,8 +141,8 @@
             {# End archived date -#}
 
             {# Actions -#}
-            <td class="px-3 xl:px-5 py-4 w-40">
-              <div class="flex items-center gap-x-2 xl:gap-x-3">
+            <td class="px-3 xl:px-5 py-4 w-32 xl:w-40">
+              <div class="flex items-center gap-x-1 xl:gap-x-3">
                 {# Views job button -#}
                 <div>
                   <button id="btn-stats-{{ job.job_id }}" class="btn-tertiary p-2 relative">
@@ -226,7 +226,6 @@
                           import {
                             showConfirmAlert,
                             showErrorAlert,
-                            showInfoAlertWithHtml,
                             showSuccessAlert,
                           } from '/static/js/common/alerts.js';
                           import {
@@ -332,14 +331,11 @@
 
       {# Modal content -#}
       <div class="p-4 md:p-8">
-        <div class="flex flex-row items-baseline mb-4">
-          <div class="fw-semibold text-md text-stone-500 uppercase">Last month total views:</div>
-          <div id="total-views" class="fw-bold text-stone-900 ms-1 text-lg"></div>
+        <div class="font-semibold text-stone-700 mb-4">
+          Views over the last 30 days <span class="font-normal text-xs text-stone-500 uppercase ms-2">(total: <span id="total-views" class="font-bold text-stone-700"></span>)</span>
         </div>
 
-        <div class="text-lg fw-semibold mb-4">Views over the last 30 days</div>
-
-        <div class="flex items-center justify-center h-[300px] border border-stone-200 text-stone-500"
+        <div class="flex items-center justify-center h-[300px] border border-stone-200 mb-2"
              id="job-stats"></div>
       </div>
       {# End modal content -#}

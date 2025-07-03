@@ -61,30 +61,20 @@ export const showErrorAlert = (message, withHtml = false) => {
  * Displays an informational alert with plain text message.
  * Auto-dismisses after 10 seconds.
  * @param {string} message - The info message to display
+ * @param {boolean} withHtml - Whether to display the message as HTML content
  */
-export const showInfoAlert = (message) => {
-  Swal.fire({
+export const showInfoAlert = (message, withHtml = false) => {
+  const alertOptions = {
     text: message,
     icon: "info",
     showConfirmButton: true,
     timer: 10000,
     ...getCommonAlertOptions(),
-  });
-};
-
-/**
- * Displays an informational alert with HTML content.
- * Auto-dismisses after 10 seconds.
- * @param {string} message - The HTML content to display
- */
-export const showInfoAlertWithHtml = (message) => {
-  Swal.fire({
-    html: message,
-    icon: "info",
-    showConfirmButton: true,
-    timer: 10000,
-    ...getCommonAlertOptions(),
-  });
+  };
+  if (withHtml) {
+    alertOptions.html = message; // Use HTML content if specified
+  }
+  Swal.fire(alertOptions);
 };
 
 /**

@@ -52,7 +52,7 @@ impl PgNotificationsManager {
     pub(crate) fn new(
         db: DynDB,
         cfg: &EmailConfig,
-        tracker: &TaskTracker,
+        task_tracker: &TaskTracker,
         cancellation_token: &CancellationToken,
     ) -> Result<Self> {
         // Setup smtp client
@@ -71,7 +71,7 @@ impl PgNotificationsManager {
                 smtp_client: smtp_client.clone(),
                 cancellation_token: cancellation_token.clone(),
             };
-            tracker.spawn(async move {
+            task_tracker.spawn(async move {
                 worker.run().await;
             });
         }

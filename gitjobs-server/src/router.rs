@@ -33,7 +33,7 @@ use crate::{
     },
     img::DynImageStore,
     notifications::DynNotificationsManager,
-    views::DynViewsTracker,
+    event_tracker::DynEventTracker,
 };
 
 /// Embeds static files from the "static" folder into the binary.
@@ -54,8 +54,8 @@ pub(crate) struct State {
     pub serde_qs_de: serde_qs::Config,
     /// Notifications manager handle.
     pub notifications_manager: DynNotificationsManager,
-    /// Views tracker handle.
-    pub views_tracker: DynViewsTracker,
+    /// Event tracker handle.
+    pub event_tracker: DynEventTracker,
 }
 
 /// Sets up the main application router and all sub-routers.
@@ -65,7 +65,7 @@ pub(crate) async fn setup(
     db: DynDB,
     image_store: DynImageStore,
     notifications_manager: DynNotificationsManager,
-    views_tracker: DynViewsTracker,
+    event_tracker: DynEventTracker,
 ) -> Result<Router> {
     // Setup router state
     let state = State {
@@ -74,7 +74,7 @@ pub(crate) async fn setup(
         image_store,
         serde_qs_de: serde_qs::Config::new(3, false),
         notifications_manager,
-        views_tracker,
+        event_tracker,
     };
 
     // Setup authentication / authorization layer

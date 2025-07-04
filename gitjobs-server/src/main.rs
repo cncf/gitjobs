@@ -6,6 +6,7 @@ use std::{path::PathBuf, sync::Arc};
 use anyhow::{Context, Result};
 use clap::Parser;
 use deadpool_postgres::Runtime;
+use event_tracker::EventTrackerDB;
 use img::db::DbImageStore;
 use notifications::PgNotificationsManager;
 use openssl::ssl::{SslConnector, SslMethod, SslVerifyMode};
@@ -15,7 +16,6 @@ use tokio_util::sync::CancellationToken;
 use tokio_util::task::TaskTracker;
 use tracing::{error, info};
 use tracing_subscriber::EnvFilter;
-use views::ViewsTrackerDB;
 
 use crate::{
     config::{Config, LogFormat},
@@ -25,12 +25,12 @@ use crate::{
 mod auth;
 mod config;
 mod db;
+mod event_tracker;
 mod handlers;
 mod img;
 mod notifications;
 mod router;
 mod templates;
-mod views;
 mod workers;
 
 /// Command-line arguments for the application.
@@ -66,7 +66,7 @@ async fn main() -> Result<()> {
     }
 
     // Setup task tracker and cancellation token for background workers.
-    let tracker = TaskTracker::new();
+    let task_tracker = TaskTracker::new();
     let cancellation_token = CancellationToken::new();
 
     // Setup database connection pool.
@@ -78,7 +78,7 @@ async fn main() -> Result<()> {
     {
         let db = db.clone();
         let cancellation_token = cancellation_token.clone();
-        tracker.spawn(async move {
+        task_tracker.spawn(async move {
             db.tx_cleaner(cancellation_token).await;
         });
     }
@@ -90,15 +90,19 @@ async fn main() -> Result<()> {
     let notifications_manager = Arc::new(PgNotificationsManager::new(
         db.clone(),
         &cfg.email,
-        &tracker,
+        &task_tracker,
         &cancellation_token,
     )?);
 
-    // Setup views tracker.
-    let views_tracker = Arc::new(ViewsTrackerDB::new(db.clone(), &tracker, &cancellation_token));
+    // Setup event tracker.
+    let event_tracker = Arc::new(EventTrackerDB::new(
+        db.clone(),
+        &task_tracker,
+        &cancellation_token,
+    ));
 
     // Run additional background workers.
-    workers::run(db.clone(), &tracker, cancellation_token.clone());
+    workers::run(db.clone(), &task_tracker, cancellation_token.clone());
 
     // Setup and launch the HTTP server.
     let router = router::setup(
@@ -106,7 +110,7 @@ async fn main() -> Result<()> {
         db,
         image_store,
         notifications_manager,
-        views_tracker,
+        event_tracker,
     )
     .await?;
     let listener = TcpListener::bind(&cfg.server.addr).await?;
@@ -122,9 +126,9 @@ async fn main() -> Result<()> {
     info!("server stopped");
 
     // Request all background workers to stop and wait for completion.
-    tracker.close();
+    task_tracker.close();
     cancellation_token.cancel();
-    tracker.wait().await;
+    task_tracker.wait().await;
 
     Ok(())
 }

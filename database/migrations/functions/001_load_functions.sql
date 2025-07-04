@@ -5,6 +5,7 @@
 {{ template "jobboard/get_stats.sql" }}
 {{ template "jobboard/search_jobs.sql" }}
 {{ template "jobboard/update_jobs_views.sql" }}
+{{ template "jobboard/update_search_appearances.sql" }}
 {{ template "misc/search_locations.sql" }}
 
 ---- create above / drop below ----

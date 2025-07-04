@@ -24,7 +24,7 @@ use crate::{
         jobboard::jobs::{ExploreSection, Filters, JobSection, JobsPage, ResultsSection},
         pagination::{NavigationLinks, build_url},
     },
-    views::DynViewsTracker,
+    event_tracker::{DynEventTracker, Event},
 };
 
 // Pages and sections handlers.
@@ -140,10 +140,10 @@ pub(crate) async fn apply(
 /// Tracks a view for a specific job in the job board.
 #[instrument(skip_all, err)]
 pub(crate) async fn track_view(
-    State(views_tracker): State<DynViewsTracker>,
+    State(event_tracker): State<DynEventTracker>,
     Path(job_id): Path<Uuid>,
 ) -> Result<impl IntoResponse, HandlerError> {
-    views_tracker.track_view(job_id).await?;
+    event_tracker.track(Event::JobView { job_id }).await?;
 
     Ok(StatusCode::NO_CONTENT)
 }

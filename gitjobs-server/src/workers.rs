@@ -9,9 +9,9 @@ use tracing::{debug, error};
 use crate::db::DynDB;
 
 /// Launches all background workers.
-pub(crate) fn run(db: DynDB, tracker: &TaskTracker, cancellation_token: CancellationToken) {
+pub(crate) fn run(db: DynDB, task_tracker: &TaskTracker, cancellation_token: CancellationToken) {
     // Jobs archiver
-    tracker.spawn(async move {
+    task_tracker.spawn(async move {
         archiver(db, cancellation_token).await;
     });
 }

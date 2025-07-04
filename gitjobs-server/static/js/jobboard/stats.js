@@ -699,7 +699,6 @@ export const renderStats = () => {
   if (!data) return;
 
   const stats = JSON.parse(data);
-
   if (!stats) return;
 
   // Register the GitJobs theme for ECharts

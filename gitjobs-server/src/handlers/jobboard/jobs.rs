@@ -17,14 +17,14 @@ use crate::{
     auth::AuthSession,
     config::HttpServerConfig,
     db::{DynDB, jobboard::JobsSearchOutput},
-    handlers::{auth::AUTH_PROVIDER_KEY, error::HandlerError, prepare_headers},
+    event_tracker::{DynEventTracker, Event},
+    handlers::{auth::AUTH_PROVIDER_KEY, error::HandlerError, prepare_headers, search_jobs},
     templates::{
         PageId,
         auth::User,
         jobboard::jobs::{ExploreSection, Filters, JobSection, JobsPage, ResultsSection},
         pagination::{NavigationLinks, build_url},
     },
-    event_tracker::{DynEventTracker, Event},
 };
 
 // Pages and sections handlers.
@@ -34,12 +34,15 @@ use crate::{
 pub(crate) async fn jobs_page(
     session: Session,
     State(db): State<DynDB>,
+    State(event_tracker): State<DynEventTracker>,
     State(cfg): State<HttpServerConfig>,
     QsQuery(filters): QsQuery<Filters>,
 ) -> Result<impl IntoResponse, HandlerError> {
     // Get filter options and jobs that match the query
-    let (filters_options, JobsSearchOutput { jobs, total }) =
-        tokio::try_join!(db.get_jobs_filters_options(), db.search_jobs(&filters))?;
+    let (filters_options, JobsSearchOutput { jobs, total }) = tokio::try_join!(
+        db.get_jobs_filters_options(),
+        search_jobs(&db, &event_tracker, &filters)
+    )?;
 
     // Prepare template
     let template = JobsPage {
@@ -69,10 +72,11 @@ pub(crate) async fn jobs_page(
 #[instrument(skip_all, err)]
 pub(crate) async fn results_section(
     State(db): State<DynDB>,
+    State(event_tracker): State<DynEventTracker>,
     QsQuery(filters): QsQuery<Filters>,
 ) -> Result<impl IntoResponse, HandlerError> {
     // Get jobs that match the query
-    let JobsSearchOutput { jobs, total } = db.search_jobs(&filters).await?;
+    let JobsSearchOutput { jobs, total } = search_jobs(&db, &event_tracker, &filters).await?;
 
     // Prepare template
     let template = ResultsSection {

@@ -14,7 +14,8 @@ use uuid::Uuid;
 use crate::{
     config::HttpServerConfig,
     db::{DynDB, jobboard::JobsSearchOutput},
-    handlers::{error::HandlerError, prepare_headers},
+    event_tracker::DynEventTracker,
+    handlers::{error::HandlerError, prepare_headers, search_jobs},
     templates::jobboard::{
         embed::{JobCard, JobsPage},
         jobs::Filters,
@@ -26,10 +27,11 @@ use crate::{
 pub(crate) async fn jobs_page(
     State(cfg): State<HttpServerConfig>,
     State(db): State<DynDB>,
+    State(event_tracker): State<DynEventTracker>,
     QsQuery(filters): QsQuery<Filters>,
 ) -> Result<impl IntoResponse, HandlerError> {
     // Get jobs that match the query
-    let JobsSearchOutput { jobs, total: _ } = db.search_jobs(&filters).await?;
+    let JobsSearchOutput { jobs, total: _ } = search_jobs(&db, &event_tracker, &filters).await?;
 
     // Prepare template
     let template = JobsPage {

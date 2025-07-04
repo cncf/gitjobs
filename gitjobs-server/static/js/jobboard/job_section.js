@@ -1,4 +1,3 @@
-import { showInfoAlert } from "../common/alerts";
 import {
   showConfirmAlert,
   showErrorAlert,

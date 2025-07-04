@@ -367,6 +367,58 @@ export const gitjobsChartTheme = {
 const MESSAGE_EMPTY_STATS = "No data available yet";
 
 /**
+ * Finds the smallest value in an array of numbers.
+ * @param {Array<number>} numbers - Array of numbers to search
+ * @returns {number} The smallest number in the array
+ */
+const getSmallestValue = (numbers) => {
+  if (!numbers || numbers.length === 0) {
+    throw new Error("Array is empty or undefined");
+  }
+  return Math.min(...numbers);
+};
+
+/**
+ * Gets the minimum date value from the data array.
+ * If the minimum date is less than the provided minimum value, returns that date.
+ * Otherwise, returns the provided minimum value.
+ * @param {Array} data - Array of data items where each item is an array with a timestamp as the first element
+ * @param {number} min - Minimum date value to compare
+ * @returns {number} The minimum date value from the data or the provided minimum value
+ */
+const getMinDateValue = (data, min) => {
+  const dates = data.map((item) => item[0]);
+  const minDate = getSmallestValue(dates);
+  return minDate < min ? minDate : min;
+};
+
+/**
+ * Finds the greatest value in an array of numbers.
+ * @param {Array<number>} numbers - Array of numbers to search
+ * @returns {number} The greatest number in the array
+ */
+const getGreatestValue = (numbers) => {
+  if (!numbers || numbers.length === 0) {
+    throw new Error("Array is empty or undefined");
+  }
+  return Math.max(...numbers);
+};
+
+/**
+ * Gets the maximum date value from the data array.
+ * If the maximum date is greater than the provided maximum value, returns that date.
+ * Otherwise, returns the provided maximum value.
+ * @param {Array} data - Array of data items where each item is an array with a timestamp as the first element
+ * @param {number} max - Maximum date value to compare
+ * @returns {number} The maximum date value from the data or the provided maximum value
+ */
+const getMaxDateValue = (data, max) => {
+  const dates = data.map((item) => item[0]);
+  const maxDate = getGreatestValue(dates);
+  return maxDate > max ? maxDate : max;
+};
+
+/**
  * Renders a line chart showing job publication trends.
  * @param {Array} data - Time series data with timestamps and job counts
  * @private
@@ -577,8 +629,8 @@ const renderBarDailyChart = (data, max, min) => {
       splitLine: {
         show: false,
       },
-      min: min,
-      max: max,
+      min: getMinDateValue(data, min),
+      max: getMaxDateValue(data, max),
     },
   };
   option && myChart.setOption(option);
@@ -628,8 +680,8 @@ const renderBarMonthlyChart = (data, max, min) => {
     xAxis: {
       ...getBarStatsOptions().xAxis,
       axisLabel: { interval: 0, formatter: "{MMM}'{yy}", hideOverlap: true },
-      min: min,
-      max: max,
+      min: getMinDateValue(data, min),
+      max: getMaxDateValue(data, max),
     },
   };
   option && myChart.setOption(option);
@@ -647,6 +699,7 @@ export const renderStats = () => {
   if (!data) return;
 
   const stats = JSON.parse(data);
+
   if (!stats) return;
 
   // Register the GitJobs theme for ECharts

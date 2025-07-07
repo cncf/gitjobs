@@ -26,6 +26,7 @@ use crate::{
     auth::AuthnBackend,
     config::HttpServerConfig,
     db::DynDB,
+    event_tracker::DynEventTracker,
     handlers::{
         auth::{self, LOG_IN_URL},
         dashboard, img, jobboard,
@@ -33,7 +34,6 @@ use crate::{
     },
     img::DynImageStore,
     notifications::DynNotificationsManager,
-    event_tracker::DynEventTracker,
 };
 
 /// Embeds static files from the "static" folder into the binary.
@@ -115,7 +115,10 @@ pub(crate) async fn setup(
         .route("/health-check", get(health_check))
         .nest("/jobboard/images", jobboard_images_router)
         .route("/jobs/{job_id}/views", post(jobboard::jobs::track_view))
-        .route("/jobs/search-appearances", post(jobboard::jobs::track_search_appearances))
+        .route(
+            "/jobs/search-appearances",
+            post(jobboard::jobs::track_search_appearances),
+        )
         .route("/locations/search", get(search_locations))
         .route("/log-in", get(auth::log_in_page));
 

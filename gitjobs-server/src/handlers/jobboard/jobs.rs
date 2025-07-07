@@ -3,7 +3,7 @@
 use anyhow::Result;
 use askama::Template;
 use axum::{
-    extract::{Path, State},
+    extract::{Json, Path, State},
     response::{Html, IntoResponse},
 };
 use chrono::Duration;
@@ -144,6 +144,19 @@ pub(crate) async fn track_view(
     Path(job_id): Path<Uuid>,
 ) -> Result<impl IntoResponse, HandlerError> {
     event_tracker.track(Event::JobView { job_id }).await?;
+
+    Ok(StatusCode::NO_CONTENT)
+}
+
+/// Tracks search appearances for multiple jobs.
+#[instrument(skip_all, err)]
+pub(crate) async fn track_search_appearances(
+    State(event_tracker): State<DynEventTracker>,
+    Json(job_ids): Json<Vec<Uuid>>,
+) -> Result<impl IntoResponse, HandlerError> {
+    event_tracker
+        .track(Event::SearchAppearances { job_ids })
+        .await?;
 
     Ok(StatusCode::NO_CONTENT)
 }

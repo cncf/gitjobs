@@ -8,6 +8,7 @@ use auth::DBAuth;
 use chrono::{DateTime, TimeDelta, Utc};
 use dashboard::DBDashBoard;
 use deadpool_postgres::{Client, Pool};
+use event_tracker::DBEventTracker;
 use img::DBImage;
 use jobboard::DBJobBoard;
 use misc::DBMisc;
@@ -17,16 +18,15 @@ use tokio::{select, time::sleep};
 use tokio_util::sync::CancellationToken;
 use tracing::instrument;
 use uuid::Uuid;
-use event_tracker::DBEventTracker;
 use workers::DBWorkers;
 
 pub(crate) mod auth;
 pub(crate) mod dashboard;
+pub(crate) mod event_tracker;
 pub(crate) mod img;
 pub(crate) mod jobboard;
 pub(crate) mod misc;
 pub(crate) mod notifications;
-pub(crate) mod event_tracker;
 pub(crate) mod workers;
 
 /// Error message when a transaction client is not found.

@@ -27,7 +27,7 @@ const LOCK_KEY_UPDATE_SEARCH_APPEARANCES: i64 = 2;
 pub(crate) trait DBEventTracker {
     /// Updates the number of views for the provided jobs and days.
     async fn update_jobs_views(&self, data: Vec<(JobId, Day, Total)>) -> Result<()>;
-    
+
     /// Updates the number of search appearances for the provided jobs and days.
     async fn update_search_appearances(&self, data: Vec<(JobId, Day, Total)>) -> Result<()>;
 }
@@ -50,7 +50,7 @@ impl DBEventTracker for PgDB {
 
         Ok(())
     }
-    
+
     #[instrument(skip(self), err)]
     async fn update_search_appearances(&self, data: Vec<(JobId, Day, Total)>) -> Result<()> {
         trace!("db: update search appearances");

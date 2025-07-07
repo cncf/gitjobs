@@ -17,6 +17,7 @@ use crate::{
     auth::AuthSession,
     config::HttpServerConfig,
     db::{DynDB, jobboard::JobsSearchOutput},
+    event_tracker::{DynEventTracker, Event},
     handlers::{auth::AUTH_PROVIDER_KEY, error::HandlerError, prepare_headers},
     templates::{
         PageId,
@@ -24,7 +25,6 @@ use crate::{
         jobboard::jobs::{ExploreSection, Filters, JobSection, JobsPage, ResultsSection},
         pagination::{NavigationLinks, build_url},
     },
-    event_tracker::{DynEventTracker, Event},
 };
 
 // Pages and sections handlers.
@@ -154,9 +154,7 @@ pub(crate) async fn track_search_appearances(
     State(event_tracker): State<DynEventTracker>,
     Json(job_ids): Json<Vec<Uuid>>,
 ) -> Result<impl IntoResponse, HandlerError> {
-    event_tracker
-        .track(Event::SearchAppearances { job_ids })
-        .await?;
+    event_tracker.track(Event::SearchAppearances { job_ids }).await?;
 
     Ok(StatusCode::NO_CONTENT)
 }

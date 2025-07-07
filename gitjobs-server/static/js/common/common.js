@@ -161,11 +161,13 @@ export const shouldDisplayJobModal = (onLoad = false) => {
 };
 
 /**
- * Registers a view for a specific job by sending a POST request.
+ * Tracks a view for a specific job by sending a POST request.
  * Silently handles errors without user notification.
  * @param {string} jobId - The ID of the job to register a view for
  */
-export const registerJobIdView = async (jobId) => {
+export const trackerJobView = async (jobId) => {
+  if (!jobId) return;
+
   try {
     fetch(`/jobs/${jobId}/views`, {
       method: "POST",

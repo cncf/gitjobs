@@ -67,7 +67,8 @@
     toggleModalVisibility,
     isSuccessfulXHRStatus,
     addParamToQueryString,
-    registerJobIdView
+    trackerJobView,
+    trackSearchAppearances
   } from '/static/js/common/common.js';
   import {
     showErrorAlert,
@@ -84,7 +85,7 @@
         // This is to avoid registering the view when the modal is opened
         // from going back in history
         if (['open-modal', 'click'].includes(e.detail.requestConfig.triggeringEvent.type)) {
-          registerJobIdView(job_id);
+          trackerJobView(job_id);
         }
       } else {
         // When the preview is not available, show an error message
@@ -95,19 +96,15 @@
 
   {% if jobs.len() > 0 -%}
     updateResults('{% call jobs_macros::current_page(total, jobs.len(), offset) -%}');
-  {% else -%}
-    updateResults('');
-  {% endif -%}
 
-  // Track search appearances for all visible jobs
-  {% if jobs.len() > 0 -%}
+    // Track search appearances for all visible jobs
     const jobButtons = document.querySelectorAll('[data-job-id]');
     const jobIds = Array.from(jobButtons).map(btn => btn.dataset.jobId);
     if (jobIds.length > 0) {
-      import('/static/js/common/common.js').then(module => {
-        module.trackSearchAppearances(jobIds);
-      });
+      trackSearchAppearances(jobIds);
     }
+  {% else -%}
+    updateResults('');
   {% endif -%}
 </script>
 {# djlint:on #}

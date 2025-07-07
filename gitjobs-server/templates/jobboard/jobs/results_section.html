@@ -98,6 +98,17 @@
   {% else -%}
     updateResults('');
   {% endif -%}
+
+  // Track search appearances for all visible jobs
+  {% if jobs.len() > 0 -%}
+    const jobButtons = document.querySelectorAll('[data-job-id]');
+    const jobIds = Array.from(jobButtons).map(btn => btn.dataset.jobId);
+    if (jobIds.length > 0) {
+      import('/static/js/common/common.js').then(module => {
+        module.trackSearchAppearances(jobIds);
+      });
+    }
+  {% endif -%}
 </script>
 {# djlint:on #}
 {# End list view -#}

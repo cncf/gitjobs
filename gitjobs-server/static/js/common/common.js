@@ -175,6 +175,27 @@ export const registerJobIdView = async (jobId) => {
   }
 };
 
+/**
+ * Tracks search appearances for multiple jobs by sending job IDs to the server.
+ * Used when search results are displayed to track which jobs appeared.
+ * @param {string[]} jobIds - Array of job IDs that appeared in search results
+ */
+export const trackSearchAppearances = async (jobIds) => {
+  if (!jobIds || jobIds.length === 0) return;
+
+  try {
+    await fetch("/jobs/search-appearances", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(jobIds),
+    });
+  } catch (error) {
+    // Silently ignore errors
+  }
+};
+
 const NUMBER_REGEX = /\.0+$|(\.[0-9]*[1-9])0+$/;
 
 /**

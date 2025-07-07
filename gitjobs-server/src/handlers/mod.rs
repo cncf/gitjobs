@@ -5,12 +5,6 @@ use axum::http::{HeaderMap, HeaderName, HeaderValue};
 use chrono::Duration;
 use reqwest::header::CACHE_CONTROL;
 
-use crate::{
-    db::{DynDB, jobboard::JobsSearchOutput},
-    event_tracker::{DynEventTracker, Event},
-    templates::jobboard::jobs::Filters,
-};
-
 /// Authentication-related HTTP handlers.
 pub(crate) mod auth;
 /// Dashboard-related HTTP handlers.
@@ -48,22 +42,4 @@ pub(crate) fn prepare_headers(cache_duration: Duration, extra_headers: &[(&str, 
     }
 
     Ok(headers)
-}
-
-/// Searches for jobs and tracks search appearances.
-pub(crate) async fn search_jobs(
-    db: &DynDB,
-    event_tracker: &DynEventTracker,
-    filters: &Filters,
-) -> Result<JobsSearchOutput> {
-    // Perform the search
-    let output = db.search_jobs(filters).await?;
-
-    // Track search appearances if there are results
-    if !output.jobs.is_empty() {
-        let job_ids = output.jobs.iter().map(|j| j.job_id).collect();
-        event_tracker.track(Event::SearchAppearances { job_ids }).await?;
-    }
-
-    Ok(output)
 }

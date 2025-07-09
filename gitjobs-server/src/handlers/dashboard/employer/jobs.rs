@@ -26,8 +26,11 @@ use crate::{
 /// Renders the page to add a new job for an employer.
 #[instrument(skip_all, err)]
 pub(crate) async fn add_page(State(db): State<DynDB>) -> Result<impl IntoResponse, HandlerError> {
-    let foundations = db.list_foundations().await?;
-    let template = jobs::AddPage { foundations };
+    let (certifications, foundations) = tokio::try_join!(
+        db.list_certifications(),
+        db.list_foundations()
+    )?;
+    let template = jobs::AddPage { certifications, foundations };
 
     Ok(Html(template.render()?))
 }
@@ -87,9 +90,12 @@ pub(crate) async fn update_page(
     State(db): State<DynDB>,
     Path(job_id): Path<Uuid>,
 ) -> Result<impl IntoResponse, HandlerError> {
-    let foundations = db.list_foundations().await?;
-    let job = db.get_job_dashboard(&job_id).await?;
-    let template = jobs::UpdatePage { foundations, job };
+    let (certifications, foundations, job) = tokio::try_join!(
+        db.list_certifications(),
+        db.list_foundations(),
+        db.get_job_dashboard(&job_id)
+    )?;
+    let template = jobs::UpdatePage { certifications, foundations, job };
 
     Ok(Html(template.render()?).into_response())
 }

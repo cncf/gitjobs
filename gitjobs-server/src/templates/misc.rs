@@ -36,6 +36,26 @@ pub(crate) struct UserMenuSection {
 
 // Types.
 
+/// Information about a certification.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub(crate) struct Certification {
+    /// Unique identifier for the certification.
+    pub certification_id: Uuid,
+    /// Full name of the certification.
+    pub name: String,
+    /// Provider of the certification.
+    pub provider: String,
+    /// Short name or abbreviation.
+    pub short_name: String,
+
+    /// Description of the certification.
+    pub description: Option<String>,
+    /// Logo URL for the certification.
+    pub logo_url: Option<String>,
+    /// URL to certification information.
+    pub url: Option<String>,
+}
+
 /// Information about a foundation.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub(crate) struct Foundation {

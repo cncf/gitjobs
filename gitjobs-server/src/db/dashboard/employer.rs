@@ -17,7 +17,7 @@ use crate::{
             team::{TeamInvitation, TeamMember},
         },
         helpers::normalize_salary,
-        misc::Foundation,
+        misc::{Certification, Foundation},
     },
 };
 
@@ -73,6 +73,9 @@ pub(crate) trait DBDashBoardEmployer {
 
     /// Lists all employers where the user is a team member.
     async fn list_employers(&self, user_id: &Uuid) -> Result<Vec<EmployerSummary>>;
+
+    /// Lists all available certifications.
+    async fn list_certifications(&self) -> Result<Vec<Certification>>;
 
     /// Lists all available foundations.
     async fn list_foundations(&self) -> Result<Vec<Foundation>>;
@@ -296,6 +299,20 @@ impl DBDashBoardEmployer for PgDB {
                     values ($1::uuid, $2::uuid);
                     ",
                     &[&job_id, &project.project_id],
+                )
+                .await?;
+            }
+        }
+
+        // Insert job certifications
+        if let Some(certifications) = &job.certifications {
+            for certification in certifications {
+                tx.execute(
+                    "
+                    insert into job_certification (job_id, certification_id)
+                    values ($1::uuid, $2::uuid);
+                    ",
+                    &[&job_id, &certification.certification_id],
                 )
                 .await?;
             }
@@ -602,7 +619,22 @@ impl DBDashBoardEmployer for PgDB {
                         left join job_project jp using (project_id)
                         left join job j using (job_id)
                         where j.job_id = $1::uuid
-                    ) as projects
+                    ) as projects,
+                    (
+                        select json_agg(json_build_object(
+                            'certification_id', c.certification_id,
+                            'name', c.name,
+                            'provider', c.provider,
+                            'short_name', c.short_name,
+                            'description', c.description,
+                            'url', c.url,
+                            'logo_url', c.logo_url
+                        ))
+                        from certification c
+                        left join job_certification jc using (certification_id)
+                        left join job j using (job_id)
+                        where j.job_id = $1::uuid
+                    ) as certifications
                 from job j
                 left join location l using (location_id)
                 where job_id = $1::uuid
@@ -621,6 +653,9 @@ impl DBDashBoardEmployer for PgDB {
             apply_instructions: row.get("apply_instructions"),
             apply_url: row.get("apply_url"),
             benefits: row.get("benefits"),
+            certifications: row
+                .get::<_, Option<serde_json::Value>>("certifications")
+                .map(|v| serde_json::from_value(v).expect("certifications should be valid json")),
             job_id: row.get("job_id"),
             location: row
                 .get::<_, Option<serde_json::Value>>("location")
@@ -784,6 +819,43 @@ impl DBDashBoardEmployer for PgDB {
             .collect();
 
         Ok(employers)
+    }
+
+    #[instrument(skip(self), err)]
+    async fn list_certifications(&self) -> Result<Vec<Certification>> {
+        trace!("db: list certifications");
+
+        let db = self.pool.get().await?;
+        let certifications = db
+            .query(
+                "
+                select
+                    certification_id,
+                    name,
+                    provider,
+                    short_name,
+                    description,
+                    logo_url,
+                    url
+                from certification
+                order by name asc;
+                ",
+                &[],
+            )
+            .await?
+            .into_iter()
+            .map(|row| Certification {
+                certification_id: row.get("certification_id"),
+                name: row.get("name"),
+                provider: row.get("provider"),
+                short_name: row.get("short_name"),
+                description: row.get("description"),
+                logo_url: row.get("logo_url"),
+                url: row.get("url"),
+            })
+            .collect();
+
+        Ok(certifications)
     }
 
     #[instrument(skip(self), err)]
@@ -1060,8 +1132,8 @@ impl DBDashBoardEmployer for PgDB {
             )
             .await?;
 
-        // Update job projects
         if rows_updated == 1 {
+            // Update job projects
             tx.execute("delete from job_project where job_id = $1::uuid;", &[&job_id])
                 .await?;
             if let Some(projects) = &job.projects {
@@ -1072,6 +1144,25 @@ impl DBDashBoardEmployer for PgDB {
                         values ($1::uuid, $2::uuid);
                         ",
                         &[&job_id, &project.project_id],
+                    )
+                    .await?;
+                }
+            }
+
+            // Update job certifications
+            tx.execute(
+                "delete from job_certification where job_id = $1::uuid;",
+                &[&job_id],
+            )
+            .await?;
+            if let Some(certifications) = &job.certifications {
+                for certification in certifications {
+                    tx.execute(
+                        "
+                        insert into job_certification (job_id, certification_id)
+                        values ($1::uuid, $2::uuid);
+                        ",
+                        &[&job_id, &certification.certification_id],
                     )
                     .await?;
                 }

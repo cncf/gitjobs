@@ -11,7 +11,7 @@ use crate::templates::{
     filters,
     helpers::{DATE_FORMAT, build_dashboard_image_url, format_location, normalize, normalize_salary},
     jobboard::jobs::Seniority,
-    misc::{Foundation, Location, Project},
+    misc::{Certification, Foundation, Location, Project},
 };
 
 // Pages templates.
@@ -20,6 +20,8 @@ use crate::templates::{
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
 #[template(path = "dashboard/employer/jobs/add.html")]
 pub(crate) struct AddPage {
+    /// List of available certifications for job requirements.
+    pub certifications: Vec<Certification>,
     /// List of available foundations for job association.
     pub foundations: Vec<Foundation>,
 }
@@ -46,6 +48,8 @@ pub(crate) struct PreviewPage {
 #[derive(Debug, Clone, Template, Serialize, Deserialize)]
 #[template(path = "dashboard/employer/jobs/update.html")]
 pub(crate) struct UpdatePage {
+    /// List of available certifications for job requirements.
+    pub certifications: Vec<Certification>,
     /// List of available foundations for job association.
     pub foundations: Vec<Foundation>,
     /// Job details to update.
@@ -102,6 +106,8 @@ pub(crate) struct Job {
     pub apply_url: Option<String>,
     /// List of job benefits, if any.
     pub benefits: Option<Vec<String>>,
+    /// Desired certifications, if any.
+    pub certifications: Option<Vec<Certification>>,
     /// Unique identifier for the job, if available.
     pub job_id: Option<Uuid>,
     /// Location details for the job, if specified.

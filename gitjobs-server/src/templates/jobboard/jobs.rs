@@ -12,7 +12,7 @@ use crate::templates::{
     dashboard::employer::jobs::{JobKind, SalaryKind, Workplace},
     filters,
     helpers::{DATE_FORMAT, DATE_FORMAT_3, build_jobboard_image_url, option_is_none_or_default},
-    misc::{Foundation, Location, Member, Project},
+    misc::{Certification, Foundation, Location, Member, Project},
     pagination::{NavigationLinks, Pagination},
 };
 
@@ -310,6 +310,8 @@ pub(crate) struct Job {
     pub apply_url: Option<String>,
     /// List of benefits, if any.
     pub benefits: Option<Vec<String>>,
+    /// Desired certifications, if any.
+    pub certifications: Option<Vec<Certification>>,
     /// Location of the job, if specified.
     pub location: Option<Location>,
     /// Open source status, if specified.

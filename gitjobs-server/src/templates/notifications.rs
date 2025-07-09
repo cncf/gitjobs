@@ -80,6 +80,7 @@ mod tests {
             apply_instructions: None,
             apply_url: None,
             benefits: None,
+            certifications: None,
             projects: None,
             published_at: None,
             qualifications: None,

@@ -138,7 +138,22 @@ impl DBJobBoard for PgDB {
                         left join job_project jp using (project_id)
                         left join job j using (job_id)
                         where j.job_id = $1::uuid
-                    ) as projects
+                    ) as projects,
+                    (
+                        select json_agg(json_build_object(
+                            'certification_id', c.certification_id,
+                            'name', c.name,
+                            'provider', c.provider,
+                            'short_name', c.short_name,
+                            'description', c.description,
+                            'logo_url', c.logo_url,
+                            'url', c.url
+                        ))
+                        from certification c
+                        left join job_certification jc using (certification_id)
+                        left join job j using (job_id)
+                        where j.job_id = $1::uuid
+                    ) as certifications
                 from job j
                 join employer e on j.employer_id = e.employer_id
                 left join location l on j.location_id = l.location_id
@@ -162,6 +177,9 @@ impl DBJobBoard for PgDB {
                 apply_instructions: row.get("apply_instructions"),
                 apply_url: row.get("apply_url"),
                 benefits: row.get("benefits"),
+                certifications: row
+                    .get::<_, Option<serde_json::Value>>("certifications")
+                    .map(|v| serde_json::from_value(v).expect("certifications should be valid json")),
                 location: row
                     .get::<_, Option<serde_json::Value>>("location")
                     .map(|v| serde_json::from_value(v).expect("location should be valid json")),

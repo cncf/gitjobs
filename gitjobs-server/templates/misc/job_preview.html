@@ -203,14 +203,7 @@
               {% call job_details_subheading(content = "Desired certifications") -%}
               <div class="flex flex-col gap-3 mt-2">
                 {% for cert in certifications -%}
-                  {% if let Some(url) = cert.url -%}
-                    <a href="{{ url }}"
-                       target="_blank"
-                       rel="noopener noreferrer"
-                       class="block">{% call macros::certification_card(certification = cert) -%}</a>
-                  {% else -%}
-                    {% call macros::certification_card(certification = cert) -%}
-                  {% endif -%}
+                  {% call macros::certification_card(certification = cert) -%}
                 {% endfor -%}
               </div>
             </div>

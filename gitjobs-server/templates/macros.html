@@ -266,9 +266,19 @@
         </div>
       {% endif -%}
       <div class="flex flex-col justify-start min-w-0">
-        <div class="truncate text-start text-stone-700 font-medium text-sm mb-[2px]">
-          {{ certification.short_name }}
-        </div>
+        {% if let Some(url) = certification.url -%}
+          <a href="{{ url }}"
+             target="_blank"
+             rel="noopener noreferrer"
+             class="inline-flex items-center max-w-full truncate text-start text-stone-700 font-medium text-sm mb-[2px] hover:underline">
+            <span class="truncate">{{ certification.short_name }}</span>
+            <div class="svg-icon size-2 icon-external_link bg-stone-500 ms-2 srink-0 mb-[2px]"></div>
+          </a>
+        {% else -%}
+          <div class="truncate text-start text-stone-700 font-medium text-sm mb-[2px]">
+            {{ certification.short_name }}
+          </div>
+        {% endif -%}
         <div class="truncate text-nowrap max-w-[100%] text-xs text-stone-500/75">{{ certification.provider }}</div>
       </div>
     </div>

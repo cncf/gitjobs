@@ -245,6 +245,36 @@
 {% endmacro dropdown_card -%}
 {# End dropdown card #}
 
+{# Certification card -#}
+{% macro certification_card(certification) -%}
+  <div class="border border-stone-200 rounded-lg p-2 text-sm/5 bg-white w-full"
+       {% if let Some(description) = certification.description %}title="{{ description }}"{% endif %}>
+    {# Certification card content #}
+    <div class="flex items-center space-x-3">
+      {% if let Some(logo_url) = certification.logo_url -%}
+        <div class="flex justify-center items-center shrink-0 size-8 lg:size-10 shrink-0">
+          <img src="{{ logo_url }}"
+               loading="lazy"
+               class="size-8 lg:size-10 object-contain"
+               height="auto"
+               width="auto"
+               alt="{{ certification.short_name }} logo">
+        </div>
+      {% else -%}
+        <div class="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center shrink-0">
+          <span class="text-xs font-bold text-primary-600 p-1">{{ certification.short_name }}</span>
+        </div>
+      {% endif -%}
+      <div class="flex flex-col justify-start min-w-0">
+        <div class="truncate text-start text-stone-700 font-medium text-sm mb-[2px]">
+          {{ certification.short_name }}
+        </div>
+        <div class="truncate text-nowrap max-w-[100%] text-xs text-stone-500/75">{{ certification.provider }}</div>
+      </div>
+    </div>
+  </div>
+{% endmacro certification_card -%}
+
 {# Alert box #}
 {% macro alert_box(content, title = "") -%}
   <div class="p-10 md:p-14">

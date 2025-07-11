@@ -200,6 +200,10 @@
         </div>
         {# End Job qualifications -#}
 
+        {# Certifications -#}
+        <dashboard-search type="certifications" certifications="{{ certifications|json }}" class="col-span-full"></dashboard-search>
+        {# End certifications -#}
+
         {# Job skills -#}
         <div class="col-span-full">
           <multi-select name="skills" label="Skills" legend="Relevant skills for this job position."></multi-select>

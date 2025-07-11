@@ -196,6 +196,26 @@
             </div>
           {% endif -%}
           {# End projects -#}
+
+          {# Desired certifications -#}
+          {% if let Some(certifications) = job.certifications -%}
+            <div class="block mb-3 md:mb-0">
+              {% call job_details_subheading(content = "Desired certifications") -%}
+              <div class="flex flex-col gap-3 mt-2">
+                {% for cert in certifications -%}
+                  {% if let Some(url) = cert.url -%}
+                    <a href="{{ url }}"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       class="block">{% call macros::certification_card(certification = cert) -%}</a>
+                  {% else -%}
+                    {% call macros::certification_card(certification = cert) -%}
+                  {% endif -%}
+                {% endfor -%}
+              </div>
+            </div>
+          {% endif -%}
+          {# End Desired certifications -#}
         </div>
 
         <div>

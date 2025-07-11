@@ -223,6 +223,10 @@
         </div>
         {# End Job qualifications -#}
 
+        {# Certifications -#}
+        <dashboard-search type="certifications" certifications="{{ certifications|json }}" {%- if let Some(job_certifications) = job.certifications %} selected="{{ job_certifications|json }}"{%- endif %} class="col-span-full"></dashboard-search>
+        {# End certifications -#}
+
         {# Job skills -#}
         <div class="col-span-full">
           <multi-select name="skills" label="Skills"

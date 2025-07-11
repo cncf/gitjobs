@@ -123,7 +123,8 @@ export class DashboardSearch extends LitWrapper {
    * @private
    */
   _filterOptions() {
-    if (this.enteredValue.length > 2) {
+    const minLength = this.type === "certifications" ? 0 : 2;
+    if (this.enteredValue.length >= minLength) {
       this.isLoading = true;
       debounce(this._getItems(this.enteredValue), 300);
     } else {
@@ -141,6 +142,19 @@ export class DashboardSearch extends LitWrapper {
   _onInputChange(event) {
     this.enteredValue = event.target.value;
     this._filterOptions();
+  }
+
+  /**
+   * Handles input focus - shows all certifications immediately for certification type.
+   * @private
+   */
+  _onInputFocus() {
+    if (this.type === "certifications") {
+      // Show all certifications immediately on focus
+      this.visibleOptions = this.certifications;
+      this.visibleDropdown = true;
+      this.activeIndex = null;
+    }
   }
 
   /**
@@ -306,6 +320,7 @@ export class DashboardSearch extends LitWrapper {
                 type="text"
                 @keydown="${this._handleKeyDown}"
                 @input=${this._onInputChange}
+                @focus=${this._onInputFocus}
                 .value="${this.enteredValue}"
                 class="input-primary peer ps-10"
                 placeholder="Search ${this.type}"

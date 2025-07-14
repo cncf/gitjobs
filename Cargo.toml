@@ -20,9 +20,9 @@ axum-login = "0.17.0"
 axum-extra = { version = "0.10.1", features = ["form"] }
 axum-messages = "0.8.0"
 cached = { version = "0.55.1", features = ["async"] }
-clap = { version = "4.5.40", features = ["derive"] }
+clap = { version = "4.5.41", features = ["derive"] }
 chrono = { version = "0.4.41", features = ["serde"] }
-chrono-tz = { version = "0.10.3", features = ["serde"] }
+chrono-tz = { version = "0.10.4", features = ["serde"] }
 deadpool-postgres = { version = "0.14.1", features = ["serde"] }
 emojis = "0.6.4"
 figment = { version = "0.10.19", features = ["yaml", "env"] }
@@ -36,25 +36,25 @@ minify-html = "0.16.4"
 mockall = "0.13.1"
 num-format = "0.4.4"
 oauth2 = "5.0.0"
-openidconnect = { version = "4.0.0", features = ["accept-rfc3339-timestamps"] }
+openidconnect = { version = "4.0.1", features = ["accept-rfc3339-timestamps"] }
 openssl = { version = "0.10.73", features = ["vendored"] }
 palette = "0.7.6"
 password-auth = "1.0.0"
 postgres-openssl = "0.5.1"
 rand = "0.9.1"
 regex = "1.11.1"
-reqwest = { version = "0.12.20", features = ["json"] }
+reqwest = { version = "0.12.22", features = ["json"] }
 rust-embed = "8.7.2"
 serde = { version = "1.0.219", features = ["derive"] }
 serde_html_form = "0.2.7"
 serde_json = "1.0.140"
 serde_qs = { version = "0.15.0", features = ["axum"] }
-serde_with = "3.13.0"
+serde_with = "3.14.0"
 sha2 = "0.10.9"
 strum = { version = "0.27", features = ["derive"] }
 thiserror = "2.0.12"
 time = "0.3.41"
-tokio = { version = "1.45.1", features = [
+tokio = { version = "1.46.1", features = [
     "macros",
     "process",
     "rt-multi-thread",

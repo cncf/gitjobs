@@ -154,7 +154,7 @@
                   </button>
                   <script type="module">
                     import {
-                      fetchStats
+                      showStats
                     } from '/static/js/dashboard/jobs/list.js';
 
                     const btnStats = document.getElementById('btn-stats-{{ job.job_id }}');
@@ -164,7 +164,7 @@
                         if (spinnerStats) {
                           spinnerStats.classList.remove('hidden');
                         }
-                        fetchStats("{{job.job_id}}");
+                        showStats("{{job.job_id}}");
                       });
                     }
                   </script>
@@ -331,12 +331,23 @@
 
       {# Modal content -#}
       <div class="p-4 md:p-8">
+        {# Views chart -#}
         <div class="font-semibold text-stone-700 mb-4">
           Views over the last 30 days <span class="font-normal text-xs text-stone-500 uppercase ms-2">(total: <span id="total-views" class="font-bold text-stone-700"></span>)</span>
         </div>
 
-        <div class="flex items-center justify-center h-[300px] border border-stone-200 mb-2"
-             id="job-stats"></div>
+        <div class="flex items-center justify-center h-[300px] border border-stone-200 mb-8"
+             id="job-chart-views"></div>
+        {# End views chart -#}
+        
+        {# Search appearances chart -#}
+        <div class="font-semibold text-stone-700 mb-4">
+          Search appearances over the last 30 days <span class="font-normal text-xs text-stone-500 uppercase ms-2">(total: <span id="total-search-appearances" class="font-bold text-stone-700"></span>)</span>
+        </div>
+
+        <div class="flex items-center justify-center h-[300px] border border-stone-200 mb-6"
+             id="job-chart-search-appearances"></div>
+        {# End search appearances chart -#}
       </div>
       {# End modal content -#}
     </div>
@@ -346,7 +357,7 @@
 {# End stats modal -#}
 <script type="module">
   import {
-    closeStatsModal,
+    closeStats,
   } from '/static/js/dashboard/jobs/list.js';
 
   const closeStatsModalBtn = document.getElementById('close-stats-modal');
@@ -354,13 +365,13 @@
 
   if (closeStatsModalBtn) {
     closeStatsModalBtn.addEventListener('click', () => {
-      closeStatsModal();
+      closeStats();
     });
   }
 
   if (backdropStatsModal) {
     backdropStatsModal.addEventListener('click', () => {
-      closeStatsModal();
+      closeStats();
     });
   }
 </script>

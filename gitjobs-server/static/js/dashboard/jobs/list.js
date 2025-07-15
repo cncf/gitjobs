@@ -3,41 +3,139 @@ import { prettifyNumber, toggleModalVisibility } from "/static/js/common/common.
 import { showErrorAlert, showInfoAlert } from "/static/js/common/alerts.js";
 
 /**
- * Function to render the statistics chart for a job
- * @param {string} id - The ID of the job to render stats for
+ * Shows statistics for a specific job in a modal
+ * @param {string} id - The ID of the job to display stats for
+ */
+export const showStats = async (id) => {
+  // Get loading spinner reference
+  const spinnerStats = document.getElementById(`spinner-stats-${id}`);
+
+  // Fetch job statistics from the API
+  const response = await fetch(`/dashboard/employer/jobs/${id}/stats`, {
+    method: "GET",
+  });
+  if (!response.ok) {
+    if (spinnerStats) {
+      spinnerStats.classList.add("hidden");
+    }
+    showErrorAlert("Something went wrong fetching the stats, please try again later.");
+    return;
+  }
+  const data = await response.json();
+  if (spinnerStats) {
+    spinnerStats.classList.add("hidden");
+  }
+
+  // Process and display the statistics data
+  if (data) {
+    const hasViewsData = data.views_daily && data.views_daily.length > 0;
+    const hasSearchAppearancesData =
+      data.search_appearances_daily && data.search_appearances_daily.length > 0;
+
+    if (hasViewsData || hasSearchAppearancesData) {
+      // Open the statistics modal if we have data for at least one chart
+      toggleModalVisibility(`stats-modal`, "open");
+
+      // Render views chart if data exists
+      if (hasViewsData) {
+        renderChart(data.views_daily, "job-chart-views", "views");
+        if (data.views_total_last_month !== undefined) {
+          const totalViewsElement = document.getElementById("total-views");
+          if (totalViewsElement) {
+            totalViewsElement.textContent = prettifyNumber(data.views_total_last_month);
+          }
+        }
+      }
+
+      // Render search appearances chart if data exists
+      if (hasSearchAppearancesData) {
+        renderChart(data.search_appearances_daily, "job-chart-search-appearances", "search_appearances");
+        if (data.search_appearances_total_last_month !== undefined) {
+          const totalSearchElement = document.getElementById("total-search-appearances");
+          if (totalSearchElement) {
+            totalSearchElement.textContent = prettifyNumber(data.search_appearances_total_last_month);
+          }
+        }
+      }
+    } else {
+      // Show message when no data is available for either chart
+      showInfoAlert(
+        'We don\'t have statistics data for this job yet.<div class="mt-2">Please check again later.</div>',
+        true,
+      );
+    }
+  }
+};
+
+/**
+ * Closes the statistics modal and cleans up resources
+ */
+export const closeStats = () => {
+  // Dispose of all chart instances to free up memory
+  const chartIds = ["job-chart-views", "job-chart-search-appearances"];
+  chartIds.forEach((id) => {
+    const chartDom = document.getElementById(id);
+    if (chartDom) {
+      const chartInstance = echarts.getInstanceByDom(chartDom);
+      if (chartInstance) {
+        chartInstance.dispose();
+      }
+    }
+  });
+
+  // Close the modal
+  toggleModalVisibility(`stats-modal`, "close");
+
+  // Clear the statistics counters
+  const totalViewsElement = document.getElementById(`total-views`);
+  if (totalViewsElement) {
+    totalViewsElement.textContent = "";
+  }
+  const totalSearchElement = document.getElementById(`total-search-appearances`);
+  if (totalSearchElement) {
+    totalSearchElement.textContent = "";
+  }
+};
+
+/**
+ * Function to render a chart
+ * @param {Array} data - The chart data
+ * @param {string} chartId - The ID of the chart container
+ * @param {string} chartType - The type of chart ('views' or 'search_appearances')
  * @private
  */
-const renderStat = (data) => {
+const renderChart = (data, chartId, chartType) => {
+  // Calculate date range for the chart (last 30 days)
   const today = Date.now();
-  // Set the minimum date to one month ago
   const min = new Date();
   const month = min.getMonth();
   min.setMonth(min.getMonth() - 1);
-
-  // If today is the first day of the month, set it to the last day of
-  // the previous month
+  // Handle edge case when today is the first day of the month
   if (min.getMonth() == month) min.setDate(0);
-  // Set the time to the start of the day
   min.setHours(0, 0, 0, 0);
 
-  const chartDom = document.getElementById(`job-stats`);
+  // Get the chart container element
+  const chartDom = document.getElementById(chartId);
   if (!chartDom) return;
 
-  const myChart = echarts.init(chartDom, "gitjobs", {
+  // Initialize the ECharts instance
+  const chart = echarts.init(chartDom, "gitjobs", {
     renderer: "svg",
     useDirtyRect: false,
   });
-  myChart.clear();
+  chart.clear();
 
+  // Add responsive resize handler
   window.addEventListener("resize", function () {
-    myChart.resize();
+    chart.resize();
   });
 
+  // Configure chart options
   const option = {
     ...getBarStatsOptions(),
     dataset: [
       {
-        dimensions: ["timestamp", "jobs"],
+        dimensions: ["timestamp", "count"],
         source: data,
       },
       {
@@ -51,7 +149,8 @@ const renderStat = (data) => {
       ...getBarStatsOptions().tooltip,
       formatter: (params) => {
         const chartdate = echarts.time.format(params.data[0], "{dd} {MMM}'{yy}");
-        return `${chartdate}<br />Views: ${prettifyNumber(params.data[1])}`;
+        const label = chartType === "views" ? "Views" : "Search appearances";
+        return `${chartdate}<br />${label}: ${prettifyNumber(params.data[1])}`;
       },
     },
     xAxis: {
@@ -65,79 +164,14 @@ const renderStat = (data) => {
     },
   };
 
-  option && myChart.setOption(option);
-};
-
-/**
- * Fetches and renders statistics for a specific job
- * @param {string} id - The ID of the job to fetch stats for
- */
-export const fetchStats = async (id) => {
-  const response = await fetch(`/dashboard/employer/jobs/${id}/stats`, {
-    method: "GET",
-  });
-  const spinnerStats = document.getElementById(`spinner-stats-${id}`);
-  if (!response.ok) {
-    // Hide the spinner if it exists
-    if (spinnerStats) {
-      spinnerStats.classList.add("hidden");
-    }
-
-    showErrorAlert("Something went wrong fetching the stats, please try again later.");
-    return;
-  }
-  const data = await response.json();
-  // Hide the spinner if it exists
-  if (spinnerStats) {
-    spinnerStats.classList.add("hidden");
-  }
-  if (data) {
-    if (data.views_daily.length > 0) {
-      // Show the stats modal
-      toggleModalVisibility(`stats-modal`, "open");
-
-      // Render the stats chart
-      renderStat(data.views_daily);
-      if (data.views_total_last_month !== undefined) {
-        const totalViewsElement = document.getElementById("total-views");
-        if (totalViewsElement) {
-          totalViewsElement.textContent = prettifyNumber(data.views_total_last_month);
-        }
-      }
-    } else {
-      showInfoAlert(
-        'We don\'t have views data for this job yet.<div class="mt-2">Please check again later.</div>',
-        true,
-      );
-    }
-  }
-};
-
-/**
- * Closes the stats modal and clears its content
- */
-export const closeStatsModal = () => {
-  const chartDom = document.getElementById("job-stats");
-  if (chartDom) {
-    const chartInstance = echarts.getInstanceByDom(chartDom);
-    // Dispose of the chart instance before closing modal
-    if (chartInstance) {
-      chartInstance.dispose();
-    }
-  }
-  // Close the stats modal
-  toggleModalVisibility(`stats-modal`, "close");
-  // Clear the total views element
-  const totalViewsElement = document.getElementById(`total-views`);
-  if (totalViewsElement) {
-    totalViewsElement.textContent = "";
-  }
+  // Render the chart with the configured options
+  option && chart.setOption(option);
 };
 
 /**
  * Registers the GitJobs theme for ECharts
  */
 export const registerEchartsTheme = () => {
-  // Register the GitJobs theme
+  // Register the custom GitJobs theme for consistent chart styling
   echarts.registerTheme("gitjobs", gitjobsChartTheme);
 };

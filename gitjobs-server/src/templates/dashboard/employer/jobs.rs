@@ -191,11 +191,16 @@ impl Job {
 /// Statistics for a specific job.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub(crate) struct JobStats {
-    /// Total views in the last month.
-    pub views_total_last_month: u64,
+    /// Daily search appearances for the last month.
+    /// Each entry is a tuple of (`timestamp_ms`, count).
+    pub search_appearances_daily: Option<Vec<(u64, u64)>>,
+    /// Total search appearances in the last month.
+    pub search_appearances_total_last_month: u64,
     /// Daily views for the last month.
     /// Each entry is a tuple of (`timestamp_ms`, count).
     pub views_daily: Option<Vec<(u64, u64)>>,
+    /// Total views in the last month.
+    pub views_total_last_month: u64,
 }
 
 /// Job status for employer dashboard jobs.

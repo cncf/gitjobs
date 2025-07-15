@@ -45,6 +45,12 @@ export const showStats = async (id) => {
             totalViewsElement.textContent = prettifyNumber(data.views_total_last_month);
           }
         }
+      } else {
+        // Hide views chart if no data is available
+        const viewsChartWrapper = document.querySelector('[data-chart="views"]');
+        if (viewsChartWrapper) {
+          viewsChartWrapper.classList.add("hidden");
+        }
       }
 
       // Render search appearances chart if data exists
@@ -55,6 +61,12 @@ export const showStats = async (id) => {
           if (totalSearchElement) {
             totalSearchElement.textContent = prettifyNumber(data.search_appearances_total_last_month);
           }
+        }
+      } else {
+        // Hide search appearances chart if no data is available
+        const searchAppearancesChartWrapper = document.querySelector('[data-chart="search-appearances"]');
+        if (searchAppearancesChartWrapper) {
+          searchAppearancesChartWrapper.classList.add("hidden");
         }
       }
     } else {
@@ -94,6 +106,16 @@ export const closeStats = () => {
   const totalSearchElement = document.getElementById(`total-search-appearances`);
   if (totalSearchElement) {
     totalSearchElement.textContent = "";
+  }
+
+  // Display charts wrapper
+  const viewsChartWrapper = document.querySelector('[data-chart="views"]');
+  if (viewsChartWrapper) {
+    viewsChartWrapper.classList.remove("hidden");
+  }
+  const searchAppearancesChartWrapper = document.querySelector('[data-chart="search-appearances"]');
+  if (searchAppearancesChartWrapper) {
+    searchAppearancesChartWrapper.classList.remove("hidden");
   }
 };
 

@@ -1,18 +1,19 @@
-name: End to end tests
+name: End-to-end tests
 on:
   schedule:
-    - cron: '0 * * * *'
+    - cron: '0 */2 * * *'
   workflow_dispatch:
+  push:
 
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
       - name: Install dependencies
         run: npm install
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
       - name: Run Playwright tests
-        run: npx playwright test --reporter=list --fail-on-flaky-tests
+        run: npx playwright test --reporter=list --fail-on-flaky-tests --browser all tests/e2e/playwright.spec.ts

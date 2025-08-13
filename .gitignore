@@ -5,3 +5,7 @@ Chart.lock
 chart/charts
 gitjobs-server/dist
 gitjobs-server/static/css/styles.css
+node_modules
+package-lock.json
+package.json
+test-results

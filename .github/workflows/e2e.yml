@@ -14,6 +14,6 @@ jobs:
       - name: Install Playwright
         run: npm i -D @playwright/test
       - name: Install Playwright browsers
-        run: npx playwright install
+        run: npx playwright install --with-deps
       - name: Run Playwright tests
-        run: npx playwright test --reporter=list --fail-on-flaky-tests --browser all tests/e2e/playwright.spec.ts
+        run: npx playwright test --config tests/e2e/playwright.config.ts

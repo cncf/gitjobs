@@ -1,6 +1,6 @@
-create extension pgcrypto;
-create extension postgis;
-create extension pg_trgm;
+create extension if not exists pgcrypto;
+create extension if not exists postgis;
+create extension if not exists pg_trgm;
 
 create or replace function i_array_to_string(text[], text)
 returns text language sql immutable as $$select array_to_string($1, $2)$$;

@@ -1,6 +1,9 @@
 name: End-to-end tests
 
 on:
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
@@ -32,7 +35,6 @@ jobs:
         with:
           toolchain: 1.87.0
           components: clippy, rustfmt
-
 
       - name: Cache Cargo dependencies
         uses: actions/cache@v3
@@ -72,7 +74,6 @@ jobs:
 
       - name: Build server
         run: cargo build --bin gitjobs-server
-
 
       - name: Run database migrations
         working-directory: database/migrations

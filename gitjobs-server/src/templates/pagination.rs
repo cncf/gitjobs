@@ -138,7 +138,7 @@ impl NavigationLinksOffsets {
             offsets.next = Some(offset + limit);
 
             // Last
-            offsets.last = if total % limit == 0 {
+            offsets.last = if total.is_multiple_of(limit) {
                 Some(total - limit)
             } else {
                 Some(total - (total % limit))

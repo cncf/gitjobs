@@ -29,7 +29,7 @@ pub(crate) trait DBImage {
 /// Shared pointer to a thread-safe, async `DBImage` trait object.
 pub(crate) type DynDBImage = Arc<dyn DBImage + Send + Sync>;
 
-/// Implementation of DBImage for the PgDB database backend.
+/// Implementation of `DBImage` for the `PgDB` database backend.
 #[async_trait]
 impl DBImage for PgDB {
     #[instrument(skip(self), err)]

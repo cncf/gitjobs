@@ -1,5 +1,7 @@
 //! This module provides database operations for authentication and authorization.
 
+use std::time::Duration;
+
 use anyhow::{Result, anyhow};
 use async_trait::async_trait;
 use axum_login::tower_sessions::session;
@@ -72,7 +74,7 @@ pub(crate) trait DBAuth {
     async fn verify_email(&self, code: &Uuid) -> Result<()>;
 }
 
-/// Implementation of DBAuth for PgDB, providing all authentication and authorization
+/// Implementation of `DBAuth` for `PgDB`, providing all authentication and authorization
 /// related database operations.
 #[async_trait]
 impl DBAuth for PgDB {

@@ -57,7 +57,7 @@ pub(crate) struct JobSeekerProfile {
     pub facebook_url: Option<String>,
     /// GitHub profile URL.
     pub github_url: Option<String>,
-    /// LinkedIn profile URL.
+    /// `LinkedIn` profile URL.
     pub linkedin_url: Option<String>,
     /// Location of the job seeker.
     pub location: Option<Location>,

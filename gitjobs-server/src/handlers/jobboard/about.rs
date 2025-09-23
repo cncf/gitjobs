@@ -12,16 +12,14 @@ use tower_sessions::Session;
 use tracing::instrument;
 
 use crate::{
-    auth::AuthSession,
     config::HttpServerConfig,
     handlers::{auth::AUTH_PROVIDER_KEY, error::HandlerError, prepare_headers},
-    templates::{PageId, jobboard::about::Page},
+    templates::{PageId, auth::User, jobboard::about::Page},
 };
 
 /// Handler that returns the about page.
 #[instrument(skip_all, err)]
 pub(crate) async fn page(
-    auth_session: AuthSession,
     session: Session,
     State(cfg): State<HttpServerConfig>,
 ) -> Result<impl IntoResponse, HandlerError> {
@@ -31,7 +29,7 @@ pub(crate) async fn page(
         cfg: cfg.into(),
         content: prepare_content()?,
         page_id: PageId::About,
-        user: auth_session.into(),
+        user: User::default(),
     };
 
     // Prepare response headers

@@ -46,10 +46,10 @@ fn main() -> Result<()> {
     let assets_manifest = generate_static_assets_manifest()?;
 
     // Copy static assets to the dist directory
-    if let Err(err) = fs::remove_dir_all(STATIC_DIST_PATH) {
-        if err.kind() != std::io::ErrorKind::NotFound {
-            bail!(err);
-        }
+    if let Err(err) = fs::remove_dir_all(STATIC_DIST_PATH)
+        && err.kind() != std::io::ErrorKind::NotFound
+    {
+        bail!(err);
     }
     copy_dir(Path::new(STATIC_PATH), Path::new(STATIC_DIST_PATH))?;
 
@@ -62,10 +62,10 @@ fn main() -> Result<()> {
     // Prepare templates
 
     // Copy templates to the dist directory
-    if let Err(err) = fs::remove_dir_all(TEMPLATES_DIST_PATH) {
-        if err.kind() != std::io::ErrorKind::NotFound {
-            bail!(err);
-        }
+    if let Err(err) = fs::remove_dir_all(TEMPLATES_DIST_PATH)
+        && err.kind() != std::io::ErrorKind::NotFound
+    {
+        bail!(err);
     }
     copy_dir(Path::new(TEMPLATES_PATH), Path::new(TEMPLATES_DIST_PATH))?;
 

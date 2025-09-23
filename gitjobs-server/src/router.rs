@@ -163,13 +163,13 @@ pub(crate) async fn setup(
         ));
 
     // Setup basic auth
-    if let Some(basic_auth) = &cfg.basic_auth {
-        if basic_auth.enabled {
-            router = router.layer(ValidateRequestHeaderLayer::basic(
-                &basic_auth.username,
-                &basic_auth.password,
-            ));
-        }
+    if let Some(basic_auth) = &cfg.basic_auth
+        && basic_auth.enabled
+    {
+        router = router.layer(ValidateRequestHeaderLayer::basic(
+            &basic_auth.username,
+            &basic_auth.password,
+        ));
     }
 
     Ok(router.with_state(state))

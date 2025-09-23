@@ -15,7 +15,7 @@ jobs:
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@master
         with:
-          toolchain: 1.87.0
+          toolchain: 1.90.0
           components: clippy, rustfmt
       - name: Install Tailwind CSS
         run: |
@@ -54,4 +54,3 @@ jobs:
         with:
           dry: true
           prettier_options: --check gitjobs-server/static/js/**/*.js --config gitjobs-server/static/js/.prettierrc.yaml
-

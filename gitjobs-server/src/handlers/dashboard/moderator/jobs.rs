@@ -79,20 +79,19 @@ pub(crate) async fn approve(
     let previous_first_published_at = db.approve_job(&job_id, &user.user_id).await?;
 
     // Post a Slack notification the first time a job is published
-    if previous_first_published_at.is_none() {
-        if let Some(webhook_url) = &cfg.slack_webhook_url {
-            if let Some(job) = db.get_job_jobboard(&job_id).await? {
-                let template = JobPublished {
-                    base_url: cfg.base_url.strip_suffix('/').unwrap_or(&cfg.base_url).to_string(),
-                    job,
-                };
-                let payload = json!({
-                    "text": template.render()?,
-                });
-                if let Err(err) = reqwest::Client::new().post(webhook_url).json(&payload).send().await {
-                    warn!("error posting slack notification: {}", err);
-                }
-            }
+    if previous_first_published_at.is_none()
+        && let Some(webhook_url) = &cfg.slack_webhook_url
+        && let Some(job) = db.get_job_jobboard(&job_id).await?
+    {
+        let template = JobPublished {
+            base_url: cfg.base_url.strip_suffix('/').unwrap_or(&cfg.base_url).to_string(),
+            job,
+        };
+        let payload = json!({
+            "text": template.render()?,
+        });
+        if let Err(err) = reqwest::Client::new().post(webhook_url).json(&payload).send().await {
+            warn!("error posting slack notification: {}", err);
         }
     }
 

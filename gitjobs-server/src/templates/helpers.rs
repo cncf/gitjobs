@@ -47,13 +47,13 @@ pub(crate) fn format_location(
     let mut location = String::new();
 
     let mut push = |part: Option<&str>| {
-        if let Some(part) = part {
-            if !part.is_empty() {
-                if !location.is_empty() {
-                    location.push_str(", ");
-                }
-                location.push_str(part);
+        if let Some(part) = part
+            && !part.is_empty()
+        {
+            if !location.is_empty() {
+                location.push_str(", ");
             }
+            location.push_str(part);
         }
     };
 

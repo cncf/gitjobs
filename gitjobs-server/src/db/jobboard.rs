@@ -1,5 +1,7 @@
 //! This module defines some database functionality for the job board.
 
+use std::time::Duration;
+
 use anyhow::Result;
 use async_trait::async_trait;
 use cached::proc_macro::cached;
@@ -37,7 +39,7 @@ pub(crate) trait DBJobBoard {
     async fn search_jobs(&self, filters: &Filters) -> Result<JobsSearchOutput>;
 }
 
-/// Implementation of DBJobBoard for the PostgreSQL database backend.
+/// Implementation of `DBJobBoard` for the `PostgreSQL` database backend.
 #[async_trait]
 impl DBJobBoard for PgDB {
     #[instrument(skip(self), err)]

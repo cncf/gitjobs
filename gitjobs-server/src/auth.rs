@@ -280,7 +280,6 @@ impl AuthnBackend {
     }
 }
 
-#[async_trait]
 impl axum_login::AuthnBackend for AuthnBackend {
     type User = User;
     type Credentials = Credentials;

@@ -3,9 +3,9 @@
 use askama::Template;
 use serde::{Deserialize, Serialize};
 
-use super::jobboard::jobs::Job;
-
 use crate::templates::{dashboard::employer::jobs::Workplace, filters};
+
+use super::jobboard::jobs::Job;
 
 // Emails templates.
 

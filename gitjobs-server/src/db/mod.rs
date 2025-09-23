@@ -43,7 +43,7 @@ const TXS_CLIENT_TIMEOUT: TimeDelta = TimeDelta::seconds(10);
 pub(crate) trait DB:
     DBJobBoard + DBDashBoard + DBAuth + DBImage + DBNotifications + DBWorkers + DBEventTracker + DBMisc
 {
-    /// Begins a new transaction and returns a unique transaction identifier.
+    /// Begins a new transaction and returns a unique client identifier.
     async fn tx_begin(&self) -> Result<Uuid>;
 
     /// Commits the transaction associated with the given client identifier.

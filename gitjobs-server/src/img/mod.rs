@@ -68,10 +68,10 @@ pub(crate) enum ImageFormat {
 
 /// Returns true if the file name has an SVG extension (case-insensitive).
 pub(crate) fn is_svg(file_name: &str) -> bool {
-    if let Some(extension) = file_name.split('.').next_back() {
-        if extension.to_lowercase() == "svg" {
-            return true;
-        }
+    if let Some(extension) = file_name.split('.').next_back()
+        && extension.eq_ignore_ascii_case("svg")
+    {
+        return true;
     }
     false
 }

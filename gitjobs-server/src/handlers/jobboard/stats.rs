@@ -11,17 +11,15 @@ use tower_sessions::Session;
 use tracing::instrument;
 
 use crate::{
-    auth::AuthSession,
     config::HttpServerConfig,
     db::DynDB,
     handlers::{auth::AUTH_PROVIDER_KEY, error::HandlerError, prepare_headers},
-    templates::{PageId, jobboard::stats::Page},
+    templates::{PageId, auth::User, jobboard::stats::Page},
 };
 
 /// Handler that returns the stats page.
 #[instrument(skip_all, err)]
 pub(crate) async fn page(
-    auth_session: AuthSession,
     session: Session,
     State(cfg): State<HttpServerConfig>,
     State(db): State<DynDB>,
@@ -35,7 +33,7 @@ pub(crate) async fn page(
         cfg: cfg.into(),
         page_id: PageId::Stats,
         stats,
-        user: auth_session.into(),
+        user: User::default(),
     };
 
     // Prepare response headers

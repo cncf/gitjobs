@@ -64,7 +64,7 @@ impl Syncer {
                     Ok(()) => final_result,
                     Err(task_err) => match final_result {
                         Ok(()) => Err(task_err),
-                        Err(final_err) => Err(format_err!("{:#}\n{:#}", final_err, task_err)),
+                        Err(final_err) => Err(format_err!("{final_err:#}\n{task_err:#}")),
                     },
                 },
             );

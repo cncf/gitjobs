@@ -1,4 +1,4 @@
-import { LitElement } from "/static/vendor/js/lit-all.v3.2.1.min.js";
+import { LitElement } from "/static/vendor/js/lit-all.v3.3.1.min.js";
 
 /**
  * Base wrapper class for Lit components that disables shadow DOM.

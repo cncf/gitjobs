@@ -1,4 +1,4 @@
-import { html, ifDefined } from "/static/vendor/js/lit-all.v3.2.1.min.js";
+import { html, ifDefined } from "/static/vendor/js/lit-all.v3.3.1.min.js";
 import { LitWrapper } from "/static/js/common/lit-wrapper.js";
 import { debounce } from "/static/js/common/common.js";
 

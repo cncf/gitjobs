@@ -1,4 +1,4 @@
-import { html } from "/static/vendor/js/lit-all.v3.2.1.min.js";
+import { html } from "/static/vendor/js/lit-all.v3.3.1.min.js";
 import { unnormalize } from "/static/js/common/common.js";
 import { triggerActionOnForm } from "/static/js/jobboard/filters.js";
 import { LitWrapper } from "/static/js/common/lit-wrapper.js";

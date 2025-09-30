@@ -33,6 +33,7 @@ openidconnect = { workspace = true }
 openssl = { workspace = true }
 palette = { workspace = true }
 password-auth = { workspace = true }
+percent-encoding = { workspace = true }
 postgres-openssl = { workspace = true }
 rand = { workspace = true }
 regex = { workspace = true }

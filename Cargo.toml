@@ -40,6 +40,7 @@ openidconnect = { version = "4.0.1", features = ["accept-rfc3339-timestamps"] }
 openssl = { version = "0.10.73", features = ["vendored"] }
 palette = "0.7.6"
 password-auth = "1.0.0"
+percent-encoding = "2.3.2"
 postgres-openssl = "0.5.1"
 rand = "0.9.2"
 regex = "1.11.2"

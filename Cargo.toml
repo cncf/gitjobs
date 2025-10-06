@@ -15,9 +15,9 @@ rust-version = "1.90"
 anyhow = "1.0.100"
 askama = { version = "0.14.0", features = ["serde_json"] }
 async-trait = "0.1.89"
-axum = { version = "0.8.4", features = ["macros", "multipart"] }
+axum = { version = "0.8.6", features = ["macros", "multipart"] }
 axum-login = "0.18.0"
-axum-extra = { version = "0.10.1", features = ["form"] }
+axum-extra = { version = "0.10.3", features = ["form"] }
 axum-messages = "0.8.0"
 cached = { version = "0.56.0", features = ["async"] }
 chrono = { version = "0.4.42", features = ["serde"] }
@@ -41,19 +41,19 @@ openssl = { version = "0.10.73", features = ["vendored"] }
 palette = "0.7.6"
 password-auth = "1.0.0"
 percent-encoding = "2.3.2"
-postgres-openssl = "0.5.1"
+postgres-openssl = "0.5.2"
 rand = "0.9.2"
-regex = "1.11.2"
+regex = "1.11.3"
 reqwest = { version = "0.12.23", features = ["json"] }
 rust-embed = "8.7.2"
-serde = { version = "1.0.226", features = ["derive"] }
+serde = { version = "1.0.228", features = ["derive"] }
 serde_html_form = "0.2.8"
 serde_json = "1.0.145"
 serde_qs = { version = "0.15.0", features = ["axum"] }
-serde_with = "3.14.1"
+serde_with = "3.15.0"
 sha2 = "0.10.9"
 strum = { version = "0.27.2", features = ["derive"] }
-thiserror = "2.0.16"
+thiserror = "2.0.17"
 time = "0.3.44"
 tokio = { version = "1.47.1", features = [
     "macros",

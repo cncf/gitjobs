@@ -170,7 +170,7 @@ postgresql:
     password: postgres
     database: gitjobs
   image:
-    repository: bitnami/postgresql
+    repository: bitnamilegacy/postgresql
     tag: 17.2.0-debian-12-r3
   postgresqlDataDir: /data/pgdata
   primary:

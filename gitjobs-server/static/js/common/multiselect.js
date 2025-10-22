@@ -1,7 +1,7 @@
 import { html, createRef, ref } from "/static/vendor/js/lit-all.v3.3.1.min.js";
 import { unnormalize } from "/static/js/common/common.js";
 import { LitWrapper } from "/static/js/common/lit-wrapper.js";
-import { getBenefits, getSkills } from "/static/js/common/data.js";
+import { getBenefits, getSkills, skillsDisplayName } from "/static/js/common/data.js";
 
 /**
  * Multi-select component with search and badge display.
@@ -208,7 +208,7 @@ export class MultiSelect extends LitWrapper {
                   class="inline-flex items-center text-nowrap max-w-[100%] ps-2 pe-0.5 py-0.5 text-xs font-medium text-stone-800 bg-stone-100 rounded-full"
                 >
                   <div class="flex items-center w-full">
-                    <div class="truncate uppercase">${unnormalize(option)}</div>
+                    <div class="truncate uppercase">${skillsDisplayName[option] || unnormalize(option)}</div>
                     <button
                       type="button"
                       @click=${() => this._onRemoveBadge(option)}
@@ -267,7 +267,7 @@ export class MultiSelect extends LitWrapper {
                     <div class="size-3 me-2">
                       ${isSelected ? html`<div class="svg-icon size-3 icon-check bg-stone-400"></div>` : ""}
                     </div>
-                    <div class="truncate">${unnormalize(option)}</div>
+                    <div class="truncate">${skillsDisplayName[option] || unnormalize(option)}</div>
                   </div>
                 </button>
               </li>`;

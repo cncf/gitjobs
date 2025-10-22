@@ -54,5 +54,29 @@ export const getSkills = () => {
     "automation",
     "microservices",
     "service-mesh",
+    "developer-advocacy",
+    "ai/ml-ecosystems",
+    "community-management",
+    "compliance",
+    "developer-education",
+    "open-source-ecosystems",
+    "innersource",
+    "metrics",
+    "policy-and-procurement",
+    "project-management",
+    "security-supply-chain",
+    "strategy",
   ];
+};
+
+// Display names for skills identifiers
+export const skillsDisplayName = {
+  "ai/ml-ecosystems": "AI/ML Ecosystems",
+  aws: "AWS",
+  "ci/cd": "CI/CD",
+  devops: "DevOps",
+  gcp: "GCP",
+  oci: "OCI",
+  "policy-and-procurement": "Policy and procurement",
+  sre: "SRE",
 };

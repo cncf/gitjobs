@@ -69,7 +69,7 @@ export const getSkills = () => {
   ];
 };
 
-// Translations for skills identifiers
+// Display names for skills identifiers
 export const skillsDisplayName = {
   "ai/ml-ecosystems": "AI/ML Ecosystems",
   aws: "AWS",

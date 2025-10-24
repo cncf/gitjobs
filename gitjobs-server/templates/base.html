@@ -70,6 +70,7 @@
       });
     </script>
     <script type="module">
+      // Keep modals and dropdown state aligned with history-driven navigation.
       import {
         getParamFromQueryString,
         shouldDisplayJobModal,
@@ -126,7 +127,138 @@
             dataLayer.push(arguments);
           }
           gtag('js', new Date());
-          gtag('config', '{{ google_tag_id }}');
+          gtag('config', '{{ google_tag_id }}', {
+            'send_page_view': false, // Disable automatic page view tracking
+            'transport_type': 'beacon' // Use 'beacon' transport for better reliability
+          });
+        </script>
+        <script>
+          // Helper function to build URL
+          const buildUrl = (pageLocation) => {
+            try {
+              return new URL(pageLocation || window.location.href, window.location.href);
+            } catch (error) {
+              return null;
+            }
+          }
+
+          (() => {
+            let lastVirtualHref = null;
+
+            // Function to build virtual path for job pages
+            const buildVirtualPath = (href) => {
+              const url = buildUrl(href);
+              if (!url) {
+                return null;
+              }
+              const jobId = url.searchParams.get('job_id');
+              if (!jobId) {
+                const basePath = url.pathname || '/';
+                const query = url.search || '';
+                return `${basePath}${query}`;
+              }
+              return `/job/${encodeURIComponent(jobId)}`;
+            }
+
+            // Function to get job details from the DOM
+            const getJobDetails = (jobId) => {
+              if (!jobId) {
+                return null;
+              }
+              const jobButton = document.getElementById(`job-preview-${jobId}`);
+              if (!jobButton) {
+                return null;
+              }
+              const {
+                jobTitle,
+                jobCompany
+              } = jobButton.dataset;
+              if (!jobTitle && !jobCompany) {
+                return null;
+              }
+              const pageTitle = jobTitle && jobCompany ?
+                `${jobCompany} | ${jobTitle} (${jobId})` :
+                null;
+              return {
+                pageTitle,
+                jobTitle: jobTitle || null,
+                jobCompany: jobCompany || null
+              };
+            }
+
+            // Emit virtual page views when routes change or modals display jobs
+            const sendPageView = (options = {}) => {
+              const {
+                preserveAttribution = false
+              } = options;
+              if (typeof window.gtag !== 'function') {
+                return;
+              }
+              const naturalHref = window.location.href;
+              const virtualPath = buildVirtualPath(naturalHref);
+              if (!virtualPath) {
+                return;
+              }
+              const virtualHref = `${window.location.origin}${virtualPath}`;
+              // Avoid sending duplicate page views
+              if (virtualHref === lastVirtualHref) {
+                return;
+              }
+              const currentUrl = buildUrl(naturalHref);
+              const jobId = currentUrl ? currentUrl.searchParams.get('job_id') : null;
+              const referrer = preserveAttribution ?
+                document.referrer || undefined :
+                lastVirtualHref || document.referrer || undefined;
+              const payload = {
+                page_title: document.title,
+                page_path: virtualPath,
+                page_location: preserveAttribution ? naturalHref : virtualHref,
+                page_referrer: referrer,
+                send_to: '{{ google_tag_id }}'
+              };
+              if (jobId) {
+                const {
+                  pageTitle,
+                  jobTitle,
+                  jobCompany
+                } = getJobDetails(jobId) || {};
+
+                payload.page_title = pageTitle || `Job ID: ${jobId}`;
+                payload.job_id = jobId;
+                payload.job_title = jobTitle || undefined;
+                payload.job_company = jobCompany || undefined;
+              }
+
+              // Send the page_view event to Google Analytics
+              gtag('event', 'page_view', payload);
+
+              lastVirtualHref = virtualHref;
+            }
+
+            window.addEventListener('DOMContentLoaded', () => {
+              sendPageView({
+                preserveAttribution: true
+              });
+            });
+
+            const originalPushState = history.pushState;
+            history.pushState = function(...args) {
+              const result = originalPushState.apply(this, args);
+              sendPageView();
+              return result;
+            };
+
+            const originalReplaceState = history.replaceState;
+            history.replaceState = function(...args) {
+              const result = originalReplaceState.apply(this, args);
+              sendPageView();
+              return result;
+            };
+
+            window.addEventListener('popstate', () => {
+              sendPageView();
+            });
+          })();
         </script>
       {% endif -%}
       {# End Google tag -#}

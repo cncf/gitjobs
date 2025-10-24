@@ -42,6 +42,8 @@
       <button id="job-preview-{{ job.job_id }}"
               data-preview-job="true"
               data-job-id="{{ job.job_id }}"
+              data-job-title="{{ job.title }}"
+              data-job-company="{{ job.employer.company }}"
               hx-get="/section/jobs/{{ job.job_id }}"
               hx-target="#job-view"
               hx-trigger="click,open-modal,open-modal-on-popstate"

@@ -35,6 +35,69 @@ test.describe('GitJobs', () => {
       }
     }
   });
+
+  test('should apply multiple filters and verify that the results are updated', async ({ page }) => {
+    await page.locator('div:nth-child(4) > div > .font-semibold').first().click();
+    await page.locator('label').filter({ hasText: 'Part Time' }).nth(1).click();
+    await page.locator('label').filter({ hasText: 'Internship' }).nth(1).click();
+
+    await page.waitForFunction(
+      () => {
+        const currentCount = document.querySelectorAll('[data-preview-job="true"]').length;
+        return currentCount === 6;
+      }
+    );
+
+    const jobCards = await page.getByRole('button', { name: /Job type/ }).all();
+    for (const jobCard of jobCards) {
+      const jobTypeElement = jobCard.locator('.capitalize').first();
+      if (await jobTypeElement.isVisible()) {
+        const jobTypeText = await jobTypeElement.textContent();
+        expect(['part time', 'internship']).toContain(jobTypeText?.trim());
+      }
+    }
+  });
+
+  test('should search for a job and verify that the results are updated and contain the search term', async ({ page }) => {
+    await page.locator('input[placeholder="Search jobs"]').click();
+    await page.locator('input[placeholder="Search jobs"]').fill('Engineer');
+    await page.locator('#search-jobs-btn').click();
+
+    const jobTitleSelector = '.text-base.font-stretch-condensed.font-medium.text-stone-900.line-clamp-2.md\\:line-clamp-1';
+    await page.waitForFunction(
+      ({ selector, term }) => {
+        const nodes = Array.from(document.querySelectorAll(selector));
+        if (nodes.length === 0) {
+          return false;
+        }
+        return nodes.every(node => node.textContent?.toLowerCase().includes(term));
+      },
+      { selector: jobTitleSelector, term: 'engineer' }
+    );
+
+    const jobTitles = await page.locator(jobTitleSelector).allTextContents();
+    for (const title of jobTitles) {
+      expect(title.trim().toLowerCase()).toContain('engineer');
+    }
+  });
+
+  test('should apply a filter and verify that the results are updated on mobile', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 667 });
+    await page.locator('#open-filters').click();
+    await page.waitForSelector('#drawer-filters', { state: 'visible' });
+    await page.locator('#drawer-filters label').filter({ hasText: 'Full Time' }).click();
+    await page.locator('#close-filters').click();
+    await page.waitForTimeout(500);
+
+    const jobCards = await page.getByRole('button', { name: /Job type/ }).all();
+    for (const jobCard of jobCards) {
+      const jobTypeElement = jobCard.locator('.capitalize').first();
+      if (await jobTypeElement.isVisible()) {
+        await expect(jobTypeElement).toHaveText('full time');
+      }
+    }
+  });
+
   test('should reset filters', async ({ page }) => {
     await page.locator('label').filter({ hasText: 'Part Time' }).nth(1).click();
 
@@ -64,6 +127,49 @@ test.describe('GitJobs', () => {
     expect(sortedJobTitles[3]).toBe('Backend Developer');
     expect(sortedJobTitles[4]).toBe('Frontend Developer');
     expect(sortedJobTitles).not.toEqual(initialJobTitles);
+  });
+
+  test('ensure filters and search persist on page refresh', async ({ page }) => {
+    await page.locator('input[placeholder="Search jobs"]').fill('Engineer');
+    await page.locator('label').filter({ hasText: 'Full Time' }).nth(1).click();
+    await page.waitForTimeout(500);
+
+    const urlBeforeRefresh = page.url();
+    expect(urlBeforeRefresh).toContain('Engineer');
+    expect(urlBeforeRefresh).toContain('full-time');
+
+    await page.reload();
+    await page.waitForTimeout(500);
+
+    const urlAfterRefresh = page.url();
+    expect(urlAfterRefresh).toBe(urlBeforeRefresh);
+
+    const searchInput = await page.locator('input[placeholder="Search jobs"]').inputValue();
+    expect(searchInput).toBe('Engineer');
+
+    const fullTimeCheckbox = await page.locator('input[id="desktop-kind[]-full-time"]').isChecked();
+    expect(fullTimeCheckbox).toBe(true);
+  });
+
+  test('should show hover states and preview on job card interactions', async ({ page }) => {
+    await page.waitForSelector('[data-preview-job="true"]');
+    const firstJobCard = page.locator('[data-preview-job="true"]').first();
+
+    // Test quick preview without opening modal
+    const jobTitle = await firstJobCard.locator('.text-base.font-stretch-condensed.font-medium.text-stone-900.line-clamp-2.md\\:line-clamp-1').textContent();
+
+    // Verify job card shows basic info without modal
+    expect(jobTitle?.trim()).toBeTruthy();
+    expect(jobTitle?.trim()).toBe('Frontend Developer');
+
+    // Test hover state - verify card is hoverable
+    await firstJobCard.hover();
+    await expect(firstJobCard).toBeVisible();
+
+    // Ensure modal is not open before or after hovering
+    await expect(page.locator('#preview-modal')).not.toBeVisible();
+    await page.waitForTimeout(300);
+    await expect(page.locator('#preview-modal')).not.toBeVisible();
   });
 
   test('should navigate to the stats page and interact with charts', async ({ page, browserName }) => {
@@ -105,6 +211,33 @@ test.describe('GitJobs', () => {
     await page.locator('#username').fill('test');
     await page.locator('#password').fill('test');
     await page.getByRole('button', { name: 'Submit' }).click();
+  });
+
+  test('should log out a user', async ({ page }) => {
+    await page.locator('#user-dropdown-button').click();
+    await page.getByRole('link', { name: 'Log in' }).click();
+    await page.waitForURL('**/log-in');
+
+    await page.locator('#username').fill('test');
+    await page.locator('#password').fill('test');
+    await page.getByRole('button', { name: 'Submit' }).click();
+
+    await expect(page).toHaveURL(/\/$/);
+    await page.locator('#user-dropdown-button').click();
+    await page.getByRole('link', { name: 'Log out' }).click();
+    await page.waitForURL('**/log-in');
+  });
+
+  test('invalid credentials stay on log in page', async ({ page }) => {
+    await page.locator('#user-dropdown-button').click();
+    await page.getByRole('link', { name: 'Log in' }).click();
+    await page.waitForURL('**/log-in');
+
+    await page.locator('#username').fill('test');
+    await page.locator('#password').fill('wrong');
+    await page.getByRole('button', { name: 'Submit' }).click();
+
+    await expect(page).toHaveURL('/log-in');
   });
 
   test('should add a new job', async ({ page }) => {
@@ -152,6 +285,39 @@ test.describe('GitJobs', () => {
     await expect(page.getByRole('button', { name: 'Apply' })).toBeEnabled();
     await expect(page.locator('#preview-content').getByText(/Published/)).toBeVisible();
     await expect(page.getByText('Share this job')).toBeVisible();
+  });
+
+  test('should display share buttons properly', async ({ page }) => {
+    await page.waitForSelector('[data-preview-job="true"]');
+    await page.locator('[data-preview-job="true"]').first().click();
+    await expect(page.locator('#preview-modal .text-xl')).toBeVisible({ timeout: 10000 });
+
+    const shareButtons = [
+      { title: 'Twitter share link', name: 'Twitter' },
+      { title: 'Facebook share link', name: 'Facebook' },
+      { title: 'LinkedIn share link', name: 'LinkedIn' },
+      { title: 'Email share link', name: 'Email' },
+      { title: 'Copy link', name: 'Copy' },
+    ];
+
+    for (const button of shareButtons) {
+      const element = page.getByTitle(button.title);
+      await expect(element).toBeVisible();
+      if (button.title !== 'Copy link' && button.title !== 'Email share link') {
+        const href = await element.getAttribute('href');
+        expect(href).toBeTruthy();
+        expect(href).toMatch(/^https?:\/\//);
+        expect(href).toContain(button.name.toLowerCase());
+      } else {
+        if (button.title === 'Email share link') {
+          const href = await element.getAttribute('href');
+          expect(href).toBeTruthy();
+          expect(href).toMatch(/^mailto:/);
+        } else {
+        await expect(element).toBeEnabled();
+        }
+      }
+    }
   });
 
   test('should allow paginating through jobs', async ({ page }) => {

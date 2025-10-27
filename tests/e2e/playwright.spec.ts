@@ -1,8 +1,20 @@
 import { test, expect } from '@playwright/test';
+import {
+  jobCards,
+  jobTitles,
+  jobTypeButtons,
+  loginWithCredentials,
+  openLoginPage,
+  openSignUpPage,
+  openUserMenu,
+  searchInput,
+  waitForJobCount,
+  JOB_TITLE_SELECTOR,
+} from './utils';
 
 test.describe('GitJobs', () => {
   test.beforeEach(async ({ page }) => {
-    for (let i = 0; i < 3; i++) {
+   for (let i = 0; i < 3; i++) {
       try {
         await page.goto('/', { timeout: 60000 });
         break;
@@ -20,15 +32,10 @@ test.describe('GitJobs', () => {
   test('should apply a filter and verify that the results are updated', async ({ page }) => {
     await page.locator('div:nth-child(4) > div > .font-semibold').first().click();
     await page.locator('label').filter({ hasText: 'Full Time' }).nth(1).click();
-    await page.waitForFunction(
-      () => {
-        const currentCount = document.querySelectorAll('[data-preview-job="true"]').length;
-        return currentCount === 12;
-      }
-    );
+    await waitForJobCount(page, 12);
 
-    const jobCards = await page.getByRole('button', { name: /Job type/ }).all();
-    for (const jobCard of jobCards) {
+    const jobTypeButtonsList = await jobTypeButtons(page).all();
+    for (const jobCard of jobTypeButtonsList) {
       const jobTypeElement = jobCard.locator('.capitalize').first();
       if (await jobTypeElement.isVisible()) {
         await expect(jobTypeElement).toHaveText('full time');
@@ -41,15 +48,10 @@ test.describe('GitJobs', () => {
     await page.locator('label').filter({ hasText: 'Part Time' }).nth(1).click();
     await page.locator('label').filter({ hasText: 'Internship' }).nth(1).click();
 
-    await page.waitForFunction(
-      () => {
-        const currentCount = document.querySelectorAll('[data-preview-job="true"]').length;
-        return currentCount === 6;
-      }
-    );
+    await waitForJobCount(page, 6);
 
-    const jobCards = await page.getByRole('button', { name: /Job type/ }).all();
-    for (const jobCard of jobCards) {
+    const jobTypeButtonsList = await jobTypeButtons(page).all();
+    for (const jobCard of jobTypeButtonsList) {
       const jobTypeElement = jobCard.locator('.capitalize').first();
       if (await jobTypeElement.isVisible()) {
         const jobTypeText = await jobTypeElement.textContent();
@@ -59,11 +61,10 @@ test.describe('GitJobs', () => {
   });
 
   test('should search for a job and verify that the results are updated and contain the search term', async ({ page }) => {
-    await page.locator('input[placeholder="Search jobs"]').click();
-    await page.locator('input[placeholder="Search jobs"]').fill('Engineer');
+    await searchInput(page).click();
+    await searchInput(page).fill('Engineer');
     await page.locator('#search-jobs-btn').click();
 
-    const jobTitleSelector = '.text-base.font-stretch-condensed.font-medium.text-stone-900.line-clamp-2.md\\:line-clamp-1';
     await page.waitForFunction(
       ({ selector, term }) => {
         const nodes = Array.from(document.querySelectorAll(selector));
@@ -72,11 +73,11 @@ test.describe('GitJobs', () => {
         }
         return nodes.every(node => node.textContent?.toLowerCase().includes(term));
       },
-      { selector: jobTitleSelector, term: 'engineer' }
+      { selector: JOB_TITLE_SELECTOR, term: 'engineer' }
     );
 
-    const jobTitles = await page.locator(jobTitleSelector).allTextContents();
-    for (const title of jobTitles) {
+    const jobTitleValues = await jobTitles(page).allTextContents();
+    for (const title of jobTitleValues) {
       expect(title.trim().toLowerCase()).toContain('engineer');
     }
   });
@@ -89,8 +90,8 @@ test.describe('GitJobs', () => {
     await page.locator('#close-filters').click();
     await page.waitForTimeout(500);
 
-    const jobCards = await page.getByRole('button', { name: /Job type/ }).all();
-    for (const jobCard of jobCards) {
+    const jobTypeButtonsList = await jobTypeButtons(page).all();
+    for (const jobCard of jobTypeButtonsList) {
       const jobTypeElement = jobCard.locator('.capitalize').first();
       if (await jobTypeElement.isVisible()) {
         await expect(jobTypeElement).toHaveText('full time');
@@ -101,26 +102,21 @@ test.describe('GitJobs', () => {
   test('should reset filters', async ({ page }) => {
     await page.locator('label').filter({ hasText: 'Part Time' }).nth(1).click();
 
-    await page.waitForFunction(
-      () => {
-        const currentCount = document.querySelectorAll('[data-preview-job="true"]').length;
-        return currentCount === 3;
-      }
-    );
-    const firstJobAfterFilter = await page.locator('.text-base.font-stretch-condensed.font-medium.text-stone-900.line-clamp-2.md\\:line-clamp-1').first().textContent();
+    await waitForJobCount(page, 3);
+    const firstJobAfterFilter = await jobTitles(page).first().textContent();
     expect(firstJobAfterFilter!.trim()).toBe('Data Scientist');
     await page.locator('#reset-desktop-filters').click();
     await expect(page.locator('#results')).toHaveText('1 - 20 of 21 results');
-    const firstJobAfterReset = await page.locator('.text-base.font-stretch-condensed.font-medium.text-stone-900.line-clamp-2.md\\:line-clamp-1').first().textContent();
+    const firstJobAfterReset = await jobTitles(page).first().textContent();
     expect(firstJobAfterReset!.trim()).toBe('Frontend Developer');
   });
 
   test('should sort jobs', async ({ page }) => {
-    const initialJobTitles = (await page.locator('.text-base.font-stretch-condensed.font-medium.text-stone-900.line-clamp-2.md\\:line-clamp-1').allTextContents()).map(title => title.trim());
+    const initialJobTitles = (await jobTitles(page).allTextContents()).map(title => title.trim());
     await page.locator('#sort-desktop').selectOption('salary');
     await expect(page).toHaveURL(/\?sort=salary/);
     await page.waitForTimeout(500);
-    const sortedJobTitles = (await page.locator('.text-base.font-stretch-condensed.font-medium.text-stone-900.line-clamp-2.md\\:line-clamp-1').allTextContents()).map(title => title.trim());
+    const sortedJobTitles = (await jobTitles(page).allTextContents()).map(title => title.trim());
     expect(sortedJobTitles[0]).toBe('Security Engineer');
     expect(sortedJobTitles[1]).toBe('DevOps Engineer');
     expect(sortedJobTitles[2]).toBe('Product Manager');
@@ -130,7 +126,7 @@ test.describe('GitJobs', () => {
   });
 
   test('ensure filters and search persist on page refresh', async ({ page }) => {
-    await page.locator('input[placeholder="Search jobs"]').fill('Engineer');
+    await searchInput(page).fill('Engineer');
     await page.locator('label').filter({ hasText: 'Full Time' }).nth(1).click();
     await page.waitForTimeout(500);
 
@@ -144,19 +140,19 @@ test.describe('GitJobs', () => {
     const urlAfterRefresh = page.url();
     expect(urlAfterRefresh).toBe(urlBeforeRefresh);
 
-    const searchInput = await page.locator('input[placeholder="Search jobs"]').inputValue();
-    expect(searchInput).toBe('Engineer');
+    const persistedSearch = await searchInput(page).inputValue();
+    expect(persistedSearch).toBe('Engineer');
 
     const fullTimeCheckbox = await page.locator('input[id="desktop-kind[]-full-time"]').isChecked();
     expect(fullTimeCheckbox).toBe(true);
   });
 
   test('should show hover states and preview on job card interactions', async ({ page }) => {
-    await page.waitForSelector('[data-preview-job="true"]');
-    const firstJobCard = page.locator('[data-preview-job="true"]').first();
+    await jobCards(page).first().waitFor();
+    const firstJobCard = jobCards(page).first();
 
     // Test quick preview without opening modal
-    const jobTitle = await firstJobCard.locator('.text-base.font-stretch-condensed.font-medium.text-stone-900.line-clamp-2.md\\:line-clamp-1').textContent();
+    const jobTitle = await firstJobCard.locator(JOB_TITLE_SELECTOR).textContent();
 
     // Verify job card shows basic info without modal
     expect(jobTitle?.trim()).toBeTruthy();
@@ -199,39 +195,25 @@ test.describe('GitJobs', () => {
   });
 
   test('should navigate to the sign-up page', async ({ page }) => {
-    await page.locator('#user-dropdown-button').click();
-    await page.getByRole('link', { name: 'Sign up' }).click();
+    await openSignUpPage(page);
     await expect(page).toHaveURL(/\/sign-up/);
   });
 
   test('should log in a user', async ({ page }) => {
-    await page.locator('#user-dropdown-button').click();
-    await page.getByRole('link', { name: 'Log in' }).click();
-    await page.waitForURL('**/log-in');
-    await page.locator('#username').fill('test');
-    await page.locator('#password').fill('test');
-    await page.getByRole('button', { name: 'Submit' }).click();
+    await loginWithCredentials(page, 'test', 'test');
   });
 
   test('should log out a user', async ({ page }) => {
-    await page.locator('#user-dropdown-button').click();
-    await page.getByRole('link', { name: 'Log in' }).click();
-    await page.waitForURL('**/log-in');
-
-    await page.locator('#username').fill('test');
-    await page.locator('#password').fill('test');
-    await page.getByRole('button', { name: 'Submit' }).click();
+    await loginWithCredentials(page, 'test', 'test');
 
     await expect(page).toHaveURL(/\/$/);
-    await page.locator('#user-dropdown-button').click();
+    await openUserMenu(page);
     await page.getByRole('link', { name: 'Log out' }).click();
     await page.waitForURL('**/log-in');
   });
 
   test('invalid credentials stay on log in page', async ({ page }) => {
-    await page.locator('#user-dropdown-button').click();
-    await page.getByRole('link', { name: 'Log in' }).click();
-    await page.waitForURL('**/log-in');
+    await openLoginPage(page);
 
     await page.locator('#username').fill('test');
     await page.locator('#password').fill('wrong');
@@ -241,12 +223,7 @@ test.describe('GitJobs', () => {
   });
 
   test('should add a new job', async ({ page }) => {
-    await page.locator('#user-dropdown-button').click();
-    await page.getByRole('link', { name: 'Log in' }).click();
-    await page.waitForURL('**/log-in');
-    await page.locator('#username').fill('test');
-    await page.locator('#password').fill('test');
-    await page.getByRole('button', { name: 'Submit' }).click();
+    await loginWithCredentials(page, 'test', 'test');
     await page.goto('/');
 
     await page.getByRole('link', { name: 'Post a job' }).click();
@@ -270,8 +247,8 @@ test.describe('GitJobs', () => {
     const expectedSalaryCurrency = 'USD';
     const expectedSalaryPeriod = '/ year';
 
-    await page.waitForSelector('[data-preview-job="true"]');
-    await page.locator('[data-preview-job="true"]').first().click();
+    await jobCards(page).first().waitFor();
+    await jobCards(page).first().click();
     await expect(page.locator('#preview-modal .text-xl')).toBeVisible({ timeout: 10000 });
 
     await expect(page.locator('.text-xl.lg\\:leading-tight.font-stretch-condensed.font-medium.text-stone-900.lg\\:truncate.my-1\\.5.md\\:my-0')).toHaveText(expectedTitle);
@@ -288,8 +265,8 @@ test.describe('GitJobs', () => {
   });
 
   test('should display share buttons properly', async ({ page }) => {
-    await page.waitForSelector('[data-preview-job="true"]');
-    await page.locator('[data-preview-job="true"]').first().click();
+    await jobCards(page).first().waitFor();
+    await jobCards(page).first().click();
     await expect(page.locator('#preview-modal .text-xl')).toBeVisible({ timeout: 10000 });
 
     const shareButtons = [
@@ -314,7 +291,7 @@ test.describe('GitJobs', () => {
           expect(href).toBeTruthy();
           expect(href).toMatch(/^mailto:/);
         } else {
-        await expect(element).toBeEnabled();
+          await expect(element).toBeEnabled();
         }
       }
     }

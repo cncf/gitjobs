@@ -166,10 +166,7 @@ begin
                     where project_id = any(
                         select project_id
                         from project p
-                        join json_table((p_filters->'projects'), '$[*]' columns (
-                            foundation text path '$.foundation',
-                            name text path '$.name'
-                        )) fp
+                        join jsonb_to_recordset(p_filters->'projects') as fp(foundation text, name text)
                         on p.foundation = fp.foundation and p.name = fp.name
                     )
                 )

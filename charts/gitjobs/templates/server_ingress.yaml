@@ -15,7 +15,7 @@ spec:
     service:
       name: {{ include "chart.resourceNamePrefix" . }}server
       port:
-        number: {{ .Values.server.service.port }}
+        number: {{ .Values.server.ingress.backendServicePort }}
   {{- with .Values.server.ingress.rules }}
   rules:
     {{- toYaml . | nindent 4 }}

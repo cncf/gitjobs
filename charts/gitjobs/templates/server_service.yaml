@@ -5,13 +5,18 @@ metadata:
   labels:
     app.kubernetes.io/component: server
     {{- include "chart.labels" . | nindent 4 }}
+  {{- with .Values.server.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
-  type: {{ .Values.server.service.type }}
+  {{- $serviceType := default "ClusterIP" .Values.server.service.type }}
+  {{- if eq $serviceType "LoadBalancer" }}
+  allocateLoadBalancerNodePorts: {{ .Values.server.service.allocateLoadBalancerNodePorts }}
+  {{- end }}
+  type: {{ $serviceType }}
   ports:
-    - port: {{ .Values.server.service.port }}
-      targetPort: http
-      protocol: TCP
-      name: http
+    {{- toYaml .Values.server.service.ports | nindent 4 }}
   selector:
     app.kubernetes.io/component: server
     {{- include "chart.selectorLabels" . | nindent 4 }}

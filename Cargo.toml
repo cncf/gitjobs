@@ -32,7 +32,7 @@ image = "0.25.8"
 lettre = { version = "0.11.19", default-features = false, features = ["builder", "hostname", "pool", "smtp-transport", "tokio1-rustls-tls"] }
 markdown = "1.0.0-alpha.24"
 mime_guess = "2.0.5"
-minify-html = "0.16.4"
+minify-html = "0.16.5"
 mockall = "0.13.1"
 num-format = "0.4.4"
 oauth2 = "5.0.0"

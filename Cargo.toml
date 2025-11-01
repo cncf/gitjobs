@@ -24,7 +24,7 @@ chrono = { version = "0.4.42", features = ["serde"] }
 chrono-tz = { version = "0.10.4", features = ["serde"] }
 clap = { version = "4.5.49", features = ["derive"] }
 deadpool-postgres = { version = "0.14.1", features = ["serde"] }
-emojis = "0.7.2"
+emojis = "0.8.0"
 figment = { version = "0.10.19", features = ["yaml", "env"] }
 futures = "0.3.31"
 human_format = "1.1.0"

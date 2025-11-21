@@ -215,6 +215,13 @@
   font-weight: 600 !important;
 }
 
+.markdown * {
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
 /* End markdown */
 
 

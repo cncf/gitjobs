@@ -12,7 +12,7 @@ WORKDIR /gitjobs/gitjobs-server
 RUN cargo build --release
 
 # Final stage
-FROM alpine:3.22.2
+FROM alpine:3.23.3
 RUN apk --no-cache add ca-certificates && addgroup -S gitjobs && adduser -S gitjobs -G gitjobs
 USER gitjobs
 WORKDIR /home/gitjobs

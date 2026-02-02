@@ -2,12 +2,12 @@
 
 <div class="space-y-12">
   <div>
-    {% call macros::form_title(title = "Employer profile", description = "This information will be displayed in your jobs postings. You can update it at anytime.") -%}
+    {{ macros::form_title(title = "Employer profile", description = "This information will be displayed in your jobs postings. You can update it at anytime.") -}}
   </div>
 
   <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 max-w-5xl">
     {# Form image -#}
-    <div class="col-span-full">{% call macros::images_form(label = "Company logo", name = "logo_id") -%}</div>
+    <div class="col-span-full">{{ macros::images_form(label = "Company logo", name = "logo_id") -}}</div>
     {# End form image -#}
   </div>
 
@@ -82,7 +82,7 @@
       <div class="col-span-full">
         <div class="form-label">Public</div>
         <label class="mt-2 inline-flex items-center cursor-pointer">
-          {% call macros::toggle_checkbox(id = "public", checked = true) -%}
+          {{ macros::toggle_checkbox(id = "public", checked = true) -}}
           <span class="ms-3 text-sm font-medium text-stone-900">Display in employers listing</span>
         </label>
         <p class="form-legend">
@@ -106,7 +106,7 @@
       <div class="relative">
         {# Submit employer form button -#}
         <button type="submit" class="btn-primary">
-          {% call macros::btn_spinner(id = "save-spinner", spinner_type = "2") -%}
+          {{ macros::btn_spinner(id = "save-spinner", spinner_type = "2") -}}
           Save
         </button>
         {# End submit employer form button -#}

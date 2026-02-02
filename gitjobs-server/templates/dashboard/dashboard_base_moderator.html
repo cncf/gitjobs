@@ -40,10 +40,7 @@
 
     {# Menu content -#}
     <div class="flex flex-col justify-between pb-5 pt-1 h-full">
-      <div class="flex flex-col grow min-h-0 w-full">
-        {% block menu -%}
-        {% endblock menu -%}
-      </div>
+      <div class="flex flex-col grow min-h-0 w-full">{% include "dashboard/moderator/menu.html" -%}</div>
 
       <div class="w-full px-3 lg:px-5 shrink-0">
         {# Analytics -#}
@@ -51,7 +48,7 @@
           {# Osano -#}
           {%- if let Some(osano_script_url) = analytics.osano_script_url -%}
             {# Cookie preferences -#}
-            {% call macros::cookie_button(id = "btn-cookies-mobile", close_drawer = true, extra_styles = "mt-4 mb-8") -%}
+            {{ macros::cookie_button(id = "btn-cookies-mobile", close_drawer = true, extra_styles = "mt-4 mb-8") -}}
             {# End cookie preferences -#}
           {%- endif -%}
         {% endif -%}
@@ -97,10 +94,7 @@
     {# Sticky menu -#}
     <aside class="hidden lg:flex h-dvh sticky top-0 w-[225px] lg:w-[300px]">
       <div class="flex flex-col justify-between py-5 pt-24 h-full w-full">
-        <div class="flex flex-col grow min-h-0 w-full">
-          {% block menu -%}
-          {% endblock menu -%}
-        </div>
+        <div class="flex flex-col grow min-h-0 w-full">{% include "dashboard/moderator/menu.html" -%}</div>
 
         <div class="w-full px-3 lg:px-5 shrink-0">
           {# Analytics -#}
@@ -108,7 +102,7 @@
             {# Osano -#}
             {%- if let Some(osano_script_url) = analytics.osano_script_url -%}
               {# Cookie preferences -#}
-              {% call macros::cookie_button(extra_styles = "mt-4 mb-8") -%}
+              {{ macros::cookie_button(extra_styles = "mt-4 mb-8") -}}
               {# End cookie preferences -#}
             {%- endif -%}
           {% endif -%}

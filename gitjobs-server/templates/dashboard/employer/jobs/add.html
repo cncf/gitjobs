@@ -11,7 +11,7 @@
       hx-disabled-elt="button[type=submit], #publish-job, #cancel-button, #preview-button">
   <div class="space-y-12">
     <div class="border-b border-stone-900/10 pb-12">
-      {% call macros::form_title(title = "Job details", description = "Please add as many details about this job as possible. You can save it as a draft and come back later to finish it.") -%}
+      {{ macros::form_title(title = "Job details", description = "Please add as many details about this job as possible. You can save it as a draft and come back later to finish it.") -}}
 
       <div class="border border-primary-500 rounded-lg mt-10 p-8 bg-primary-50/20"
            role="alert">
@@ -71,10 +71,10 @@
                 <select id="tz_start"
                         name="tz_start"
                         class="select-primary ps-10 aligned-right">
-                  {% call macros::select_option(value = "", label = "") -%}
+                  {{ macros::select_option(value = "", label = "") -}}
                   {% for i in 0..25 -%}
                     {% let timezone = format!("UTC{:+}", (12 - i)) -%}
-                    {% call macros::select_option(value = timezone, label = timezone) -%}
+                    {{ macros::select_option(value = timezone, label = timezone) -}}
                   {% endfor -%}
                 </select>
               </div>
@@ -86,10 +86,10 @@
               <div class="mt-2 grid grid-cols-1 relative">
                 <div class="absolute pointer-events-none top-3 start-3 text-xs text-stone-500">End</div>
                 <select id="tz_end" name="tz_end" class="select-primary ps-10 aligned-right">
-                  {% call macros::select_option(value = "", label = "") -%}
+                  {{ macros::select_option(value = "", label = "") -}}
                   {% for i in 0..25 -%}
                     {% let timezone = format!("UTC{:+}", (12 - i)) -%}
-                    {% call macros::select_option(value = timezone, label = timezone) -%}
+                    {{ macros::select_option(value = timezone, label = timezone) -}}
                   {% endfor -%}
                 </select>
               </div>
@@ -108,19 +108,19 @@
           </label>
           <div class="mt-2 grid grid-cols-4 gap-x-6">
             {# Full time -#}
-            {% call macros::radio_box(name = "kind", value = JobKind::FullTime, label = "Full Time", icon = "signature", checked = JobKind::FullTime, required = true) -%}
+            {{ macros::radio_box(name = "kind", value = JobKind::FullTime, label = "Full Time", icon = "signature", checked = JobKind::FullTime, required = true) -}}
             {# End Full time -#}
 
             {# Part time -#}
-            {% call macros::radio_box(name = "kind", value = JobKind::PartTime, label = "Part Time", icon = "hour_glass", checked = JobKind::FullTime, required = true) -%}
+            {{ macros::radio_box(name = "kind", value = JobKind::PartTime, label = "Part Time", icon = "hour_glass", checked = JobKind::FullTime, required = true) -}}
             {# End Part time -#}
 
             {# Contractor -#}
-            {% call macros::radio_box(name = "kind", value = JobKind::Contractor, label = "Contractor", icon = "clipboard", checked = JobKind::FullTime, required = true) -%}
+            {{ macros::radio_box(name = "kind", value = JobKind::Contractor, label = "Contractor", icon = "clipboard", checked = JobKind::FullTime, required = true) -}}
             {# End Contractor -#}
 
             {# Internship -#}
-            {% call macros::radio_box(name = "kind", value = JobKind::Internship, label = "Internship", icon = "graduation_cap", checked = JobKind::FullTime, required = true) -%}
+            {{ macros::radio_box(name = "kind", value = JobKind::Internship, label = "Internship", icon = "graduation_cap", checked = JobKind::FullTime, required = true) -}}
             {# End Internship -#}
           </div>
         </div>
@@ -133,15 +133,15 @@
           </label>
           <div class="mt-2 grid grid-cols-4 gap-x-6">
             {# On site -#}
-            {% call macros::radio_box(name = "workplace", value = Workplace::OnSite, label = "On Site", icon = "office_chair", checked = Workplace::OnSite, required = true) -%}
+            {{ macros::radio_box(name = "workplace", value = Workplace::OnSite, label = "On Site", icon = "office_chair", checked = Workplace::OnSite, required = true) -}}
             {# End On site -#}
 
             {# Remote -#}
-            {% call macros::radio_box(name = "workplace", value = Workplace::Remote, label = "Remote", icon = "remote", checked = Workplace::OnSite, required = true) -%}
+            {{ macros::radio_box(name = "workplace", value = Workplace::Remote, label = "Remote", icon = "remote", checked = Workplace::OnSite, required = true) -}}
             {# End Remote -#}
 
             {# Hybrid -#}
-            {% call macros::radio_box(name = "workplace", value = Workplace::Hybrid, label = "Hybrid", icon = "buildings", checked = Workplace::OnSite, required = true) -%}
+            {{ macros::radio_box(name = "workplace", value = Workplace::Hybrid, label = "Hybrid", icon = "buildings", checked = Workplace::OnSite, required = true) -}}
             {# End Hybrid -#}
           </div>
         </div>
@@ -164,12 +164,12 @@
           <label for="seniority" class="form-label">Seniority level</label>
           <div class="mt-2 grid grid-cols-1">
             <select id="seniority" name="seniority" class="select-primary">
-              {% call macros::select_option(value = "", label = "") -%}
-              {% call macros::select_option(value = "entry", label = "Entry") -%}
-              {% call macros::select_option(value = "junior", label = "Junior") -%}
-              {% call macros::select_option(value = "mid", label = "Mid") -%}
-              {% call macros::select_option(value = "senior", label = "Senior") -%}
-              {% call macros::select_option(value = "lead", label = "Lead") -%}
+              {{ macros::select_option(value = "", label = "") -}}
+              {{ macros::select_option(value = "entry", label = "Entry") -}}
+              {{ macros::select_option(value = "junior", label = "Junior") -}}
+              {{ macros::select_option(value = "mid", label = "Mid") -}}
+              {{ macros::select_option(value = "senior", label = "Senior") -}}
+              {{ macros::select_option(value = "lead", label = "Lead") -}}
             </select>
           </div>
           <p class="form-legend">Experience level required for the position.</p>
@@ -236,7 +236,7 @@
 
     {# Salary section -#}
     <div class="border-b border-stone-900/10 pb-12">
-      {% call macros::form_title(title = "Compensation", description = "This section includes the salary details and benefits.") -%}
+      {{ macros::form_title(title = "Compensation", description = "This section includes the salary details and benefits.") -}}
 
       <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-6 max-w-5xl">
         {# Salary kind -#}
@@ -312,13 +312,13 @@
           <label for="salary_currency" class="form-label">Currency</label>
           <div class="mt-2 grid grid-cols-1">
             <select id="salary_currency" name="salary_currency" class="select-primary">
-              {% call macros::select_option(value = "", label = "") -%}
-              {% call macros::select_option(value = "USD", label = "USD - United States Dollar") -%}
-              {% call macros::select_option(value = "EUR", label = "EUR - Euro") -%}
-              {% call macros::select_option(value = "GBP", label = "GBP - British Pound Sterling") -%}
-              {% call macros::select_option(value = "CHF", label = "CHF - Swiss Franc") -%}
-              {% call macros::select_option(value = "CAD", label = "CAD - Canadian Dollar") -%}
-              {% call macros::select_option(value = "JPY", label = "JPY - Japanese Yen") -%}
+              {{ macros::select_option(value = "", label = "") -}}
+              {{ macros::select_option(value = "USD", label = "USD - United States Dollar") -}}
+              {{ macros::select_option(value = "EUR", label = "EUR - Euro") -}}
+              {{ macros::select_option(value = "GBP", label = "GBP - British Pound Sterling") -}}
+              {{ macros::select_option(value = "CHF", label = "CHF - Swiss Franc") -}}
+              {{ macros::select_option(value = "CAD", label = "CAD - Canadian Dollar") -}}
+              {{ macros::select_option(value = "JPY", label = "JPY - Japanese Yen") -}}
             </select>
           </div>
         </div>
@@ -329,12 +329,12 @@
           <label for="salary_period" class="form-label">Timeframe</label>
           <div class="mt-2 grid grid-cols-1">
             <select id="salary_period" name="salary_period" class="select-primary">
-              {% call macros::select_option(value = "", label = "") -%}
-              {% call macros::select_option(value = "year", label = "Year") -%}
-              {% call macros::select_option(value = "month", label = "Month") -%}
-              {% call macros::select_option(value = "week", label = "Week") -%}
-              {% call macros::select_option(value = "day", label = "Day") -%}
-              {% call macros::select_option(value = "hour", label = "Hour") -%}
+              {{ macros::select_option(value = "", label = "") -}}
+              {{ macros::select_option(value = "year", label = "Year") -}}
+              {{ macros::select_option(value = "month", label = "Month") -}}
+              {{ macros::select_option(value = "week", label = "Week") -}}
+              {{ macros::select_option(value = "day", label = "Day") -}}
+              {{ macros::select_option(value = "hour", label = "Hour") -}}
             </select>
           </div>
         </div>
@@ -351,7 +351,7 @@
 
     {# Open Source -#}
     <div class="border-b border-stone-900/10 pb-12">
-      {% call macros::form_title(title = "Open Source", description = "Does this job involve working on open source projects? Does it offer time to contribute to upstream projects?") -%}
+      {{ macros::form_title(title = "Open Source", description = "Does this job involve working on open source projects? Does it offer time to contribute to upstream projects?") -}}
 
       <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-6 max-w-6xl">
         {# Open source -#}
@@ -406,7 +406,7 @@
           <span class="block md:hidden">
             <div class="svg-icon size-3 icon-eye group-hover:bg-white"></div>
           </span>
-          {% call macros::btn_spinner(id = "preview-spinner") -%}
+          {{ macros::btn_spinner(id = "preview-spinner") -}}
         </button>
         {# End preview button -#}
       </div>
@@ -424,14 +424,14 @@
 
         {# Save draft button -#}
         <button type="submit" class="btn-secondary">
-          {% call macros::btn_spinner(id = "save-spinner", spinner_type = "3") -%}
+          {{ macros::btn_spinner(id = "save-spinner", spinner_type = "3") -}}
           Save draft
         </button>
         {# End save draft button -#}
 
         {# Publish button -#}
         <button id="publish-job" type="button" class="btn-primary">
-          {% call macros::btn_spinner(id = "publish-spinner", spinner_type = "2") -%}
+          {{ macros::btn_spinner(id = "publish-spinner", spinner_type = "2") -}}
           Publish
         </button>
         {# End publish button -#}
@@ -441,7 +441,7 @@
 </form>
 
 {# Preview modal -#}
-{% call preview::modal() -%}
+{{ preview::modal() -}}
 {# End preview modal -#}
 
 <script type="module">

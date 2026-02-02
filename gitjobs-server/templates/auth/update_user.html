@@ -9,7 +9,7 @@
       hx-disabled-elt="button[type=submit]">
   <div class="space-y-12">
     <div>
-      {% call macros::form_title(title = "Account", description = "You can update your personal user account details here.") -%}
+      {{ macros::form_title(title = "Account", description = "You can update your personal user account details here.") -}}
       <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-6 max-w-5xl">
         {# Name -#}
         <div class="col-span-3">
@@ -73,7 +73,7 @@
 
     <div class="mt-6">
       <button type="submit" class="btn-primary">
-        {% call macros::btn_spinner(id = "save-user-spinner", spinner_type = "2") -%}
+        {{ macros::btn_spinner(id = "save-user-spinner", spinner_type = "2") -}}
         Save
       </button>
     </div>
@@ -95,7 +95,7 @@
         hx-disabled-elt="button[type=submit]">
     <div class="space-y-12">
       <div>
-        {% call macros::form_title(title = "Update password", description = "After updating your password all your current sessions will be terminated and you will need to log back in.") -%}
+        {{ macros::form_title(title = "Update password", description = "After updating your password all your current sessions will be terminated and you will need to log back in.") -}}
 
         <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-6 max-w-5xl">
           <div class="col-span-3">
@@ -143,7 +143,7 @@
 
       <div class="mt-6 items-center">
         <button type="submit" class="btn-primary">
-          {% call macros::btn_spinner(id = "update-password-spinner", spinner_type = "2") -%}
+          {{ macros::btn_spinner(id = "update-password-spinner", spinner_type = "2") -}}
           Save
         </button>
       </div>

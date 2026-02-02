@@ -17,7 +17,7 @@
     Please note that the verification code <strong>is only valid for 24 hours</strong>. If you haven't verified your account by then you'll need to sign up again.
   </p>
 
-  {% call macros::email_button(link = link, text = "Verify your email" ) %}
+  {{ macros::email_button(link = link, text = "Verify your email") }}
 
   <p class="default mt-30 mb-15">
     Once you've verified your email, you'll be able to log in using your credentials.

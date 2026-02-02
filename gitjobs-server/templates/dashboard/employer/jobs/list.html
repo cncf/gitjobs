@@ -1,6 +1,6 @@
 {% import "macros.html" as macros -%}
 
-{% call macros::form_title(title = "Jobs") -%}
+{{ macros::form_title(title = "Jobs") -}}
 
 <div class="flex justify-between my-10">
   <div class="flex items-center gap-x-6">
@@ -91,15 +91,13 @@
               <div class="max-w-full truncate">{{ job.title }}</div>
               {# End title job -#}
               {# Location -#}
-              <div class="block xl:hidden text-xs text-stone-500 max-w-full truncate">
-                {% call location_content(job) -%}
-              </div>
+              <div class="block xl:hidden text-xs text-stone-500 max-w-full truncate">{{ location_content(job) -}}</div>
               {# End Location -#}
             </th>
 
             {# Location -#}
             <td class="hidden xl:table-cell px-3 xl:px-5 py-4 whitespace-nowrap min-w-[100px] max-w-[100px] xl:max-w-[200px]">
-              <div class="max-w-full truncate">{% call location_content(job) -%}</div>
+              <div class="max-w-full truncate">{{ location_content(job) -}}</div>
             </td>
             {# End location -#}
 
@@ -108,7 +106,7 @@
               {% let review_notes = job.review_notes|display_some %}
               {% if job.status == JobStatus::Rejected && !review_notes.is_empty() -%}
                 <div class="relative">
-                  <div class="cursor-pointer peer">{% call macros::job_status_badge(status = job.status) -%}</div>
+                  <div class="cursor-pointer peer">{{ macros::job_status_badge(status = job.status) -}}</div>
                   <div role="tooltip"
                        class="absolute top-7 z-10 end-4 opacity-0 peer-hover:opacity-100 px-3 py-2 text-xs xl:text-sm font-medium text-white transition-opacity duration-300 bg-stone-900/80 rounded-lg shadow-xs tooltip min-w-[250px] max-w-[400px]">
                     <div class="text-wrap">{{ review_notes }}</div>
@@ -117,7 +115,7 @@
                   </div>
                 </div>
               {% else -%}
-                {% call macros::job_status_badge(status = job.status) -%}
+                {{ macros::job_status_badge(status = job.status) -}}
               {% endif -%}
             </td>
             {# End status -#}
@@ -149,7 +147,7 @@
                     <div class="svg-icon size-4 icon-stats"></div>
                     <div class="hidden" id="spinner-stats-{{ job.job_id }}">
                       {# Spinner for loading stats -#}
-                      {% call macros::btn_spinner(id = "spinner-{{ job.job_id }}", size = "size-6.5", htmx = false) -%}
+                      {{ macros::btn_spinner(id = format!("spinner-{}", job.job_id) , size = "size-6.5", htmx = false) -}}
                     </div>
                   </button>
                   <script type="module">

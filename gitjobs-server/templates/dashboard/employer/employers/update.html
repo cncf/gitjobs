@@ -2,7 +2,7 @@
 
 <div class="space-y-12">
   <div>
-    {% call macros::form_title(title = "Employer profile", description = "This information will be displayed in your jobs postings. You can update it at anytime.") -%}
+    {{ macros::form_title(title = "Employer profile", description = "This information will be displayed in your jobs postings. You can update it at anytime.") -}}
   </div>
 
   <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 max-w-5xl">
@@ -10,9 +10,9 @@
     <div class="col-span-full">
       {% if let Some(logo_id) = employer.logo_id -%}
         {% let image = &self::build_dashboard_image_url(logo_id, "small") -%}
-        {% call macros::images_form(label = "Company logo", name = "logo_id", value = logo_id.to_string(), url_image = image) -%}
+        {{ macros::images_form(label = "Company logo", name = "logo_id", value = logo_id.to_string() , url_image = image) -}}
       {% else -%}
-        {% call macros::images_form(label = "Company logo", name = "logo_id") -%}
+        {{ macros::images_form(label = "Company logo", name = "logo_id") -}}
       {% endif -%}
     </div>
     {# End form image -#}
@@ -101,7 +101,7 @@
       <div class="col-span-full">
         <div class="form-label">Public</div>
         <label class="mt-2 inline-flex items-center cursor-pointer">
-          {% call macros::toggle_checkbox(id = "public", checked = employer.public) -%}
+          {{ macros::toggle_checkbox(id = "public", checked = employer.public) -}}
           <span class="ms-3 text-sm font-medium text-stone-900">Display in employers listing</span>
         </label>
         <p class="form-legend">
@@ -125,7 +125,7 @@
       <div class="relative">
         {# Submit employer form button -#}
         <button type="submit" class="btn-primary">
-          {% call macros::btn_spinner(id = "publish-spinner", spinner_type = "2") -%}
+          {{ macros::btn_spinner(id = "publish-spinner", spinner_type = "2") -}}
           Save
         </button>
         {# End submit employer form button -#}

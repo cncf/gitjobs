@@ -1,37 +1,40 @@
 version: 2
+
+multi-ecosystem-groups:
+  backend:
+    schedule:
+      interval: "monthly"
+  infra:
+    schedule:
+      interval: "monthly"
+
 updates:
   - package-ecosystem: "cargo"
     directory: "/"
-    schedule:
-      interval: "monthly"
-    groups:
-      cli:
-        patterns:
-          - "*"
-        update-types:
-          - "minor"
-          - "patch"
+    patterns:
+      - "*"
+    multi-ecosystem-group: "backend"
 
   - package-ecosystem: "github-actions"
     directory: "/"
-    schedule:
-      interval: "monthly"
-    groups:
-      github-actions:
-        patterns:
-          - "*"
+    patterns:
+      - "*"
+    multi-ecosystem-group: "infra"
 
   - package-ecosystem: "docker"
     directory: "/gitjobs-server"
-    schedule:
-      interval: "monthly"
+    patterns:
+      - "*"
+    multi-ecosystem-group: "infra"
 
   - package-ecosystem: "docker"
     directory: "/gitjobs-syncer"
-    schedule:
-      interval: "monthly"
+    patterns:
+      - "*"
+    multi-ecosystem-group: "infra"
 
   - package-ecosystem: "docker"
     directory: "/database/migrations"
-    schedule:
-      interval: "monthly"
+    patterns:
+      - "*"
+    multi-ecosystem-group: "infra"

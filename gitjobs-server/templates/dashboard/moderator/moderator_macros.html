@@ -1,6 +1,6 @@
 {% import "misc/preview_modal.html" as preview -%}
 
-{% macro jobs_table(jobs, kind = &"live") -%}
+{% macro jobs_table(jobs, kind = "live") -%}
   <div class="hidden md:block relative overflow-visible mt-10">
     <table class="table-fixed w-full text-xs lg:text-sm text-left rtl:text-right text-stone-500">
       <thead class="text-xs text-stone-700 uppercase bg-stone-100 border-b border-stone-200">
@@ -20,9 +20,9 @@
           <tr class="bg-white border-b border-stone-200">
             {# No jobs -#}
             <td class="px-8 py-20 text-center table-cell lg:hidden xl:table-cell"
-                colspan="5">{% call placeholder_jobs() -%}</td>
+                colspan="5">{{ placeholder_jobs() -}}</td>
             <td class="px-8 py-20 text-center hidden lg:table-cell xl:hidden"
-                colspan="4">{% call placeholder_jobs() -%}</td>
+                colspan="4">{{ placeholder_jobs() -}}</td>
             {# End no jobs -#}
           </tr>
         {% else -%}
@@ -32,7 +32,7 @@
               <td class="px-3 xl:px-5 py-4">
                 <div class="text-stone-500 text-xs uppercase font-semibold truncate">{{ job.employer.company }}</div>
                 <div class="hidden lg:flex xl:hidden mt-0 lg:mt-1 xl:mt-0">
-                  {% call employer_member_badge(employer = job.employer ) -%}
+                  {{ employer_member_badge(employer = job.employer) -}}
                 </div>
               </td>
               {# End employer -#}
@@ -50,7 +50,7 @@
 
               {# Member -#}
               <td class="px-3 xl:px-5 py-4 whitespace-nowrap table-cell lg:hidden xl:table-cell">
-                {% call employer_member_badge(employer = job.employer, with_legend = false ) -%}
+                {{ employer_member_badge(employer = job.employer, with_legend = false) -}}
               </td>
               {# End member -#}
 
@@ -61,7 +61,7 @@
               {# Actions -#}
               <td class="px-3 xl:px-5">
                 <div class="flex items-center justify-center space-x-2">
-                  {% if kind == &"pending" -%}
+                  {% if kind == "pending" -%}
                     <div>
                       <button hx-put="/dashboard/moderator/jobs/{{ job.job_id }}/approve"
                               hx-disabled-elt="this"
@@ -90,7 +90,7 @@
   </div>
 {% endmacro jobs_table -%}
 
-{% macro mobile_job_card(job, kind = &"live") -%}
+{% macro mobile_job_card(job, kind = "live") -%}
   <div class="border border-stone-200 bg-white rounded-lg p-5">
     <div class="flex justify-between items-center">
       {# Comapny -#}
@@ -118,12 +118,12 @@
     {# End job -#}
 
     {# Member -#}
-    <div>{% call employer_member_badge(employer = job.employer ) -%}</div>
+    <div>{{ employer_member_badge(employer = job.employer) -}}</div>
     {# End member -#}
 
     {# Actions -#}
     <div class="flex items-center justify-center space-x-2 mt-4">
-      {% if kind == &"pending" -%}
+      {% if kind == "pending" -%}
         <div>
           <button hx-put="/dashboard/moderator/jobs/{{ job.job_id }}/approve"
                   hx-disabled-elt="this"
@@ -256,7 +256,7 @@
 {% endmacro reject_modal -%}
 
 {% macro preview_modal() -%}
-  {% call preview::modal() -%}
+  {{ preview::modal() -}}
 
   <script type="module">
     import {
@@ -284,7 +284,7 @@
 
 {% macro placeholder_jobs() -%}
   <div class="text-xl lg:text-2xl mb-10">
-    {% if kind == &"pending" -%}
+    {% if kind == "pending" -%}
       <div>There are no moderation pending jobs at the moment.</div>
     {% else -%}
       <div>There are no live jobs at the moment.</div>

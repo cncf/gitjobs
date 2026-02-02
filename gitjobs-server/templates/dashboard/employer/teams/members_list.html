@@ -1,7 +1,7 @@
 {% import "macros.html" as macros -%}
 
 <div class="flex justify-between items-center">
-  <div>{% call macros::form_title(title = "Team") -%}</div>
+  <div>{{ macros::form_title(title = "Team") -}}</div>
 
   <div>
     {# Add member button -#}
@@ -140,7 +140,7 @@
           </div>
           <div class="flex justify-end">
             <button id="add-member-submit-button" type="submit" class="btn-primary my-2">
-              {% call macros::btn_spinner(id = "add-member-spinner", spinner_type = "2") -%}
+              {{ macros::btn_spinner(id = "add-member-spinner", spinner_type = "2") -}}
               Add
             </button>
           </div>

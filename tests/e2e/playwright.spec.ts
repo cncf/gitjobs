@@ -60,6 +60,23 @@ test.describe('GitJobs', () => {
     }
   });
 
+  test('should not send empty or zero default filter values', async ({ page }) => {
+    const requestPromise = page.waitForRequest((request) => {
+      return request.method() === 'GET' && request.url().includes('/section/jobs/results');
+    });
+
+    await page.locator('label').filter({ hasText: 'Full Time' }).nth(1).click();
+
+    const requestUrl = (await requestPromise).url();
+    const query = new URL(requestUrl).search;
+
+    expect(query).not.toContain('seniority=');
+    expect(query).not.toContain('open_source=0');
+    expect(query).not.toContain('upstream_commitment=0');
+    expect(query).not.toContain('salary_min=0');
+    expect(query).not.toContain('ts_query=');
+  });
+
   test('should search for a job and verify that the results are updated and contain the search term', async ({ page }) => {
     await searchInput(page).click();
     await searchInput(page).fill('Engineer');

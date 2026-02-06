@@ -10,19 +10,19 @@
       {{ filters_subtitle(text = "Job type") -}}
       <div class="grid grid-cols-2 w-full gap-2 mt-3">
         {# Full time -#}
-        {{ checkbox(form = form, name = "kind", value = JobKind::FullTime, label = "Full Time", icon = "signature", active_filters = filters.kind, required = false, device = device) -}}
+        {{ checkbox(form = form, name = "kind[]", value = JobKind::FullTime, label = "Full Time", icon = "signature", active_filters = filters.kind, required = false, device = device) -}}
         {# End Full time -#}
 
         {# Part time -#}
-        {{ checkbox(form = form, name = "kind", value = JobKind::PartTime, label = "Part Time", icon = "hour_glass", active_filters = filters.kind, required = false, device = device) -}}
+        {{ checkbox(form = form, name = "kind[]", value = JobKind::PartTime, label = "Part Time", icon = "hour_glass", active_filters = filters.kind, required = false, device = device) -}}
         {# End Part time -#}
 
         {# Contractor -#}
-        {{ checkbox(form = form, name = "kind", value = JobKind::Contractor, label = "Contractor", icon = "clipboard", active_filters = filters.kind, required = false, device = device) -}}
+        {{ checkbox(form = form, name = "kind[]", value = JobKind::Contractor, label = "Contractor", icon = "clipboard", active_filters = filters.kind, required = false, device = device) -}}
         {# End Contractor -#}
 
         {# Internship -#}
-        {{ checkbox(form = form, name = "kind", value = JobKind::Internship, label = "Internship", icon = "graduation_cap", active_filters = filters.kind, required = false, device = device) -}}
+        {{ checkbox(form = form, name = "kind[]", value = JobKind::Internship, label = "Internship", icon = "graduation_cap", active_filters = filters.kind, required = false, device = device) -}}
         {# End Internship -#}
       </div>
     </div>
@@ -33,15 +33,15 @@
       {{ filters_subtitle(text = "Workplace") -}}
       <div class="grid grid-cols-2 w-full gap-2 mt-3">
         {# On site -#}
-        {{ checkbox(form = form, name = "workplace", value = Workplace::OnSite, label = "On Site", icon = "office_chair", active_filters = filters.workplace, required = false, device = device) -}}
+        {{ checkbox(form = form, name = "workplace[]", value = Workplace::OnSite, label = "On Site", icon = "office_chair", active_filters = filters.workplace, required = false, device = device) -}}
         {# End On site -#}
 
         {# Remote -#}
-        {{ checkbox(form = form, name = "workplace", value = Workplace::Remote, label = "Remote", icon = "remote", active_filters = filters.workplace, required = false, device = device) -}}
+        {{ checkbox(form = form, name = "workplace[]", value = Workplace::Remote, label = "Remote", icon = "remote", active_filters = filters.workplace, required = false, device = device) -}}
         {# End Remote -#}
 
         {# Hybrid -#}
-        {{ checkbox(form = form, name = "workplace", value = Workplace::Hybrid, label = "Hybrid", icon = "buildings", active_filters = filters.workplace, required = false, device = device) -}}
+        {{ checkbox(form = form, name = "workplace[]", value = Workplace::Hybrid, label = "Hybrid", icon = "buildings", active_filters = filters.workplace, required = false, device = device) -}}
         {# End Hybrid -#}
       </div>
     </div>

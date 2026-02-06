@@ -283,7 +283,7 @@ export class MultiSelect extends LitWrapper {
             : ""}
         </div>
       </div>
-      ${this.selected.map((option) => html`<input type="hidden" name="${this.name}" value="${option}" />`)}
+      ${this.selected.map((option) => html`<input type="hidden" name="${this.name}[]" value="${option}" />`)}
     `;
   }
 }

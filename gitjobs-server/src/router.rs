@@ -377,7 +377,7 @@ async fn static_handler(uri: Uri) -> impl IntoResponse {
 
 /// Returns the `serde_qs` configuration for query string parsing.
 fn serde_qs_config() -> serde_qs::Config {
-    serde_qs::Config::new().max_depth(3).use_form_encoding(false)
+    serde_qs::Config::new().max_depth(3).use_form_encoding(true)
 }
 
 /// Validates HTTP basic auth headers against configured credentials.

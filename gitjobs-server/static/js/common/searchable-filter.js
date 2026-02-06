@@ -301,7 +301,7 @@ export class SearchableFilter extends LitWrapper {
                       ></div>
                     </div>
                   </button>
-                  <input type="hidden" form="${this.form}" name="${this.name}[]" value="${opt}" />`,
+                  <input type="hidden" form="${this.form}" name="${this.name}" value="${opt}" />`,
             )}
           </div>`
         : ""}

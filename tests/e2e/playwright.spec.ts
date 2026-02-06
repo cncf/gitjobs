@@ -160,7 +160,7 @@ test.describe('GitJobs', () => {
     const persistedSearch = await searchInput(page).inputValue();
     expect(persistedSearch).toBe('Engineer');
 
-    const fullTimeCheckbox = await page.locator('input[id="desktop-kind[]-full-time"]').isChecked();
+    const fullTimeCheckbox = await page.locator('input[id="desktop-kind-full-time"]').isChecked();
     expect(fullTimeCheckbox).toBe(true);
   });
 

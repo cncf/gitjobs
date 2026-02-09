@@ -3,22 +3,26 @@
 use anyhow::Result;
 use axum::{
     Extension, Router,
+    body::Body,
     extract::FromRef,
     http::{
-        HeaderValue, StatusCode, Uri,
-        header::{CACHE_CONTROL, CONTENT_TYPE},
+        HeaderValue, Request, Response, StatusCode, Uri,
+        header::{AUTHORIZATION, CACHE_CONTROL, CONTENT_TYPE},
     },
     middleware,
     response::IntoResponse,
     routing::{delete, get, post, put},
 };
+use axum_extra::headers::{Authorization, Header, authorization::Basic};
 use axum_login::login_required;
 use axum_messages::MessagesManagerLayer;
 use rust_embed::Embed;
 use serde_qs::axum::{QsQueryConfig, QsQueryRejection};
 use tower::ServiceBuilder;
 use tower_http::{
-    set_header::SetResponseHeaderLayer, trace::TraceLayer, validate_request::ValidateRequestHeaderLayer,
+    set_header::SetResponseHeaderLayer,
+    trace::TraceLayer,
+    validate_request::{ValidateRequest, ValidateRequestHeaderLayer},
 };
 use tracing::instrument;
 
@@ -68,11 +72,12 @@ pub(crate) async fn setup(
     event_tracker: DynEventTracker,
 ) -> Result<Router> {
     // Setup router state
+    let serde_qs_de = serde_qs_config();
     let state = State {
         cfg: cfg.clone(),
         db: db.clone(),
         image_store,
-        serde_qs_de: serde_qs::Config::new(3, false),
+        serde_qs_de,
         notifications_manager,
         event_tracker,
     };
@@ -152,9 +157,9 @@ pub(crate) async fn setup(
         .route_layer(MessagesManagerLayer)
         .route_layer(auth_layer)
         .route_layer(ServiceBuilder::new().layer(TraceLayer::new_for_http()))
-        .route_layer(Extension(QsQueryConfig::new(3, false).error_handler(|err| {
-            QsQueryRejection::new(err, StatusCode::UNPROCESSABLE_ENTITY)
-        })))
+        .route_layer(Extension(QsQueryConfig::new().config(serde_qs_de).error_handler(
+            |err| QsQueryRejection::new(err, StatusCode::UNPROCESSABLE_ENTITY),
+        )))
         .route("/static/{*file}", get(static_handler))
         .fallback(not_found)
         .layer(SetResponseHeaderLayer::if_not_present(
@@ -166,10 +171,10 @@ pub(crate) async fn setup(
     if let Some(basic_auth) = &cfg.basic_auth
         && basic_auth.enabled
     {
-        router = router.layer(ValidateRequestHeaderLayer::basic(
-            &basic_auth.username,
-            &basic_auth.password,
-        ));
+        router = router.layer(ValidateRequestHeaderLayer::custom(BasicAuth::new(
+            basic_auth.username.as_str(),
+            basic_auth.password.as_str(),
+        )));
     }
 
     Ok(router.with_state(state))
@@ -367,5 +372,51 @@ async fn static_handler(uri: Uri) -> impl IntoResponse {
             (headers, file.data).into_response()
         }
         None => StatusCode::NOT_FOUND.into_response(),
+    }
+}
+
+/// Returns the `serde_qs` configuration for query string parsing.
+fn serde_qs_config() -> serde_qs::Config {
+    serde_qs::Config::new().max_depth(3).use_form_encoding(true)
+}
+
+/// Validates HTTP basic auth headers against configured credentials.
+#[derive(Clone, Debug)]
+struct BasicAuth {
+    password: String,
+    username: String,
+}
+
+impl BasicAuth {
+    /// Creates a new `BasicAuth` instance with the given username and password.
+    fn new(username: impl Into<String>, password: impl Into<String>) -> Self {
+        Self {
+            password: password.into(),
+            username: username.into(),
+        }
+    }
+
+    /// Generates an unauthorized HTTP response.
+    fn unauthorized_response() -> Response<Body> {
+        let mut response = Response::new(Body::empty());
+        *response.status_mut() = StatusCode::UNAUTHORIZED;
+        response
+    }
+}
+
+impl<B> ValidateRequest<B> for BasicAuth {
+    type ResponseBody = Body;
+
+    fn validate(&mut self, request: &mut Request<B>) -> Result<(), Response<Self::ResponseBody>> {
+        // Reject requests without valid basic auth credentials
+        let mut values = request.headers().get_all(AUTHORIZATION).iter();
+        if let Ok(auth) = Authorization::<Basic>::decode(&mut values)
+            && auth.username() == self.username
+            && auth.password() == self.password
+        {
+            Ok(())
+        } else {
+            Err(Self::unauthorized_response())
+        }
     }
 }

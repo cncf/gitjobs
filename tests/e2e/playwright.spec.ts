@@ -60,6 +60,23 @@ test.describe('GitJobs', () => {
     }
   });
 
+  test('should not send empty or zero default filter values', async ({ page }) => {
+    const requestPromise = page.waitForRequest((request) => {
+      return request.method() === 'GET' && request.url().includes('/section/jobs/results');
+    });
+
+    await page.locator('label').filter({ hasText: 'Full Time' }).nth(1).click();
+
+    const requestUrl = (await requestPromise).url();
+    const query = new URL(requestUrl).search;
+
+    expect(query).not.toContain('seniority=');
+    expect(query).not.toContain('open_source=0');
+    expect(query).not.toContain('upstream_commitment=0');
+    expect(query).not.toContain('salary_min=0');
+    expect(query).not.toContain('ts_query=');
+  });
+
   test('should search for a job and verify that the results are updated and contain the search term', async ({ page }) => {
     await searchInput(page).click();
     await searchInput(page).fill('Engineer');
@@ -220,6 +237,35 @@ test.describe('GitJobs', () => {
     await page.getByRole('button', { name: 'Submit' }).click();
 
     await expect(page).toHaveURL('/log-in');
+  });
+
+  test('should send experience fields using bracket keys on profile update', async ({ page }) => {
+    await loginWithCredentials(page, 'test', 'test');
+    await page.goto('/dashboard/job-seeker');
+
+    await page.locator('#name').fill('Test User');
+    await page.locator('#email').fill('test@example.com');
+    await page.locator('textarea[name="summary"]').fill('Profile summary');
+
+    await page.locator('[data-section="experience"]').click();
+    await page.locator('input[name="experience[0][title]"]').fill('Engineer');
+    await page.locator('input[name="experience[0][company]"]').fill('ACME');
+    await page.locator('textarea[name="experience[0][description]"]').fill('Worked on platform');
+    await page.locator('input[name="experience[0][start_date]"]').fill('2026-02-06');
+
+    const requestPromise = page.waitForRequest((request) => {
+      return request.method() === 'PUT' && request.url().includes('/dashboard/job-seeker/profile/update');
+    });
+
+    await page.locator('#update-profile-button').click();
+
+    const updateRequest = await requestPromise;
+    const body = updateRequest.postData() || '';
+    const formData = new URLSearchParams(body);
+    expect(formData.get('experience[0][title]')).toBe('Engineer');
+    expect(formData.get('experience[0][company]')).toBe('ACME');
+    expect(formData.get('experience[0][description]')).toBe('Worked on platform');
+    expect(formData.get('experience[0][start_date]')).toBe('2026-02-06');
   });
 
   test('should add a new job', async ({ page }) => {

@@ -57,7 +57,7 @@
       <div class="flex md:hidden sm:ps-12 mt-1">
         <div class="flex border border-stone-200 bg-white rounded-md px-2 py-0.5 text-xs text-stone-500 font-normal items-center">
           <div class="text-nowrap truncate">
-            {% call salary_content(job = job, text_size = "text-xs", salary_size = "text-xs") -%}
+            {{ salary_content(job = job, text_size = "text-xs", salary_size = "text-xs") -}}
           </div>
         </div>
       </div>
@@ -96,8 +96,8 @@
             {# Published date -#}
             {% if let Some(published_at) = job.published_at -%}
               <div class="block">
-                {% call job_details_subheading(content = "Published") -%}
-                {% call job_details_content(text = job.published_at|display_some_datetime(DATE_FORMAT)) -%}
+                {{ job_details_subheading(content = "Published") -}}
+                {{ job_details_content(text = job.published_at|display_some_datetime(DATE_FORMAT) ) -}}
               </div>
             {% endif -%}
             {# End published date -#}
@@ -105,31 +105,31 @@
             {# Last update -#}
             {% if let Some(updated_at) = job.updated_at -%}
               <div class="hidden md:block">
-                {% call job_details_subheading(content = "Last updated") -%}
-                {% call job_details_content(text = job.updated_at|display_some_datetime(DATE_FORMAT)) -%}
+                {{ job_details_subheading(content = "Last updated") -}}
+                {{ job_details_content(text = job.updated_at|display_some_datetime(DATE_FORMAT) ) -}}
               </div>
             {% endif -%}
             {# End last update -#}
 
             {# Type -#}
             <div class="block">
-              {% call job_details_subheading(content = "Job type") -%}
-              {% call job_kind(kind = job.kind) -%}
+              {{ job_details_subheading(content = "Job type") -}}
+              {{ job_kind(kind = job.kind) -}}
             </div>
             {# End type -#}
 
             {# Workplace -#}
             <div class="hidden md:block">
-              {% call job_details_subheading(content = "Workplace") -%}
-              {% call job_workplace(workplace = job.workplace) -%}
+              {{ job_details_subheading(content = "Workplace") -}}
+              {{ job_workplace(workplace = job.workplace) -}}
             </div>
             {# End workplace -#}
 
             {# Seniority level -#}
             {% if let Some(seniority) = job.seniority -%}
               <div class="block">
-                {% call job_details_subheading(content = "Seniority level") -%}
-                {% call job_details_content(text = seniority, extra_styles = "capitalize") -%}
+                {{ job_details_subheading(content = "Seniority level") -}}
+                {{ job_details_content(text = seniority, extra_styles = "capitalize") -}}
               </div>
             {% endif -%}
             {# End seniority level -#}
@@ -138,8 +138,8 @@
           {# Salary -#}
           {% if !job.salary.is_none() || !job.salary_min.is_none() -%}
             <div class="hidden md:block">
-              {% call job_details_subheading(content = "Salary") -%}
-              {% call salary_content(job = job) -%}
+              {{ job_details_subheading(content = "Salary") -}}
+              {{ salary_content(job = job) -}}
             </div>
           {% endif -%}
           {# End salary -#}
@@ -147,8 +147,8 @@
           {# Location -#}
           {% if let Some(location) = job.location -%}
             <div class="hidden md:block">
-              {% call job_details_subheading(content = "Location") -%}
-              {% call job_details_content(text = location) -%}
+              {{ job_details_subheading(content = "Location") -}}
+              {{ job_details_content(text = location) -}}
             </div>
           {% endif -%}
           {# End location -#}
@@ -156,12 +156,12 @@
           {# Timezone -#}
           {% if let Some(tz_start) = job.tz_start -%}
             <div class="block mb-3 md:mb-0">
-              {% call job_details_subheading(content = "Timezone") -%}
+              {{ job_details_subheading(content = "Timezone") -}}
               {% if let Some(tz_end) = job.tz_end -%}
                 {% let timezone = format!("{} - {}", tz_start, tz_end) -%}
-                {% call job_details_content(text = timezone) -%}
+                {{ job_details_content(text = timezone) -}}
               {% else -%}
-                {% call job_details_content(text = tz_start) -%}
+                {{ job_details_content(text = tz_start) -}}
               {% endif -%}
             </div>
           {% endif -%}
@@ -169,27 +169,27 @@
 
           {# Open source -#}
           <div class="block mb-3 md:mb-0">
-            {% call job_details_subheading(content = "Time working on open source", content_short = "Open source time") -%}
-            {% call badge_percentage_bar(percentage = job.open_source|display_some_or("0")) -%}
+            {{ job_details_subheading(content = "Time working on open source", content_short = "Open source time") -}}
+            {{ badge_percentage_bar(percentage = job.open_source|display_some_or("0") ) -}}
           </div>
           {# End open source -#}
 
           {# Upstream commitment -#}
           <div class="block mb-3 md:mb-0">
-            {% call job_details_subheading(content = "Time working on upstream projects", content_short = "Upstream projects time") -%}
-            {% call badge_percentage_bar(percentage = job.upstream_commitment|display_some_or("0"), type = "upstream_commitment") -%}
+            {{ job_details_subheading(content = "Time working on upstream projects", content_short = "Upstream projects time") -}}
+            {{ badge_percentage_bar(percentage = job.upstream_commitment|display_some_or("0") , type = "upstream_commitment") -}}
           </div>
           {# End Upstream commitment -#}
 
           {# Projects -#}
           {% if let Some(projects) = job.projects -%}
             <div class="block mb-3 md:mb-0">
-              {% call job_details_subheading(content = "Projects you'd work on") -%}
+              {{ job_details_subheading(content = "Projects you'd work on") -}}
               <div class="flex flex-col gap-3 mt-2">
                 {% for p in projects -%}
                   <div class="border border-stone-200 rounded-lg p-2 text-sm/5 bg-white w-full">
                     {% let label = &format!("{} {}", p.foundation, p.maturity) -%}
-                    {% call macros::dropdown_card(name = p.name, label = label, logo_url = p.logo_url, font_size = "text-[0.75rem]/5 text-xs/5") -%}
+                    {{ macros::dropdown_card(name = p.name, label = label, logo_url = p.logo_url, font_size = "text-[0.75rem]/5 text-xs/5") -}}
                   </div>
                 {% endfor -%}
               </div>
@@ -200,10 +200,10 @@
           {# Desired certifications -#}
           {% if let Some(certifications) = job.certifications -%}
             <div class="block mb-3 md:mb-0">
-              {% call job_details_subheading(content = "Desired certifications") -%}
+              {{ job_details_subheading(content = "Desired certifications") -}}
               <div class="flex flex-col gap-3 mt-2">
                 {% for cert in certifications -%}
-                  {% call macros::certification_card(certification = cert) -%}
+                  {{ macros::certification_card(certification = cert) -}}
                 {% endfor -%}
               </div>
             </div>
@@ -235,7 +235,7 @@
           {% if with_links && !job_id.is_empty() -%}
             {# Social share -#}
             <div class="mb-4 md:mb-0">
-              {% call job_details_subheading(content = "Share this job") -%}
+              {{ job_details_subheading(content = "Share this job") -}}
               <div id="social-links"
                    data-job-id="{{ job_id }}"
                    class="flex flex-col gap-3 mt-2 relative">
@@ -325,7 +325,7 @@
       <div class="flex flex-col space-y-6">
         {# Job description -#}
         <div>
-          {% call content_heading(content = "Job description", margin = 0) -%}
+          {{ content_heading(content = "Job description", margin = 0) -}}
           <div class="text-sm/6 text-stone-600 markdown">{{ job.description|md_to_html|safe }}</div>
         </div>
         {# End job description -#}
@@ -333,7 +333,7 @@
         {# Job responsibilities -#}
         {% if let Some(responsibilities) = job.responsibilities -%}
           <div>
-            {% call content_heading(content = "Responsibilities") -%}
+            {{ content_heading(content = "Responsibilities") -}}
             <div class="text-sm/6 text-stone-600 markdown">{{ responsibilities|md_to_html|safe }}</div>
           </div>
         {% endif -%}
@@ -342,7 +342,7 @@
         {# Job qualifications -#}
         {% if let Some(qualifications) = job.qualifications -%}
           <div>
-            {% call content_heading(content = "Qualifications") -%}
+            {{ content_heading(content = "Qualifications") -}}
             <div class="text-sm/6 text-stone-600 markdown">{{ qualifications|md_to_html|safe }}</div>
           </div>
         {% endif -%}
@@ -351,10 +351,10 @@
         {# Skills -#}
         {% if let Some(skills) = job.skills -%}
           <div class="mb-5">
-            {% call content_heading(content = "Required skills") -%}
+            {{ content_heading(content = "Required skills") -}}
             <div class="flex flex-wrap gap-3 md:gap-5 mt-2">
               {% for skill in skills -%}
-                {% call badge(content = skill|unnormalize) -%}
+                {{ badge(content = skill|unnormalize) -}}
               {% endfor -%}
             </div>
           </div>
@@ -364,10 +364,10 @@
         {# Benefits -#}
         {% if let Some(benefits) = job.benefits -%}
           <div class="mb-5">
-            {% call content_heading(content = "Benefits") -%}
+            {{ content_heading(content = "Benefits") -}}
             <div class="flex flex-wrap gap-3 md:gap-5 mt-2">
               {% for benefit in benefits -%}
-                {% call badge(content = benefit|unnormalize) -%}
+                {{ badge(content = benefit|unnormalize) -}}
               {% endfor -%}
             </div>
           </div>
@@ -377,7 +377,7 @@
         {# Application -#}
         {% if let Some(apply_instructions) = job.apply_instructions -%}
           <div>
-            {% call content_heading(content = "Apply instructions") -%}
+            {{ content_heading(content = "Apply instructions") -}}
             <div class="text-sm/6 text-stone-600 markdown">{{ apply_instructions|md_to_html|safe }}</div>
           </div>
         {% endif -%}
@@ -386,7 +386,7 @@
         {# Company information -#}
         {% if !employer_description.is_empty() -%}
           <div>
-            {% call content_heading(content = "About company") -%}
+            {{ content_heading(content = "About company") -}}
             <div class="text-sm/6 text-stone-600 markdown">{{ employer_description|md_to_html|safe }}</div>
           </div>
         {% endif -%}
@@ -403,13 +403,13 @@
   {% let job_kind = kind.to_string().as_str()|unnormalize -%}
   {% match kind -%}
   {% when JobKind::FullTime -%}
-  {% call job_details_content(text = job_kind, icon = "signature", extra_styles = "capitalize") -%}
+  {{ job_details_content(text = job_kind, icon = "signature", extra_styles = "capitalize") -}}
   {% when JobKind::PartTime -%}
-  {% call job_details_content(text = job_kind, icon = "hour_glass", extra_styles = "capitalize") -%}
+  {{ job_details_content(text = job_kind, icon = "hour_glass", extra_styles = "capitalize") -}}
   {% when JobKind::Contractor -%}
-  {% call job_details_content(text = job_kind, icon = "clipboard", extra_styles = "capitalize") -%}
+  {{ job_details_content(text = job_kind, icon = "clipboard", extra_styles = "capitalize") -}}
   {% when JobKind::Internship -%}
-  {% call job_details_content(text = job_kind, icon = "graduation_cap", extra_styles = "capitalize") -%}
+  {{ job_details_content(text = job_kind, icon = "graduation_cap", extra_styles = "capitalize") -}}
 {% endmatch -%}
 {% endmacro job_kind -%}
 {# End job kind -#}
@@ -419,11 +419,11 @@
   {% let job_workplace = workplace.to_string().as_str()|unnormalize -%}
   {% match workplace -%}
   {% when Workplace::OnSite -%}
-  {% call job_details_content(text = job_workplace, icon = "office_chair", extra_styles = "capitalize") -%}
+  {{ job_details_content(text = job_workplace, icon = "office_chair", extra_styles = "capitalize") -}}
   {% when Workplace::Remote -%}
-  {% call job_details_content(text = job_workplace, icon = "remote", extra_styles = "capitalize") -%}
+  {{ job_details_content(text = job_workplace, icon = "remote", extra_styles = "capitalize") -}}
   {% when Workplace::Hybrid -%}
-  {% call job_details_content(text = job_workplace, icon = "buildings", extra_styles = "capitalize") -%}
+  {{ job_details_content(text = job_workplace, icon = "buildings", extra_styles = "capitalize") -}}
 {% endmatch -%}
 {% endmacro job_workplace -%}
 {# End job workplace -#}
@@ -473,11 +473,11 @@
 {# End badge for skills/benefits -#}
 
 {# Badge with percentage bar -#}
-{% macro badge_percentage_bar(percentage = 0, type = &"open_source", bar_margin = "my-2") -%}
+{% macro badge_percentage_bar(percentage = 0, type = "open_source", bar_margin = "my-2") -%}
   <div class="-mt-1 flex space-x-2 items-center w-full">
     <div class="w-full bg-stone-200 rounded-full h-1.5 {{ bar_margin }}">
       {# djlint:off H008 #}
-      <div class='{%- if type == &"open_source" -%}bg-lime-300{%- else -%}bg-lime-500{%- endif %} h-1.5 rounded-full'
+      <div class='{%- if type == "open_source" -%}bg-lime-300{%- else -%}bg-lime-500{%- endif %} h-1.5 rounded-full'
            style="width: {{ percentage }}%"></div>
       {# djlint:on H008 #}
     </div>
@@ -498,7 +498,7 @@
     <div class="flex items-baseline">
       {% if let Some(salary) = job.salary -%}
         <div class="flex items-baseline font-medium text-stone-900 {{ salary_size }}">
-          {% call currency(value = job.salary_currency) -%}
+          {{ currency(value = job.salary_currency) -}}
           {{ salary|humanize_salary }}
         </div>
       {% else -%}
@@ -514,7 +514,7 @@
     <div class="flex items-baseline">
       {% if let Some(salary_min) = job.salary_min -%}
         <div class="flex items-baseline font-medium text-stone-900 {{ salary_size }}">
-          {% call currency(value = job.salary_currency) -%}
+          {{ currency(value = job.salary_currency) -}}
           {{ salary_min|humanize_salary }}
         </div>
       {% else -%}

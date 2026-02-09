@@ -1,7 +1,7 @@
 {% import "macros.html" as macros -%}
 {% import "misc/preview_modal.html" as preview -%}
 
-{% call macros::form_title(title = "My applications") -%}
+{{ macros::form_title(title = "My applications") -}}
 
 {# Applicants Table -#}
 <div class="relative overflow-visible mt-10">
@@ -40,7 +40,7 @@
                     <div class="max-w-full text-black truncate">{{ application.job_title }}</div>
                   </div>
                   {# Location -#}
-                  {% call location_content(workplace = application.job_workplace, job_location = application.job_location) %}
+                  {{ location_content(workplace = application.job_workplace, job_location = application.job_location) }}
                   {# End location -#}
                 </button>
               {% else -%}
@@ -57,7 +57,7 @@
 
                   </div>
                   {# Location -#}
-                  {% call location_content(workplace = application.job_workplace, job_location = application.job_location) %}
+                  {{ location_content(workplace = application.job_workplace, job_location = application.job_location) }}
                   {# End location -#}
                 </div>
               {% endif -%}
@@ -114,7 +114,7 @@
 {# End applicants Table -#}
 
 {# Preview modal -#}
-{% call preview::modal() -%}
+{{ preview::modal() -}}
 {# End preview modal -#}
 
 <script type="module">

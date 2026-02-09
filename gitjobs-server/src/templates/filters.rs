@@ -1,4 +1,12 @@
 //! Custom filters for Askama templates, including formatting and display helpers.
+#![allow(
+    clippy::cast_precision_loss,
+    clippy::inline_always,
+    clippy::ref_option,
+    clippy::trivially_copy_pass_by_ref,
+    clippy::unnecessary_wraps,
+    clippy::unused_self
+)]
 
 use std::sync::LazyLock;
 
@@ -20,7 +28,7 @@ static SALARY_FORMATTER: LazyLock<Formatter> = LazyLock::new(|| {
 });
 
 /// Display the value if present, otherwise return an empty string.
-#[allow(clippy::unnecessary_wraps, clippy::ref_option)]
+#[askama::filter_fn]
 pub(crate) fn display_some<T>(value: &Option<T>, _: &dyn askama::Values) -> askama::Result<String>
 where
     T: std::fmt::Display,
@@ -32,7 +40,7 @@ where
 }
 
 /// Display the value if present, otherwise return the provided alternative value.
-#[allow(clippy::unnecessary_wraps, clippy::ref_option)]
+#[askama::filter_fn]
 pub(crate) fn display_some_or<T, U>(
     value: &Option<T>,
     _: &dyn askama::Values,
@@ -49,11 +57,8 @@ where
 }
 
 /// Display the formatted date if present, otherwise return the alternative value.
-#[allow(
-    clippy::unnecessary_wraps,
-    clippy::ref_option,
-    clippy::trivially_copy_pass_by_ref
-)]
+#[askama::filter_fn]
+#[allow(clippy::trivially_copy_pass_by_ref)]
 pub(crate) fn display_some_date_or<T>(
     value: &Option<NaiveDate>,
     _: &dyn askama::Values,
@@ -70,7 +75,8 @@ where
 }
 
 /// Display the formatted datetime if present, otherwise return an empty string.
-#[allow(clippy::unnecessary_wraps, clippy::ref_option, dead_code)]
+#[askama::filter_fn]
+#[allow(dead_code)]
 pub(crate) fn display_some_datetime(
     value: &Option<DateTime<Utc>>,
     _: &dyn askama::Values,
@@ -83,7 +89,7 @@ pub(crate) fn display_some_datetime(
 }
 
 /// Display the formatted datetime if present, otherwise return the alternative value.
-#[allow(clippy::unnecessary_wraps, clippy::ref_option)]
+#[askama::filter_fn]
 pub(crate) fn display_some_datetime_or<T>(
     value: &Option<DateTime<Utc>>,
     _: &dyn askama::Values,
@@ -100,18 +106,14 @@ where
 }
 
 /// Format a salary amount as a human-readable string (e.g., 10K, 1M).
-#[allow(
-    clippy::unnecessary_wraps,
-    clippy::ref_option,
-    clippy::trivially_copy_pass_by_ref,
-    clippy::cast_precision_loss
-)]
+#[askama::filter_fn]
+#[allow(clippy::cast_precision_loss, clippy::trivially_copy_pass_by_ref)]
 pub(crate) fn humanize_salary(amount: &i64, _: &dyn askama::Values) -> askama::Result<String> {
     Ok(SALARY_FORMATTER.format(*amount as f64))
 }
 
 /// Convert a markdown string to HTML using GitHub Flavored Markdown options.
-#[allow(clippy::unnecessary_wraps, clippy::ref_option)]
+#[askama::filter_fn]
 pub(crate) fn md_to_html(s: &str, _: &dyn askama::Values) -> askama::Result<String> {
     let options = markdown::Options::gfm();
     match markdown::to_html_with_options(s, &options) {
@@ -124,7 +126,7 @@ pub(crate) fn md_to_html(s: &str, _: &dyn askama::Values) -> askama::Result<Stri
 }
 
 /// Replace hyphens in a string with spaces, returning the unnormalized version.
-#[allow(clippy::unnecessary_wraps, clippy::ref_option)]
+#[askama::filter_fn]
 pub(crate) fn unnormalize(s: &str, _: &dyn askama::Values) -> askama::Result<String> {
     Ok(s.replace('-', " "))
 }

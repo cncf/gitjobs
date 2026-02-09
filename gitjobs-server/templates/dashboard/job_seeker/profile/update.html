@@ -65,7 +65,7 @@
           <span class="block md:hidden">
             <div class="svg-icon size-3 icon-eye group-hover:bg-white"></div>
           </span>
-          {% call macros::btn_spinner(id = "preview-spinner") -%}
+          {{ macros::btn_spinner(id = "preview-spinner") -}}
         </button>
         {# End preview button -#}
       </div>
@@ -80,7 +80,7 @@
                 hx-include="[name=photo_id], #profile-form, #experience-form, #education-form, #projects-form"
                 hx-indicator="#dashboard-spinner, #save-spinner"
                 hx-disabled-elt="#update-profile-button, #preview-button">
-          {% call macros::btn_spinner(id = "save-spinner", spinner_type = "2") -%}
+          {{ macros::btn_spinner(id = "save-spinner", spinner_type = "2") -}}
           Save
         </button>
       </div>
@@ -100,9 +100,9 @@
         <div class="col-span-full">
           {% if let Some(photo_id) = profile.photo_id -%}
             {% let image = &self::build_dashboard_image_url(photo_id, "small") -%}
-            {% call macros::images_form(label = "Photo", name = "photo_id", icon = "user", value = photo_id.to_string(), url_image = image) -%}
+            {{ macros::images_form(label = "Photo", name = "photo_id", icon = "user", value = photo_id.to_string() , url_image = image) -}}
           {% else -%}
-            {% call macros::images_form(label = "Photo", name = "photo_id", icon = "user") -%}
+            {{ macros::images_form(label = "Photo", name = "photo_id", icon = "user") -}}
           {% endif -%}
         </div>
         {# End form image -#}
@@ -195,7 +195,7 @@
             {# Open to relocation -#}
             <div class="col-span-full">
               <label class="inline-flex items-center cursor-pointer">
-                {% call macros::toggle_checkbox(id = "open_to_relocation", checked = profile.open_to_relocation.unwrap_or(false)) -%}
+                {{ macros::toggle_checkbox(id = "open_to_relocation", checked = profile.open_to_relocation.unwrap_or(false) ) -}}
                 <span class="ms-3 text-sm font-medium text-stone-900">Open to relocation</span>
               </label>
             </div>
@@ -204,7 +204,7 @@
             {# Open to remote -#}
             <div class="col-span-full">
               <label class="inline-flex items-center cursor-pointer">
-                {% call macros::toggle_checkbox(id = "open_to_remote", checked = profile.open_to_remote.unwrap_or(false)) -%}
+                {{ macros::toggle_checkbox(id = "open_to_remote", checked = profile.open_to_remote.unwrap_or(false) ) -}}
                 <span class="ms-3 text-sm font-medium text-stone-900">Open to remote work</span>
               </label>
             </div>
@@ -213,14 +213,14 @@
             {# Public -#}
             <div class="col-span-full">
               <label class="inline-flex items-center cursor-pointer">
-                {% call macros::toggle_checkbox(id = "public", checked = profile.public) -%}
+                {{ macros::toggle_checkbox(id = "public", checked = profile.public) -}}
                 <span class="ms-3 text-sm font-medium text-stone-900">Display profile publicly in the profiles list of the site</span>
               </label>
             </div>
             {# End Public -#}
           </div>
           <div class="border-t border-stone-900/10 pt-12">
-            {% call macros::form_title(title = "Links", description = "Some links where employers can find out more about you and your work.") -%}
+            {{ macros::form_title(title = "Links", description = "Some links where employers can find out more about you and your work.") -}}
 
             <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 max-w-5xl">
               {# Website URL -#}
@@ -355,7 +355,7 @@
 </div>
 
 {# Preview modal -#}
-{% call preview::modal() -%}
+{{ preview::modal() -}}
 {# End preview modal -#}
 
 <script type="module">

@@ -20,11 +20,11 @@
     </script>
   </div>
   {# End mobile filters button -#}
-  {% call macros::form_title(title = "Moderation pending jobs") -%}
+  {{ macros::form_title(title = "Moderation pending jobs") -}}
 </div>
 
 {# Pending jobs Table -#}
-{% call moderator_macros::jobs_table(jobs = jobs, kind = "pending") -%}
+{{ moderator_macros::jobs_table(jobs = jobs, kind = "pending") -}}
 {# End pending jobs Table -#}
 
 {# Mobile pending jobs cards -#}
@@ -39,16 +39,16 @@
     </div>
   {% else -%}
     {% for job in jobs -%}
-      {% call moderator_macros::mobile_job_card(job = job, kind = "pending") -%}
+      {{ moderator_macros::mobile_job_card(job = job, kind = "pending") -}}
     {% endfor -%}
   {% endif -%}
 </div>
 {# End mobile pending jobs cards -#}
 
 {# Preview modal -#}
-{% call moderator_macros::preview_modal() -%}
+{{ moderator_macros::preview_modal() -}}
 {# End preview modal -#}
 
 {# Reject modal -#}
-{% call moderator_macros::reject_modal() -%}
+{{ moderator_macros::reject_modal() -}}
 {# End reject modal -#}

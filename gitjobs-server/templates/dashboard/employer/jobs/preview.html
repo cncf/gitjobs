@@ -2,7 +2,7 @@
 
 {% if let Some(logo_id) = employer.logo_id -%}
   {% let logo = &self::build_dashboard_image_url(logo_id, "small") -%}
-  {% call job_preview_macros::job_preview(job = job, employer = employer, logo = logo, employer_description = employer.description) -%}
+  {{ job_preview_macros::job_preview(job = job, employer = employer, logo = logo, employer_description = employer.description) -}}
 {% else -%}
-  {% call job_preview_macros::job_preview(job = job, employer = employer, employer_description = employer.description) -%}
+  {{ job_preview_macros::job_preview(job = job, employer = employer, employer_description = employer.description) -}}
 {% endif -%}

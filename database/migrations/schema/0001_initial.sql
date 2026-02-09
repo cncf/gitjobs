@@ -86,7 +86,7 @@ create table image_version (
 
 create table job_seeker_profile (
     job_seeker_profile_id uuid primary key default gen_random_uuid(),
-    user_id uuid not null unique references "user"  on delete cascade,
+    user_id uuid not null unique references "user" on delete cascade,
     location_id uuid references location on delete set null,
     photo_id uuid references image (image_id) on delete set null,
 

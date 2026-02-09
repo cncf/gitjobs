@@ -47,7 +47,7 @@
             {# Osano -#}
             {%- if let Some(osano_script_url) = analytics.osano_script_url -%}
               {# Cookie preferences -#}
-              {% call macros::cookie_button(extra_styles = "mt-4 mb-8") -%}
+              {{ macros::cookie_button(extra_styles = "mt-4 mb-8") -}}
               {# End cookie preferences -#}
             {%- endif -%}
           {% endif -%}

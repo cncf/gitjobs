@@ -36,12 +36,12 @@
     <div class="flex space-x-3 relative">
       <div class="font-semibold text-sm text-black">Filters</div>
       <div id="mobile-jobs-spinner" class="hx-spinner absolute start-12 top-0">
-        {% call macros::spinner(size = "size-5") -%}
+        {{ macros::spinner(size = "size-5") -}}
       </div>
     </div>
   </div>
   {# End header filters -#}
-  {% call jobs_macros::filters(form = "mobile-jobs-form", device = "mobile") -%}
+  {{ jobs_macros::filters(form = "mobile-jobs-form", device = "mobile") -}}
   {# End filters content -#}
 
   <div class="text-end p-5">
@@ -81,16 +81,14 @@
 
         <div class="flex space-x-3 relative">
           <div id="desktop-jobs-spinner"
-               class="hx-spinner absolute -start-8 top-0.5">
-            {% call macros::spinner(size = "size-5") -%}
-          </div>
+               class="hx-spinner absolute -start-8 top-0.5">{{ macros::spinner(size = "size-5") -}}</div>
 
           <button id="reset-desktop-filters" class="btn-primary-outline btn-mini">Reset</button>
         </div>
       </div>
       {# End header -#}
 
-      {% call jobs_macros::filters(form = "desktop-jobs-form") -%}
+      {{ jobs_macros::filters(form = "desktop-jobs-form") -}}
     </div>
     {# End filters -#}
 
@@ -152,7 +150,7 @@
           <div id="results"
                class="flex flex-row items-center justify-between text-xs md:text-sm font-semibold">
             {% if results_section.jobs.len() > 0 -%}
-              {% call jobs_macros::current_page(total = results_section.total, items_number = results_section.jobs.len(), offset_value = results_section.offset) -%}
+              {{ jobs_macros::current_page(total = results_section.total, items_number = results_section.jobs.len() , offset_value = results_section.offset) -}}
             {% endif -%}
           </div>
           {# End results -#}
@@ -167,18 +165,18 @@
             <select id="sort-desktop"
                     name="sort"
                     class="hidden md:block w-[185px] py-1 px-3 text-[0.8rem] leading-none h-[30px] text-stone-900 bg-white border border-stone-300 rounded-full focus:outline-none focus:ring-0 focus:border-stone-300 hover:border-primary-500 focus:hover:border-primary-500">
-              {% call macros::select_option(value = "date", label = "Date", selected = selected_sort) -%}
-              {% call macros::select_option(value = "open-source", label = "Open Source", selected = selected_sort) -%}
-              {% call macros::select_option(value = "salary", label = "Salary", selected = selected_sort) -%}
-              {% call macros::select_option(value = "upstream-commitment", label = "Upstream Commitment", selected = selected_sort) -%}
+              {{ macros::select_option(value = "date", label = "Date", selected = selected_sort) -}}
+              {{ macros::select_option(value = "open-source", label = "Open Source", selected = selected_sort) -}}
+              {{ macros::select_option(value = "salary", label = "Salary", selected = selected_sort) -}}
+              {{ macros::select_option(value = "upstream-commitment", label = "Upstream Commitment", selected = selected_sort) -}}
             </select>
             <select id="sort-mobile"
                     name="sort"
                     class="block md:hidden w-[175px] py-1 px-3 text-xs leading-none h-[30px] text-stone-900 bg-white border border-stone-300 rounded-full focus:outline-none focus:ring-0 focus:border-stone-300 hover:border-primary-500 focus:hover:border-primary-500">
-              {% call macros::select_option(value = "date", label = "Date", selected = selected_sort) -%}
-              {% call macros::select_option(value = "open-source", label = "Open Source", selected = selected_sort) -%}
-              {% call macros::select_option(value = "salary", label = "Salary", selected = selected_sort) -%}
-              {% call macros::select_option(value = "upstream-commitment", label = "Upstream Commitment", selected = selected_sort) -%}
+              {{ macros::select_option(value = "date", label = "Date", selected = selected_sort) -}}
+              {{ macros::select_option(value = "open-source", label = "Open Source", selected = selected_sort) -}}
+              {{ macros::select_option(value = "salary", label = "Salary", selected = selected_sort) -}}
+              {{ macros::select_option(value = "upstream-commitment", label = "Upstream Commitment", selected = selected_sort) -}}
             </select>
             <script type="module">
               import {

@@ -23,9 +23,9 @@
       {% let employer_description = job.employer.description|display_some -%}
       {% if let Some(logo_id) = job.employer.logo_id -%}
         {% let logo = &self::build_jobboard_image_url(logo_id, "small") -%}
-        {% call job_preview_macros::job_preview(job = job, employer = job.employer, logo = logo, employer_description = employer_description, job_id = job_id, base_url = base_url, with_links = true) -%}
+        {{ job_preview_macros::job_preview(job = job, employer = job.employer, logo = logo, employer_description = employer_description, job_id = job_id, base_url = base_url, with_links = true) -}}
       {% else -%}
-        {% call job_preview_macros::job_preview(job = job, employer = job.employer, employer_description = employer_description, job_id = job_id, base_url = base_url, with_links = true) -%}
+        {{ job_preview_macros::job_preview(job = job, employer = job.employer, employer_description = employer_description, job_id = job_id, base_url = base_url, with_links = true) -}}
       {% endif -%}
     </div>
     {# End modal content -#}
@@ -94,7 +94,7 @@
             {% let markdown_code = format!("[![GitJobs]({}/embed/job/{}/card.svg)]({}/?job_id={})", self.base_url, job_id, self.base_url, job_id) -%}
             <div class="flex items-center justify-between gap-x-4 mb-4">
               <pre class="block overflow-auto p-4 bg-stone-100"><code class="text-sm">{{ markdown_code }}</code></pre>
-              <div>{% call copy_button(name = "markdown", content = markdown_code) -%}</div>
+              <div>{{ copy_button(name = "markdown", content = markdown_code) -}}</div>
             </div>
           </div>
           {# End markdown #}
@@ -104,7 +104,7 @@
             {% let asciidoc_code = format!("{}/?job_id={}[image:{}/embed/job/{}/card.svg[GitJobs]]", self.base_url, job_id, self.base_url, job_id) -%}
             <div class="flex items-center justify-between gap-x-4 mb-4">
               <pre class="block overflow-auto p-4 bg-stone-100"><code class="text-sm">{{ asciidoc_code }}</code></pre>
-              <div>{% call copy_button(name = "asciidoc", content = asciidoc_code) -%}</div>
+              <div>{{ copy_button(name = "asciidoc", content = asciidoc_code) -}}</div>
             </div>
           </div>
           {# End AsciiDoc #}
@@ -116,7 +116,7 @@
             {# djlint:on #}
             <div class="flex items-center justify-between gap-x-4 mb-4">
               <pre class="block overflow-auto p-4 bg-stone-100"><code class="text-sm">{{ html_code }}</code></pre>
-              <div>{% call copy_button(name = "html", content = html_code) -%}</div>
+              <div>{{ copy_button(name = "html", content = html_code) -}}</div>
             </div>
           </div>
           {# End HTML #}

@@ -9,7 +9,7 @@ use axum_login::{
     AuthManagerLayer, AuthManagerLayerBuilder,
     tower_sessions::{self, session, session_store},
 };
-use oauth2::{TokenResponse, reqwest};
+use oauth2::{TokenResponse, reqwest as oauth2_reqwest};
 use openidconnect::{self as oidc, LocalizedClaim};
 use password_auth::verify_password;
 use reqwest::header::HeaderMap;
@@ -117,7 +117,7 @@ impl std::fmt::Debug for SessionStore {
 #[derive(Clone)]
 pub(crate) struct AuthnBackend {
     db: DynDB,
-    http_client: reqwest::Client,
+    http_client: oauth2_reqwest::Client,
     /// Registered `OAuth2` providers.
     pub oauth2_providers: OAuth2Providers,
     /// Registered `Oidc` providers.
@@ -127,8 +127,8 @@ pub(crate) struct AuthnBackend {
 impl AuthnBackend {
     /// Create a new `AuthnBackend` instance.
     pub async fn new(db: DynDB, oauth2_cfg: &OAuth2Config, oidc_cfg: &OidcConfig) -> Result<Self> {
-        let http_client = reqwest::ClientBuilder::new()
-            .redirect(reqwest::redirect::Policy::none())
+        let http_client = oauth2_reqwest::ClientBuilder::new()
+            .redirect(oauth2_reqwest::redirect::Policy::none())
             .build()?;
         let oauth2_providers = Self::setup_oauth2_providers(oauth2_cfg)?;
         let oidc_providers = Self::setup_oidc_providers(oidc_cfg, http_client.clone()).await?;
@@ -154,7 +154,7 @@ impl AuthnBackend {
             .await?
             .access_token()
             .secret()
-            .to_string();
+            .clone();
 
         // Get the user if they exist, otherwise sign them up
         let user_summary = match creds.provider {
@@ -254,7 +254,7 @@ impl AuthnBackend {
     /// Set up `Oidc` providers from configuration.
     async fn setup_oidc_providers(
         oidc_cfg: &OidcConfig,
-        http_client: reqwest::Client,
+        http_client: oauth2_reqwest::Client,
     ) -> Result<OidcProviders> {
         let mut providers: OidcProviders = HashMap::new();
 

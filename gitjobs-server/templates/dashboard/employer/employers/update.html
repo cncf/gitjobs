@@ -53,8 +53,8 @@
 
       {# Member -#}
       <dashboard-search type="members" foundations="{{ foundations|json }}"
-      {% if let Some(member) = employer.member -%}
-        selected="[{{ member|json }}]"
+      {% if let Some(members) = employer.members -%}
+        selected="{{ members|json }}"
       {% endif -%}
       class="col-span-full"></dashboard-search>
       {# End member -#}

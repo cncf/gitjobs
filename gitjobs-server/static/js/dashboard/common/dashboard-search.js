@@ -238,7 +238,7 @@ export class DashboardSearch extends LitWrapper {
    * @private
    */
   _onSelect(item) {
-    if (this.type === "projects" || this.type === "certifications") {
+    if (this.type === "projects" || this.type === "certifications" || this.type === "members") {
       this.selected.push(item);
     } else {
       this.selected = [item];
@@ -572,11 +572,23 @@ export class DashboardSearch extends LitWrapper {
                                   value="${opt.url}"
                                 />`
                               : ""}`
-                        : html`<input type="hidden" name="member[member_id]" value="${opt.member_id}" />
-                            <input type="hidden" name="member[name]" value="${opt.name}" />
-                            <input type="hidden" name="member[level]" value="${opt.level}" />
-                            <input type="hidden" name="member[foundation]" value="${opt.foundation}" />
-                            <input type="hidden" name="member[logo_url]" value="${opt.logo_url}" />`}
+                        : html`<input
+                              type="hidden"
+                              name="members[${index}][member_id]"
+                              value="${opt.member_id}"
+                            />
+                            <input type="hidden" name="members[${index}][name]" value="${opt.name}" />
+                            <input type="hidden" name="members[${index}][level]" value="${opt.level}" />
+                            <input
+                              type="hidden"
+                              name="members[${index}][foundation]"
+                              value="${opt.foundation}"
+                            />
+                            <input
+                              type="hidden"
+                              name="members[${index}][logo_url]"
+                              value="${opt.logo_url}"
+                            />`}
                   </div> `,
               )}
             </div>`

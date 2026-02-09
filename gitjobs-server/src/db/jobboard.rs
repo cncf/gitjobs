@@ -108,16 +108,12 @@ impl DBJobBoard for PgDB {
                             'description', e.description,
                             'employer_id', e.employer_id,
                             'logo_id', e.logo_id,
-                            'website_url', e.website_url,
-                            'member', (
-                                select nullif(jsonb_strip_nulls(jsonb_build_object(
-                                    'member_id', m.member_id,
-                                    'foundation', m.foundation,
-                                    'level', m.level,
-                                    'logo_url', m.logo_url,
-                                    'name', m.name
-                                )), '{}'::jsonb)
-                            )
+                            'member', case
+                                when memberships.membership_count = 1 then memberships.members->0
+                                else null
+                            end,
+                            'multiple_memberships', memberships.membership_count > 1,
+                            'website_url', e.website_url
                         )), '{}'::jsonb)
                     ) as employer,
                     (
@@ -158,8 +154,21 @@ impl DBJobBoard for PgDB {
                     ) as certifications
                 from job j
                 join employer e on j.employer_id = e.employer_id
+                left join lateral (
+                    select
+                        count(*) as membership_count,
+                        jsonb_agg(jsonb_build_object(
+                            'member_id', m.member_id,
+                            'foundation', m.foundation,
+                            'level', m.level,
+                            'logo_url', m.logo_url,
+                            'name', m.name
+                        ) order by m.foundation asc, m.name asc) as members
+                    from employer_member em
+                    join member m on em.member_id = m.member_id
+                    where em.employer_id = e.employer_id
+                ) memberships on true
                 left join location l on j.location_id = l.location_id
-                left join member m on e.member_id = m.member_id
                 where job_id = $1::uuid
                 and status = 'published';
                 ",
@@ -233,7 +242,7 @@ impl DBJobBoard for PgDB {
                         (
                             select json_agg(json_build_object(
                                 'name', name
-                            ))
+                            ) order by name asc)
                             from foundation
                         )::text as foundations;
                     ",

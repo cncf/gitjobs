@@ -98,6 +98,9 @@ pub(crate) struct Filters {
     /// Maximum distance from location.
     #[serde(skip_serializing_if = "option_is_none_or_default")]
     pub max_distance: Option<u64>,
+    /// Foundation membership filter.
+    #[serde(skip_serializing_if = "option_is_none_or_default")]
+    pub membership: Option<String>,
     /// Offset for pagination.
     #[serde(skip_serializing_if = "option_is_none_or_default")]
     pub offset: Option<usize>,
@@ -276,6 +279,8 @@ pub(crate) struct Employer {
     pub company: String,
     /// Unique identifier for the employer.
     pub employer_id: Uuid,
+    /// Whether the employer has multiple foundation memberships.
+    pub multiple_memberships: bool,
 
     /// Description of the employer, if any.
     pub description: Option<String>,

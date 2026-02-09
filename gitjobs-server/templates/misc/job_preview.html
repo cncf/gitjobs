@@ -65,7 +65,7 @@
     {# End salary -#}
 
     {# Member badge -#}
-    {% if let Some(member) = employer.member -%}
+    {% if employer.multiple_memberships -%}
       <div class="hidden lg:flex xl:w-1/4">
         <div class="flex gap-x-2 items-center bg-stone-50 border border-stone-200 rounded-lg p-2 max-w-full xl:min-w-full">
           <div class="flex items-center justify-center size-10 shrink-0">
@@ -76,13 +76,33 @@
                  class="size-10 object-contain">
           </div>
           <div class="flex flex-col justify-start min-w-0">
-            <div class="truncate text-start text-stone-700 font-medium">{{ member.name }}</div>
+            <div class="truncate text-start text-stone-700 font-medium">Multiple memberships</div>
             <div class="truncate text-nowrap uppercase max-w-[100%] text-xs/4 font-medium text-stone-500/75">
-              {{ member.foundation }} {{ member.level }} member
+              Foundation memberships
             </div>
           </div>
         </div>
       </div>
+    {% else -%}
+      {% if let Some(member) = employer.member -%}
+        <div class="hidden lg:flex xl:w-1/4">
+          <div class="flex gap-x-2 items-center bg-stone-50 border border-stone-200 rounded-lg p-2 max-w-full xl:min-w-full">
+            <div class="flex items-center justify-center size-10 shrink-0">
+              <img src="/static/images/badge_member.png"
+                   alt="Member badge logo"
+                   height="auto"
+                   width="auto"
+                   class="size-10 object-contain">
+            </div>
+            <div class="flex flex-col justify-start min-w-0">
+              <div class="truncate text-start text-stone-700 font-medium">{{ member.name }}</div>
+              <div class="truncate text-nowrap uppercase max-w-[100%] text-xs/4 font-medium text-stone-500/75">
+                {{ member.foundation }} {{ member.level }} member
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endif -%}
     {% endif -%}
     {# End memeber badge -#}
   </div>

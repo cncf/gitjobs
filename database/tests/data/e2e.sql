@@ -4,6 +4,12 @@ VALUES ('f39a95c8-9903-4537-8873-2d81bfb86b35', gen_random_bytes(32), '2025-08-2
 INSERT INTO employer (employer_id, company, created_at, description, public)
 VALUES ('18fff2d7-c794-4130-85e4-76b9d7c60b72', 'Test Inc.', '2025-08-25 09:20:05.88454+02', 'test', false);
 
+INSERT INTO member (member_id, foundation, name, level, logo_url)
+VALUES ('ed9e4417-3fb5-4ded-8bb2-d5f4587cc977', 'cncf', 'Test Member', 'gold', 'https://example.com/member-logo.svg');
+
+INSERT INTO employer_member (employer_id, member_id)
+VALUES ('18fff2d7-c794-4130-85e4-76b9d7c60b72', 'ed9e4417-3fb5-4ded-8bb2-d5f4587cc977');
+
 INSERT INTO employer_team (user_id, employer_id, approved)
 VALUES ('f39a95c8-9903-4537-8873-2d81bfb86b35', '18fff2d7-c794-4130-85e4-76b9d7c60b72', true);
 

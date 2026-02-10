@@ -82,6 +82,14 @@ db-recreate: db-drop db-create db-migrate
 # Drop, create, and migrate test database.
 db-recreate-tests: db-drop-tests db-create-tests db-migrate-tests
 
+# Run database tests (recreates test db and runs pgTAP tests).
+db-tests: db-recreate-tests
+    pg_prove -h {{ db_host }} -p {{ db_port }} -d {{ db_name_tests }} -U {{ db_user }} --psql-bin {{ pg_bin }}/psql -v $(find "{{ source_dir }}/database/tests/schema" "{{ source_dir }}/database/tests/functions" -type f -name '*.sql' | sort)
+
+# Run database tests on a specific file.
+db-tests-file file: db-migrate-tests
+    pg_prove -h {{ db_host }} -p {{ db_port }} -d {{ db_name_tests }} -U {{ db_user }} --psql-bin {{ pg_bin }}/psql -v {{ file }}
+
 # Start PostgreSQL server.
 db-server data_dir:
     just pg postgres -D "{{ data_dir }}" -p {{ db_port }} {{ db_server_host_opt }}

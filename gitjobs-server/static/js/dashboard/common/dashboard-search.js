@@ -330,7 +330,7 @@ export class DashboardSearch extends LitWrapper {
                 spellcheck="false"
               />
               <div class="absolute end-1.5 top-1.5 peer-placeholder-shown:hidden">
-                <button @click=${this._cleanEnteredValue} type="button" class="cursor-pointer mt-[2px]">
+                <button @click=${this._cleanEnteredValue} type="button" class="cursor-pointer mt-0.5">
                   <div class="svg-icon size-5 bg-stone-400 hover:bg-stone-700 icon-close"></div>
                 </button>
               </div>
@@ -404,7 +404,7 @@ export class DashboardSearch extends LitWrapper {
                                   ${this.type === "certifications"
                                     ? html`<div class="inline-flex">
                                           <div
-                                            class="truncate text-nowrap max-w-[100%] text-xs/6 font-medium text-stone-700"
+                                            class="truncate text-nowrap max-w-full text-xs/6 font-medium text-stone-700"
                                           >
                                             ${option.short_name}
                                             <span class="font-normal text-stone-500/75"
@@ -420,7 +420,7 @@ export class DashboardSearch extends LitWrapper {
                                         </div>
                                         <div class="inline-flex">
                                           <div
-                                            class="truncate text-nowrap uppercase max-w-[100%] text-xs/6 font-medium text-stone-500/75"
+                                            class="truncate text-nowrap uppercase max-w-full text-xs/6 font-medium text-stone-500/75"
                                           >
                                             ${option.foundation}
                                             ${this.type === "projects"
@@ -484,7 +484,7 @@ export class DashboardSearch extends LitWrapper {
                         ${this.type === "certifications"
                           ? html` <div class="inline-flex">
                                 <div
-                                  class="truncate text-nowrap max-w-[100%] text-xs/6 font-medium text-stone-700"
+                                  class="truncate text-nowrap max-w-full text-xs/6 font-medium text-stone-700"
                                 >
                                   ${opt.short_name}
                                   <span class="font-normal text-stone-500/75">(${opt.provider})</span>
@@ -512,7 +512,7 @@ export class DashboardSearch extends LitWrapper {
                               </div>
                               <div class="inline-flex">
                                 <div
-                                  class="truncate text-nowrap uppercase max-w-[100%] text-xs/6 font-medium text-stone-500/75"
+                                  class="truncate text-nowrap uppercase max-w-full text-xs/6 font-medium text-stone-500/75"
                                 >
                                   ${opt.foundation}
                                   ${this.type === "members" ? `${opt.level} member` : opt.maturity}

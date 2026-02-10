@@ -117,8 +117,7 @@ pub(crate) async fn reject(
     };
 
     // Reject job
-    db.reject_job(&job_id, &user.user_id, input.review_notes.as_ref())
-        .await?;
+    db.reject_job(&job_id, &user.user_id, input.review_notes).await?;
 
     Ok((
         StatusCode::NO_CONTENT,

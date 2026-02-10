@@ -26,6 +26,8 @@ pub(crate) mod event_tracker;
 pub(crate) mod img;
 pub(crate) mod jobboard;
 pub(crate) mod misc;
+#[cfg(test)]
+pub(crate) mod mock;
 pub(crate) mod notifications;
 pub(crate) mod workers;
 

@@ -232,11 +232,10 @@ mod tests {
     //! These tests verify that events are flushed both periodically and on shutdown, and
     //! that no flush occurs if no events are tracked.
 
-    use futures::future;
     use mockall::predicate::eq;
     use tokio::time::{Duration, sleep};
 
-    use crate::db::event_tracker::MockDBEventTracker;
+    use crate::db::mock::MockDB;
 
     use super::*;
 
@@ -251,12 +250,12 @@ mod tests {
     async fn flush_job_views_on_stop() {
         // Setup mock database.
         let day = OffsetDateTime::now_utc().format(&DATE_FORMAT).unwrap();
-        let mut mock_db = MockDBEventTracker::new();
+        let mut mock_db = MockDB::new();
         mock_db
             .expect_update_jobs_views()
             .with(eq(vec![(*JOB1_ID, day.clone(), 2), (*JOB2_ID, day, 1)]))
             .times(1)
-            .returning(|_| Box::pin(future::ready(Ok(()))));
+            .returning(|_| Ok(()));
         let mock_db = Arc::new(mock_db);
 
         // Setup tracker and track some job views.
@@ -278,12 +277,12 @@ mod tests {
     async fn flush_job_views_periodically() {
         // Setup mock database.
         let day = OffsetDateTime::now_utc().format(&DATE_FORMAT).unwrap();
-        let mut mock_db = MockDBEventTracker::new();
+        let mut mock_db = MockDB::new();
         mock_db
             .expect_update_jobs_views()
             .with(eq(vec![(*JOB1_ID, day.clone(), 2), (*JOB2_ID, day, 1)]))
             .times(1)
-            .returning(|_| Box::pin(future::ready(Ok(()))));
+            .returning(|_| Ok(()));
         let mock_db = Arc::new(mock_db);
 
         // Setup tracker and track some job views.
@@ -302,7 +301,7 @@ mod tests {
     #[tokio::test]
     async fn no_events_tracked_nothing_to_flush() {
         // Setup tracker (no events tracked).
-        let mock_db = Arc::new(MockDBEventTracker::new());
+        let mock_db = Arc::new(MockDB::new());
         let tracker = TaskTracker::new();
         let cancellation_token = CancellationToken::new();
         let _ = EventTrackerDB::new(mock_db, &tracker, &cancellation_token);
@@ -318,12 +317,12 @@ mod tests {
     async fn flush_search_appearances() {
         // Setup mock database.
         let day = OffsetDateTime::now_utc().format(&DATE_FORMAT).unwrap();
-        let mut mock_db = MockDBEventTracker::new();
+        let mut mock_db = MockDB::new();
         mock_db
             .expect_update_search_appearances()
             .with(eq(vec![(*JOB1_ID, day.clone(), 1), (*JOB2_ID, day, 1)]))
             .times(1)
-            .returning(|_| Box::pin(future::ready(Ok(()))));
+            .returning(|_| Ok(()));
         let mock_db = Arc::new(mock_db);
 
         // Setup tracker and track search appearances.
@@ -347,17 +346,17 @@ mod tests {
     async fn flush_mixed_events() {
         // Setup mock database.
         let day = OffsetDateTime::now_utc().format(&DATE_FORMAT).unwrap();
-        let mut mock_db = MockDBEventTracker::new();
+        let mut mock_db = MockDB::new();
         mock_db
             .expect_update_jobs_views()
             .with(eq(vec![(*JOB1_ID, day.clone(), 2)]))
             .times(1)
-            .returning(|_| Box::pin(future::ready(Ok(()))));
+            .returning(|_| Ok(()));
         mock_db
             .expect_update_search_appearances()
             .with(eq(vec![(*JOB1_ID, day.clone(), 1), (*JOB2_ID, day, 1)]))
             .times(1)
-            .returning(|_| Box::pin(future::ready(Ok(()))));
+            .returning(|_| Ok(()));
         let mock_db = Arc::new(mock_db);
 
         // Setup tracker and track mixed events.

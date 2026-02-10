@@ -21,7 +21,7 @@ pub(crate) trait DBDashBoardModerator {
     async fn list_jobs_for_moderation(&self, status: JobStatus) -> Result<Vec<JobSummary>>;
 
     /// Rejects a job, optionally adding review notes and updating review metadata.
-    async fn reject_job(&self, job_id: &Uuid, reviewer: &Uuid, review_notes: Option<&String>) -> Result<()>;
+    async fn reject_job(&self, job_id: &Uuid, reviewer: &Uuid, review_notes: Option<String>) -> Result<()>;
 }
 
 #[async_trait]
@@ -111,7 +111,7 @@ impl DBDashBoardModerator for PgDB {
     }
 
     #[instrument(skip(self), err)]
-    async fn reject_job(&self, job_id: &Uuid, reviewer: &Uuid, review_notes: Option<&String>) -> Result<()> {
+    async fn reject_job(&self, job_id: &Uuid, reviewer: &Uuid, review_notes: Option<String>) -> Result<()> {
         trace!("db: reject job");
 
         let db = self.pool.get().await?;

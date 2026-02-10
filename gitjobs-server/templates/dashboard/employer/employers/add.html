@@ -16,7 +16,7 @@
         hx-post="/dashboard/employer/employers/add"
         hx-ext="no-empty-vals"
         hx-include="[name=logo_id]"
-        hx-exclude="[name=foundation],[name=member]"
+        hx-exclude="[name=foundation]"
         hx-trigger="submit"
         hx-indicator="#dashboard-spinner, #save-spinner"
         hx-disabled-elt="button[type=submit], #cancel-button">
@@ -45,7 +45,9 @@
       <div class="col-span-3"></div>
 
       {# Member -#}
-      <dashboard-search type="members" foundations="{{ foundations|json }}" class="col-span-full"></dashboard-search>
+      <dashboard-search type="members"
+                        foundations="{{ foundations|json }}"
+                        class="col-span-full"></dashboard-search>
       {# End member -#}
 
       {# Location -#}

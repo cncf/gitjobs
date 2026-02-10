@@ -148,22 +148,8 @@
         <div class="shrink-0 flex items-center md:space-x-16">
           <div class="hidden md:flex">
             {# Member -#}
-            {% if job.employer.multiple_memberships -%}
-              <div class="flex items-center space-x-1 rounded-md uppercase">
-                <div class="shrink-0 size-3 flex items-center justify-center">
-                  <img class="size-3 object-contain"
-                       height="auto"
-                       width="auto"
-                       src="/static/images/badge_member.png"
-                       alt="Member badge logo">
-                </div>
-
-                <div class="leading-3 text-stone-600 text-xs tracking-wide font-semibold uppercase">
-                  Multiple memberships
-                </div>
-              </div>
-            {% else -%}
-              {% if let Some(member) = job.employer.member -%}
+            {% if let Some(members) = job.employer.members -%}
+              {% if members.len() > 1 -%}
                 <div class="flex items-center space-x-1 rounded-md uppercase">
                   <div class="shrink-0 size-3 flex items-center justify-center">
                     <img class="size-3 object-contain"
@@ -174,9 +160,25 @@
                   </div>
 
                   <div class="leading-3 text-stone-600 text-xs tracking-wide font-semibold uppercase">
-                    {{ member.foundation }} member
+                    Multiple memberships
                   </div>
                 </div>
+              {% else -%}
+                {% if let Some(member) = members.first() -%}
+                  <div class="flex items-center space-x-1 rounded-md uppercase">
+                    <div class="shrink-0 size-3 flex items-center justify-center">
+                      <img class="size-3 object-contain"
+                           height="auto"
+                           width="auto"
+                           src="/static/images/badge_member.png"
+                           alt="Member badge logo">
+                    </div>
+
+                    <div class="leading-3 text-stone-600 text-xs tracking-wide font-semibold uppercase">
+                      {{ member.foundation }} member
+                    </div>
+                  </div>
+                {% endif -%}
               {% endif -%}
             {% endif -%}
             {# End member -#}

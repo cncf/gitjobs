@@ -53,13 +53,10 @@ pub(crate) struct Employer {
     pub company: String,
     /// Unique identifier for the employer.
     pub employer_id: Uuid,
-    /// Whether the employer has multiple foundation memberships.
-    pub multiple_memberships: bool,
-
     /// Optional logo identifier for the employer.
     pub logo_id: Option<Uuid>,
-    /// Optional member information for the employer.
-    pub member: Option<Member>,
+    /// Optional members associated with the employer.
+    pub members: Option<Vec<Member>>,
     /// Optional website URL for the employer.
     pub website_url: Option<String>,
 }

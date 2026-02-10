@@ -82,7 +82,9 @@ export class DashboardSearch extends LitWrapper {
 
     // Fetch projects or members from server
     const url = `${
-      this.type === "members" ? "/dashboard/members/search?member=" : "/projects/search?project="
+      this.type === "members"
+        ? "/dashboard/members/search?member="
+        : "/projects/search?project="
     }${encodeURIComponent(this.enteredValue)}&foundation=${this.selectedFoundation}`;
     try {
       const response = await fetch(url);
@@ -238,7 +240,11 @@ export class DashboardSearch extends LitWrapper {
    * @private
    */
   _onSelect(item) {
-    if (this.type === "projects" || this.type === "certifications" || this.type === "members") {
+    if (
+      this.type === "projects" ||
+      this.type === "certifications" ||
+      this.type === "members"
+    ) {
       this.selected.push(item);
     } else {
       this.selected = [item];
@@ -287,7 +293,7 @@ export class DashboardSearch extends LitWrapper {
         case "projects":
           return "If the job position involves contributing to any of the supported foundations projects, please list them here.";
         default:
-          return "If your company is a member of any of the supported foundations please select the corresponding member entry. Jobs posted by members will be featured across the site. False membership claims may lead to the suspension of the employer and associated user accounts.";
+          return "If your company has a membership in any of the supported foundations please select the corresponding membership entry. Jobs posted by members will be featured across the site. False membership claims may lead to the suspension of the employer and associated user accounts.";
       }
     };
 
@@ -577,8 +583,16 @@ export class DashboardSearch extends LitWrapper {
                               name="members[${index}][member_id]"
                               value="${opt.member_id}"
                             />
-                            <input type="hidden" name="members[${index}][name]" value="${opt.name}" />
-                            <input type="hidden" name="members[${index}][level]" value="${opt.level}" />
+                            <input
+                              type="hidden"
+                              name="members[${index}][name]"
+                              value="${opt.name}"
+                            />
+                            <input
+                              type="hidden"
+                              name="members[${index}][level]"
+                              value="${opt.level}"
+                            />
                             <input
                               type="hidden"
                               name="members[${index}][foundation]"

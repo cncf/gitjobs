@@ -570,11 +570,6 @@ impl DBDashBoardEmployer for PgDB {
         let members: Option<Vec<Member>> = row
             .get::<_, Option<serde_json::Value>>("members")
             .map(|v| serde_json::from_value(v).expect("members should be valid json"));
-        let (member, multiple_memberships) = match members.as_ref() {
-            Some(members) if members.len() == 1 => (members.first().cloned(), false),
-            Some(members) if !members.is_empty() => (None, true),
-            _ => (None, false),
-        };
 
         let employer = Employer {
             company: row.get("company"),
@@ -584,9 +579,7 @@ impl DBDashBoardEmployer for PgDB {
                 .get::<_, Option<serde_json::Value>>("location")
                 .map(|v| serde_json::from_value(v).expect("location should be valid json")),
             logo_id: row.get("logo_id"),
-            member,
             members,
-            multiple_memberships,
             website_url: row.get("website_url"),
         };
 

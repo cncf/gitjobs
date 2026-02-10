@@ -150,22 +150,8 @@
 {% macro employer_member_badge(employer, with_legend = true) -%}
   <div>
     {# Member -#}
-    {% if employer.multiple_memberships -%}
-      <div class="flex items-center space-x-1 rounded-md uppercase min-w-0">
-        <div class="shrink-0 size-3 flex items-center justify-center">
-          <img class="size-3 object-contain"
-               height="auto"
-               width="auto"
-               src="/static/images/badge_member.png"
-               alt="Member badge logo">
-        </div>
-
-        <div class="text-stone-600 text-[0.7rem] md:text-xs font-semibold tracking-wide uppercase truncate">
-          Multiple memberships
-        </div>
-      </div>
-    {% else -%}
-      {% if let Some(member) = employer.member -%}
+    {% if let Some(members) = employer.members -%}
+      {% if members.len() > 1 -%}
         <div class="flex items-center space-x-1 rounded-md uppercase min-w-0">
           <div class="shrink-0 size-3 flex items-center justify-center">
             <img class="size-3 object-contain"
@@ -176,12 +162,28 @@
           </div>
 
           <div class="text-stone-600 text-[0.7rem] md:text-xs font-semibold tracking-wide uppercase truncate">
-            {{ member.foundation }}
-            {% if with_legend -%}
-              member
-            {% endif -%}
+            Multiple memberships
           </div>
         </div>
+      {% else -%}
+        {% if let Some(member) = members.first() -%}
+          <div class="flex items-center space-x-1 rounded-md uppercase min-w-0">
+            <div class="shrink-0 size-3 flex items-center justify-center">
+              <img class="size-3 object-contain"
+                   height="auto"
+                   width="auto"
+                   src="/static/images/badge_member.png"
+                   alt="Member badge logo">
+            </div>
+
+            <div class="text-stone-600 text-[0.7rem] md:text-xs font-semibold tracking-wide uppercase truncate">
+              {{ member.foundation }}
+              {% if with_legend -%}
+                member
+              {% endif -%}
+            </div>
+          </div>
+        {% endif -%}
       {% endif -%}
     {% endif -%}
     {# End member -#}

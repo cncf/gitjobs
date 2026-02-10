@@ -78,10 +78,10 @@ impl DBMisc for PgDB {
             .await?
             .into_iter()
             .map(|row| Member {
-                member_id: row.get("member_id"),
                 foundation: row.get("foundation"),
                 level: row.get("level"),
                 logo_url: row.get("logo_url"),
+                member_id: row.get("member_id"),
                 name: row.get("name"),
             })
             .collect();

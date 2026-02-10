@@ -88,11 +88,7 @@ begin
                     'company', e.company,
                     'employer_id', e.employer_id,
                     'logo_id', e.logo_id,
-                    'member', case
-                        when memberships.membership_count = 1 then memberships.members->0
-                        else null
-                    end,
-                    'multiple_memberships', memberships.membership_count > 1,
+                    'members', members.members,
                     'website_url', e.website_url
                 )), '{}'::jsonb)
             ) as employer,
@@ -121,7 +117,6 @@ begin
         join employer e on j.employer_id = e.employer_id
         left join lateral (
             select
-                count(*) as membership_count,
                 jsonb_agg(jsonb_build_object(
                     'member_id', m.member_id,
                     'foundation', m.foundation,
@@ -132,7 +127,7 @@ begin
             from employer_member em
             join member m on em.member_id = m.member_id
             where em.employer_id = e.employer_id
-        ) memberships on true
+        ) members on true
         left join location l on j.location_id = l.location_id
         where j.status = 'published'
         and

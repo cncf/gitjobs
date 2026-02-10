@@ -59,10 +59,9 @@ mod tests {
             employer: Employer {
                 employer_id: Uuid::parse_str("550e8400-e29b-41d4-a716-446655440001").unwrap(),
                 company: "ACME Corp".to_string(),
-                multiple_memberships: false,
                 description: None,
                 logo_id: None,
-                member: None,
+                members: None,
                 website_url: None,
             },
             kind: JobKind::FullTime,

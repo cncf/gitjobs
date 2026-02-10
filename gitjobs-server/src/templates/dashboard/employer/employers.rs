@@ -59,9 +59,6 @@ pub(crate) struct Employer {
     pub company: String,
     /// Company description.
     pub description: String,
-    /// Whether the employer has multiple foundation memberships.
-    #[serde(default)]
-    pub multiple_memberships: bool,
     /// Whether the employer profile is public.
     pub public: bool,
 
@@ -69,9 +66,7 @@ pub(crate) struct Employer {
     pub location: Option<Location>,
     /// Logo image identifier, if available.
     pub logo_id: Option<Uuid>,
-    /// Primary membership when a single foundation membership exists.
-    pub member: Option<Member>,
-    /// Associated memberships, if any.
+    /// Associated members, if any.
     pub members: Option<Vec<Member>>,
     /// Website URL, if provided.
     pub website_url: Option<String>,

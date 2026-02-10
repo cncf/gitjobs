@@ -72,11 +72,7 @@ impl DBDashBoardModerator for PgDB {
                             'company', e.company,
                             'employer_id', e.employer_id,
                             'logo_id', e.logo_id,
-                            'member', case
-                                when memberships.membership_count = 1 then memberships.members->0
-                                else null
-                            end,
-                            'multiple_memberships', memberships.membership_count > 1,
+                            'members', members.members,
                             'website_url', e.website_url
                         ))
                     ) as employer
@@ -84,7 +80,6 @@ impl DBDashBoardModerator for PgDB {
                 join employer e on j.employer_id = e.employer_id
                 left join lateral (
                     select
-                        count(*) as membership_count,
                         jsonb_agg(jsonb_build_object(
                             'member_id', m.member_id,
                             'foundation', m.foundation,
@@ -95,7 +90,7 @@ impl DBDashBoardModerator for PgDB {
                     from employer_member em
                     join member m on em.member_id = m.member_id
                     where em.employer_id = e.employer_id
-                ) memberships on true
+                ) members on true
                 where j.status = $1
                 order by j.created_at desc;
                 ",

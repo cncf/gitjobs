@@ -1,6 +1,8 @@
 //! This module defines database functionality used to manage notifications, including
 //! enqueueing, retrieving, and updating notification records.
 
+use std::sync::Arc;
+
 use anyhow::{Result, bail};
 use async_trait::async_trait;
 use tracing::{instrument, trace};
@@ -56,9 +58,12 @@ impl DBNotifications for PgDB {
     #[instrument(skip(self), err)]
     async fn get_pending_notification(&self, client_id: Uuid) -> Result<Option<Notification>> {
         // Get transaction client
-        let clients = self.txs_clients.read().await;
-        let Some((tx, _)) = clients.get(&client_id) else {
-            bail!(TX_CLIENT_NOT_FOUND);
+        let tx = {
+            let clients = self.txs_clients.read().await;
+            let Some((tx, _)) = clients.get(&client_id) else {
+                bail!(TX_CLIENT_NOT_FOUND);
+            };
+            Arc::clone(tx)
         };
 
         // Get pending notification (if any)
@@ -106,9 +111,12 @@ impl DBNotifications for PgDB {
         trace!("db: update notification");
 
         // Get transaction client
-        let clients = self.txs_clients.read().await;
-        let Some((tx, _)) = clients.get(&client_id) else {
-            bail!(TX_CLIENT_NOT_FOUND);
+        let tx = {
+            let clients = self.txs_clients.read().await;
+            let Some((tx, _)) = clients.get(&client_id) else {
+                bail!(TX_CLIENT_NOT_FOUND);
+            };
+            Arc::clone(tx)
         };
 
         // Update notification

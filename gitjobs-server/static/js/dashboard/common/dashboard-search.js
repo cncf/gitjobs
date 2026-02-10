@@ -82,9 +82,7 @@ export class DashboardSearch extends LitWrapper {
 
     // Fetch projects or members from server
     const url = `${
-      this.type === "members"
-        ? "/dashboard/members/search?member="
-        : "/projects/search?project="
+      this.type === "members" ? "/dashboard/members/search?member=" : "/projects/search?project="
     }${encodeURIComponent(this.enteredValue)}&foundation=${this.selectedFoundation}`;
     try {
       const response = await fetch(url);
@@ -240,11 +238,7 @@ export class DashboardSearch extends LitWrapper {
    * @private
    */
   _onSelect(item) {
-    if (
-      this.type === "projects" ||
-      this.type === "certifications" ||
-      this.type === "members"
-    ) {
+    if (this.type === "projects" || this.type === "certifications" || this.type === "members") {
       this.selected.push(item);
     } else {
       this.selected = [item];
@@ -583,16 +577,8 @@ export class DashboardSearch extends LitWrapper {
                               name="members[${index}][member_id]"
                               value="${opt.member_id}"
                             />
-                            <input
-                              type="hidden"
-                              name="members[${index}][name]"
-                              value="${opt.name}"
-                            />
-                            <input
-                              type="hidden"
-                              name="members[${index}][level]"
-                              value="${opt.level}"
-                            />
+                            <input type="hidden" name="members[${index}][name]" value="${opt.name}" />
+                            <input type="hidden" name="members[${index}][level]" value="${opt.level}" />
                             <input
                               type="hidden"
                               name="members[${index}][foundation]"

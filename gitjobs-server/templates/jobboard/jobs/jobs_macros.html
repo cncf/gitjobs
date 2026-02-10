@@ -189,6 +189,33 @@
   </div>
   {# End benefits -#}
 </div>
+{# End compensation section -#}
+
+{# Membership section -#}
+<div class="pt-4 md:pt-6 px-6 border-t border-stone-100">{{ filters_title(text = "Membership") -}}</div>
+
+<div class="p-6 pb-4 md:pb-6 pt-3 flex flex-col space-y-5">
+  {# Membership foundation -#}
+  <div>
+    {{ filters_subtitle(text = "Jobs from foundation members") -}}
+
+    <div class="mt-2.5">
+      {%- let selected_membership = filters.membership|display_some -%}
+      <select id="{{ device }}-membership"
+              form="{{ form }}"
+              data-trigger-form="true"
+              name="membership"
+              class="select-primary py-0.5 text-[0.775rem]/6 text-stone-700">
+        {{ macros::select_option(value = "", label = "Any foundation", selected = selected_membership) -}}
+        {% for foundation in filters_options.foundations -%}
+          {{ macros::select_option(value = foundation.name.as_str() , label = foundation.name|upper, selected = selected_membership) -}}
+        {% endfor -%}
+      </select>
+    </div>
+  </div>
+  {# End membership foundation -#}
+</div>
+{# End membership section -#}
 
 {# Embed button -#}
 <div class="pt-4 md:pt-6 px-6 md:mb-1 border-t border-stone-100 flex justify-center">
@@ -197,7 +224,6 @@
           data-device="{{ device }}">Get embed code</button>
 </div>
 {# End embed button -#}
-{# End compensation section -#}
 {% endmacro filters -%}
 {# End filters -#}
 

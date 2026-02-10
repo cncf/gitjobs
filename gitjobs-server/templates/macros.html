@@ -88,6 +88,27 @@
 {% endmacro badge -%}
 {# End badge #}
 
+{# Memberships popover #}
+{% macro memberships_popover(members, width_styles = "min-w-[220px] max-w-[320px]") -%}
+  <div class="absolute left-0 top-full z-20 w-max {{ width_styles }} opacity-0 pointer-events-none transition-opacity duration-150 group-hover:opacity-100 group-hover:pointer-events-auto">
+    <div class="absolute size-2.5 pointer-events-none bg-white border-l border-t border-stone-200 rotate-45 top-1 left-4">
+    </div>
+    <div class="mt-2 rounded-lg border border-stone-200 bg-white shadow-xs overflow-hidden">
+      <ul class="divide-y divide-stone-100 max-h-48 overflow-y-auto">
+        {% for member in members -%}
+          <li class="px-3 py-2">
+            <div class="text-[0.82rem] leading-4 font-semibold uppercase text-stone-700">{{ member.foundation }}</div>
+            <div class="text-[0.68rem] leading-4 font-semibold tracking-wide uppercase text-stone-500/90">
+              {{ member.level }} member
+            </div>
+          </li>
+        {% endfor -%}
+      </ul>
+    </div>
+  </div>
+{% endmacro memberships_popover -%}
+{# End memberships popover #}
+
 {# Form title #}
 {% macro form_title(title, description = "") -%}
   <div class="text-xl lg:text-2xl font-medium text-stone-900 h-[38px]">{{ title }}</div>

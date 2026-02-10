@@ -7,7 +7,7 @@ use axum::{
     extract::FromRef,
     http::{
         HeaderValue, Request, Response, StatusCode, Uri,
-        header::{AUTHORIZATION, CACHE_CONTROL, CONTENT_TYPE},
+        header::{AUTHORIZATION, CACHE_CONTROL, CONTENT_TYPE, WWW_AUTHENTICATE},
     },
     middleware,
     response::IntoResponse,
@@ -400,6 +400,9 @@ impl BasicAuth {
     fn unauthorized_response() -> Response<Body> {
         let mut response = Response::new(Body::empty());
         *response.status_mut() = StatusCode::UNAUTHORIZED;
+        response
+            .headers_mut()
+            .insert(WWW_AUTHENTICATE, HeaderValue::from_static("Basic"));
         response
     }
 }

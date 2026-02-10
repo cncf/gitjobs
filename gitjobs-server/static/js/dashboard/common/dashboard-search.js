@@ -238,7 +238,7 @@ export class DashboardSearch extends LitWrapper {
    * @private
    */
   _onSelect(item) {
-    if (this.type === "projects" || this.type === "certifications") {
+    if (this.type === "projects" || this.type === "certifications" || this.type === "members") {
       this.selected.push(item);
     } else {
       this.selected = [item];
@@ -287,7 +287,7 @@ export class DashboardSearch extends LitWrapper {
         case "projects":
           return "If the job position involves contributing to any of the supported foundations projects, please list them here.";
         default:
-          return "If your company is a member of any of the supported foundations please select the corresponding member entry. Jobs posted by members will be featured across the site. False membership claims may lead to the suspension of the employer and associated user accounts.";
+          return "If your company has a membership in any of the supported foundations please select the corresponding membership entry. Jobs posted by members will be featured across the site. False membership claims may lead to the suspension of the employer and associated user accounts.";
       }
     };
 
@@ -330,7 +330,7 @@ export class DashboardSearch extends LitWrapper {
                 spellcheck="false"
               />
               <div class="absolute end-1.5 top-1.5 peer-placeholder-shown:hidden">
-                <button @click=${this._cleanEnteredValue} type="button" class="cursor-pointer mt-[2px]">
+                <button @click=${this._cleanEnteredValue} type="button" class="cursor-pointer mt-0.5">
                   <div class="svg-icon size-5 bg-stone-400 hover:bg-stone-700 icon-close"></div>
                 </button>
               </div>
@@ -404,7 +404,7 @@ export class DashboardSearch extends LitWrapper {
                                   ${this.type === "certifications"
                                     ? html`<div class="inline-flex">
                                           <div
-                                            class="truncate text-nowrap max-w-[100%] text-xs/6 font-medium text-stone-700"
+                                            class="truncate text-nowrap max-w-full text-xs/6 font-medium text-stone-700"
                                           >
                                             ${option.short_name}
                                             <span class="font-normal text-stone-500/75"
@@ -420,7 +420,7 @@ export class DashboardSearch extends LitWrapper {
                                         </div>
                                         <div class="inline-flex">
                                           <div
-                                            class="truncate text-nowrap uppercase max-w-[100%] text-xs/6 font-medium text-stone-500/75"
+                                            class="truncate text-nowrap uppercase max-w-full text-xs/6 font-medium text-stone-500/75"
                                           >
                                             ${option.foundation}
                                             ${this.type === "projects"
@@ -453,7 +453,7 @@ export class DashboardSearch extends LitWrapper {
                     class="relative border border-stone-200 rounded-lg p-4 pe-10 bg-white ${this.type ===
                     "certifications"
                       ? "min-w-full"
-                      : "min-w-64"}"
+                      : "max-w-full w-[280px]"}"
                     title="${ifDefined(opt.description)}"
                   >
                     <button
@@ -484,7 +484,7 @@ export class DashboardSearch extends LitWrapper {
                         ${this.type === "certifications"
                           ? html` <div class="inline-flex">
                                 <div
-                                  class="truncate text-nowrap max-w-[100%] text-xs/6 font-medium text-stone-700"
+                                  class="truncate text-nowrap max-w-full text-xs/6 font-medium text-stone-700"
                                 >
                                   ${opt.short_name}
                                   <span class="font-normal text-stone-500/75">(${opt.provider})</span>
@@ -512,7 +512,7 @@ export class DashboardSearch extends LitWrapper {
                               </div>
                               <div class="inline-flex">
                                 <div
-                                  class="truncate text-nowrap uppercase max-w-[100%] text-xs/6 font-medium text-stone-500/75"
+                                  class="truncate text-nowrap uppercase max-w-full text-xs/6 font-medium text-stone-500/75"
                                 >
                                   ${opt.foundation}
                                   ${this.type === "members" ? `${opt.level} member` : opt.maturity}
@@ -572,11 +572,23 @@ export class DashboardSearch extends LitWrapper {
                                   value="${opt.url}"
                                 />`
                               : ""}`
-                        : html`<input type="hidden" name="member[member_id]" value="${opt.member_id}" />
-                            <input type="hidden" name="member[name]" value="${opt.name}" />
-                            <input type="hidden" name="member[level]" value="${opt.level}" />
-                            <input type="hidden" name="member[foundation]" value="${opt.foundation}" />
-                            <input type="hidden" name="member[logo_url]" value="${opt.logo_url}" />`}
+                        : html`<input
+                              type="hidden"
+                              name="members[${index}][member_id]"
+                              value="${opt.member_id}"
+                            />
+                            <input type="hidden" name="members[${index}][name]" value="${opt.name}" />
+                            <input type="hidden" name="members[${index}][level]" value="${opt.level}" />
+                            <input
+                              type="hidden"
+                              name="members[${index}][foundation]"
+                              value="${opt.foundation}"
+                            />
+                            <input
+                              type="hidden"
+                              name="members[${index}][logo_url]"
+                              value="${opt.logo_url}"
+                            />`}
                   </div> `,
               )}
             </div>`

@@ -61,7 +61,7 @@ mod tests {
                 company: "ACME Corp".to_string(),
                 description: None,
                 logo_id: None,
-                member: None,
+                members: None,
                 website_url: None,
             },
             kind: JobKind::FullTime,

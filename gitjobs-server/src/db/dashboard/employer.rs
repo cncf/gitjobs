@@ -17,7 +17,7 @@ use crate::{
             team::{TeamInvitation, TeamMember},
         },
         helpers::normalize_salary,
-        misc::{Certification, Foundation},
+        misc::{Certification, Foundation, Member},
     },
 };
 
@@ -141,7 +141,6 @@ impl DBDashBoardEmployer for PgDB {
                     public,
                     location_id,
                     logo_id,
-                    member_id,
                     website_url
                 ) values (
                     $1::text,
@@ -149,8 +148,7 @@ impl DBDashBoardEmployer for PgDB {
                     $3::bool,
                     $4::uuid,
                     $5::uuid,
-                    $6::uuid,
-                    $7::text
+                    $6::text
                 ) returning employer_id;
                 ",
                 &[
@@ -159,12 +157,31 @@ impl DBDashBoardEmployer for PgDB {
                     &employer.public,
                     &employer.location.as_ref().map(|l| l.location_id),
                     &employer.logo_id,
-                    &employer.member.as_ref().map(|m| m.member_id),
                     &employer.website_url,
                 ],
             )
             .await?
             .get("employer_id");
+
+        // Insert employer memberships
+        if let Some(members) = &employer.members {
+            for member in members {
+                tx.execute(
+                    "
+                    insert into employer_member (
+                        employer_id,
+                        member_id
+                    ) values (
+                        $1::uuid,
+                        $2::uuid
+                    )
+                    on conflict (employer_id, member_id) do nothing;
+                    ",
+                    &[&employer_id, &member.member_id],
+                )
+                .await?;
+            }
+        }
 
         // Add user to employer team
         tx.execute(
@@ -531,22 +548,29 @@ impl DBDashBoardEmployer for PgDB {
                         )), '{}'::jsonb)
                     ) as location,
                     (
-                        select nullif(jsonb_strip_nulls(jsonb_build_object(
+                        select json_agg(json_build_object(
                             'member_id', m.member_id,
                             'foundation', m.foundation,
                             'level', m.level,
                             'logo_url', m.logo_url,
                             'name', m.name
-                        )), '{}'::jsonb)
-                    ) as member
+                        ) order by m.foundation asc, m.name asc)
+                        from employer_member em
+                        join member m on em.member_id = m.member_id
+                        where em.employer_id = e.employer_id
+                    ) as members
                 from employer e
                 left join location l using (location_id)
-                left join member m using (member_id)
                 where employer_id = $1::uuid;
                 ",
                 &[&employer_id],
             )
             .await?;
+
+        let members: Option<Vec<Member>> = row
+            .get::<_, Option<serde_json::Value>>("members")
+            .map(|v| serde_json::from_value(v).expect("members should be valid json"));
+
         let employer = Employer {
             company: row.get("company"),
             description: row.get("description"),
@@ -555,9 +579,7 @@ impl DBDashBoardEmployer for PgDB {
                 .get::<_, Option<serde_json::Value>>("location")
                 .map(|v| serde_json::from_value(v).expect("location should be valid json")),
             logo_id: row.get("logo_id"),
-            member: row
-                .get::<_, Option<serde_json::Value>>("member")
-                .map(|v| serde_json::from_value(v).expect("member should be valid json")),
+            members,
             website_url: row.get("website_url"),
         };
 
@@ -1027,8 +1049,11 @@ impl DBDashBoardEmployer for PgDB {
     async fn update_employer(&self, employer_id: &Uuid, employer: &Employer) -> Result<()> {
         trace!("db: update employer");
 
-        let db = self.pool.get().await?;
-        db.execute(
+        let mut db = self.pool.get().await?;
+        let tx = db.transaction().await?;
+
+        // Update employer profile
+        tx.execute(
             "
             update employer
             set
@@ -1037,8 +1062,7 @@ impl DBDashBoardEmployer for PgDB {
                 public = $4::bool,
                 location_id = $5::uuid,
                 logo_id = $6::uuid,
-                member_id = $7::uuid,
-                website_url = $8::text,
+                website_url = $7::text,
                 updated_at = current_timestamp
             where employer_id = $1::uuid;
             ",
@@ -1049,11 +1073,39 @@ impl DBDashBoardEmployer for PgDB {
                 &employer.public,
                 &employer.location.as_ref().map(|l| l.location_id),
                 &employer.logo_id,
-                &employer.member.as_ref().map(|m| m.member_id),
                 &employer.website_url,
             ],
         )
         .await?;
+
+        // Refresh employer memberships
+        tx.execute(
+            "delete from employer_member where employer_id = $1::uuid;",
+            &[&employer_id],
+        )
+        .await?;
+
+        if let Some(members) = &employer.members {
+            for member in members {
+                tx.execute(
+                    "
+                    insert into employer_member (
+                        employer_id,
+                        member_id
+                    ) values (
+                        $1::uuid,
+                        $2::uuid
+                    )
+                    on conflict (employer_id, member_id) do nothing;
+                    ",
+                    &[&employer_id, &member.member_id],
+                )
+                .await?;
+            }
+        }
+
+        // Commit transaction
+        tx.commit().await?;
 
         Ok(())
     }

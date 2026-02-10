@@ -66,8 +66,8 @@ pub(crate) struct Employer {
     pub location: Option<Location>,
     /// Logo image identifier, if available.
     pub logo_id: Option<Uuid>,
-    /// Associated member information, if any.
-    pub member: Option<Member>,
+    /// Associated members, if any.
+    pub members: Option<Vec<Member>>,
     /// Website URL, if provided.
     pub website_url: Option<String>,
 }

@@ -453,7 +453,7 @@ export class DashboardSearch extends LitWrapper {
                     class="relative border border-stone-200 rounded-lg p-4 pe-10 bg-white ${this.type ===
                     "certifications"
                       ? "min-w-full"
-                      : "min-w-64"}"
+                      : "max-w-full w-[280px]"}"
                     title="${ifDefined(opt.description)}"
                   >
                     <button

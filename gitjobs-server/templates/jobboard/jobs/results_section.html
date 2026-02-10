@@ -150,18 +150,21 @@
             {# Member -#}
             {% if let Some(members) = job.employer.members -%}
               {% if members.len() > 1 -%}
-                <div class="flex items-center space-x-1 rounded-md uppercase">
-                  <div class="shrink-0 size-3 flex items-center justify-center">
-                    <img class="size-3 object-contain"
-                         height="auto"
-                         width="auto"
-                         src="/static/images/badge_member.png"
-                         alt="Member badge logo">
-                  </div>
+                <div class="relative group">
+                  <div class="peer flex items-center space-x-1 rounded-md uppercase">
+                    <div class="shrink-0 size-3 flex items-center justify-center">
+                      <img class="size-3 object-contain"
+                           height="auto"
+                           width="auto"
+                           src="/static/images/badge_member.png"
+                           alt="Member badge logo">
+                    </div>
 
-                  <div class="leading-3 text-stone-600 text-xs tracking-wide font-semibold uppercase">
-                    Multiple memberships
+                    <div class="leading-3 text-stone-600 text-xs tracking-wide font-semibold uppercase">
+                      Multiple memberships
+                    </div>
                   </div>
+                  {{ macros::memberships_popover(members = members) -}}
                 </div>
               {% else -%}
                 {% if let Some(member) = members.first() -%}

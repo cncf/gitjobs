@@ -68,20 +68,25 @@
     {% if let Some(members) = employer.members -%}
       {% if members.len() > 1 -%}
         <div class="hidden lg:flex xl:w-1/4">
-          <div class="flex gap-x-2 items-center bg-stone-50 border border-stone-200 rounded-lg p-2 max-w-full xl:min-w-full">
-            <div class="flex items-center justify-center size-10 shrink-0">
-              <img src="/static/images/badge_member.png"
-                   alt="Member badge logo"
-                   height="auto"
-                   width="auto"
-                   class="size-10 object-contain">
-            </div>
-            <div class="flex flex-col justify-start min-w-0">
-              <div class="truncate text-start text-stone-700 font-medium">Multiple memberships</div>
-              <div class="truncate text-nowrap uppercase max-w-[100%] text-xs/4 font-medium text-stone-500/75">
-                Foundation memberships
+          <div class="relative group max-w-full xl:min-w-full">
+            <button type="button"
+                    aria-label="Display membership list"
+                    class="peer w-full text-start flex gap-x-2 items-center bg-stone-50 border border-stone-200 rounded-lg p-2 cursor-pointer">
+              <div class="flex items-center justify-center size-10 shrink-0">
+                <img src="/static/images/badge_member.png"
+                     alt="Member badge logo"
+                     height="auto"
+                     width="auto"
+                     class="size-10 object-contain">
               </div>
-            </div>
+              <div class="flex flex-col justify-start min-w-0">
+                <div class="truncate text-nowrap uppercase max-w-[100%] text-xs leading-[12px] mt-1 font-medium text-stone-500/75">
+                  Employer is member of
+                </div>
+                <div class="truncate text-start text-stone-700 font-medium mt-0.5">Multiple foundations</div>
+              </div>
+            </button>
+            {{ macros::memberships_popover(members = members, width_styles = "min-w-full max-w-[340px]") -}}
           </div>
         </div>
       {% else -%}

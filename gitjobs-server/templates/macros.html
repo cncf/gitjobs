@@ -91,7 +91,8 @@
 {# Memberships popover #}
 {% macro memberships_popover(members, width_styles = "min-w-[220px] max-w-[320px]") -%}
   <div class="absolute left-0 top-full z-20 w-max {{ width_styles }} opacity-0 pointer-events-none transition-opacity duration-150 group-hover:opacity-100 group-hover:pointer-events-auto">
-    <div class="absolute size-2.5 pointer-events-none bg-white border-l border-t border-stone-200 rotate-45 top-1 left-4"></div>
+    <div class="absolute size-2.5 pointer-events-none bg-white border-l border-t border-stone-200 rotate-45 top-1 left-4">
+    </div>
     <div class="mt-2 rounded-lg border border-stone-200 bg-white shadow-xs overflow-hidden">
       <ul class="divide-y divide-stone-100 max-h-48 overflow-y-auto">
         {% for member in members -%}

@@ -1,5 +1,5 @@
 -- Deletes a team member while preserving at least one approved member.
-create or replace function dashboard_employer_delete_team_member(
+create or replace function delete_team_member(
     p_employer_id uuid,
     p_user_id uuid
 )

@@ -1,5 +1,5 @@
 -- Soft-deletes a job.
-create or replace function dashboard_employer_delete_job(p_job_id uuid)
+create or replace function delete_job(p_job_id uuid)
 returns void as $$
     update job
     set

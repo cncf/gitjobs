@@ -19,7 +19,7 @@ impl DBWorkers for PgDB {
     #[instrument(skip(self), err)]
     async fn archive_expired_jobs(&self) -> Result<()> {
         let db = self.pool.get().await?;
-        db.execute("select workers_archive_expired_jobs()", &[]).await?;
+        db.execute("select archive_expired_jobs()", &[]).await?;
 
         Ok(())
     }

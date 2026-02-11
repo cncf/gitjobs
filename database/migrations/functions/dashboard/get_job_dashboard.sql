@@ -1,5 +1,5 @@
 -- Returns full job details for employer dashboard.
-create or replace function dashboard_employer_get_job_dashboard(p_job_id uuid)
+create or replace function get_job_dashboard(p_job_id uuid)
 returns json as $$
     select nullif(jsonb_strip_nulls(jsonb_build_object(
         'description', j.description,

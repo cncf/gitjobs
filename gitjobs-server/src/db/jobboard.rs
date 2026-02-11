@@ -48,10 +48,7 @@ impl DBJobBoard for PgDB {
 
         let db = self.pool.get().await?;
         let applied = db
-            .query_one(
-                "select jobboard_apply_to_job($1::uuid, $2::uuid);",
-                &[&job_id, &user_id],
-            )
+            .query_one("select apply_to_job($1::uuid, $2::uuid);", &[&job_id, &user_id])
             .await?;
 
         Ok(applied.get(0))
@@ -63,7 +60,7 @@ impl DBJobBoard for PgDB {
 
         let db = self.pool.get().await?;
         let json_data: Option<String> = db
-            .query_one("select jobboard_get_job_jobboard($1::uuid)::text;", &[&job_id])
+            .query_one("select get_job_jobboard($1::uuid)::text;", &[&job_id])
             .await?
             .get(0);
         let job = json_data.map(|data| serde_json::from_str(&data)).transpose()?;
@@ -83,9 +80,7 @@ impl DBJobBoard for PgDB {
         async fn inner(db: Object) -> Result<FiltersOptions> {
             trace!("db: get jobs filters options");
 
-            let row = db
-                .query_one("select jobboard_get_jobs_filters_options()::text;", &[])
-                .await?;
+            let row = db.query_one("select get_jobs_filters_options()::text;", &[]).await?;
             let filters_options = serde_json::from_str(&row.get::<_, String>(0))?;
 
             Ok(filters_options)
@@ -102,7 +97,7 @@ impl DBJobBoard for PgDB {
         // Query database
         let db = self.pool.get().await?;
         let json_data: String = db
-            .query_one("select jobboard_get_stats()::text as stats;", &[])
+            .query_one("select get_stats()::text as stats;", &[])
             .await?
             .get("stats");
         let stats = serde_json::from_str(&json_data)?;
@@ -117,7 +112,7 @@ impl DBJobBoard for PgDB {
         // Query database
         let db = self.pool.get().await?;
         let row = db
-            .query_one("select jobboard_search_jobs($1::jsonb)::text", &[&Json(filters)])
+            .query_one("select search_jobs($1::jsonb)::text", &[&Json(filters)])
             .await?;
         let output = serde_json::from_str(&row.get::<_, String>(0))?;
 

@@ -1,5 +1,5 @@
 -- Lists all members for the provided foundation.
-create or replace function syncer_list_members(p_foundation text)
+create or replace function list_members(p_foundation text)
 returns json as $$
     select coalesce(json_agg(json_build_object(
         'foundation', p_foundation,

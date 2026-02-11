@@ -41,7 +41,7 @@ insert into application (application_id, job_id, job_seeker_profile_id) values
 -- ============================================================================
 
 -- Should not delete application when user is not the profile owner
-select dashboard_job_seeker_cancel_application(:'applicationID'::uuid, :'userOtherID'::uuid);
+select cancel_application(:'applicationID'::uuid, :'userOtherID'::uuid);
 
 select is(
     (select count(*) from application where application_id = :'applicationID'::uuid),
@@ -50,7 +50,7 @@ select is(
 );
 
 -- Should delete application when user owns the profile
-select dashboard_job_seeker_cancel_application(:'applicationID'::uuid, :'userOwnerID'::uuid);
+select cancel_application(:'applicationID'::uuid, :'userOwnerID'::uuid);
 
 select is(
     (select count(*) from application where application_id = :'applicationID'::uuid),

@@ -1,5 +1,5 @@
 -- Creates a user and generates an email verification code if needed.
-create or replace function auth_sign_up_user(
+create or replace function sign_up_user(
     p_user_summary jsonb,
     p_email_verified boolean
 )

@@ -25,14 +25,14 @@ insert into "user" (auth_hash, email, email_verified, name, password, user_id, u
 
 -- Should return password hash for existing users
 select is(
-    auth_get_user_password(:'userID'::uuid),
+    get_user_password(:'userID'::uuid),
     'password-hash',
     'Should return password hash for existing users'
 );
 
 -- Should return null for unknown users
 select is(
-    auth_get_user_password(:'unknownUserID'::uuid),
+    get_user_password(:'unknownUserID'::uuid),
     null::text,
     'Should return null for unknown users'
 );

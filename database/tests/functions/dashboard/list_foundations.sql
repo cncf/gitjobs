@@ -17,7 +17,7 @@ insert into foundation (name) values ('lf');
 
 -- Should return full foundations payload sorted by name
 select is(
-    dashboard_employer_list_foundations()::jsonb,
+    list_foundations()::jsonb,
     '[
         {"name":"cncf"},
         {"name":"lf"}

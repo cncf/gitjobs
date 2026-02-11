@@ -1,5 +1,5 @@
 -- Returns the next pending notification and locks it for processing.
-create or replace function notifications_get_pending_notification()
+create or replace function get_pending_notification()
 returns table(
     kind text,
     notification_id uuid,

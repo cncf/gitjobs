@@ -1,5 +1,5 @@
 -- Returns the jobs that match the filters provided.
-create or replace function jobboard_search_jobs(p_filters jsonb)
+create or replace function search_jobs(p_filters jsonb)
 returns json as $$
 declare
     v_benefits text[];

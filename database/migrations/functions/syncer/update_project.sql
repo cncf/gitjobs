@@ -1,5 +1,5 @@
 -- Updates a project for the provided foundation.
-create or replace function syncer_update_project(
+create or replace function update_project(
     p_foundation text,
     p_name text,
     p_maturity text,

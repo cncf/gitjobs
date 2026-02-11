@@ -1,5 +1,5 @@
 -- Removes a project for the provided foundation.
-create or replace function syncer_remove_project(p_foundation text, p_name text)
+create or replace function remove_project(p_foundation text, p_name text)
 returns void as $$
     delete from project
     where foundation = p_foundation

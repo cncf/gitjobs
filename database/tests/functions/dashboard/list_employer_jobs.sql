@@ -80,7 +80,7 @@ insert into job (
 
 -- Should return full jobs payload excluding deleted rows
 select is(
-    dashboard_employer_list_employer_jobs(:'employerID'::uuid)::jsonb,
+    list_employer_jobs(:'employerID'::uuid)::jsonb,
     jsonb_build_array(
         jsonb_build_object(
             'archived_at',
@@ -132,7 +132,7 @@ select is(
 
 -- Should return empty arrays for unknown employers
 select is(
-    dashboard_employer_list_employer_jobs('99999999-9999-9999-9999-999999999999'::uuid)::jsonb,
+    list_employer_jobs('99999999-9999-9999-9999-999999999999'::uuid)::jsonb,
     '[]'::jsonb,
     'Should return empty arrays for unknown employers'
 );

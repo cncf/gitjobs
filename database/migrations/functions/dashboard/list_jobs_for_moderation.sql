@@ -1,5 +1,5 @@
 -- Returns jobs for moderation filtered by status.
-create or replace function dashboard_moderator_list_jobs_for_moderation(p_status text)
+create or replace function list_jobs_for_moderation(p_status text)
 returns json as $$
     select coalesce(json_agg(json_build_object(
         'created_at', j.created_at,

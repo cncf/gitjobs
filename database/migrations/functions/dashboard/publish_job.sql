@@ -1,5 +1,5 @@
 -- Publishes a job and refreshes normalized salary values.
-create or replace function dashboard_employer_publish_job(
+create or replace function publish_job(
     p_job_id uuid,
     p_salary_usd_year bigint,
     p_salary_min_usd_year bigint,

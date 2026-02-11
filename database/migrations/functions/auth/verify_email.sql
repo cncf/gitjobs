@@ -1,5 +1,5 @@
 -- Verifies email using a non-expired verification code.
-create or replace function auth_verify_email(p_code uuid)
+create or replace function verify_email(p_code uuid)
 returns void as $$
 declare
     v_user_id uuid;

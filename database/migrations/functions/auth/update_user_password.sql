@@ -1,5 +1,5 @@
 -- Updates user password and rotates auth hash.
-create or replace function auth_update_user_password(
+create or replace function update_user_password(
     p_user_id uuid,
     p_new_password text
 )

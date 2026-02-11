@@ -44,7 +44,7 @@ select is(
             'user_id', user_id::text,
             'username', username
         )
-        from auth_get_user_by_username('with-password')
+        from get_user_by_username('with-password')
     ),
     jsonb_build_object(
         'auth_hash', '01',
@@ -65,7 +65,7 @@ select is(
 select is(
     (
         select count(*)
-        from auth_get_user_by_username('without-password')
+        from get_user_by_username('without-password')
     ),
     0::bigint,
     'Should return no row when the user has no password'
@@ -75,7 +75,7 @@ select is(
 select is(
     (
         select count(*)
-        from auth_get_user_by_username('unverified-password')
+        from get_user_by_username('unverified-password')
     ),
     0::bigint,
     'Should return no row when the user is not verified'

@@ -1,5 +1,5 @@
 -- Adds a new employer with memberships and an initial approved team member.
-create or replace function dashboard_employer_add_employer(
+create or replace function add_employer(
     p_user_id uuid,
     p_employer jsonb
 )

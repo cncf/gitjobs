@@ -37,7 +37,7 @@ insert into employer_team (approved, employer_id, user_id) values
 
 -- Should return full team members payload sorted by name
 select is(
-    dashboard_employer_list_team_members(:'employerID'::uuid)::jsonb,
+    list_team_members(:'employerID'::uuid)::jsonb,
     '[
         {
             "approved": true,
@@ -66,7 +66,7 @@ select is(
 
 -- Should return empty arrays for unknown employers
 select is(
-    dashboard_employer_list_team_members('99999999-9999-9999-9999-999999999999'::uuid)::jsonb,
+    list_team_members('99999999-9999-9999-9999-999999999999'::uuid)::jsonb,
     '[]'::jsonb,
     'Should return empty arrays for unknown employers'
 );

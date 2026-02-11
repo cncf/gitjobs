@@ -32,10 +32,7 @@ impl DBDashBoardModerator for PgDB {
 
         let db = self.pool.get().await?;
         let first_published_at = db
-            .query_one(
-                "select dashboard_moderator_approve_job($1::uuid, $2::uuid)",
-                &[job_id, reviewer],
-            )
+            .query_one("select approve_job($1::uuid, $2::uuid)", &[job_id, reviewer])
             .await?
             .get(0);
 
@@ -49,7 +46,7 @@ impl DBDashBoardModerator for PgDB {
         let db = self.pool.get().await?;
         let row = db
             .query_one(
-                "select dashboard_moderator_list_jobs_for_moderation($1::text)::text",
+                "select list_jobs_for_moderation($1::text)::text",
                 &[&status.to_string()],
             )
             .await?;
@@ -64,7 +61,7 @@ impl DBDashBoardModerator for PgDB {
 
         let db = self.pool.get().await?;
         db.execute(
-            "select dashboard_moderator_reject_job($1::uuid, $2::uuid, $3::text);",
+            "select reject_job($1::uuid, $2::uuid, $3::text);",
             &[job_id, reviewer, &review_notes],
         )
         .await?;

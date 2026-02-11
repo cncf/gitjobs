@@ -62,7 +62,7 @@ insert into job (
 -- ============================================================================
 
 -- Should publish draft jobs and update normalized salary fields
-select dashboard_employer_publish_job(:'draftJobID'::uuid, 120000, 100000, 150000);
+select publish_job(:'draftJobID'::uuid, 120000, 100000, 150000);
 
 select ok(
     exists (
@@ -80,7 +80,7 @@ select ok(
 );
 
 -- Should not modify jobs outside publishable statuses
-select dashboard_employer_publish_job(:'publishedJobID'::uuid, 130000, 110000, 160000);
+select publish_job(:'publishedJobID'::uuid, 130000, 110000, 160000);
 
 select is(
     (

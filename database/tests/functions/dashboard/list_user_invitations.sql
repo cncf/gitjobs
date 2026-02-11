@@ -52,7 +52,7 @@ insert into employer_team (approved, employer_id, user_id) values
 
 -- Should return full pending invitations payload sorted by created_at
 select is(
-    dashboard_employer_list_user_invitations(:'userID'::uuid)::jsonb,
+    list_user_invitations(:'userID'::uuid)::jsonb,
     jsonb_build_array(
         jsonb_build_object(
             'company',
@@ -76,7 +76,7 @@ select is(
 
 -- Should return empty arrays when the user has no pending invitations
 select is(
-    dashboard_employer_list_user_invitations(
+    list_user_invitations(
         '99999999-9999-9999-9999-999999999999'::uuid
     )::jsonb,
     '[]'::jsonb,

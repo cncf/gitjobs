@@ -30,7 +30,7 @@ insert into employer_team (approved, employer_id, user_id) values
 -- ============================================================================
 
 -- Should mark the invitation as approved
-select dashboard_employer_accept_team_member_invitation(:'employerID'::uuid, :'userID'::uuid);
+select accept_team_member_invitation(:'employerID'::uuid, :'userID'::uuid);
 
 select is(
     (

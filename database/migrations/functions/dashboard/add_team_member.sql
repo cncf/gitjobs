@@ -1,5 +1,5 @@
 -- Adds a team member invitation by user email.
-create or replace function dashboard_employer_add_team_member(
+create or replace function add_team_member(
     p_employer_id uuid,
     p_email text
 )

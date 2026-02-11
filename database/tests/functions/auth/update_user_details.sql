@@ -23,7 +23,7 @@ insert into "user" (auth_hash, email, email_verified, name, user_id, username) v
 -- ============================================================================
 
 -- Should update the user name from the JSON payload
-select auth_update_user_details(
+select update_user_details(
     :'userID'::uuid,
     jsonb_build_object('name', 'New Name')
 );

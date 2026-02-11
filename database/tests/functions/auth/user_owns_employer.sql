@@ -34,21 +34,21 @@ insert into employer_team (approved, employer_id, user_id) values
 
 -- Should return true for approved team members
 select is(
-    auth_user_owns_employer(:'approvedUserID'::uuid, :'employerID'::uuid),
+    user_owns_employer(:'approvedUserID'::uuid, :'employerID'::uuid),
     true,
     'Should return true for approved team members'
 );
 
 -- Should return false for unapproved team members
 select is(
-    auth_user_owns_employer(:'pendingUserID'::uuid, :'employerID'::uuid),
+    user_owns_employer(:'pendingUserID'::uuid, :'employerID'::uuid),
     false,
     'Should return false for unapproved team members'
 );
 
 -- Should return false for unknown employers
 select is(
-    auth_user_owns_employer(
+    user_owns_employer(
         :'approvedUserID'::uuid,
         '99999999-9999-9999-9999-999999999999'::uuid
     ),

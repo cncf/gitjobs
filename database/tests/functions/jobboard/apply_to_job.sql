@@ -56,7 +56,7 @@ insert into job (description, employer_id, job_id, kind, status, title, workplac
 
 -- Should insert applications for published jobs
 select is(
-    jobboard_apply_to_job(:'jobPublishedID'::uuid, :'userID'::uuid),
+    apply_to_job(:'jobPublishedID'::uuid, :'userID'::uuid),
     true,
     'Should insert applications for published jobs'
 );
@@ -91,7 +91,7 @@ select is(
 
 -- Should not duplicate existing applications
 select is(
-    jobboard_apply_to_job(:'jobPublishedID'::uuid, :'userID'::uuid),
+    apply_to_job(:'jobPublishedID'::uuid, :'userID'::uuid),
     false,
     'Should not duplicate existing applications'
 );
@@ -126,7 +126,7 @@ select is(
 
 -- Should reject applications to non-published jobs
 select is(
-    jobboard_apply_to_job(:'jobDraftID'::uuid, :'userID'::uuid),
+    apply_to_job(:'jobDraftID'::uuid, :'userID'::uuid),
     false,
     'Should reject applications to non-published jobs'
 );
@@ -146,7 +146,7 @@ select ok(
 
 -- Should return false when the user has no job seeker profile
 select is(
-    jobboard_apply_to_job(:'jobPublishedID'::uuid, :'userWithoutProfileID'::uuid),
+    apply_to_job(:'jobPublishedID'::uuid, :'userWithoutProfileID'::uuid),
     false,
     'Should return false when the user has no job seeker profile'
 );

@@ -82,7 +82,7 @@ select is(
             (
                 select jsonb_agg(job - 'created_at')
                 from jsonb_array_elements(
-                    (dashboard_employer_get_applications_filters_options(:'employerID'::uuid)->'jobs')::jsonb
+                    (get_applications_filters_options(:'employerID'::uuid)->'jobs')::jsonb
                 ) as job
             )
         )
@@ -113,7 +113,7 @@ select is(
 
 -- Should return empty jobs for unknown employers
 select is(
-    dashboard_employer_get_applications_filters_options(
+    get_applications_filters_options(
         '99999999-9999-9999-9999-999999999999'::uuid
     )::jsonb,
     '{"jobs":[]}'::jsonb,

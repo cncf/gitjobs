@@ -65,21 +65,21 @@ insert into job (
 
 -- Should return true for employer logos with published jobs
 select is(
-    auth_is_image_public(:'imagePublicID'::uuid),
+    is_image_public(:'imagePublicID'::uuid),
     true,
     'Should return true for employer logos with published jobs'
 );
 
 -- Should return false for employer logos without published jobs
 select is(
-    auth_is_image_public(:'imagePrivateID'::uuid),
+    is_image_public(:'imagePrivateID'::uuid),
     false,
     'Should return false for employer logos without published jobs'
 );
 
 -- Should return false for unknown images
 select is(
-    auth_is_image_public('99999999-9999-9999-9999-999999999999'::uuid),
+    is_image_public('99999999-9999-9999-9999-999999999999'::uuid),
     false,
     'Should return false for unknown images'
 );

@@ -39,7 +39,7 @@ insert into member (foundation, level, logo_url, member_id, name) values
 -- Should create employer and return a generated id
 select ok(
     (
-        select dashboard_employer_add_employer(
+        select add_employer(
             :'userID'::uuid,
             jsonb_build_object(
                 'company', 'Acme Corp',

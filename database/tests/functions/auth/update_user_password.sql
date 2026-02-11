@@ -23,7 +23,7 @@ insert into "user" (auth_hash, email, email_verified, name, password, user_id, u
 -- ============================================================================
 
 -- Should update the password hash
-select auth_update_user_password(:'userID'::uuid, 'new-password');
+select update_user_password(:'userID'::uuid, 'new-password');
 
 select ok(
     (

@@ -51,7 +51,7 @@ insert into certification (
 -- ============================================================================
 
 -- Should insert all job fields from payload
-select dashboard_employer_add_job(
+select add_job(
     :'employerID'::uuid,
     jsonb_build_object(
         'apply_instructions', 'Apply with resume',

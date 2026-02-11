@@ -26,7 +26,7 @@ insert into location (city, country, location_id, state) values
 
 -- Should return full json payload with matching locations
 select is(
-    misc_search_locations_json('san')::jsonb,
+    search_locations_json('san')::jsonb,
     jsonb_build_array(
         jsonb_build_object(
             'city', 'San Francisco',
@@ -46,7 +46,7 @@ select is(
 
 -- Should return an empty array when there are no matches
 select is(
-    misc_search_locations_json('tokyo')::jsonb,
+    search_locations_json('tokyo')::jsonb,
     '[]'::jsonb,
     'Should return an empty array when there are no matches'
 );

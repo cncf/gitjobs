@@ -17,7 +17,7 @@ insert into member (foundation, level, logo_url, name) values
 -- ============================================================================
 
 -- Should update member level and logo URL
-select syncer_update_member('cncf', 'Acme', 'platinum', 'https://example.com/acme-new.svg');
+select update_member('cncf', 'Acme', 'platinum', 'https://example.com/acme-new.svg');
 
 select ok(
     exists (

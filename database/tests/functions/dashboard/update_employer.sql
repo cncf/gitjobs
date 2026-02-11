@@ -52,7 +52,7 @@ insert into employer_member (employer_id, member_id) values
 -- ============================================================================
 
 -- Should update all employer fields from payload
-select dashboard_employer_update_employer(
+select update_employer(
     :'employerID'::uuid,
     jsonb_build_object(
         'company', 'New Corp',

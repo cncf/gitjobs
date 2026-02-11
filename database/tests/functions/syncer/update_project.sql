@@ -17,7 +17,7 @@ insert into project (foundation, logo_url, maturity, name) values
 -- ============================================================================
 
 -- Should update project maturity and logo URL
-select syncer_update_project('cncf', 'Kubernetes', 'graduated', 'https://example.com/kube-new.svg');
+select update_project('cncf', 'Kubernetes', 'graduated', 'https://example.com/kube-new.svg');
 
 select ok(
     exists (

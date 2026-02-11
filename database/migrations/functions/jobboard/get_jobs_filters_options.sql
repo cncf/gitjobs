@@ -1,5 +1,5 @@
 -- Returns available filters options for job board searches.
-create or replace function jobboard_get_jobs_filters_options()
+create or replace function get_jobs_filters_options()
 returns json as $$
     select json_build_object(
         'foundations',

@@ -34,7 +34,7 @@ insert into image_version (data, image_id, version) values
 select is(
     (
         select format || ':' || encode(data, 'hex')
-        from img_get_image_version(:'imageWithPngAndSvgID'::uuid, 'small')
+        from get_image_version(:'imageWithPngAndSvgID'::uuid, 'small')
     ),
     'png:0102',
     'Should return requested PNG version when it exists'
@@ -44,7 +44,7 @@ select is(
 select is(
     (
         select format || ':' || encode(data, 'hex')
-        from img_get_image_version(:'imageWithPngAndSvgID'::uuid, 'large')
+        from get_image_version(:'imageWithPngAndSvgID'::uuid, 'large')
     ),
     'svg:aa55',
     'Should fallback to SVG when requested version does not exist'
@@ -54,7 +54,7 @@ select is(
 select is(
     (
         select count(*)
-        from img_get_image_version(:'imageWithoutVersionsID'::uuid, 'large')
+        from get_image_version(:'imageWithoutVersionsID'::uuid, 'large')
     ),
     0::bigint,
     'Should return no rows when neither requested version nor SVG exists'

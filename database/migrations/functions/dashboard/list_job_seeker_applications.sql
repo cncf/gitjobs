@@ -1,5 +1,5 @@
 -- Returns all job applications for the provided user.
-create or replace function dashboard_job_seeker_list_applications(p_user_id uuid)
+create or replace function list_job_seeker_applications(p_user_id uuid)
 returns json as $$
     select coalesce(json_agg(json_build_object(
         'application_id', a.application_id,

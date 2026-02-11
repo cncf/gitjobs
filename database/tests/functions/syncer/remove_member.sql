@@ -17,7 +17,7 @@ insert into member (foundation, level, logo_url, name) values
 -- ============================================================================
 
 -- Should remove the selected member
-select syncer_remove_member('cncf', 'Acme');
+select remove_member('cncf', 'Acme');
 
 select is(
     (

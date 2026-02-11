@@ -111,7 +111,7 @@ impl DBDashBoardEmployer for PgDB {
 
         let db = self.pool.get().await?;
         db.execute(
-            "select dashboard_employer_accept_team_member_invitation($1::uuid, $2::uuid);",
+            "select accept_team_member_invitation($1::uuid, $2::uuid);",
             &[&employer_id, &user_id],
         )
         .await?;
@@ -126,7 +126,7 @@ impl DBDashBoardEmployer for PgDB {
         let db = self.pool.get().await?;
         let employer_id = db
             .query_one(
-                "select dashboard_employer_add_employer($1::uuid, $2::jsonb);",
+                "select add_employer($1::uuid, $2::jsonb);",
                 &[&user_id, &Json(employer)],
             )
             .await?
@@ -141,7 +141,7 @@ impl DBDashBoardEmployer for PgDB {
 
         let db = self.pool.get().await?;
         db.execute(
-            "select dashboard_employer_add_job($1::uuid, $2::jsonb);",
+            "select add_job($1::uuid, $2::jsonb);",
             &[&employer_id, &Json(job)],
         )
         .await?;
@@ -156,7 +156,7 @@ impl DBDashBoardEmployer for PgDB {
         let db = self.pool.get().await?;
         let user_id = db
             .query_one(
-                "select dashboard_employer_add_team_member($1::uuid, $2::text) as user_id;",
+                "select add_team_member($1::uuid, $2::text) as user_id;",
                 &[&employer_id, &email],
             )
             .await?
@@ -170,8 +170,7 @@ impl DBDashBoardEmployer for PgDB {
         trace!("db: archive job");
 
         let db = self.pool.get().await?;
-        db.execute("select dashboard_employer_archive_job($1::uuid);", &[&job_id])
-            .await?;
+        db.execute("select archive_job($1::uuid);", &[&job_id]).await?;
 
         Ok(())
     }
@@ -181,8 +180,7 @@ impl DBDashBoardEmployer for PgDB {
         trace!("db: delete job");
 
         let db = self.pool.get().await?;
-        db.execute("select dashboard_employer_delete_job($1::uuid);", &[&job_id])
-            .await?;
+        db.execute("select delete_job($1::uuid);", &[&job_id]).await?;
 
         Ok(())
     }
@@ -202,7 +200,7 @@ impl DBDashBoardEmployer for PgDB {
 
         let db = self.pool.get().await?;
         db.execute(
-            "select dashboard_employer_delete_team_member($1::uuid, $2::uuid);",
+            "select delete_team_member($1::uuid, $2::uuid);",
             &[&employer_id, &user_id],
         )
         .await?;
@@ -220,7 +218,7 @@ impl DBDashBoardEmployer for PgDB {
         let db = self.pool.get().await?;
         let json_data: String = db
             .query_one(
-                "select dashboard_employer_get_applications_filters_options($1::uuid)::text;",
+                "select get_applications_filters_options($1::uuid)::text;",
                 &[&employer_id],
             )
             .await?
@@ -235,10 +233,7 @@ impl DBDashBoardEmployer for PgDB {
 
         let db = self.pool.get().await?;
         let json_data: Option<String> = db
-            .query_one(
-                "select dashboard_employer_get_employer($1::uuid)::text;",
-                &[&employer_id],
-            )
+            .query_one("select get_employer($1::uuid)::text;", &[&employer_id])
             .await?
             .get(0);
         let json_data = json_data.context("employer not found")?;
@@ -252,10 +247,7 @@ impl DBDashBoardEmployer for PgDB {
 
         let db = self.pool.get().await?;
         let json_data: Option<String> = db
-            .query_one(
-                "select dashboard_employer_get_job_dashboard($1::uuid)::text;",
-                &[&job_id],
-            )
+            .query_one("select get_job_dashboard($1::uuid)::text;", &[&job_id])
             .await?
             .get(0);
         let json_data = json_data.context("job not found or deleted")?;
@@ -270,7 +262,7 @@ impl DBDashBoardEmployer for PgDB {
         let db = self.pool.get().await?;
         let user_id = db
             .query_one(
-                "select dashboard_employer_get_job_seeker_user_id($1::uuid);",
+                "select get_job_seeker_user_id($1::uuid);",
                 &[&job_seeker_profile_id],
             )
             .await?
@@ -286,10 +278,7 @@ impl DBDashBoardEmployer for PgDB {
         // Query database
         let db = self.pool.get().await?;
         let json_data: String = db
-            .query_one(
-                "select dashboard_employer_get_job_stats($1::uuid)::text as stats",
-                &[&job_id],
-            )
+            .query_one("select get_job_stats($1::uuid)::text as stats", &[&job_id])
             .await?
             .get("stats");
         let stats: JobStats = serde_json::from_str(&json_data)?;
@@ -304,10 +293,7 @@ impl DBDashBoardEmployer for PgDB {
         let db = self.pool.get().await?;
         #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
         let count = db
-            .query_one(
-                "select dashboard_employer_get_user_invitations_count($1::uuid);",
-                &[&user_id],
-            )
+            .query_one("select get_user_invitations_count($1::uuid);", &[&user_id])
             .await?
             .get::<_, i64>(0) as usize;
 
@@ -320,10 +306,7 @@ impl DBDashBoardEmployer for PgDB {
 
         let db = self.pool.get().await?;
         let json_data: String = db
-            .query_one(
-                "select dashboard_employer_list_employer_jobs($1::uuid)::text;",
-                &[&employer_id],
-            )
+            .query_one("select list_employer_jobs($1::uuid)::text;", &[&employer_id])
             .await?
             .get(0);
 
@@ -336,10 +319,7 @@ impl DBDashBoardEmployer for PgDB {
 
         let db = self.pool.get().await?;
         let json_data: String = db
-            .query_one(
-                "select dashboard_employer_list_employers($1::uuid)::text;",
-                &[&user_id],
-            )
+            .query_one("select list_employers($1::uuid)::text;", &[&user_id])
             .await?
             .get(0);
 
@@ -351,10 +331,7 @@ impl DBDashBoardEmployer for PgDB {
         trace!("db: list certifications");
 
         let db = self.pool.get().await?;
-        let json_data: String = db
-            .query_one("select dashboard_employer_list_certifications()::text;", &[])
-            .await?
-            .get(0);
+        let json_data: String = db.query_one("select list_certifications()::text;", &[]).await?.get(0);
 
         Ok(serde_json::from_str(&json_data)?)
     }
@@ -364,10 +341,7 @@ impl DBDashBoardEmployer for PgDB {
         trace!("db: list foundations");
 
         let db = self.pool.get().await?;
-        let json_data: String = db
-            .query_one("select dashboard_employer_list_foundations()::text;", &[])
-            .await?
-            .get(0);
+        let json_data: String = db.query_one("select list_foundations()::text;", &[]).await?.get(0);
 
         Ok(serde_json::from_str(&json_data)?)
     }
@@ -378,10 +352,7 @@ impl DBDashBoardEmployer for PgDB {
 
         let db = self.pool.get().await?;
         let json_data: String = db
-            .query_one(
-                "select dashboard_employer_list_team_members($1::uuid)::text;",
-                &[&employer_id],
-            )
+            .query_one("select list_team_members($1::uuid)::text;", &[&employer_id])
             .await?
             .get(0);
 
@@ -394,10 +365,7 @@ impl DBDashBoardEmployer for PgDB {
 
         let db = self.pool.get().await?;
         let json_data: String = db
-            .query_one(
-                "select dashboard_employer_list_user_invitations($1::uuid)::text;",
-                &[&user_id],
-            )
+            .query_one("select list_user_invitations($1::uuid)::text;", &[&user_id])
             .await?
             .get(0);
 
@@ -412,10 +380,7 @@ impl DBDashBoardEmployer for PgDB {
 
         // Read salary fields needed to refresh normalized yearly values
         let row = db
-            .query_one(
-                "select * from dashboard_employer_get_job_salary($1::uuid);",
-                &[&job_id],
-            )
+            .query_one("select * from get_job_salary($1::uuid);", &[&job_id])
             .await?;
         let salary: Option<i64> = row.get("salary");
         let salary_min: Option<i64> = row.get("salary_min");
@@ -426,7 +391,7 @@ impl DBDashBoardEmployer for PgDB {
         // Publish job and persist normalized salary values
         db.execute(
             "
-            select dashboard_employer_publish_job($1::uuid, $2::bigint, $3::bigint, $4::bigint);
+            select publish_job($1::uuid, $2::bigint, $3::bigint, $4::bigint);
             ",
             &[
                 &job_id,
@@ -452,7 +417,7 @@ impl DBDashBoardEmployer for PgDB {
         let db = self.pool.get().await?;
         let row = db
             .query_one(
-                "select dashboard_employer_search_applications($1::uuid, $2::jsonb)::text",
+                "select search_applications($1::uuid, $2::jsonb)::text",
                 &[&employer_id, &Json(filters)],
             )
             .await?;
@@ -467,7 +432,7 @@ impl DBDashBoardEmployer for PgDB {
 
         let db = self.pool.get().await?;
         db.execute(
-            "select dashboard_employer_update_employer($1::uuid, $2::jsonb);",
+            "select update_employer($1::uuid, $2::jsonb);",
             &[&employer_id, &Json(employer)],
         )
         .await?;
@@ -480,11 +445,8 @@ impl DBDashBoardEmployer for PgDB {
         trace!("db: update job");
 
         let db = self.pool.get().await?;
-        db.execute(
-            "select dashboard_employer_update_job($1::uuid, $2::jsonb);",
-            &[&job_id, &Json(job)],
-        )
-        .await?;
+        db.execute("select update_job($1::uuid, $2::jsonb);", &[&job_id, &Json(job)])
+            .await?;
 
         Ok(())
     }

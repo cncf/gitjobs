@@ -1,5 +1,5 @@
 -- Checks whether the image is publicly visible.
-create or replace function auth_is_image_public(p_image_id uuid)
+create or replace function is_image_public(p_image_id uuid)
 returns boolean as $$
     select exists (
         select 1

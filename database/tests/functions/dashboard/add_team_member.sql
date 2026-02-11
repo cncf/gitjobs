@@ -29,7 +29,7 @@ insert into "user" (auth_hash, email, name, user_id, username) values
 -- Should return the user id for an existing user email
 select is(
     (
-        select dashboard_employer_add_team_member(:'employerID'::uuid, 'member@example.com')
+        select add_team_member(:'employerID'::uuid, 'member@example.com')
     ),
     :'memberUserID'::uuid,
     'Should return the user id for an existing user email'
@@ -50,7 +50,7 @@ select ok(
 -- Should return null when the invitation already exists
 select ok(
     (
-        select dashboard_employer_add_team_member(:'employerID'::uuid, 'member@example.com') is null
+        select add_team_member(:'employerID'::uuid, 'member@example.com') is null
     ),
     'Should return null when the invitation already exists'
 );
@@ -58,7 +58,7 @@ select ok(
 -- Should return null for unknown emails
 select ok(
     (
-        select dashboard_employer_add_team_member(:'employerID'::uuid, 'unknown@example.com') is null
+        select add_team_member(:'employerID'::uuid, 'unknown@example.com') is null
     ),
     'Should return null for unknown emails'
 );

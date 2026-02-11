@@ -40,7 +40,7 @@ impl DBEventTracker for PgDB {
 
         let db = self.pool.get().await?;
         db.execute(
-            "select jobboard_update_jobs_views($1::bigint, $2::jsonb)",
+            "select update_jobs_views($1::bigint, $2::jsonb)",
             &[&LOCK_KEY_UPDATE_JOBS_VIEWS, &Json(&data)],
         )
         .await?;
@@ -54,7 +54,7 @@ impl DBEventTracker for PgDB {
 
         let db = self.pool.get().await?;
         db.execute(
-            "select jobboard_update_search_appearances($1::bigint, $2::jsonb)",
+            "select update_search_appearances($1::bigint, $2::jsonb)",
             &[&LOCK_KEY_UPDATE_SEARCH_APPEARANCES, &Json(&data)],
         )
         .await?;

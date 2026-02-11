@@ -1,5 +1,5 @@
 -- Returns filter options for employer applications.
-create or replace function dashboard_employer_get_applications_filters_options(p_employer_id uuid)
+create or replace function get_applications_filters_options(p_employer_id uuid)
 returns json as $$
     select json_build_object(
         'jobs',

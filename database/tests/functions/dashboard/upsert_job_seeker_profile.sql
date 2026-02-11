@@ -35,7 +35,7 @@ insert into location (city, country, location_id, state) values
 -- ============================================================================
 
 -- Should insert profile when it does not exist
-select dashboard_job_seeker_upsert_profile(
+select upsert_job_seeker_profile(
     :'userID'::uuid,
     jsonb_build_object(
         'bluesky_url', 'https://bsky.app/alice',
@@ -114,7 +114,7 @@ select is(
 );
 
 -- Should update existing profile on conflict
-select dashboard_job_seeker_upsert_profile(
+select upsert_job_seeker_profile(
     :'userID'::uuid,
     jsonb_build_object(
         'bluesky_url', 'https://bsky.app/alice-updated',

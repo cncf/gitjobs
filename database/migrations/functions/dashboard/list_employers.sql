@@ -1,5 +1,5 @@
 -- Returns employers where the user is an approved team member.
-create or replace function dashboard_employer_list_employers(p_user_id uuid)
+create or replace function list_employers(p_user_id uuid)
 returns json as $$
     select coalesce(json_agg(json_build_object(
         'employer_id', e.employer_id,

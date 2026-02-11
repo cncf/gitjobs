@@ -35,7 +35,7 @@ insert into job (job_id, employer_id, kind, status, title, workplace, descriptio
 -- ============================================================================
 
 -- Should soft-delete a job and set deleted_at
-select dashboard_employer_delete_job(:'jobID'::uuid);
+select delete_job(:'jobID'::uuid);
 
 select ok(
     exists (

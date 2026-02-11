@@ -1,5 +1,5 @@
 -- Returns the job seeker profile for the provided user.
-create or replace function dashboard_job_seeker_get_profile(p_user_id uuid)
+create or replace function get_job_seeker_profile(p_user_id uuid)
 returns json as $$
     select nullif(jsonb_strip_nulls(jsonb_build_object(
         'bluesky_url', p.bluesky_url,

@@ -40,7 +40,7 @@ impl DBNotifications for PgDB {
 
         let db = self.pool.get().await?;
         db.execute(
-            "select notifications_enqueue_notification($1::text, $2::jsonb, $3::uuid);",
+            "select enqueue_notification($1::text, $2::jsonb, $3::uuid);",
             &[
                 &notification.kind.to_string(),
                 &notification.template_data,
@@ -65,7 +65,7 @@ impl DBNotifications for PgDB {
 
         // Get pending notification (if any)
         let notification = tx
-            .query_opt("select * from notifications_get_pending_notification();", &[])
+            .query_opt("select * from get_pending_notification();", &[])
             .await?
             .map(|row| Notification {
                 email: row.get("email"),
@@ -103,7 +103,7 @@ impl DBNotifications for PgDB {
 
         // Update notification
         tx.execute(
-            "select notifications_update_notification($1::uuid, $2::text);",
+            "select update_notification($1::uuid, $2::text);",
             &[&notification.notification_id, &error],
         )
         .await?;

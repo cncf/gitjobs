@@ -106,7 +106,7 @@ insert into job_certification (certification_id, job_id) values
 -- ============================================================================
 
 -- Should update all fields for non-deleted jobs
-select dashboard_employer_update_job(
+select update_job(
     :'updatableJobID'::uuid,
     jsonb_build_object(
         'apply_instructions', 'Apply by email',
@@ -208,7 +208,7 @@ select is(
 );
 
 -- Should ignore deleted jobs and keep their existing relations
-select dashboard_employer_update_job(
+select update_job(
     :'deletedJobID'::uuid,
     jsonb_build_object(
         'description', 'Should not update',

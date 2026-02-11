@@ -38,7 +38,7 @@ from generate_series(1, 25) as i;
 
 -- Should return only projects from the selected foundation
 select is(
-    misc_search_projects('lf', '')::jsonb,
+    search_projects('lf', '')::jsonb,
     '[
         {
             "foundation": "lf",
@@ -53,7 +53,7 @@ select is(
 
 -- Should filter projects using case-insensitive partial matching
 select is(
-    misc_search_projects('cncf', 'kuber')::jsonb,
+    search_projects('cncf', 'kuber')::jsonb,
     '[
         {
             "foundation": "cncf",
@@ -69,7 +69,7 @@ select is(
 -- Should cap returned projects at 20
 select is(
     (
-        select jsonb_array_length(misc_search_projects('cncf', 'project')::jsonb)
+        select jsonb_array_length(search_projects('cncf', 'project')::jsonb)
     ),
     20,
     'Should cap returned projects at 20'

@@ -1,5 +1,5 @@
 -- Adds a job and its projects/certifications for an employer.
-create or replace function dashboard_employer_add_job(p_employer_id uuid, p_job jsonb)
+create or replace function add_job(p_employer_id uuid, p_job jsonb)
 returns void as $$
 declare
     v_job_id uuid;

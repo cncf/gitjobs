@@ -1,5 +1,5 @@
 -- Approves a job and returns the previous first_published_at value.
-create or replace function dashboard_moderator_approve_job(p_job_id uuid, p_reviewer uuid)
+create or replace function approve_job(p_job_id uuid, p_reviewer uuid)
 returns timestamptz as $$
     with old as (
         select first_published_at

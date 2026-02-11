@@ -39,7 +39,7 @@ insert into job (
 -- ============================================================================
 
 -- Should insert counters only for published jobs
-select jobboard_update_search_appearances(
+select update_search_appearances(
     42,
     jsonb_build_array(
         jsonb_build_array(:'publishedJobID'::text, current_date::text, 6),
@@ -78,7 +78,7 @@ select is(
 );
 
 -- Should increment existing counters on conflict
-select jobboard_update_search_appearances(
+select update_search_appearances(
     43,
     jsonb_build_array(
         jsonb_build_array(:'publishedJobID'::text, current_date::text, 5)

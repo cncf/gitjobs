@@ -1,5 +1,5 @@
 -- Returns salary fields required to refresh normalized salary values.
-create or replace function dashboard_employer_get_job_salary(p_job_id uuid)
+create or replace function get_job_salary(p_job_id uuid)
 returns table(
     salary bigint,
     salary_currency text,

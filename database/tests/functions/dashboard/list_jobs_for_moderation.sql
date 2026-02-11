@@ -57,7 +57,7 @@ insert into job (
 
 -- Should return full moderation payload for the requested status
 select is(
-    dashboard_moderator_list_jobs_for_moderation('pending-approval')::jsonb,
+    list_jobs_for_moderation('pending-approval')::jsonb,
     jsonb_build_array(
         jsonb_build_object(
             'created_at',
@@ -80,7 +80,7 @@ select is(
 
 -- Should return empty arrays when no jobs match the status
 select is(
-    dashboard_moderator_list_jobs_for_moderation('deleted')::jsonb,
+    list_jobs_for_moderation('deleted')::jsonb,
     '[]'::jsonb,
     'Should return empty arrays when no jobs match the status'
 );

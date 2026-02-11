@@ -1,5 +1,5 @@
 -- Returns stats for a specific job in json format.
-create or replace function dashboard_employer_get_job_stats(p_job_id uuid)
+create or replace function get_job_stats(p_job_id uuid)
 returns json as $$
     select json_strip_nulls(json_build_object(
         'search_appearances_daily', (

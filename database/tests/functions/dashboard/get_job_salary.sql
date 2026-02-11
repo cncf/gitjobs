@@ -61,7 +61,7 @@ select is(
             'salary_min', salary_min,
             'salary_period', salary_period
         )
-        from dashboard_employer_get_job_salary(:'jobID'::uuid)
+        from get_job_salary(:'jobID'::uuid)
     ),
     jsonb_build_object(
         'salary', 120000,
@@ -77,7 +77,7 @@ select is(
 select is(
     (
         select count(*)
-        from dashboard_employer_get_job_salary('99999999-9999-9999-9999-999999999999'::uuid)
+        from get_job_salary('99999999-9999-9999-9999-999999999999'::uuid)
     ),
     0::bigint,
     'Should return no rows for unknown jobs'

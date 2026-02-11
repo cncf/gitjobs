@@ -37,7 +37,7 @@ insert into employer_team (approved, employer_id, user_id) values
 
 -- Should delete pending invitations directly
 select lives_ok(
-    $$ select dashboard_employer_delete_team_member(
+    $$ select delete_team_member(
         '00000000-0000-0000-0000-000000000101'::uuid,
         '00000000-0000-0000-0000-000000000203'::uuid
     ) $$,
@@ -46,7 +46,7 @@ select lives_ok(
 
 -- Should delete approved members when another approved member remains
 select lives_ok(
-    $$ select dashboard_employer_delete_team_member(
+    $$ select delete_team_member(
         '00000000-0000-0000-0000-000000000101'::uuid,
         '00000000-0000-0000-0000-000000000201'::uuid
     ) $$,
@@ -55,7 +55,7 @@ select lives_ok(
 
 -- Should prevent deleting the last approved team member
 select throws_ok(
-    $$ select dashboard_employer_delete_team_member(
+    $$ select delete_team_member(
         '00000000-0000-0000-0000-000000000101'::uuid,
         '00000000-0000-0000-0000-000000000202'::uuid
     ) $$,
@@ -65,7 +65,7 @@ select throws_ok(
 
 -- Should fail for unknown team memberships
 select throws_ok(
-    $$ select dashboard_employer_delete_team_member(
+    $$ select delete_team_member(
         '00000000-0000-0000-0000-000000000101'::uuid,
         '99999999-9999-9999-9999-999999999999'::uuid
     ) $$,

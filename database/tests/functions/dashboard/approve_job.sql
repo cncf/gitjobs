@@ -32,7 +32,7 @@ insert into job (description, employer_id, job_id, kind, status, title, workplac
 
 -- Should return null old first_published_at on the first approval
 select is(
-    dashboard_moderator_approve_job(:'jobID'::uuid, :'reviewerID'::uuid),
+    approve_job(:'jobID'::uuid, :'reviewerID'::uuid),
     null::timestamptz,
     'Should return null old first_published_at on the first approval'
 );

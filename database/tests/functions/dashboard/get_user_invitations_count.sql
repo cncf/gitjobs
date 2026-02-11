@@ -40,14 +40,14 @@ insert into employer_team (approved, employer_id, user_id) values
 
 -- Should count only pending invitations for the selected user
 select is(
-    dashboard_employer_get_user_invitations_count(:'user1ID'::uuid),
+    get_user_invitations_count(:'user1ID'::uuid),
     2::bigint,
     'Should count only pending invitations for the selected user'
 );
 
 -- Should return pending invitation count for other users independently
 select is(
-    dashboard_employer_get_user_invitations_count(:'user2ID'::uuid),
+    get_user_invitations_count(:'user2ID'::uuid),
     1::bigint,
     'Should return pending invitation count for other users independently'
 );

@@ -151,7 +151,7 @@ impl DBAuth for PgDB {
 
         let db = self.pool.get().await?;
         let user = db
-            .query_opt("select * from auth_get_user_by_email($1::text);", &[&email])
+            .query_opt("select * from get_user_by_email($1::text);", &[&email])
             .await?
             .map(|row| User {
                 user_id: row.get("user_id"),
@@ -175,10 +175,7 @@ impl DBAuth for PgDB {
 
         let db = self.pool.get().await?;
         let user = db
-            .query_opt(
-                "select * from auth_get_user_by_id_verified($1::uuid);",
-                &[&user_id],
-            )
+            .query_opt("select * from get_user_by_id_verified($1::uuid);", &[&user_id])
             .await?
             .map(|row| User {
                 user_id: row.get("user_id"),
@@ -202,7 +199,7 @@ impl DBAuth for PgDB {
 
         let db = self.pool.get().await?;
         let user = db
-            .query_opt("select * from auth_get_user_by_username($1::text);", &[&username])
+            .query_opt("select * from get_user_by_username($1::text);", &[&username])
             .await?
             .map(|row| User {
                 user_id: row.get("user_id"),
@@ -226,7 +223,7 @@ impl DBAuth for PgDB {
 
         let db = self.pool.get().await?;
         let password: Option<String> = db
-            .query_one("select auth_get_user_password($1::uuid);", &[&user_id])
+            .query_one("select get_user_password($1::uuid);", &[&user_id])
             .await?
             .get(0);
 
@@ -246,7 +243,7 @@ impl DBAuth for PgDB {
             trace!("db: check if image is public");
 
             let row = db
-                .query_one("select auth_is_image_public($1::uuid);", &[&image_id])
+                .query_one("select is_image_public($1::uuid);", &[&image_id])
                 .await?;
 
             Ok(row.get(0))
@@ -267,7 +264,7 @@ impl DBAuth for PgDB {
         let db = self.pool.get().await?;
         let row = db
             .query_one(
-                "select * from auth_sign_up_user($1::jsonb, $2::boolean);",
+                "select * from sign_up_user($1::jsonb, $2::boolean);",
                 &[&Json(user_summary), &email_verified],
             )
             .await?;
@@ -317,7 +314,7 @@ impl DBAuth for PgDB {
 
         let db = self.pool.get().await?;
         db.execute(
-            "select auth_update_user_details($1::uuid, $2::jsonb);",
+            "select update_user_details($1::uuid, $2::jsonb);",
             &[&user_id, &Json(user_summary)],
         )
         .await?;
@@ -331,7 +328,7 @@ impl DBAuth for PgDB {
 
         let db = self.pool.get().await?;
         db.execute(
-            "select auth_update_user_password($1::uuid, $2::text);",
+            "select update_user_password($1::uuid, $2::text);",
             &[&user_id, &new_password],
         )
         .await?;
@@ -346,7 +343,7 @@ impl DBAuth for PgDB {
         let db = self.pool.get().await?;
         let row = db
             .query_one(
-                "select auth_user_has_image_access($1::uuid, $2::uuid);",
+                "select user_has_image_access($1::uuid, $2::uuid);",
                 &[&user_id, &image_id],
             )
             .await?;
@@ -361,7 +358,7 @@ impl DBAuth for PgDB {
         let db = self.pool.get().await?;
         let row = db
             .query_one(
-                "select auth_user_has_profile_access($1::uuid, $2::uuid);",
+                "select user_has_profile_access($1::uuid, $2::uuid);",
                 &[&user_id, &job_seeker_profile_id],
             )
             .await?;
@@ -376,7 +373,7 @@ impl DBAuth for PgDB {
         let db = self.pool.get().await?;
         let row = db
             .query_one(
-                "select auth_user_owns_employer($1::uuid, $2::uuid);",
+                "select user_owns_employer($1::uuid, $2::uuid);",
                 &[&user_id, &employer_id],
             )
             .await?;
@@ -390,10 +387,7 @@ impl DBAuth for PgDB {
 
         let db = self.pool.get().await?;
         let row = db
-            .query_one(
-                "select auth_user_owns_job($1::uuid, $2::uuid);",
-                &[&user_id, &job_id],
-            )
+            .query_one("select user_owns_job($1::uuid, $2::uuid);", &[&user_id, &job_id])
             .await?;
 
         Ok(row.get(0))
@@ -404,7 +398,7 @@ impl DBAuth for PgDB {
         trace!("db: verify email");
 
         let db = self.pool.get().await?;
-        db.execute("select auth_verify_email($1::uuid);", &[&code]).await?;
+        db.execute("select verify_email($1::uuid);", &[&code]).await?;
 
         Ok(())
     }

@@ -1,5 +1,5 @@
 -- Marks a notification as processed and stores the delivery error, if any.
-create or replace function notifications_update_notification(
+create or replace function update_notification(
     p_notification_id uuid,
     p_error text
 )

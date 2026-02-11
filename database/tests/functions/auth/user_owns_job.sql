@@ -46,21 +46,21 @@ insert into job (description, employer_id, job_id, kind, status, title, workplac
 
 -- Should return true for approved owners of the job employer
 select is(
-    auth_user_owns_job(:'approvedUserID'::uuid, :'jobID'::uuid),
+    user_owns_job(:'approvedUserID'::uuid, :'jobID'::uuid),
     true,
     'Should return true for approved owners of the job employer'
 );
 
 -- Should return false for unapproved team members
 select is(
-    auth_user_owns_job(:'pendingUserID'::uuid, :'jobID'::uuid),
+    user_owns_job(:'pendingUserID'::uuid, :'jobID'::uuid),
     false,
     'Should return false for unapproved team members'
 );
 
 -- Should return false for unknown jobs
 select is(
-    auth_user_owns_job(:'approvedUserID'::uuid, '99999999-9999-9999-9999-999999999999'::uuid),
+    user_owns_job(:'approvedUserID'::uuid, '99999999-9999-9999-9999-999999999999'::uuid),
     false,
     'Should return false for unknown jobs'
 );

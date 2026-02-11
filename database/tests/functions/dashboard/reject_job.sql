@@ -31,7 +31,7 @@ insert into job (description, employer_id, job_id, kind, status, title, workplac
 -- ============================================================================
 
 -- Should mark job as rejected and store notes and reviewer metadata
-select dashboard_moderator_reject_job(
+select reject_job(
     :'jobID'::uuid,
     :'reviewerID'::uuid,
     'Needs more detail'

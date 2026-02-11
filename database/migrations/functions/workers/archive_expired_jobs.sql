@@ -1,5 +1,5 @@
 -- Archives published jobs that expired more than 30 days ago.
-create or replace function workers_archive_expired_jobs()
+create or replace function archive_expired_jobs()
 returns void as $$
     update job
     set

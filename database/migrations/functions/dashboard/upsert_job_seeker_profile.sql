@@ -1,5 +1,5 @@
 -- Upserts the job seeker profile for the provided user.
-create or replace function dashboard_job_seeker_upsert_profile(p_user_id uuid, p_profile jsonb)
+create or replace function upsert_job_seeker_profile(p_user_id uuid, p_profile jsonb)
 returns void as $$
 begin
     insert into job_seeker_profile (

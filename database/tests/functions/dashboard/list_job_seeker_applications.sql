@@ -56,7 +56,7 @@ insert into application (application_id, created_at, job_id, job_seeker_profile_
 
 -- Should return full applications payload sorted by applied_at
 select is(
-    dashboard_job_seeker_list_applications(:'userID'::uuid)::jsonb,
+    list_job_seeker_applications(:'userID'::uuid)::jsonb,
     jsonb_build_array(
         jsonb_build_object(
             'application_id',
@@ -103,7 +103,7 @@ select is(
 
 -- Should return empty arrays for users without applications
 select is(
-    dashboard_job_seeker_list_applications(
+    list_job_seeker_applications(
         '99999999-9999-9999-9999-999999999999'::uuid
     )::jsonb,
     '[]'::jsonb,

@@ -1,5 +1,5 @@
 -- update_jobs_views updates the views of the jobs provided.
-create or replace function jobboard_update_jobs_views(p_lock_key bigint, p_data jsonb)
+create or replace function update_jobs_views(p_lock_key bigint, p_data jsonb)
 returns void as $$
     -- Make sure only one batch of updates is processed at a time
     select pg_advisory_xact_lock(p_lock_key);

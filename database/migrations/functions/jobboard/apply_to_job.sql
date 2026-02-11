@@ -1,5 +1,5 @@
 -- Applies the user profile to a published job.
-create or replace function jobboard_apply_to_job(p_job_id uuid, p_user_id uuid)
+create or replace function apply_to_job(p_job_id uuid, p_user_id uuid)
 returns boolean as $$
     with inserted_application as (
         insert into application (

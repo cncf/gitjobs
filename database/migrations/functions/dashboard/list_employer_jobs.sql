@@ -1,5 +1,5 @@
 -- Returns all non-deleted jobs for an employer.
-create or replace function dashboard_employer_list_employer_jobs(p_employer_id uuid)
+create or replace function list_employer_jobs(p_employer_id uuid)
 returns json as $$
     select coalesce(json_agg(json_build_object(
         'job_id', j.job_id,

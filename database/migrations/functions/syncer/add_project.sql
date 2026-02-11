@@ -1,5 +1,5 @@
 -- Adds a project for the provided foundation.
-create or replace function syncer_add_project(
+create or replace function add_project(
     p_foundation text,
     p_name text,
     p_maturity text,

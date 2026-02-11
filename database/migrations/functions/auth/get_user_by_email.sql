@@ -1,5 +1,5 @@
 -- Returns a verified user by email.
-create or replace function auth_get_user_by_email(p_email text)
+create or replace function get_user_by_email(p_email text)
 returns table(
     user_id uuid,
     auth_hash bytea,

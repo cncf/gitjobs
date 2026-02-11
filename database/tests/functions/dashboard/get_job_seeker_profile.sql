@@ -45,7 +45,7 @@ insert into job_seeker_profile (
 
 -- Should return profile data with nested location
 select is(
-    dashboard_job_seeker_get_profile(:'userID'::uuid)::jsonb,
+    get_job_seeker_profile(:'userID'::uuid)::jsonb,
     '{
         "email": "alice@example.com",
         "location": {
@@ -62,7 +62,7 @@ select is(
 
 -- Should return null when profile does not exist
 select is(
-    dashboard_job_seeker_get_profile(:'unknownUserID'::uuid)::jsonb,
+    get_job_seeker_profile(:'unknownUserID'::uuid)::jsonb,
     null::jsonb,
     'Should return null when profile does not exist'
 );

@@ -12,7 +12,7 @@ select plan(8);
 -- Should return full payload for unverified users
 with sign_up_output as (
     select *
-    from auth_sign_up_user(
+    from sign_up_user(
         jsonb_build_object(
             'email', 'unverified@example.com',
             'name', 'Unverified User',
@@ -79,7 +79,7 @@ select ok(
 -- Should return full payload for verified users
 with sign_up_output as (
     select *
-    from auth_sign_up_user(
+    from sign_up_user(
         jsonb_build_object(
             'email', 'verified@example.com',
             'name', 'Verified User',

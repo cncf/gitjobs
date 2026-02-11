@@ -23,7 +23,7 @@ insert into "user" (auth_hash, email, name, user_id, username) values
 -- ============================================================================
 
 -- Should insert a notification with the provided payload
-select notifications_enqueue_notification(
+select enqueue_notification(
     'email-verification',
     jsonb_build_object('code', 'abc123'),
     :'userID'::uuid

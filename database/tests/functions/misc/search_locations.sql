@@ -39,7 +39,7 @@ from generate_series(1, 25) as g;
 select is(
     (
         select row_to_json(location_result)::jsonb
-        from misc_search_locations('san fra') as location_result
+        from search_locations('san fra') as location_result
         limit 1
     ),
     jsonb_build_object(
@@ -53,14 +53,14 @@ select is(
 
 -- Should cap the number of returned matches at 20
 select is(
-    (select count(*) from misc_search_locations('matchv')),
+    (select count(*) from search_locations('matchv')),
     20::bigint,
     'Should cap the number of returned matches at 20'
 );
 
 -- Should return no matches for unrelated queries
 select is(
-    (select count(*) from misc_search_locations('totally unrelated query')),
+    (select count(*) from search_locations('totally unrelated query')),
     0::bigint,
     'Should return no matches for unrelated queries'
 );

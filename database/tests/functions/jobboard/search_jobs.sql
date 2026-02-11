@@ -157,7 +157,7 @@ insert into job_project (job_id, project_id) values
 
 -- Should return full payload for published jobs by default
 select is(
-    jobboard_search_jobs('{}'::jsonb)::jsonb,
+    search_jobs('{}'::jsonb)::jsonb,
     jsonb_build_object(
         'jobs',
         jsonb_build_array(
@@ -270,7 +270,7 @@ select is(
     (
         select total
         from (
-            select (jobboard_search_jobs('{"foundation":"cncf"}'::jsonb)->>'total')::bigint as total
+            select (search_jobs('{"foundation":"cncf"}'::jsonb)->>'total')::bigint as total
         ) t
     ),
     1::bigint,
@@ -282,7 +282,7 @@ select is(
     (
         select total
         from (
-            select (jobboard_search_jobs('{"ts_query":"kuber"}'::jsonb)->>'total')::bigint as total
+            select (search_jobs('{"ts_query":"kuber"}'::jsonb)->>'total')::bigint as total
         ) t
     ),
     1::bigint,
@@ -294,7 +294,7 @@ select is(
     (
         select total
         from (
-            select (jobboard_search_jobs('{"membership":"lf"}'::jsonb)->>'total')::bigint as total
+            select (search_jobs('{"membership":"lf"}'::jsonb)->>'total')::bigint as total
         ) t
     ),
     1::bigint,
@@ -305,7 +305,7 @@ select is(
 select is(
     (
         select (jobs::jsonb->0->>'job_id')::uuid
-        from (select jobboard_search_jobs('{"sort":"salary"}'::jsonb)->'jobs' as jobs) t
+        from (select search_jobs('{"sort":"salary"}'::jsonb)->'jobs' as jobs) t
     ),
     :'job1ID'::uuid,
     'Should sort by salary when requested'

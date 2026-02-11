@@ -64,7 +64,7 @@ impl DB for PgDB {
 
         let db = self.pool.get().await?;
         db.execute(
-            "select syncer_add_member($1::text, $2::text, $3::text, $4::text)",
+            "select add_member($1::text, $2::text, $3::text, $4::text)",
             &[&member.foundation, &member.name, &member.level, &member.logo_url],
         )
         .await?;
@@ -78,7 +78,7 @@ impl DB for PgDB {
 
         let db = self.pool.get().await?;
         db.execute(
-            "select syncer_add_project($1::text, $2::text, $3::text, $4::text)",
+            "select add_project($1::text, $2::text, $3::text, $4::text)",
             &[
                 &project.foundation,
                 &project.name,
@@ -108,7 +108,7 @@ impl DB for PgDB {
 
         let db = self.pool.get().await?;
         let row = db
-            .query_one("select syncer_list_members($1::text)::text", &[&foundation])
+            .query_one("select list_members($1::text)::text", &[&foundation])
             .await?;
         let members = serde_json::from_str(&row.get::<_, String>(0))?;
 
@@ -121,7 +121,7 @@ impl DB for PgDB {
 
         let db = self.pool.get().await?;
         let row = db
-            .query_one("select syncer_list_projects($1::text)::text", &[&foundation])
+            .query_one("select list_projects($1::text)::text", &[&foundation])
             .await?;
         let projects = serde_json::from_str(&row.get::<_, String>(0))?;
 
@@ -134,7 +134,7 @@ impl DB for PgDB {
 
         let db = self.pool.get().await?;
         db.execute(
-            "select syncer_remove_member($1::text, $2::text);",
+            "select remove_member($1::text, $2::text);",
             &[&foundation, &member_name],
         )
         .await?;
@@ -148,7 +148,7 @@ impl DB for PgDB {
 
         let db = self.pool.get().await?;
         db.execute(
-            "select syncer_remove_project($1::text, $2::text);",
+            "select remove_project($1::text, $2::text);",
             &[&foundation, &project_name],
         )
         .await?;
@@ -162,7 +162,7 @@ impl DB for PgDB {
 
         let db = self.pool.get().await?;
         db.execute(
-            "select syncer_update_member($1::text, $2::text, $3::text, $4::text);",
+            "select update_member($1::text, $2::text, $3::text, $4::text);",
             &[&member.foundation, &member.name, &member.level, &member.logo_url],
         )
         .await?;
@@ -176,7 +176,7 @@ impl DB for PgDB {
 
         let db = self.pool.get().await?;
         db.execute(
-            "select syncer_update_project($1::text, $2::text, $3::text, $4::text);",
+            "select update_project($1::text, $2::text, $3::text, $4::text);",
             &[
                 &project.foundation,
                 &project.name,

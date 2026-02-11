@@ -1,5 +1,5 @@
 -- Updates a member for the provided foundation.
-create or replace function syncer_update_member(
+create or replace function update_member(
     p_foundation text,
     p_name text,
     p_level text,

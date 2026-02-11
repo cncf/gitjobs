@@ -1,5 +1,5 @@
 -- Enqueues a notification for delivery.
-create or replace function notifications_enqueue_notification(
+create or replace function enqueue_notification(
     p_kind text,
     p_template_data jsonb,
     p_user_id uuid

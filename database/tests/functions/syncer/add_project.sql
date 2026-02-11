@@ -10,7 +10,7 @@ select plan(1);
 -- ============================================================================
 
 -- Should add a project for the selected foundation
-select syncer_add_project('cncf', 'Kubernetes', 'graduated', 'https://example.com/kube.svg');
+select add_project('cncf', 'Kubernetes', 'graduated', 'https://example.com/kube.svg');
 
 select ok(
     exists (

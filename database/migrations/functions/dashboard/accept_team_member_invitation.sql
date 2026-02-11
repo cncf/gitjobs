@@ -1,5 +1,5 @@
 -- Accepts a pending team member invitation.
-create or replace function dashboard_employer_accept_team_member_invitation(
+create or replace function accept_team_member_invitation(
     p_employer_id uuid,
     p_user_id uuid
 )

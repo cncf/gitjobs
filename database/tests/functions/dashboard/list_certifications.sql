@@ -53,7 +53,7 @@ select is(
     (
         select coalesce(jsonb_agg(certification order by certification->>'name'), '[]'::jsonb)
         from jsonb_array_elements(
-            dashboard_employer_list_certifications()::jsonb
+            list_certifications()::jsonb
         ) certification
         where certification->>'provider' = 'test-provider'
     ),

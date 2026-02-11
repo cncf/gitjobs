@@ -67,7 +67,7 @@ insert into job (
 -- ============================================================================
 
 -- Should archive published jobs older than 30 days
-select workers_archive_expired_jobs();
+select archive_expired_jobs();
 
 select ok(
     (

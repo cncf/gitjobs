@@ -1,5 +1,5 @@
 -- Updates employer details and refreshes its memberships.
-create or replace function dashboard_employer_update_employer(
+create or replace function update_employer(
     p_employer_id uuid,
     p_employer jsonb
 )

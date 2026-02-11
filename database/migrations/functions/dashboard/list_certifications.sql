@@ -1,5 +1,5 @@
 -- Returns available certifications.
-create or replace function dashboard_employer_list_certifications()
+create or replace function list_certifications()
 returns json as $$
     select coalesce(json_agg(json_build_object(
         'certification_id', c.certification_id,

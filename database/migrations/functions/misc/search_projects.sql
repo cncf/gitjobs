@@ -1,5 +1,5 @@
 -- Returns projects that match the provided foundation and project query.
-create or replace function misc_search_projects(p_foundation text, p_project text)
+create or replace function search_projects(p_foundation text, p_project text)
 returns json as $$
     select coalesce(json_agg(json_build_object(
         'foundation', p.foundation,

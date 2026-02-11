@@ -1,5 +1,5 @@
 -- Updates a non-deleted job and refreshes its projects/certifications.
-create or replace function dashboard_employer_update_job(p_job_id uuid, p_job jsonb)
+create or replace function update_job(p_job_id uuid, p_job jsonb)
 returns void as $$
 begin
     -- Update job fields from payload

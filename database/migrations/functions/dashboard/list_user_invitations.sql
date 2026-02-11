@@ -1,5 +1,5 @@
 -- Returns pending team invitations for a user.
-create or replace function dashboard_employer_list_user_invitations(p_user_id uuid)
+create or replace function list_user_invitations(p_user_id uuid)
 returns json as $$
     select coalesce(json_agg(json_build_object(
         'company', e.company,

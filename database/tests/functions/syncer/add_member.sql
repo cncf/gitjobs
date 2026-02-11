@@ -10,7 +10,7 @@ select plan(1);
 -- ============================================================================
 
 -- Should add a member for the selected foundation
-select syncer_add_member('cncf', 'Acme', 'platinum', 'https://example.com/acme.svg');
+select add_member('cncf', 'Acme', 'platinum', 'https://example.com/acme.svg');
 
 select ok(
     exists (

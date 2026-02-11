@@ -1,5 +1,5 @@
 -- Updates user details from the provided payload.
-create or replace function auth_update_user_details(
+create or replace function update_user_details(
     p_user_id uuid,
     p_user_summary jsonb
 )

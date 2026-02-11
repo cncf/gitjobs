@@ -39,7 +39,7 @@ select is(
             'notification_id', notification_id::text,
             'template_data', template_data
         )
-        from notifications_get_pending_notification()
+        from get_pending_notification()
     ),
     jsonb_build_object(
         'email', 'alice@example.com',
@@ -54,7 +54,7 @@ select is(
 select is(
     (
         select count(*)
-        from notifications_get_pending_notification()
+        from get_pending_notification()
         where notification_id = :'processedNotificationID'::uuid
     ),
     0::bigint,

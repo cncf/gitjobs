@@ -1,5 +1,5 @@
 -- Cancels a job application for the given user.
-create or replace function dashboard_job_seeker_cancel_application(
+create or replace function cancel_application(
     p_application_id uuid,
     p_user_id uuid
 )

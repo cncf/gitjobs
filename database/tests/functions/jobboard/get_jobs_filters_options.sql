@@ -22,7 +22,7 @@ select is(
     (
         select coalesce(jsonb_agg(foundation order by foundation->>'name'), '[]'::jsonb)
         from jsonb_array_elements(
-            jobboard_get_jobs_filters_options()::jsonb->'foundations'
+            get_jobs_filters_options()::jsonb->'foundations'
         ) foundation
         where foundation->>'name' like 'test-foundation-%'
     ),

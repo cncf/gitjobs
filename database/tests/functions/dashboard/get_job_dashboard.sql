@@ -98,7 +98,7 @@ insert into job_certification (job_id, certification_id) values
 -- Should return full payload for non-deleted jobs
 select is(
     (
-        select dashboard_employer_get_job_dashboard(:'jobID'::uuid)::jsonb - 'updated_at'
+        select get_job_dashboard(:'jobID'::uuid)::jsonb - 'updated_at'
     ),
     '{
         "certifications": [
@@ -141,7 +141,7 @@ select is(
 
 -- Should return null for deleted jobs
 select is(
-    dashboard_employer_get_job_dashboard(:'deletedJobID'::uuid)::jsonb,
+    get_job_dashboard(:'deletedJobID'::uuid)::jsonb,
     null::jsonb,
     'Should return null for deleted jobs'
 );

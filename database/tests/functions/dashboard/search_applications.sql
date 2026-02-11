@@ -141,7 +141,7 @@ insert into application (
 
 -- Should return full payload for non-deleted employer jobs
 select is(
-    dashboard_employer_search_applications(:'employerID'::uuid, '{}'::jsonb)::jsonb,
+    search_applications(:'employerID'::uuid, '{}'::jsonb)::jsonb,
     jsonb_build_object(
         'applications',
         jsonb_build_array(
@@ -207,7 +207,7 @@ select is(
 
 -- Should filter applications by job_id
 select is(
-    dashboard_employer_search_applications(
+    search_applications(
         :'employerID'::uuid,
         jsonb_build_object('job_id', :'job2ID'::text)
     )::jsonb,
@@ -245,7 +245,7 @@ select is(
 
 -- Should respect limit and offset pagination
 select is(
-    dashboard_employer_search_applications(
+    search_applications(
         :'employerID'::uuid,
         jsonb_build_object('limit', 1, 'offset', 1)
     )::jsonb,

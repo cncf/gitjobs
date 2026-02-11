@@ -1,5 +1,5 @@
 -- Checks whether the user can access the provided job seeker profile.
-create or replace function auth_user_has_profile_access(
+create or replace function user_has_profile_access(
     p_user_id uuid,
     p_job_seeker_profile_id uuid
 )

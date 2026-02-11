@@ -56,21 +56,21 @@ insert into employer_team (approved, employer_id, user_id) values
 
 -- Should allow approved team members to access applied profiles
 select is(
-    auth_user_has_profile_access(:'teamApprovedUserID'::uuid, :'applicantProfileID'::uuid),
+    user_has_profile_access(:'teamApprovedUserID'::uuid, :'applicantProfileID'::uuid),
     true,
     'Should allow approved team members to access applied profiles'
 );
 
 -- Should deny unapproved team members
 select is(
-    auth_user_has_profile_access(:'teamPendingUserID'::uuid, :'applicantProfileID'::uuid),
+    user_has_profile_access(:'teamPendingUserID'::uuid, :'applicantProfileID'::uuid),
     false,
     'Should deny unapproved team members'
 );
 
 -- Should deny unknown profiles
 select is(
-    auth_user_has_profile_access(
+    user_has_profile_access(
         :'teamApprovedUserID'::uuid,
         '99999999-9999-9999-9999-999999999999'::uuid
     ),

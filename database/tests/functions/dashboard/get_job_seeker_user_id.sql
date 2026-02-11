@@ -28,14 +28,14 @@ insert into job_seeker_profile (email, job_seeker_profile_id, name, summary, use
 
 -- Should return the profile owner user id
 select is(
-    dashboard_employer_get_job_seeker_user_id(:'profileID'::uuid),
+    get_job_seeker_user_id(:'profileID'::uuid),
     :'userID'::uuid,
     'Should return the profile owner user id'
 );
 
 -- Should return null for unknown profiles
 select is(
-    dashboard_employer_get_job_seeker_user_id('99999999-9999-9999-9999-999999999999'::uuid),
+    get_job_seeker_user_id('99999999-9999-9999-9999-999999999999'::uuid),
     null::uuid,
     'Should return null for unknown profiles'
 );

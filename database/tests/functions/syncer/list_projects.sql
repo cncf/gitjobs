@@ -22,7 +22,7 @@ insert into project (foundation, logo_url, maturity, name) values
 
 -- Should return full projects payload for the requested foundation
 select is(
-    syncer_list_projects('cncf')::jsonb,
+    list_projects('cncf')::jsonb,
     '[
         {
             "foundation": "cncf",

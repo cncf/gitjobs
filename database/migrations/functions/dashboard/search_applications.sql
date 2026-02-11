@@ -1,5 +1,5 @@
 -- Returns the applications that match the filters provided.
-create or replace function dashboard_employer_search_applications(
+create or replace function search_applications(
     p_employer_id uuid,
     p_filters jsonb
 )

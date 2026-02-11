@@ -27,7 +27,7 @@ insert into notification (kind, notification_id, processed, user_id) values
 -- ============================================================================
 
 -- Should mark notification as processed and persist error details
-select notifications_update_notification(:'notificationID'::uuid, 'smtp timeout');
+select update_notification(:'notificationID'::uuid, 'smtp timeout');
 
 select ok(
     (

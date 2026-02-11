@@ -42,7 +42,7 @@ select is(
             'user_id', user_id::text,
             'username', username
         )
-        from auth_get_user_by_email('verified@example.com')
+        from get_user_by_email('verified@example.com')
     ),
     jsonb_build_object(
         'auth_hash', '01',
@@ -63,7 +63,7 @@ select is(
 select is(
     (
         select count(*)
-        from auth_get_user_by_email('unverified@example.com')
+        from get_user_by_email('unverified@example.com')
     ),
     0::bigint,
     'Should return no row for unverified users'
@@ -73,7 +73,7 @@ select is(
 select is(
     (
         select count(*)
-        from auth_get_user_by_email('missing@example.com')
+        from get_user_by_email('missing@example.com')
     ),
     0::bigint,
     'Should return no row for unknown emails'

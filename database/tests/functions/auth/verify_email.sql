@@ -31,7 +31,7 @@ insert into email_verification_code (created_at, email_verification_code_id, use
 -- ============================================================================
 
 -- Should mark user email as verified with a valid code
-select auth_verify_email(:'validCodeID'::uuid);
+select verify_email(:'validCodeID'::uuid);
 
 select ok(
     (
@@ -55,14 +55,14 @@ select is(
 
 -- Should fail for invalid codes
 select throws_ok(
-    $$ select auth_verify_email('99999999-9999-9999-9999-999999999999'::uuid) $$,
+    $$ select verify_email('99999999-9999-9999-9999-999999999999'::uuid) $$,
     'invalid email verification code',
     'Should fail for invalid codes'
 );
 
 -- Should fail for expired codes
 select throws_ok(
-    $$ select auth_verify_email('00000000-0000-0000-0000-000000000302'::uuid) $$,
+    $$ select verify_email('00000000-0000-0000-0000-000000000302'::uuid) $$,
     'invalid email verification code',
     'Should fail for expired codes'
 );

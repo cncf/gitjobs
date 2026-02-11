@@ -1,5 +1,5 @@
 -- Returns a verified user by username including password.
-create or replace function auth_get_user_by_username(p_username text)
+create or replace function get_user_by_username(p_username text)
 returns table(
     user_id uuid,
     auth_hash bytea,

@@ -45,7 +45,7 @@ insert into job (job_id, employer_id, kind, status, title, workplace, descriptio
 -- ============================================================================
 
 -- Should archive a published job and set archived_at
-select dashboard_employer_archive_job(:'publishedJobID'::uuid);
+select archive_job(:'publishedJobID'::uuid);
 
 select ok(
     exists (
@@ -60,7 +60,7 @@ select ok(
 );
 
 -- Should not archive jobs outside the allowed statuses
-select dashboard_employer_archive_job(:'draftJobID'::uuid);
+select archive_job(:'draftJobID'::uuid);
 
 select is(
     (

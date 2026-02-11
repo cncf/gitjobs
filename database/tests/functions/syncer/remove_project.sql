@@ -17,7 +17,7 @@ insert into project (foundation, logo_url, maturity, name) values
 -- ============================================================================
 
 -- Should remove the selected project
-select syncer_remove_project('cncf', 'Kubernetes');
+select remove_project('cncf', 'Kubernetes');
 
 select is(
     (

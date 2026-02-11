@@ -1,5 +1,5 @@
 -- Returns a verified user by id.
-create or replace function auth_get_user_by_id_verified(p_user_id uuid)
+create or replace function get_user_by_id_verified(p_user_id uuid)
 returns table(
     user_id uuid,
     auth_hash bytea,

@@ -37,7 +37,7 @@ insert into employer_team (approved, employer_id, user_id) values
 
 -- Should return full payload with approved employers sorted by company
 select is(
-    dashboard_employer_list_employers(:'userID'::uuid)::jsonb,
+    list_employers(:'userID'::uuid)::jsonb,
     '[
         {
             "company": "Acme Corp",
@@ -55,7 +55,7 @@ select is(
 
 -- Should return empty arrays when the user has no approved employers
 select is(
-    dashboard_employer_list_employers('99999999-9999-9999-9999-999999999999'::uuid)::jsonb,
+    list_employers('99999999-9999-9999-9999-999999999999'::uuid)::jsonb,
     '[]'::jsonb,
     'Should return empty arrays when the user has no approved employers'
 );

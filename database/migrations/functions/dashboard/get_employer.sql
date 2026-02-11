@@ -1,5 +1,5 @@
 -- Returns employer details.
-create or replace function dashboard_employer_get_employer(p_employer_id uuid)
+create or replace function get_employer(p_employer_id uuid)
 returns json as $$
     select nullif(jsonb_strip_nulls(jsonb_build_object(
         'company', e.company,

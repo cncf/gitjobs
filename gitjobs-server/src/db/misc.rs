@@ -30,7 +30,7 @@ impl DBMisc for PgDB {
 
         let db = self.pool.get().await?;
         let row = db
-            .query_one("select misc_search_locations_json($1::text)::text;", &[&ts_query])
+            .query_one("select search_locations_json($1::text)::text;", &[&ts_query])
             .await?;
         let locations = serde_json::from_str(&row.get::<_, String>(0))?;
 
@@ -44,7 +44,7 @@ impl DBMisc for PgDB {
         let db = self.pool.get().await?;
         let row = db
             .query_one(
-                "select misc_search_members($1::text, $2::text)::text",
+                "select search_members($1::text, $2::text)::text",
                 &[&foundation, &member],
             )
             .await?;
@@ -60,7 +60,7 @@ impl DBMisc for PgDB {
         let db = self.pool.get().await?;
         let row = db
             .query_one(
-                "select misc_search_projects($1::text, $2::text)::text",
+                "select search_projects($1::text, $2::text)::text",
                 &[&foundation, &project],
             )
             .await?;

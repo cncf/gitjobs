@@ -56,7 +56,7 @@ insert into employer_member (employer_id, member_id) values
 
 -- Should return full employer payload
 select is(
-    dashboard_employer_get_employer(:'employerID'::uuid)::jsonb,
+    get_employer(:'employerID'::uuid)::jsonb,
     '{
         "company": "Acme Corp",
         "description": "Employer for get_employer tests",
@@ -90,7 +90,7 @@ select is(
 
 -- Should return null for unknown employers
 select is(
-    dashboard_employer_get_employer('99999999-9999-9999-9999-999999999999'::uuid)::jsonb,
+    get_employer('99999999-9999-9999-9999-999999999999'::uuid)::jsonb,
     null::jsonb,
     'Should return null for unknown employers'
 );

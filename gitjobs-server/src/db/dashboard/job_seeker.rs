@@ -35,7 +35,7 @@ impl DBDashBoardJobSeeker for PgDB {
 
         let db = self.pool.get().await?;
         db.execute(
-            "select dashboard_job_seeker_cancel_application($1::uuid, $2::uuid)",
+            "select cancel_application($1::uuid, $2::uuid)",
             &[&application_id, &user_id],
         )
         .await?;
@@ -49,7 +49,7 @@ impl DBDashBoardJobSeeker for PgDB {
 
         let db = self.pool.get().await?;
         let row = db
-            .query_one("select dashboard_job_seeker_get_profile($1::uuid)", &[&user_id])
+            .query_one("select get_job_seeker_profile($1::uuid)", &[&user_id])
             .await?;
         let profile = row
             .get::<_, Option<serde_json::Value>>(0)
@@ -65,10 +65,7 @@ impl DBDashBoardJobSeeker for PgDB {
 
         let db = self.pool.get().await?;
         let row = db
-            .query_one(
-                "select dashboard_job_seeker_list_applications($1::uuid)::text",
-                &[&user_id],
-            )
+            .query_one("select list_job_seeker_applications($1::uuid)::text", &[&user_id])
             .await?;
         let applications = serde_json::from_str(&row.get::<_, String>(0))?;
 
@@ -81,7 +78,7 @@ impl DBDashBoardJobSeeker for PgDB {
 
         let db = self.pool.get().await?;
         db.execute(
-            "select dashboard_job_seeker_upsert_profile($1::uuid, $2::jsonb)",
+            "select upsert_job_seeker_profile($1::uuid, $2::jsonb)",
             &[&user_id, &Json(profile)],
         )
         .await?;

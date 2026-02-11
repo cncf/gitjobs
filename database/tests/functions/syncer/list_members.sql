@@ -22,7 +22,7 @@ insert into member (foundation, level, logo_url, name) values
 
 -- Should return full members payload for the requested foundation
 select is(
-    syncer_list_members('cncf')::jsonb,
+    list_members('cncf')::jsonb,
     '[
         {
             "foundation": "cncf",

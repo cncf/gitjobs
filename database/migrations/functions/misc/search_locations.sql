@@ -1,5 +1,5 @@
 -- Returns the locations that match the query provided.
-create or replace function misc_search_locations(p_ts_query text)
+create or replace function search_locations(p_ts_query text)
 returns table(
     location_id uuid,
     city text,

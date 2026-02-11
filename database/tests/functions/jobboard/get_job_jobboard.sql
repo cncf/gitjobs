@@ -158,7 +158,7 @@ insert into job_certification (certification_id, job_id) values
 
 -- Should return full payload for published jobs
 select is(
-    jobboard_get_job_jobboard(:'jobPublishedID'::uuid)::jsonb,
+    get_job_jobboard(:'jobPublishedID'::uuid)::jsonb,
     jsonb_build_object(
         'apply_instructions', 'Apply by email',
         'apply_url', 'https://example.com/apply',
@@ -229,7 +229,7 @@ select is(
 
 -- Should return null for non-published jobs
 select is(
-    jobboard_get_job_jobboard(:'jobDraftID'::uuid)::jsonb,
+    get_job_jobboard(:'jobDraftID'::uuid)::jsonb,
     null::jsonb,
     'Should return null for non-published jobs'
 );

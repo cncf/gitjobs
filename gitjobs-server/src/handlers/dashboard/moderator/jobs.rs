@@ -23,7 +23,7 @@ use crate::{
             employer::{self, jobs::JobStatus},
             moderator::jobs,
         },
-        helpers::option_is_none_or_default,
+        helpers::{empty_string_as_none, option_is_none_or_default},
         notifications::JobPublished,
     },
     validation::{MAX_LEN_DESCRIPTION_SHORT, trimmed_non_empty_opt},
@@ -134,7 +134,11 @@ pub(crate) async fn reject(
 pub(crate) struct RejectInput {
     /// Optional review notes provided by the moderator when rejecting a job.
     #[garde(custom(trimmed_non_empty_opt), length(max = MAX_LEN_DESCRIPTION_SHORT))]
-    #[serde(skip_serializing_if = "option_is_none_or_default")]
+    #[serde(
+        default,
+        deserialize_with = "empty_string_as_none",
+        skip_serializing_if = "option_is_none_or_default"
+    )]
     pub review_notes: Option<String>,
 }
 
@@ -409,6 +413,49 @@ mod tests {
             .header(COOKIE, format!("id={session_id}"))
             .header("content-type", "application/x-www-form-urlencoded")
             .body(Body::empty())
+            .unwrap();
+        let response = router.oneshot(request).await.unwrap();
+
+        // Check response matches expectations
+        assert_eq!(response.status(), StatusCode::NO_CONTENT);
+    }
+
+    #[tokio::test]
+    async fn test_reject_passes_none_review_notes_when_provided_as_blank_string() {
+        // Setup identifiers and data structures
+        let auth_hash = "hash";
+        let job_id = Uuid::new_v4();
+        let session_id = session::Id::default();
+        let user_id = Uuid::new_v4();
+        let session_record = sample_session_record(session_id, user_id, auth_hash, None);
+        let mut moderator = sample_auth_user(user_id, auth_hash);
+        moderator.moderator = true;
+
+        // Setup database mock
+        let mut db = MockDB::new();
+        db.expect_get_session()
+            .times(1)
+            .withf(move |id| *id == session_id)
+            .returning(move |_| Ok(Some(session_record.clone())));
+        db.expect_get_user_by_id()
+            .times(1)
+            .withf(move |id| *id == user_id)
+            .returning(move |_| Ok(Some(moderator.clone())));
+        db.expect_reject_job()
+            .times(1)
+            .withf(move |id, reviewer, notes| *id == job_id && *reviewer == user_id && notes.is_none())
+            .returning(|_, _, _| Ok(()));
+
+        // Setup router and send request
+        let router = TestRouterBuilder::new(db, MockNotificationsManager::new())
+            .build()
+            .await;
+        let request = Request::builder()
+            .method("PUT")
+            .uri(format!("/dashboard/moderator/jobs/{job_id}/reject"))
+            .header(COOKIE, format!("id={session_id}"))
+            .header("content-type", "application/x-www-form-urlencoded")
+            .body(Body::from("review_notes="))
             .unwrap();
         let response = router.oneshot(request).await.unwrap();
 

@@ -5,6 +5,7 @@ use std::{collections::HashMap, sync::LazyLock, time::Duration};
 use anyhow::Result;
 use cached::proc_macro::cached;
 use regex::Regex;
+use serde::{Deserialize, Deserializer};
 use tracing::{debug, warn};
 use uuid::Uuid;
 
@@ -27,6 +28,16 @@ pub(crate) fn build_dashboard_image_url(image_id: &Uuid, version: &str) -> Strin
 /// Build job board image URL for a specific image version.
 pub(crate) fn build_jobboard_image_url(image_id: &Uuid, version: &str) -> String {
     format!("/jobboard/images/{image_id}/{version}")
+}
+
+/// Deserializes an optional string and maps empty values to `None`.
+pub(crate) fn empty_string_as_none<'de, D>(deserializer: D) -> Result<Option<String>, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let value = Option::<String>::deserialize(deserializer)?;
+
+    Ok(value.and_then(|value| if value.is_empty() { None } else { Some(value) }))
 }
 
 /// Find an employer by id in a list of employers.

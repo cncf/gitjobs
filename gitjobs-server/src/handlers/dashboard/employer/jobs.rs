@@ -569,4 +569,27 @@ mod tests {
         // Check response matches expectations
         assert_eq!(response.status(), StatusCode::NO_CONTENT);
     }
+
+    #[tokio::test]
+    async fn test_update_returns_unprocessable_entity_for_invalid_status() {
+        // Setup identifiers and data structures
+        let job_id = Uuid::new_v4();
+
+        // Setup database mock
+        let db: DynDB = Arc::new(MockDB::new());
+
+        // Execute handler
+        let response = update(
+            State(db),
+            State(qs_config()),
+            Path(job_id),
+            "description=desc&kind=full-time&status=published&title=title&workplace=remote".to_string(),
+        )
+        .await
+        .unwrap()
+        .into_response();
+
+        // Check response matches expectations
+        assert_eq!(response.status(), StatusCode::UNPROCESSABLE_ENTITY);
+    }
 }

@@ -390,6 +390,31 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn test_apply_redirects_to_log_in_when_user_is_unauthenticated() {
+        // Setup identifiers and data structures
+        let job_id = Uuid::new_v4();
+
+        // Setup router and send request
+        let db = MockDB::new();
+        let router = TestRouterBuilder::new(db, MockNotificationsManager::new())
+            .build()
+            .await;
+        let request = Request::builder()
+            .method("POST")
+            .uri(format!("/jobs/{job_id}/apply"))
+            .body(Body::empty())
+            .unwrap();
+        let response = router.oneshot(request).await.unwrap();
+
+        // Check response matches expectations
+        assert_eq!(response.status(), StatusCode::TEMPORARY_REDIRECT);
+        assert_eq!(
+            response.headers()["location"],
+            format!("/log-in?next_url=%2Fjobs%2F{job_id}%2Fapply")
+        );
+    }
+
+    #[tokio::test]
     async fn test_track_view_returns_no_content() {
         // Setup identifiers and data structures
         let job_id = Uuid::new_v4();

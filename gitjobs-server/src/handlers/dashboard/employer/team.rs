@@ -216,7 +216,10 @@ pub(crate) async fn reject_invitation(
 
 #[cfg(test)]
 mod tests {
-    use std::sync::Arc;
+    use std::sync::{
+        Arc,
+        atomic::{AtomicBool, Ordering},
+    };
 
     use axum::{
         body::Body,
@@ -225,6 +228,7 @@ mod tests {
         response::IntoResponse,
     };
     use axum_login::tower_sessions::session;
+    use serde_json::json;
     use tower::ServiceExt;
     use uuid::Uuid;
 
@@ -403,6 +407,161 @@ mod tests {
 
         // Check response matches expectations
         assert_eq!(response.status(), StatusCode::NO_CONTENT);
+    }
+
+    #[tokio::test]
+    async fn test_add_member_does_not_enqueue_notification_when_user_does_not_exist() {
+        // Setup identifiers and data structures
+        let auth_hash = "hash";
+        let employer_id = Uuid::new_v4();
+        let session_id = session::Id::default();
+        let user_id = Uuid::new_v4();
+        let session_record = sample_session_record(session_id, user_id, auth_hash, Some(employer_id));
+
+        // Setup database mock
+        let mut db = MockDB::new();
+        db.expect_get_session()
+            .times(1)
+            .withf(move |id| *id == session_id)
+            .returning(move |_| Ok(Some(session_record.clone())));
+        db.expect_get_user_by_id()
+            .times(1)
+            .withf(move |id| *id == user_id)
+            .returning(move |_| Ok(Some(sample_auth_user(user_id, auth_hash))));
+        db.expect_add_team_member()
+            .times(1)
+            .withf(move |id, email| *id == employer_id && email == "invitee@example.test")
+            .returning(|_, _| Ok(None));
+        db.expect_update_session().times(1..).returning(|_| Ok(()));
+
+        // Setup router and send request
+        let router = TestRouterBuilder::new(db, MockNotificationsManager::new())
+            .build()
+            .await;
+        let request = Request::builder()
+            .method("POST")
+            .uri("/dashboard/employer/team/members/add")
+            .header(COOKIE, format!("id={session_id}"))
+            .header("content-type", "application/x-www-form-urlencoded")
+            .body(Body::from("email=invitee%40example.test"))
+            .unwrap();
+        let response = router.oneshot(request).await.unwrap();
+
+        // Check response matches expectations
+        assert_eq!(response.status(), StatusCode::NO_CONTENT);
+    }
+
+    #[tokio::test]
+    async fn test_delete_member_clears_selected_employer_when_user_removes_self_and_has_no_employers() {
+        // Setup identifiers and data structures
+        let auth_hash = "hash";
+        let selected_employer_id = Uuid::new_v4();
+        let session_id = session::Id::default();
+        let user_id = Uuid::new_v4();
+        let session_record =
+            sample_session_record(session_id, user_id, auth_hash, Some(selected_employer_id));
+        let selected_employer_removed = Arc::new(AtomicBool::new(false));
+        let selected_employer_removed_cloned = selected_employer_removed.clone();
+
+        // Setup database mock
+        let mut db = MockDB::new();
+        db.expect_get_session()
+            .times(1)
+            .withf(move |id| *id == session_id)
+            .returning(move |_| Ok(Some(session_record.clone())));
+        db.expect_get_user_by_id()
+            .times(1)
+            .withf(move |id| *id == user_id)
+            .returning(move |_| Ok(Some(sample_auth_user(user_id, auth_hash))));
+        db.expect_delete_team_member()
+            .times(1)
+            .withf(move |employer, user| *employer == selected_employer_id && *user == user_id)
+            .returning(|_, _| Ok(()));
+        db.expect_list_employers()
+            .times(1)
+            .withf(move |id| *id == user_id)
+            .returning(|_| Ok(Vec::new()));
+        db.expect_update_session().times(1..).returning(move |record| {
+            if !record.data.contains_key(SELECTED_EMPLOYER_ID_KEY) {
+                selected_employer_removed_cloned.store(true, Ordering::SeqCst);
+            }
+            Ok(())
+        });
+
+        // Setup router and send request
+        let router = TestRouterBuilder::new(db, MockNotificationsManager::new())
+            .build()
+            .await;
+        let request = Request::builder()
+            .method("DELETE")
+            .uri(format!("/dashboard/employer/team/members/{user_id}/delete"))
+            .header(COOKIE, format!("id={session_id}"))
+            .body(Body::empty())
+            .unwrap();
+        let response = router.oneshot(request).await.unwrap();
+
+        // Check response matches expectations
+        assert_eq!(response.status(), StatusCode::NO_CONTENT);
+        assert!(selected_employer_removed.load(Ordering::SeqCst));
+    }
+
+    #[tokio::test]
+    async fn test_delete_member_selects_first_employer_when_user_removes_self_and_has_other_employers() {
+        // Setup identifiers and data structures
+        let auth_hash = "hash";
+        let new_selected_employer_id = Uuid::new_v4();
+        let selected_employer_id = Uuid::new_v4();
+        let session_id = session::Id::default();
+        let user_id = Uuid::new_v4();
+        let session_record =
+            sample_session_record(session_id, user_id, auth_hash, Some(selected_employer_id));
+        let selected_employer_updated = Arc::new(AtomicBool::new(false));
+        let selected_employer_updated_cloned = selected_employer_updated.clone();
+
+        // Setup database mock
+        let mut db = MockDB::new();
+        db.expect_get_session()
+            .times(1)
+            .withf(move |id| *id == session_id)
+            .returning(move |_| Ok(Some(session_record.clone())));
+        db.expect_get_user_by_id()
+            .times(1)
+            .withf(move |id| *id == user_id)
+            .returning(move |_| Ok(Some(sample_auth_user(user_id, auth_hash))));
+        db.expect_delete_team_member()
+            .times(1)
+            .withf(move |employer, user| *employer == selected_employer_id && *user == user_id)
+            .returning(|_, _| Ok(()));
+        db.expect_list_employers()
+            .times(1)
+            .withf(move |id| *id == user_id)
+            .returning(move |_| Ok(vec![sample_employer_summary(new_selected_employer_id)]));
+        db.expect_update_session().times(1..).returning(move |record| {
+            if record
+                .data
+                .get(SELECTED_EMPLOYER_ID_KEY)
+                .is_some_and(|value| *value == json!(new_selected_employer_id))
+            {
+                selected_employer_updated_cloned.store(true, Ordering::SeqCst);
+            }
+            Ok(())
+        });
+
+        // Setup router and send request
+        let router = TestRouterBuilder::new(db, MockNotificationsManager::new())
+            .build()
+            .await;
+        let request = Request::builder()
+            .method("DELETE")
+            .uri(format!("/dashboard/employer/team/members/{user_id}/delete"))
+            .header(COOKIE, format!("id={session_id}"))
+            .body(Body::empty())
+            .unwrap();
+        let response = router.oneshot(request).await.unwrap();
+
+        // Check response matches expectations
+        assert_eq!(response.status(), StatusCode::NO_CONTENT);
+        assert!(selected_employer_updated.load(Ordering::SeqCst));
     }
 
     #[tokio::test]

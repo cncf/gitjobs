@@ -673,6 +673,7 @@ fn sanitize_next_url(next_url: Option<&str>) -> Option<String> {
 
 #[cfg(test)]
 mod tests {
+    use anyhow::anyhow;
     use axum::{
         body::Body,
         http::{Request, StatusCode, header::COOKIE},
@@ -685,7 +686,7 @@ mod tests {
         db::mock::MockDB,
         handlers::tests::{
             TestRouterBuilder, notification_matches_kind, sample_auth_user, sample_employer_summary,
-            sample_session_record, with_auth_provider,
+            sample_session_record, test_http_server_cfg, with_auth_provider,
         },
         notifications::{MockNotificationsManager, NotificationKind},
     };
@@ -952,6 +953,34 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn test_sign_up_redirects_to_sign_up_when_db_fails() {
+        // Setup database mock
+        let mut db = MockDB::new();
+        allow_session_store_updates(&mut db);
+        db.expect_sign_up_user()
+            .times(1)
+            .returning(|_, _| Err(anyhow!("db error")));
+
+        // Setup router and send request
+        let router = TestRouterBuilder::new(db, MockNotificationsManager::new())
+            .build()
+            .await;
+        let request = Request::builder()
+            .method("POST")
+            .uri("/sign-up")
+            .header("content-type", "application/x-www-form-urlencoded")
+            .body(Body::from(
+                "email=user%40example.test&name=User&username=user&password=secret",
+            ))
+            .unwrap();
+        let response = router.oneshot(request).await.unwrap();
+
+        // Check response matches expectations
+        assert_eq!(response.status(), StatusCode::SEE_OTHER);
+        assert_eq!(response.headers()["location"], SIGN_UP_URL);
+    }
+
+    #[tokio::test]
     async fn test_update_user_details_returns_no_content() {
         // Setup identifiers and data structures
         let auth_hash = "hash";
@@ -1081,6 +1110,47 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn test_update_user_password_returns_bad_request_when_password_is_missing() {
+        // Setup identifiers and data structures
+        let auth_hash = "hash";
+        let session_id = session::Id::default();
+        let user_id = Uuid::new_v4();
+        let session_record = sample_session_record(session_id, user_id, auth_hash, None);
+
+        // Setup database mock
+        let mut db = MockDB::new();
+        allow_session_store_updates(&mut db);
+        db.expect_get_session()
+            .times(1)
+            .withf(move |id| *id == session_id)
+            .returning(move |_| Ok(Some(session_record.clone())));
+        db.expect_get_user_by_id()
+            .times(1)
+            .withf(move |id| *id == user_id)
+            .returning(move |_| Ok(Some(sample_auth_user(user_id, auth_hash))));
+        db.expect_get_user_password()
+            .times(1)
+            .withf(move |id| *id == user_id)
+            .returning(|_| Ok(None));
+
+        // Setup router and send request
+        let router = TestRouterBuilder::new(db, MockNotificationsManager::new())
+            .build()
+            .await;
+        let request = Request::builder()
+            .method("PUT")
+            .uri("/dashboard/account/update/password")
+            .header(COOKIE, format!("id={session_id}"))
+            .header("content-type", "application/x-www-form-urlencoded")
+            .body(Body::from("old_password=old-password&new_password=new-one"))
+            .unwrap();
+        let response = router.oneshot(request).await.unwrap();
+
+        // Check response matches expectations
+        assert_eq!(response.status(), StatusCode::BAD_REQUEST);
+    }
+
+    #[tokio::test]
     async fn test_user_menu_section_includes_auth_provider_from_session() {
         // Setup identifiers and data structures
         let auth_hash = "hash";
@@ -1144,6 +1214,456 @@ mod tests {
         // Check response matches expectations
         assert_eq!(response.status(), StatusCode::SEE_OTHER);
         assert_eq!(response.headers()["location"], LOG_IN_URL);
+    }
+
+    #[tokio::test]
+    async fn test_verify_email_redirects_to_log_in_when_verification_fails() {
+        // Setup identifiers and data structures
+        let code = Uuid::new_v4();
+
+        // Setup database mock
+        let mut db = MockDB::new();
+        allow_session_store_updates(&mut db);
+        db.expect_verify_email()
+            .times(1)
+            .withf(move |value| *value == code)
+            .returning(|_| Err(anyhow!("verification error")));
+
+        // Setup router and send request
+        let router = TestRouterBuilder::new(db, MockNotificationsManager::new())
+            .build()
+            .await;
+        let request = Request::builder()
+            .method("GET")
+            .uri(format!("/verify-email/{code}"))
+            .body(Body::empty())
+            .unwrap();
+        let response = router.oneshot(request).await.unwrap();
+
+        // Check response matches expectations
+        assert_eq!(response.status(), StatusCode::SEE_OTHER);
+        assert_eq!(response.headers()["location"], LOG_IN_URL);
+    }
+
+    #[tokio::test]
+    async fn test_oauth2_callback_redirects_when_csrf_state_is_missing() {
+        // Setup database mock
+        let mut cfg = test_http_server_cfg();
+        cfg.login.github = true;
+
+        let mut db = MockDB::new();
+        allow_session_store_updates(&mut db);
+
+        // Setup router and send request
+        let router = TestRouterBuilder::new(db, MockNotificationsManager::new())
+            .with_cfg(cfg)
+            .build()
+            .await;
+        let request = Request::builder()
+            .method("GET")
+            .uri("/log-in/oauth2/github/callback?code=abc&state=expected-state")
+            .body(Body::empty())
+            .unwrap();
+        let response = router.oneshot(request).await.unwrap();
+
+        // Check response matches expectations
+        assert_eq!(response.status(), StatusCode::SEE_OTHER);
+        assert_eq!(response.headers()["location"], LOG_IN_URL);
+    }
+
+    #[tokio::test]
+    async fn test_oauth2_callback_redirects_when_csrf_state_mismatches() {
+        // Setup identifiers and data structures
+        let auth_hash = "hash";
+        let session_id = session::Id::default();
+        let user_id = Uuid::new_v4();
+        let mut session_record = sample_session_record(session_id, user_id, auth_hash, None);
+        session_record.data.insert(
+            OAUTH2_CSRF_STATE_KEY.to_string(),
+            serde_json::json!("expected-state"),
+        );
+
+        // Setup database mock
+        let mut cfg = test_http_server_cfg();
+        cfg.login.github = true;
+
+        let mut db = MockDB::new();
+        allow_session_store_updates(&mut db);
+        db.expect_get_session()
+            .times(1)
+            .withf(move |id| *id == session_id)
+            .returning(move |_| Ok(Some(session_record.clone())));
+        db.expect_get_user_by_id()
+            .times(1)
+            .withf(move |id| *id == user_id)
+            .returning(move |_| Ok(Some(sample_auth_user(user_id, auth_hash))));
+
+        // Setup router and send request
+        let router = TestRouterBuilder::new(db, MockNotificationsManager::new())
+            .with_cfg(cfg)
+            .build()
+            .await;
+        let request = Request::builder()
+            .method("GET")
+            .uri("/log-in/oauth2/github/callback?code=abc&state=unexpected-state")
+            .header(COOKIE, format!("id={session_id}"))
+            .body(Body::empty())
+            .unwrap();
+        let response = router.oneshot(request).await.unwrap();
+
+        // Check response matches expectations
+        assert_eq!(response.status(), StatusCode::SEE_OTHER);
+        assert_eq!(response.headers()["location"], LOG_IN_URL);
+    }
+
+    #[tokio::test]
+    async fn test_oidc_callback_redirects_when_csrf_state_mismatches() {
+        // Setup identifiers and data structures
+        let auth_hash = "hash";
+        let session_id = session::Id::default();
+        let user_id = Uuid::new_v4();
+        let mut session_record = sample_session_record(session_id, user_id, auth_hash, None);
+        session_record.data.insert(
+            OAUTH2_CSRF_STATE_KEY.to_string(),
+            serde_json::json!("expected-state"),
+        );
+        session_record
+            .data
+            .insert(OIDC_NONCE_KEY.to_string(), serde_json::json!("expected-nonce"));
+
+        // Setup database mock
+        let mut cfg = test_http_server_cfg();
+        cfg.login.linuxfoundation = true;
+
+        let mut db = MockDB::new();
+        allow_session_store_updates(&mut db);
+        db.expect_get_session()
+            .times(1)
+            .withf(move |id| *id == session_id)
+            .returning(move |_| Ok(Some(session_record.clone())));
+        db.expect_get_user_by_id()
+            .times(1)
+            .withf(move |id| *id == user_id)
+            .returning(move |_| Ok(Some(sample_auth_user(user_id, auth_hash))));
+
+        // Setup router and send request
+        let router = TestRouterBuilder::new(db, MockNotificationsManager::new())
+            .with_cfg(cfg)
+            .build()
+            .await;
+        let request = Request::builder()
+            .method("GET")
+            .uri("/log-in/oidc/linuxfoundation/callback?code=abc&state=unexpected-state")
+            .header(COOKIE, format!("id={session_id}"))
+            .body(Body::empty())
+            .unwrap();
+        let response = router.oneshot(request).await.unwrap();
+
+        // Check response matches expectations
+        assert_eq!(response.status(), StatusCode::SEE_OTHER);
+        assert_eq!(response.headers()["location"], LOG_IN_URL);
+    }
+
+    #[tokio::test]
+    async fn test_oidc_callback_redirects_when_nonce_is_missing() {
+        // Setup identifiers and data structures
+        let auth_hash = "hash";
+        let session_id = session::Id::default();
+        let user_id = Uuid::new_v4();
+        let mut session_record = sample_session_record(session_id, user_id, auth_hash, None);
+        session_record.data.insert(
+            OAUTH2_CSRF_STATE_KEY.to_string(),
+            serde_json::json!("expected-state"),
+        );
+
+        // Setup database mock
+        let mut cfg = test_http_server_cfg();
+        cfg.login.linuxfoundation = true;
+
+        let mut db = MockDB::new();
+        allow_session_store_updates(&mut db);
+        db.expect_get_session()
+            .times(1)
+            .withf(move |id| *id == session_id)
+            .returning(move |_| Ok(Some(session_record.clone())));
+        db.expect_get_user_by_id()
+            .times(1)
+            .withf(move |id| *id == user_id)
+            .returning(move |_| Ok(Some(sample_auth_user(user_id, auth_hash))));
+
+        // Setup router and send request
+        let router = TestRouterBuilder::new(db, MockNotificationsManager::new())
+            .with_cfg(cfg)
+            .build()
+            .await;
+        let request = Request::builder()
+            .method("GET")
+            .uri("/log-in/oidc/linuxfoundation/callback?code=abc&state=expected-state")
+            .header(COOKIE, format!("id={session_id}"))
+            .body(Body::empty())
+            .unwrap();
+        let response = router.oneshot(request).await.unwrap();
+
+        // Check response matches expectations
+        assert_eq!(response.status(), StatusCode::SEE_OTHER);
+        assert_eq!(response.headers()["location"], LOG_IN_URL);
+    }
+
+    #[tokio::test]
+    async fn test_employer_dashboard_redirects_to_log_in_when_user_is_unauthenticated() {
+        // Setup router and send request
+        let db = MockDB::new();
+        let router = TestRouterBuilder::new(db, MockNotificationsManager::new())
+            .build()
+            .await;
+        let request = Request::builder()
+            .method("GET")
+            .uri("/dashboard/employer")
+            .body(Body::empty())
+            .unwrap();
+        let response = router.oneshot(request).await.unwrap();
+
+        // Check response matches expectations
+        assert_eq!(response.status(), StatusCode::TEMPORARY_REDIRECT);
+        assert_eq!(
+            response.headers()["location"],
+            "/log-in?next_url=%2Fdashboard%2Femployer"
+        );
+    }
+
+    #[tokio::test]
+    async fn test_jobboard_image_route_returns_internal_server_error_when_public_check_fails() {
+        // Setup identifiers and data structures
+        let image_id = Uuid::new_v4();
+
+        // Setup database mock
+        let mut db = MockDB::new();
+        allow_session_store_updates(&mut db);
+        db.expect_is_image_public()
+            .times(1)
+            .withf(move |id| *id == image_id)
+            .returning(|_| Err(anyhow!("db error")));
+
+        // Setup router and send request
+        let router = TestRouterBuilder::new(db, MockNotificationsManager::new())
+            .build()
+            .await;
+        let request = Request::builder()
+            .method("GET")
+            .uri(format!("/jobboard/images/{image_id}/small"))
+            .body(Body::empty())
+            .unwrap();
+        let response = router.oneshot(request).await.unwrap();
+
+        // Check response matches expectations
+        assert_eq!(response.status(), StatusCode::INTERNAL_SERVER_ERROR);
+    }
+
+    #[tokio::test]
+    async fn test_dashboard_image_route_returns_internal_server_error_when_access_check_fails() {
+        // Setup identifiers and data structures
+        let auth_hash = "hash";
+        let image_id = Uuid::new_v4();
+        let session_id = session::Id::default();
+        let user_id = Uuid::new_v4();
+        let session_record = sample_session_record(session_id, user_id, auth_hash, None);
+
+        // Setup database mock
+        let mut db = MockDB::new();
+        allow_session_store_updates(&mut db);
+        db.expect_get_session()
+            .times(1)
+            .withf(move |id| *id == session_id)
+            .returning(move |_| Ok(Some(session_record.clone())));
+        db.expect_get_user_by_id()
+            .times(1)
+            .withf(move |id| *id == user_id)
+            .returning(move |_| Ok(Some(sample_auth_user(user_id, auth_hash))));
+        db.expect_user_has_image_access()
+            .times(1)
+            .withf(move |user, image| *user == user_id && *image == image_id)
+            .returning(|_, _| Err(anyhow!("db error")));
+
+        // Setup router and send request
+        let router = TestRouterBuilder::new(db, MockNotificationsManager::new())
+            .build()
+            .await;
+        let request = Request::builder()
+            .method("GET")
+            .uri(format!("/dashboard/images/{image_id}/small"))
+            .header(COOKIE, format!("id={session_id}"))
+            .body(Body::empty())
+            .unwrap();
+        let response = router.oneshot(request).await.unwrap();
+
+        // Check response matches expectations
+        assert_eq!(response.status(), StatusCode::INTERNAL_SERVER_ERROR);
+    }
+
+    #[tokio::test]
+    async fn test_profile_preview_route_returns_internal_server_error_when_access_check_fails() {
+        // Setup identifiers and data structures
+        let auth_hash = "hash";
+        let profile_id = Uuid::new_v4();
+        let session_id = session::Id::default();
+        let user_id = Uuid::new_v4();
+        let session_record = sample_session_record(session_id, user_id, auth_hash, None);
+
+        // Setup database mock
+        let mut db = MockDB::new();
+        allow_session_store_updates(&mut db);
+        db.expect_get_session()
+            .times(1)
+            .withf(move |id| *id == session_id)
+            .returning(move |_| Ok(Some(session_record.clone())));
+        db.expect_get_user_by_id()
+            .times(1)
+            .withf(move |id| *id == user_id)
+            .returning(move |_| Ok(Some(sample_auth_user(user_id, auth_hash))));
+        db.expect_user_has_profile_access()
+            .times(1)
+            .withf(move |id, profile| *id == user_id && *profile == profile_id)
+            .returning(|_, _| Err(anyhow!("db error")));
+
+        // Setup router and send request
+        let router = TestRouterBuilder::new(db, MockNotificationsManager::new())
+            .build()
+            .await;
+        let request = Request::builder()
+            .method("GET")
+            .uri(format!(
+                "/dashboard/employer/applications/profile/{profile_id}/preview"
+            ))
+            .header(COOKIE, format!("id={session_id}"))
+            .body(Body::empty())
+            .unwrap();
+        let response = router.oneshot(request).await.unwrap();
+
+        // Check response matches expectations
+        assert_eq!(response.status(), StatusCode::INTERNAL_SERVER_ERROR);
+    }
+
+    #[tokio::test]
+    async fn test_select_employer_route_returns_forbidden_when_user_does_not_own_employer() {
+        // Setup identifiers and data structures
+        let auth_hash = "hash";
+        let employer_id = Uuid::new_v4();
+        let session_id = session::Id::default();
+        let user_id = Uuid::new_v4();
+        let session_record = sample_session_record(session_id, user_id, auth_hash, None);
+
+        // Setup database mock
+        let mut db = MockDB::new();
+        allow_session_store_updates(&mut db);
+        db.expect_get_session()
+            .times(1)
+            .withf(move |id| *id == session_id)
+            .returning(move |_| Ok(Some(session_record.clone())));
+        db.expect_get_user_by_id()
+            .times(1)
+            .withf(move |id| *id == user_id)
+            .returning(move |_| Ok(Some(sample_auth_user(user_id, auth_hash))));
+        db.expect_user_owns_employer()
+            .times(1)
+            .withf(move |id, employer| *id == user_id && *employer == employer_id)
+            .returning(|_, _| Ok(false));
+
+        // Setup router and send request
+        let router = TestRouterBuilder::new(db, MockNotificationsManager::new())
+            .build()
+            .await;
+        let request = Request::builder()
+            .method("PUT")
+            .uri(format!("/dashboard/employer/employers/{employer_id}/select"))
+            .header(COOKIE, format!("id={session_id}"))
+            .body(Body::empty())
+            .unwrap();
+        let response = router.oneshot(request).await.unwrap();
+
+        // Check response matches expectations
+        assert_eq!(response.status(), StatusCode::FORBIDDEN);
+    }
+
+    #[tokio::test]
+    async fn test_select_employer_route_returns_internal_server_error_when_ownership_check_fails() {
+        // Setup identifiers and data structures
+        let auth_hash = "hash";
+        let employer_id = Uuid::new_v4();
+        let session_id = session::Id::default();
+        let user_id = Uuid::new_v4();
+        let session_record = sample_session_record(session_id, user_id, auth_hash, None);
+
+        // Setup database mock
+        let mut db = MockDB::new();
+        allow_session_store_updates(&mut db);
+        db.expect_get_session()
+            .times(1)
+            .withf(move |id| *id == session_id)
+            .returning(move |_| Ok(Some(session_record.clone())));
+        db.expect_get_user_by_id()
+            .times(1)
+            .withf(move |id| *id == user_id)
+            .returning(move |_| Ok(Some(sample_auth_user(user_id, auth_hash))));
+        db.expect_user_owns_employer()
+            .times(1)
+            .withf(move |id, employer| *id == user_id && *employer == employer_id)
+            .returning(|_, _| Err(anyhow!("db error")));
+
+        // Setup router and send request
+        let router = TestRouterBuilder::new(db, MockNotificationsManager::new())
+            .build()
+            .await;
+        let request = Request::builder()
+            .method("PUT")
+            .uri(format!("/dashboard/employer/employers/{employer_id}/select"))
+            .header(COOKIE, format!("id={session_id}"))
+            .body(Body::empty())
+            .unwrap();
+        let response = router.oneshot(request).await.unwrap();
+
+        // Check response matches expectations
+        assert_eq!(response.status(), StatusCode::INTERNAL_SERVER_ERROR);
+    }
+
+    #[tokio::test]
+    async fn test_archive_route_returns_internal_server_error_when_ownership_check_fails() {
+        // Setup identifiers and data structures
+        let auth_hash = "hash";
+        let job_id = Uuid::new_v4();
+        let session_id = session::Id::default();
+        let user_id = Uuid::new_v4();
+        let session_record = sample_session_record(session_id, user_id, auth_hash, None);
+
+        // Setup database mock
+        let mut db = MockDB::new();
+        allow_session_store_updates(&mut db);
+        db.expect_get_session()
+            .times(1)
+            .withf(move |id| *id == session_id)
+            .returning(move |_| Ok(Some(session_record.clone())));
+        db.expect_get_user_by_id()
+            .times(1)
+            .withf(move |id| *id == user_id)
+            .returning(move |_| Ok(Some(sample_auth_user(user_id, auth_hash))));
+        db.expect_user_owns_job()
+            .times(1)
+            .withf(move |id, job| *id == user_id && *job == job_id)
+            .returning(|_, _| Err(anyhow!("db error")));
+
+        // Setup router and send request
+        let router = TestRouterBuilder::new(db, MockNotificationsManager::new())
+            .build()
+            .await;
+        let request = Request::builder()
+            .method("PUT")
+            .uri(format!("/dashboard/employer/jobs/{job_id}/archive"))
+            .header(COOKIE, format!("id={session_id}"))
+            .body(Body::empty())
+            .unwrap();
+        let response = router.oneshot(request).await.unwrap();
+
+        // Check response matches expectations
+        assert_eq!(response.status(), StatusCode::INTERNAL_SERVER_ERROR);
     }
 
     #[test]

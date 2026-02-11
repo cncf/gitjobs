@@ -121,12 +121,104 @@ mod tests {
         db::{DynDB, mock::MockDB},
         event_tracker::{DynEventTracker, MockEventTracker},
         handlers::auth::SELECTED_EMPLOYER_ID_KEY,
-        handlers::tests::{qs_config, test_http_server_cfg},
+        handlers::tests::{TestRouterBuilder, qs_config, test_http_server_cfg},
         img::{DynImageStore, MockImageStore},
         notifications::{DynNotificationsManager, MockNotificationsManager},
     };
 
     use super::*;
+
+    #[tokio::test]
+    async fn test_oauth2_extractor_returns_bad_request_when_provider_is_missing() {
+        // Setup state and router
+        let db: DynDB = Arc::new(MockDB::new());
+        let image_store: DynImageStore = Arc::new(MockImageStore::new());
+        let notifications_manager: DynNotificationsManager = Arc::new(MockNotificationsManager::new());
+        let state = build_state(db, image_store, notifications_manager);
+        let router = Router::new()
+            .route("/oauth2", post(|_provider: OAuth2| async { StatusCode::OK }))
+            .with_state(state);
+
+        // Send request and check response
+        let request = Request::builder()
+            .method("POST")
+            .uri("/oauth2")
+            .body(Body::empty())
+            .unwrap();
+        let response = router.oneshot(request).await.unwrap();
+
+        assert_eq!(response.status(), StatusCode::BAD_REQUEST);
+    }
+
+    #[tokio::test]
+    async fn test_oauth2_extractor_returns_bad_request_when_provider_is_unsupported() {
+        // Setup config and database mock
+        let mut cfg = test_http_server_cfg();
+        cfg.login.github = true;
+
+        let mut db = MockDB::new();
+        allow_session_store_updates(&mut db);
+
+        // Setup router and send request
+        let router = TestRouterBuilder::new(db, MockNotificationsManager::new())
+            .with_cfg(cfg)
+            .build()
+            .await;
+        let request = Request::builder()
+            .method("GET")
+            .uri("/log-in/oauth2/github")
+            .body(Body::empty())
+            .unwrap();
+        let response = router.oneshot(request).await.unwrap();
+
+        assert_eq!(response.status(), StatusCode::BAD_REQUEST);
+    }
+
+    #[tokio::test]
+    async fn test_oidc_extractor_returns_bad_request_when_provider_is_missing() {
+        // Setup state and router
+        let db: DynDB = Arc::new(MockDB::new());
+        let image_store: DynImageStore = Arc::new(MockImageStore::new());
+        let notifications_manager: DynNotificationsManager = Arc::new(MockNotificationsManager::new());
+        let state = build_state(db, image_store, notifications_manager);
+        let router = Router::new()
+            .route("/oidc", post(|_provider: Oidc| async { StatusCode::OK }))
+            .with_state(state);
+
+        // Send request and check response
+        let request = Request::builder()
+            .method("POST")
+            .uri("/oidc")
+            .body(Body::empty())
+            .unwrap();
+        let response = router.oneshot(request).await.unwrap();
+
+        assert_eq!(response.status(), StatusCode::BAD_REQUEST);
+    }
+
+    #[tokio::test]
+    async fn test_oidc_extractor_returns_bad_request_when_provider_is_unsupported() {
+        // Setup config and database mock
+        let mut cfg = test_http_server_cfg();
+        cfg.login.linuxfoundation = true;
+
+        let mut db = MockDB::new();
+        allow_session_store_updates(&mut db);
+
+        // Setup router and send request
+        let router = TestRouterBuilder::new(db, MockNotificationsManager::new())
+            .with_cfg(cfg)
+            .build()
+            .await;
+        let request = Request::builder()
+            .method("GET")
+            .uri("/log-in/oidc/linuxfoundation")
+            .body(Body::empty())
+            .unwrap();
+        let response = router.oneshot(request).await.unwrap();
+
+        assert_eq!(response.status(), StatusCode::BAD_REQUEST);
+    }
 
     #[tokio::test]
     async fn test_selected_employer_id_optional_returns_id_when_set() {
@@ -286,6 +378,12 @@ mod tests {
     }
 
     // Helpers.
+
+    fn allow_session_store_updates(db: &mut MockDB) {
+        db.expect_create_session().times(0..).returning(|_| Ok(()));
+        db.expect_delete_session().times(0..).returning(|_| Ok(()));
+        db.expect_update_session().times(0..).returning(|_| Ok(()));
+    }
 
     fn build_state(
         db: DynDB,

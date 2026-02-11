@@ -136,7 +136,7 @@
 {# End radio box #}
 
 {# Form image #}
-{% macro images_form(label, name, icon = "company", value = "", url_image = "") -%}
+{% macro images_form(label, name, icon = "company", target = "logo", value = "", url_image = "") -%}
   {% let empty_image = value.is_empty() -%}
   {# Images form #}
   <form id="images-form"
@@ -147,6 +147,7 @@
         hx-indicator="#images-spinner"
         hx-disabled-elt="#clean-image, input[type=file]">
     <label for="{{ name }}" class="form-label">{{ label }}</label>
+    <input type="hidden" name="target" value="{{ target }}" />
     <div class="mt-3 flex items-stretch gap-x-5">
       <div class="relative flex items-center size-24 min-w-24 bg-stone-200/50 overflow-hidden">
         <div id="images-spinner" class="hx-spinner absolute z-10 start-5 top-5">
@@ -171,14 +172,14 @@
 
       <div class="flex flex-col justify-between self-stretch">
         <p class="form-legend">
-          Images must be at least 400x400, preferably in square format. Maximum file size: 2MB. Formats supported: SVG, PNG, JPEG, GIF, WEBP and TIFF.
+          Images must be at least 400x400, preferably in square format. Maximum file size: 1MB. Formats supported: SVG, PNG, JPEG, GIF, WEBP and TIFF.
         </p>
 
         <div class="flex items-center gap-x-3">
           {# Input file #}
           <label for="logo"
                  class="btn-primary btn-mini cursor-pointer whitespace-nowrap">
-            <input type="file" id="logo" name="logo" class="hidden" />
+            <input type="file" id="logo" name="file" class="hidden" />
             Upload image
           </label>
           {# End input file #}
@@ -226,7 +227,7 @@
           placeholderImage.classList.add('hidden');
           cleanImage.removeAttribute('disabled');
         } else {
-          showErrorAlert('Something went wrong adding the image, please try again later.<br /><br /><div class="text-sm text-stone-500">Images must be at least 400x400, preferably in square format. Maximum file size: 2MB. Formats supported: SVG, PNG, JPEG, GIF, WEBP and TIFF.</div>', true);
+          showErrorAlert('Something went wrong adding the image, please try again later.<br /><br /><div class="text-sm text-stone-500">Images must be at least 400x400, preferably in square format. Maximum file size: 1MB. Formats supported: SVG, PNG, JPEG, GIF, WEBP and TIFF.</div>', true);
         }
       });
 

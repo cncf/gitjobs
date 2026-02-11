@@ -92,6 +92,9 @@ server:
   cookie:
     secure: false
 
+  # Disable referer checks for image uploads
+  disableRefererChecks: false
+
   # Login options enabled
   login:
     # Enable email login

@@ -94,6 +94,9 @@ pub(crate) struct HttpServerConfig {
     pub addr: String,
     /// Base URL for the server.
     pub base_url: String,
+    /// Disable referer header validation for image uploads.
+    #[serde(default)]
+    pub disable_referer_checks: bool,
     /// Login options configuration.
     pub login: LoginOptions,
     /// `OAuth2` providers configuration.

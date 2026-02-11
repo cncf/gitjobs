@@ -7,7 +7,9 @@
 
   <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 max-w-5xl">
     {# Form image -#}
-    <div class="col-span-full">{{ macros::images_form(label = "Company logo", name = "logo_id") -}}</div>
+    <div class="col-span-full">
+      {{ macros::images_form(label = "Company logo", name = "logo_id", target = "logo") -}}
+    </div>
     {# End form image -#}
   </div>
 

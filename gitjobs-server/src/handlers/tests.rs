@@ -496,6 +496,7 @@ pub(crate) fn test_http_server_cfg() -> HttpServerConfig {
     HttpServerConfig {
         addr: "127.0.0.1:9000".to_string(),
         base_url: "http://localhost:9000".to_string(),
+        disable_referer_checks: false,
         login: LoginOptions {
             email: true,
             github: false,

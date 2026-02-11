@@ -35,6 +35,7 @@ palette = { workspace = true }
 password-auth = { workspace = true }
 percent-encoding = { workspace = true }
 postgres-openssl = { workspace = true }
+quick-xml = { workspace = true }
 rand = { workspace = true }
 regex = { workspace = true }
 reqwest = { workspace = true }

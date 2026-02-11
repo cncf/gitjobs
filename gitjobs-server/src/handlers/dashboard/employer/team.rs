@@ -5,7 +5,6 @@ use axum::{
     extract::{Path, State},
     response::{Html, IntoResponse},
 };
-use axum_extra::extract::Form;
 use axum_messages::Messages;
 use reqwest::StatusCode;
 use tower_sessions::Session;
@@ -16,7 +15,11 @@ use crate::{
     auth::AuthSession,
     config::HttpServerConfig,
     db::DynDB,
-    handlers::{auth::SELECTED_EMPLOYER_ID_KEY, error::HandlerError, extractors::SelectedEmployerIdRequired},
+    handlers::{
+        auth::SELECTED_EMPLOYER_ID_KEY,
+        error::HandlerError,
+        extractors::{SelectedEmployerIdRequired, ValidatedForm},
+    },
     notifications::{DynNotificationsManager, NewNotification, NotificationKind},
     templates::{
         dashboard::employer::team::{self, NewTeamMember},
@@ -105,7 +108,7 @@ pub(crate) async fn add_member(
     State(db): State<DynDB>,
     State(notifications_manager): State<DynNotificationsManager>,
     SelectedEmployerIdRequired(employer_id): SelectedEmployerIdRequired,
-    Form(member): Form<NewTeamMember>,
+    ValidatedForm(member): ValidatedForm<NewTeamMember>,
 ) -> Result<impl IntoResponse, HandlerError> {
     // Add the new team member to the database
     let user_id = db.add_team_member(&employer_id, &member.email).await?;
@@ -450,6 +453,45 @@ mod tests {
 
         // Check response matches expectations
         assert_eq!(response.status(), StatusCode::NO_CONTENT);
+    }
+
+    #[tokio::test]
+    async fn test_add_member_returns_unprocessable_entity_for_invalid_email() {
+        // Setup identifiers and data structures
+        let auth_hash = "hash";
+        let employer_id = Uuid::new_v4();
+        let session_id = session::Id::default();
+        let user_id = Uuid::new_v4();
+        let session_record = sample_session_record(session_id, user_id, auth_hash, Some(employer_id));
+
+        // Setup database mock
+        let mut db = MockDB::new();
+        db.expect_get_session()
+            .times(1)
+            .withf(move |id| *id == session_id)
+            .returning(move |_| Ok(Some(session_record.clone())));
+        db.expect_get_user_by_id()
+            .times(1)
+            .withf(move |id| *id == user_id)
+            .returning(move |_| Ok(Some(sample_auth_user(user_id, auth_hash))));
+        db.expect_add_team_member().times(0);
+        db.expect_update_session().times(0..).returning(|_| Ok(()));
+
+        // Setup router and send request
+        let router = TestRouterBuilder::new(db, MockNotificationsManager::new())
+            .build()
+            .await;
+        let request = Request::builder()
+            .method("POST")
+            .uri("/dashboard/employer/team/members/add")
+            .header(COOKIE, format!("id={session_id}"))
+            .header("content-type", "application/x-www-form-urlencoded")
+            .body(Body::from("email=invalid-email"))
+            .unwrap();
+        let response = router.oneshot(request).await.unwrap();
+
+        // Check response matches expectations
+        assert_eq!(response.status(), StatusCode::UNPROCESSABLE_ENTITY);
     }
 
     #[tokio::test]

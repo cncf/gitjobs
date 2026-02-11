@@ -2,16 +2,23 @@
 
 use askama::Template;
 use chrono::{DateTime, Utc};
+use garde::Validate;
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use uuid::Uuid;
 
-use crate::templates::{
-    dashboard::employer::employers::Employer,
-    filters,
-    helpers::{DATE_FORMAT, build_dashboard_image_url, format_location, normalize, normalize_salary},
-    jobboard::jobs::Seniority,
-    misc::{Certification, Foundation, Location, Project},
+use crate::{
+    templates::{
+        dashboard::employer::employers::Employer,
+        filters,
+        helpers::{DATE_FORMAT, build_dashboard_image_url, format_location, normalize, normalize_salary},
+        jobboard::jobs::Seniority,
+        misc::{Certification, Foundation, Location, Project},
+    },
+    validation::{
+        MAX_LEN_DESCRIPTION, MAX_LEN_DESCRIPTION_SHORT, MAX_LEN_ENTITY_NAME, MAX_LEN_L, MAX_LEN_S,
+        trimmed_non_empty, trimmed_non_empty_opt, trimmed_non_empty_tag_vec, trimmed_non_empty_vec,
+    },
 };
 
 // Pages templates.
@@ -87,70 +94,101 @@ pub(crate) struct JobSummary {
 
 /// Job details for the employer dashboard.
 #[skip_serializing_none]
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Validate)]
 pub(crate) struct Job {
     /// Job description text.
+    #[garde(custom(trimmed_non_empty), length(max = MAX_LEN_DESCRIPTION))]
     pub description: String,
     /// Current status of the job.
+    #[garde(skip)]
     pub status: JobStatus,
     /// Job title.
+    #[garde(custom(trimmed_non_empty), length(max = MAX_LEN_ENTITY_NAME))]
     pub title: String,
     /// Kind of job (full-time, part-time, etc.).
+    #[garde(skip)]
     pub kind: JobKind,
     /// Workplace type for the job.
+    #[garde(skip)]
     pub workplace: Workplace,
 
     /// Application instructions, if provided.
+    #[garde(custom(trimmed_non_empty_opt), length(max = MAX_LEN_DESCRIPTION))]
     pub apply_instructions: Option<String>,
     /// External application URL, if provided.
+    #[garde(url, length(max = MAX_LEN_L))]
     pub apply_url: Option<String>,
     /// List of job benefits, if any.
+    #[garde(custom(trimmed_non_empty_vec))]
     pub benefits: Option<Vec<String>>,
     /// Desired certifications, if any.
+    #[garde(skip)]
     pub certifications: Option<Vec<Certification>>,
     /// Unique identifier for the job, if available.
+    #[garde(skip)]
     pub job_id: Option<Uuid>,
     /// Location details for the job, if specified.
+    #[garde(skip)]
     pub location: Option<Location>,
     /// Open source commitment level, if specified.
+    #[garde(skip)]
     pub open_source: Option<i32>,
     /// Related projects, if any.
+    #[garde(skip)]
     pub projects: Option<Vec<Project>>,
     /// Timestamp when the job was published, if applicable.
+    #[garde(skip)]
     pub published_at: Option<DateTime<Utc>>,
     /// Required qualifications, if any.
+    #[garde(custom(trimmed_non_empty_opt), length(max = MAX_LEN_DESCRIPTION))]
     pub qualifications: Option<String>,
     /// Job responsibilities, if any.
+    #[garde(custom(trimmed_non_empty_opt), length(max = MAX_LEN_DESCRIPTION))]
     pub responsibilities: Option<String>,
     /// Notes from job review, if any.
+    #[garde(custom(trimmed_non_empty_opt), length(max = MAX_LEN_DESCRIPTION_SHORT))]
     pub review_notes: Option<String>,
     /// Salary amount, if specified.
+    #[garde(skip)]
     pub salary: Option<i64>,
     /// Salary normalized to USD per year, if available.
+    #[garde(skip)]
     pub salary_usd_year: Option<i64>,
     /// Currency of the salary, if specified.
+    #[garde(custom(trimmed_non_empty_opt), length(max = MAX_LEN_S))]
     pub salary_currency: Option<String>,
     /// Minimum salary, if specified.
+    #[garde(skip)]
     pub salary_min: Option<i64>,
     /// Minimum salary normalized to USD per year, if available.
+    #[garde(skip)]
     pub salary_min_usd_year: Option<i64>,
     /// Maximum salary, if specified.
+    #[garde(skip)]
     pub salary_max: Option<i64>,
     /// Maximum salary normalized to USD per year, if available.
+    #[garde(skip)]
     pub salary_max_usd_year: Option<i64>,
     /// Salary period (e.g., year, month, week, day, hour), if specified.
+    #[garde(skip)]
     pub salary_period: Option<String>,
     /// Seniority level for the job, if specified.
+    #[garde(skip)]
     pub seniority: Option<Seniority>,
     /// List of required or desired skills, if any.
+    #[garde(custom(trimmed_non_empty_tag_vec))]
     pub skills: Option<Vec<String>>,
     /// End of timezone range, if specified.
+    #[garde(custom(trimmed_non_empty_opt), length(max = MAX_LEN_S))]
     pub tz_end: Option<String>,
     /// Start of timezone range, if specified.
+    #[garde(custom(trimmed_non_empty_opt), length(max = MAX_LEN_S))]
     pub tz_start: Option<String>,
     /// Timestamp when the job was last updated, if available.
+    #[garde(skip)]
     pub updated_at: Option<DateTime<Utc>>,
     /// Upstream commitment level, if specified.
+    #[garde(skip)]
     pub upstream_commitment: Option<i32>,
 }
 

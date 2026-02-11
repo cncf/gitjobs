@@ -11,6 +11,7 @@ use axum::{
 };
 use axum_extra::extract::Form;
 use axum_messages::Messages;
+use garde::Validate;
 use openidconnect as oidc;
 use password_auth::verify_password;
 use percent_encoding::{NON_ALPHANUMERIC, utf8_percent_encode};
@@ -25,10 +26,11 @@ use crate::{
     db::DynDB,
     handlers::{
         error::HandlerError,
-        extractors::{OAuth2, Oidc},
+        extractors::{OAuth2, Oidc, ValidatedForm},
     },
     notifications::{DynNotificationsManager, NewNotification, NotificationKind},
     templates::{self, PageId, auth::User, notifications::EmailVerification},
+    validation::{MAX_LEN_S, trimmed_non_empty},
 };
 
 /// Key used to store the authentication provider in the session.
@@ -129,14 +131,25 @@ pub(crate) async fn log_in(
     session: Session,
     Query(query): Query<HashMap<String, String>>,
     State(db): State<DynDB>,
-    Form(creds): Form<PasswordCredentials>,
+    Form(login_form): Form<LoginForm>,
 ) -> Result<impl IntoResponse, HandlerError> {
     // Sanitize next url
     let next_url = sanitize_next_url(query.get("next_url").map(String::as_str));
 
+    // Validate form
+    if let Err(e) = login_form.validate() {
+        messages.error(e.to_string());
+        let log_in_url = get_log_in_url(next_url.as_deref());
+        return Ok(Redirect::to(&log_in_url));
+    }
+
     // Authenticate user
+    let creds = PasswordCredentials {
+        password: login_form.password,
+        username: login_form.username,
+    };
     let Some(user) = auth_session
-        .authenticate(Credentials::Password(creds.clone()))
+        .authenticate(Credentials::Password(creds))
         .await
         .map_err(|e| HandlerError::Auth(e.to_string()))?
     else {
@@ -376,6 +389,15 @@ pub(crate) async fn sign_up(
     Query(query): Query<HashMap<String, String>>,
     Form(mut user_summary): Form<auth::UserSummary>,
 ) -> Result<impl IntoResponse, HandlerError> {
+    // Sanitize next url
+    let next_url = sanitize_next_url(query.get("next_url").map(String::as_str));
+
+    // Validate form
+    if let Err(e) = user_summary.validate() {
+        messages.error(e.to_string());
+        return Ok(get_sign_up_url(next_url.as_deref()).into_response());
+    }
+
     // Check if the password has been provided
     let Some(password) = user_summary.password.take() else {
         return Ok((StatusCode::BAD_REQUEST, "password not provided").into_response());
@@ -410,7 +432,6 @@ pub(crate) async fn sign_up(
     }
 
     // Redirect to the log in page on success
-    let next_url = sanitize_next_url(query.get("next_url").map(String::as_str));
     let log_in_url = get_log_in_url(next_url.as_deref());
     Ok(Redirect::to(&log_in_url).into_response())
 }
@@ -421,7 +442,7 @@ pub(crate) async fn update_user_details(
     auth_session: AuthSession,
     messages: Messages,
     State(db): State<DynDB>,
-    Form(user_summary): Form<auth::UserSummary>,
+    ValidatedForm(input): ValidatedForm<templates::auth::UpdateUserDetailsInput>,
 ) -> Result<impl IntoResponse, HandlerError> {
     // Get user from session
     let Some(user) = auth_session.user else {
@@ -430,6 +451,13 @@ pub(crate) async fn update_user_details(
 
     // Update user in database
     let user_id = user.user_id;
+    let user_summary = auth::UserSummary {
+        email: user.email,
+        name: input.name,
+        username: user.username,
+        has_password: user.has_password,
+        password: None,
+    };
     db.update_user_details(&user_id, &user_summary).await?;
     messages.success("User details updated successfully.");
 
@@ -441,7 +469,7 @@ pub(crate) async fn update_user_details(
 pub(crate) async fn update_user_password(
     auth_session: AuthSession,
     State(db): State<DynDB>,
-    Form(mut input): Form<auth::PasswordUpdateInput>,
+    ValidatedForm(mut input): ValidatedForm<templates::auth::UserPassword>,
 ) -> Result<impl IntoResponse, HandlerError> {
     // Get user from session
     let Some(user) = auth_session.user else {
@@ -485,6 +513,17 @@ pub(crate) async fn verify_email(
 }
 
 // Deserialization helpers.
+
+/// Login form data from the user.
+#[derive(Debug, Deserialize, Validate)]
+pub(crate) struct LoginForm {
+    /// Password for authentication.
+    #[garde(custom(trimmed_non_empty), length(max = MAX_LEN_S))]
+    pub password: String,
+    /// Username for authentication.
+    #[garde(custom(trimmed_non_empty), length(max = MAX_LEN_S))]
+    pub username: String,
+}
 
 /// `OAuth2` authorization response containing code and CSRF state.
 #[derive(Debug, Clone, Deserialize)]
@@ -658,6 +697,15 @@ fn get_log_in_url(next_url: Option<&str>) -> String {
     log_in_url
 }
 
+/// Get the sign up url including the next url if provided.
+fn get_sign_up_url(next_url: Option<&str>) -> Redirect {
+    let mut sign_up_url = SIGN_UP_URL.to_string();
+    if let Some(next_url) = sanitize_next_url(next_url) {
+        sign_up_url = format!("{sign_up_url}?next_url={}", encode_next_url(&next_url));
+    }
+    Redirect::to(&sign_up_url)
+}
+
 /// Sanitize a `next_url` value ensuring it points to an in-site path.
 fn sanitize_next_url(next_url: Option<&str>) -> Option<String> {
     let value = next_url?.trim();
@@ -768,6 +816,30 @@ mod tests {
             .uri("/log-in")
             .header("content-type", "application/x-www-form-urlencoded")
             .body(Body::from("username=user&password=wrong"))
+            .unwrap();
+        let response = router.oneshot(request).await.unwrap();
+
+        // Check response matches expectations
+        assert_eq!(response.status(), StatusCode::SEE_OTHER);
+        assert_eq!(response.headers()["location"], "/log-in");
+    }
+
+    #[tokio::test]
+    async fn test_log_in_redirects_when_form_is_invalid() {
+        // Setup database mock
+        let mut db = MockDB::new();
+        allow_session_store_updates(&mut db);
+        db.expect_get_user_by_username().times(0);
+
+        // Setup router and send request
+        let router = TestRouterBuilder::new(db, MockNotificationsManager::new())
+            .build()
+            .await;
+        let request = Request::builder()
+            .method("POST")
+            .uri("/log-in")
+            .header("content-type", "application/x-www-form-urlencoded")
+            .body(Body::from("username=+&password=secret"))
             .unwrap();
         let response = router.oneshot(request).await.unwrap();
 
@@ -900,6 +972,32 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn test_sign_up_redirects_to_sign_up_when_form_is_invalid() {
+        // Setup database mock
+        let mut db = MockDB::new();
+        allow_session_store_updates(&mut db);
+        db.expect_sign_up_user().times(0);
+
+        // Setup router and send request
+        let router = TestRouterBuilder::new(db, MockNotificationsManager::new())
+            .build()
+            .await;
+        let request = Request::builder()
+            .method("POST")
+            .uri("/sign-up")
+            .header("content-type", "application/x-www-form-urlencoded")
+            .body(Body::from(
+                "email=user%40example.test&name=+&username=user&password=secret123",
+            ))
+            .unwrap();
+        let response = router.oneshot(request).await.unwrap();
+
+        // Check response matches expectations
+        assert_eq!(response.status(), StatusCode::SEE_OTHER);
+        assert_eq!(response.headers()["location"], SIGN_UP_URL);
+    }
+
+    #[tokio::test]
     async fn test_sign_up_enqueues_email_verification_notification() {
         // Setup identifiers and data structures
         let verification_code = Uuid::new_v4();
@@ -943,7 +1041,7 @@ mod tests {
             .uri("/sign-up")
             .header("content-type", "application/x-www-form-urlencoded")
             .body(Body::from(
-                "email=user%40example.test&name=User&username=user&password=secret",
+                "email=user%40example.test&name=User&username=user&password=secret123",
             ))
             .unwrap();
         let response = router.oneshot(request).await.unwrap();
@@ -971,7 +1069,7 @@ mod tests {
             .uri("/sign-up")
             .header("content-type", "application/x-www-form-urlencoded")
             .body(Body::from(
-                "email=user%40example.test&name=User&username=user&password=secret",
+                "email=user%40example.test&name=User&username=user&password=secret123",
             ))
             .unwrap();
         let response = router.oneshot(request).await.unwrap();
@@ -1014,13 +1112,51 @@ mod tests {
             .uri("/dashboard/account/update/details")
             .header(COOKIE, format!("id={session_id}"))
             .header("content-type", "application/x-www-form-urlencoded")
-            .body(Body::from("email=user%40example.test&name=User&username=user"))
+            .body(Body::from("name=User"))
             .unwrap();
         let response = router.oneshot(request).await.unwrap();
 
         // Check response matches expectations
         assert_eq!(response.status(), StatusCode::NO_CONTENT);
         assert_eq!(response.headers()["hx-trigger"], "refresh-body");
+    }
+
+    #[tokio::test]
+    async fn test_update_user_details_returns_unprocessable_entity_for_invalid_form() {
+        // Setup identifiers and data structures
+        let auth_hash = "hash";
+        let session_id = session::Id::default();
+        let user_id = Uuid::new_v4();
+        let session_record = sample_session_record(session_id, user_id, auth_hash, None);
+
+        // Setup database mock
+        let mut db = MockDB::new();
+        allow_session_store_updates(&mut db);
+        db.expect_get_session()
+            .times(1)
+            .withf(move |id| *id == session_id)
+            .returning(move |_| Ok(Some(session_record.clone())));
+        db.expect_get_user_by_id()
+            .times(1)
+            .withf(move |id| *id == user_id)
+            .returning(move |_| Ok(Some(sample_auth_user(user_id, auth_hash))));
+        db.expect_update_user_details().times(0);
+
+        // Setup router and send request
+        let router = TestRouterBuilder::new(db, MockNotificationsManager::new())
+            .build()
+            .await;
+        let request = Request::builder()
+            .method("PUT")
+            .uri("/dashboard/account/update/details")
+            .header(COOKIE, format!("id={session_id}"))
+            .header("content-type", "application/x-www-form-urlencoded")
+            .body(Body::from("name=+"))
+            .unwrap();
+        let response = router.oneshot(request).await.unwrap();
+
+        // Check response matches expectations
+        assert_eq!(response.status(), StatusCode::UNPROCESSABLE_ENTITY);
     }
 
     #[tokio::test]
@@ -1056,12 +1192,51 @@ mod tests {
             .uri("/dashboard/account/update/password")
             .header(COOKIE, format!("id={session_id}"))
             .header("content-type", "application/x-www-form-urlencoded")
-            .body(Body::from("old_password=wrong&new_password=new-one"))
+            .body(Body::from("old_password=wrong&new_password=new-password"))
             .unwrap();
         let response = router.oneshot(request).await.unwrap();
 
         // Check response matches expectations
         assert_eq!(response.status(), StatusCode::FORBIDDEN);
+    }
+
+    #[tokio::test]
+    async fn test_update_user_password_returns_unprocessable_entity_for_invalid_form() {
+        // Setup identifiers and data structures
+        let auth_hash = "hash";
+        let session_id = session::Id::default();
+        let user_id = Uuid::new_v4();
+        let session_record = sample_session_record(session_id, user_id, auth_hash, None);
+
+        // Setup database mock
+        let mut db = MockDB::new();
+        allow_session_store_updates(&mut db);
+        db.expect_get_session()
+            .times(1)
+            .withf(move |id| *id == session_id)
+            .returning(move |_| Ok(Some(session_record.clone())));
+        db.expect_get_user_by_id()
+            .times(1)
+            .withf(move |id| *id == user_id)
+            .returning(move |_| Ok(Some(sample_auth_user(user_id, auth_hash))));
+        db.expect_get_user_password().times(0);
+        db.expect_update_user_password().times(0);
+
+        // Setup router and send request
+        let router = TestRouterBuilder::new(db, MockNotificationsManager::new())
+            .build()
+            .await;
+        let request = Request::builder()
+            .method("PUT")
+            .uri("/dashboard/account/update/password")
+            .header(COOKIE, format!("id={session_id}"))
+            .header("content-type", "application/x-www-form-urlencoded")
+            .body(Body::from("old_password=old-password&new_password=short"))
+            .unwrap();
+        let response = router.oneshot(request).await.unwrap();
+
+        // Check response matches expectations
+        assert_eq!(response.status(), StatusCode::UNPROCESSABLE_ENTITY);
     }
 
     #[tokio::test]
@@ -1101,7 +1276,7 @@ mod tests {
             .uri("/dashboard/account/update/password")
             .header(COOKIE, format!("id={session_id}"))
             .header("content-type", "application/x-www-form-urlencoded")
-            .body(Body::from("old_password=old-password&new_password=new-one"))
+            .body(Body::from("old_password=old-password&new_password=new-password"))
             .unwrap();
         let response = router.oneshot(request).await.unwrap();
 
@@ -1143,7 +1318,7 @@ mod tests {
             .uri("/dashboard/account/update/password")
             .header(COOKIE, format!("id={session_id}"))
             .header("content-type", "application/x-www-form-urlencoded")
-            .body(Body::from("old_password=old-password&new_password=new-one"))
+            .body(Body::from("old_password=old-password&new_password=new-password"))
             .unwrap();
         let response = router.oneshot(request).await.unwrap();
 

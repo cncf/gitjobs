@@ -31,6 +31,7 @@ mod img;
 mod notifications;
 mod router;
 mod templates;
+mod validation;
 mod workers;
 
 /// Command-line arguments for the application.

@@ -9,6 +9,7 @@ use axum_login::{
     AuthManagerLayer, AuthManagerLayerBuilder,
     tower_sessions::{self, session, session_store},
 };
+use garde::Validate;
 use oauth2::{TokenResponse, reqwest as oauth2_reqwest};
 use openidconnect::{self as oidc, LocalizedClaim};
 use password_auth::verify_password;
@@ -22,6 +23,10 @@ use uuid::Uuid;
 use crate::{
     config::{HttpServerConfig, OAuth2Config, OAuth2Provider, OidcConfig, OidcProvider},
     db::DynDB,
+    validation::{
+        MAX_LEN_DISPLAY_NAME, MAX_LEN_M, MAX_LEN_S, MIN_PASSWORD_LEN, trimmed_non_empty,
+        trimmed_non_empty_opt,
+    },
 };
 
 /// Type alias for the authentication layer used in the router.
@@ -438,18 +443,23 @@ impl std::fmt::Debug for User {
 
 /// Summary of user information.
 #[skip_serializing_none]
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize, Validate)]
 pub(crate) struct UserSummary {
     /// User's email address.
+    #[garde(email, length(max = MAX_LEN_M))]
     pub email: String,
     /// User's display name.
+    #[garde(custom(trimmed_non_empty), length(max = MAX_LEN_DISPLAY_NAME))]
     pub name: String,
     /// User's username.
+    #[garde(custom(trimmed_non_empty), length(max = MAX_LEN_S))]
     pub username: String,
 
     /// Whether the user has a password set.
+    #[garde(skip)]
     pub has_password: Option<bool>,
     /// User's password (if present).
+    #[garde(custom(trimmed_non_empty_opt), length(min = MIN_PASSWORD_LEN, max = MAX_LEN_S))]
     pub password: Option<String>,
 }
 
@@ -572,13 +582,4 @@ struct GitHubUserEmail {
     primary: bool,
     /// Whether this email is verified.
     verified: bool,
-}
-
-/// Input for updating a user's password.
-#[derive(Clone, Serialize, Deserialize)]
-pub(crate) struct PasswordUpdateInput {
-    /// The user's current password.
-    pub old_password: String,
-    /// The new password to set.
-    pub new_password: String,
 }

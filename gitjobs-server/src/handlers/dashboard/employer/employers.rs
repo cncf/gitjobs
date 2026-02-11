@@ -15,7 +15,11 @@ use uuid::Uuid;
 use crate::{
     auth::AuthSession,
     db::DynDB,
-    handlers::{auth::SELECTED_EMPLOYER_ID_KEY, error::HandlerError, extractors::SelectedEmployerIdRequired},
+    handlers::{
+        auth::SELECTED_EMPLOYER_ID_KEY,
+        error::HandlerError,
+        extractors::{SelectedEmployerIdRequired, ValidatedFormQs},
+    },
     templates::dashboard::employer::employers::{self, Employer},
 };
 
@@ -55,18 +59,11 @@ pub(crate) async fn add(
     messages: Messages,
     session: Session,
     State(db): State<DynDB>,
-    State(serde_qs_de): State<serde_qs::Config>,
-    body: String,
+    ValidatedFormQs(employer): ValidatedFormQs<Employer>,
 ) -> Result<impl IntoResponse, HandlerError> {
     // Get user from session
     let Some(user) = auth_session.user else {
         return Ok((StatusCode::FORBIDDEN).into_response());
-    };
-
-    // Get employer information from body
-    let employer: Employer = match serde_qs_de.deserialize_str(&body).map_err(anyhow::Error::new) {
-        Ok(profile) => profile,
-        Err(e) => return Ok((StatusCode::UNPROCESSABLE_ENTITY, e.to_string()).into_response()),
     };
 
     // Add employer to database
@@ -110,16 +107,9 @@ pub(crate) async fn select(
 pub(crate) async fn update(
     messages: Messages,
     State(db): State<DynDB>,
-    State(serde_qs_de): State<serde_qs::Config>,
     SelectedEmployerIdRequired(employer_id): SelectedEmployerIdRequired,
-    body: String,
+    ValidatedFormQs(employer): ValidatedFormQs<Employer>,
 ) -> Result<impl IntoResponse, HandlerError> {
-    // Get employer information from body
-    let employer: Employer = match serde_qs_de.deserialize_str(&body).map_err(anyhow::Error::new) {
-        Ok(profile) => profile,
-        Err(e) => return Ok((StatusCode::UNPROCESSABLE_ENTITY, e.to_string()).into_response()),
-    };
-
     // Update employer in database
     db.update_employer(&employer_id, &employer).await?;
     messages.success("Employer updated successfully.");
@@ -246,6 +236,45 @@ mod tests {
 
         // Check response matches expectations
         assert_eq!(response.status(), StatusCode::CREATED);
+    }
+
+    #[tokio::test]
+    async fn test_add_returns_unprocessable_entity_for_invalid_payload() {
+        // Setup identifiers and data structures
+        let auth_hash = "hash";
+        let session_id = session::Id::default();
+        let user_id = Uuid::new_v4();
+        let session_record = sample_session_record(session_id, user_id, auth_hash, None);
+
+        // Setup database mock
+        let mut db = MockDB::new();
+        db.expect_get_session()
+            .times(1)
+            .withf(move |id| *id == session_id)
+            .returning(move |_| Ok(Some(session_record.clone())));
+        db.expect_get_user_by_id()
+            .times(1)
+            .withf(move |id| *id == user_id)
+            .returning(move |_| Ok(Some(sample_auth_user(user_id, auth_hash))));
+        db.expect_add_employer().times(0);
+        db.expect_update_session().times(0..).returning(|_| Ok(()));
+
+        // Setup router and send request
+        let router = TestRouterBuilder::new(db, MockNotificationsManager::new())
+            .build()
+            .await;
+        let request = Request::builder()
+            .method("POST")
+            .uri("/dashboard/employer/employers/add")
+            .header(COOKIE, format!("id={session_id}"))
+            .body(Body::from(
+                "company=+&description=Employer+description&public=true",
+            ))
+            .unwrap();
+        let response = router.oneshot(request).await.unwrap();
+
+        // Check response matches expectations
+        assert_eq!(response.status(), StatusCode::UNPROCESSABLE_ENTITY);
     }
 
     #[tokio::test]

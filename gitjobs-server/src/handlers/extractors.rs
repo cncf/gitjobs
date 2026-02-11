@@ -4,9 +4,12 @@ use std::sync::Arc;
 
 use anyhow::Result;
 use axum::{
-    extract::{FromRequestParts, Path},
+    Form,
+    extract::{FromRequest, FromRequestParts, Path, Request},
     http::{StatusCode, request::Parts},
 };
+use garde::Validate;
+use serde::de::DeserializeOwned;
 use tower_sessions::Session;
 use tracing::instrument;
 use uuid::Uuid;
@@ -99,6 +102,62 @@ impl FromRequestParts<router::State> for SelectedEmployerIdRequired {
     }
 }
 
+/// Extractor that deserializes and validates form data using Axum's `Form`.
+pub(crate) struct ValidatedForm<T>(pub T);
+
+impl<T> FromRequest<router::State> for ValidatedForm<T>
+where
+    T: DeserializeOwned + Validate,
+    T::Context: Default,
+{
+    type Rejection = (StatusCode, String);
+
+    async fn from_request(req: Request, state: &router::State) -> Result<Self, Self::Rejection> {
+        // Deserialize form data
+        let Form(value) = Form::<T>::from_request(req, state)
+            .await
+            .map_err(|e| (StatusCode::UNPROCESSABLE_ENTITY, e.to_string()))?;
+
+        // Validate the deserialized value
+        value
+            .validate()
+            .map_err(|e| (StatusCode::UNPROCESSABLE_ENTITY, e.to_string()))?;
+
+        Ok(Self(value))
+    }
+}
+
+/// Extractor that deserializes and validates form data using `serde_qs`.
+pub(crate) struct ValidatedFormQs<T>(pub T);
+
+impl<T> FromRequest<router::State> for ValidatedFormQs<T>
+where
+    T: DeserializeOwned + Validate,
+    T::Context: Default,
+{
+    type Rejection = (StatusCode, String);
+
+    async fn from_request(req: Request, state: &router::State) -> Result<Self, Self::Rejection> {
+        // Read body as string
+        let body = String::from_request(req, state)
+            .await
+            .map_err(|e| (StatusCode::BAD_REQUEST, e.to_string()))?;
+
+        // Deserialize using serde_qs
+        let value: T = state
+            .serde_qs_de
+            .deserialize_str(&body)
+            .map_err(|e| (StatusCode::UNPROCESSABLE_ENTITY, e.to_string()))?;
+
+        // Validate the deserialized value
+        value
+            .validate()
+            .map_err(|e| (StatusCode::UNPROCESSABLE_ENTITY, e.to_string()))?;
+
+        Ok(Self(value))
+    }
+}
+
 // Tests.
 
 #[cfg(test)]
@@ -107,12 +166,14 @@ mod tests {
 
     use axum::{
         Router,
-        body::Body,
+        body::{Body, to_bytes},
         extract::Path,
         http::{Request, StatusCode, header::SET_COOKIE},
         response::IntoResponse,
         routing::{get, post},
     };
+    use garde::Validate;
+    use serde::Deserialize;
     use tower::ServiceExt;
     use tower_sessions::{MemoryStore, Session, SessionManagerLayer};
     use uuid::Uuid;
@@ -124,6 +185,7 @@ mod tests {
         handlers::tests::{TestRouterBuilder, qs_config, test_http_server_cfg},
         img::{DynImageStore, MockImageStore},
         notifications::{DynNotificationsManager, MockNotificationsManager},
+        validation::{MAX_LEN_S, trimmed_non_empty, trimmed_non_empty_vec},
     };
 
     use super::*;
@@ -377,7 +439,190 @@ mod tests {
         assert_eq!(body.as_ref(), employer_id.to_string().as_bytes());
     }
 
+    #[tokio::test]
+    async fn test_validated_form_qs_returns_unprocessable_entity_for_invalid_body() {
+        // Setup state and router
+        let db: DynDB = Arc::new(MockDB::new());
+        let image_store: DynImageStore = Arc::new(MockImageStore::new());
+        let notifications_manager: DynNotificationsManager = Arc::new(MockNotificationsManager::new());
+        let state = build_state(db, image_store, notifications_manager);
+        let router = Router::new()
+            .route(
+                "/form-qs",
+                post(|ValidatedFormQs(_form): ValidatedFormQs<TestFormQs>| async move {
+                    StatusCode::OK.into_response()
+                }),
+            )
+            .with_state(state);
+
+        // Send request and check response
+        let request = Request::builder()
+            .method("POST")
+            .uri("/form-qs")
+            .body(Body::from("name=test&tags[abc]=rust"))
+            .unwrap();
+        let response = router.oneshot(request).await.unwrap();
+
+        assert_eq!(response.status(), StatusCode::UNPROCESSABLE_ENTITY);
+    }
+
+    #[tokio::test]
+    async fn test_validated_form_qs_returns_unprocessable_entity_for_invalid_form() {
+        // Setup state and router
+        let db: DynDB = Arc::new(MockDB::new());
+        let image_store: DynImageStore = Arc::new(MockImageStore::new());
+        let notifications_manager: DynNotificationsManager = Arc::new(MockNotificationsManager::new());
+        let state = build_state(db, image_store, notifications_manager);
+        let router = Router::new()
+            .route(
+                "/form-qs",
+                post(|ValidatedFormQs(_form): ValidatedFormQs<TestFormQs>| async move {
+                    StatusCode::OK.into_response()
+                }),
+            )
+            .with_state(state);
+
+        // Send request and check response
+        let request = Request::builder()
+            .method("POST")
+            .uri("/form-qs")
+            .body(Body::from("name=test&tags[0]=+"))
+            .unwrap();
+        let response = router.oneshot(request).await.unwrap();
+
+        assert_eq!(response.status(), StatusCode::UNPROCESSABLE_ENTITY);
+    }
+
+    #[tokio::test]
+    async fn test_validated_form_qs_succeeds_for_valid_form() {
+        // Setup state and router
+        let db: DynDB = Arc::new(MockDB::new());
+        let image_store: DynImageStore = Arc::new(MockImageStore::new());
+        let notifications_manager: DynNotificationsManager = Arc::new(MockNotificationsManager::new());
+        let state = build_state(db, image_store, notifications_manager);
+        let router = Router::new()
+            .route(
+                "/form-qs",
+                post(|ValidatedFormQs(form): ValidatedFormQs<TestFormQs>| async move {
+                    form.name.into_response()
+                }),
+            )
+            .with_state(state);
+
+        // Send request and check response
+        let request = Request::builder()
+            .method("POST")
+            .uri("/form-qs")
+            .body(Body::from("name=test&tags[0]=rust&tags[1]=oss"))
+            .unwrap();
+        let response = router.oneshot(request).await.unwrap();
+        let (parts, body) = response.into_parts();
+        let bytes = to_bytes(body, usize::MAX).await.unwrap();
+
+        assert_eq!(parts.status, StatusCode::OK);
+        assert_eq!(bytes.as_ref(), b"test");
+    }
+
+    #[tokio::test]
+    async fn test_validated_form_returns_unprocessable_entity_for_invalid_body() {
+        // Setup state and router
+        let db: DynDB = Arc::new(MockDB::new());
+        let image_store: DynImageStore = Arc::new(MockImageStore::new());
+        let notifications_manager: DynNotificationsManager = Arc::new(MockNotificationsManager::new());
+        let state = build_state(db, image_store, notifications_manager);
+        let router = Router::new()
+            .route(
+                "/form",
+                post(|ValidatedForm(_form): ValidatedForm<TestForm>| async move {
+                    StatusCode::OK.into_response()
+                }),
+            )
+            .with_state(state);
+
+        // Send request and check response
+        let request = Request::builder()
+            .method("POST")
+            .uri("/form")
+            .header("content-type", "application/x-www-form-urlencoded")
+            .body(Body::from(""))
+            .unwrap();
+        let response = router.oneshot(request).await.unwrap();
+
+        assert_eq!(response.status(), StatusCode::UNPROCESSABLE_ENTITY);
+    }
+
+    #[tokio::test]
+    async fn test_validated_form_returns_unprocessable_entity_for_invalid_form() {
+        // Setup state and router
+        let db: DynDB = Arc::new(MockDB::new());
+        let image_store: DynImageStore = Arc::new(MockImageStore::new());
+        let notifications_manager: DynNotificationsManager = Arc::new(MockNotificationsManager::new());
+        let state = build_state(db, image_store, notifications_manager);
+        let router = Router::new()
+            .route(
+                "/form",
+                post(|ValidatedForm(_form): ValidatedForm<TestForm>| async move {
+                    StatusCode::OK.into_response()
+                }),
+            )
+            .with_state(state);
+
+        // Send request and check response
+        let request = Request::builder()
+            .method("POST")
+            .uri("/form")
+            .header("content-type", "application/x-www-form-urlencoded")
+            .body(Body::from("name=+"))
+            .unwrap();
+        let response = router.oneshot(request).await.unwrap();
+
+        assert_eq!(response.status(), StatusCode::UNPROCESSABLE_ENTITY);
+    }
+
+    #[tokio::test]
+    async fn test_validated_form_succeeds_for_valid_form() {
+        // Setup state and router
+        let db: DynDB = Arc::new(MockDB::new());
+        let image_store: DynImageStore = Arc::new(MockImageStore::new());
+        let notifications_manager: DynNotificationsManager = Arc::new(MockNotificationsManager::new());
+        let state = build_state(db, image_store, notifications_manager);
+        let router = Router::new()
+            .route(
+                "/form",
+                post(|ValidatedForm(form): ValidatedForm<TestForm>| async move { form.name.into_response() }),
+            )
+            .with_state(state);
+
+        // Send request and check response
+        let request = Request::builder()
+            .method("POST")
+            .uri("/form")
+            .header("content-type", "application/x-www-form-urlencoded")
+            .body(Body::from("name=test"))
+            .unwrap();
+        let response = router.oneshot(request).await.unwrap();
+        let (parts, body) = response.into_parts();
+        let bytes = to_bytes(body, usize::MAX).await.unwrap();
+
+        assert_eq!(parts.status, StatusCode::OK);
+        assert_eq!(bytes.as_ref(), b"test");
+    }
+
     // Helpers.
+
+    #[derive(Debug, Deserialize, Validate)]
+    struct TestForm {
+        #[garde(custom(trimmed_non_empty), length(max = MAX_LEN_S))]
+        name: String,
+    }
+
+    #[derive(Debug, Deserialize, Validate)]
+    struct TestFormQs {
+        #[garde(custom(trimmed_non_empty), length(max = MAX_LEN_S))]
+        name: String,
+        #[garde(custom(trimmed_non_empty_vec))]
+        tags: Option<Vec<String>>,
+    }
 
     fn allow_session_store_updates(db: &mut MockDB) {
         db.expect_create_session().times(0..).returning(|_| Ok(()));

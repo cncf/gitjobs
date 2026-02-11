@@ -32,42 +32,6 @@
         {# End name -#}
 
         <div class="col-span-3"></div>
-
-        {# Username -#}
-        <div class="col-span-3 hidden">
-          <label for="username" class="form-label">
-            Username <span class="asterisk">*</span>
-          </label>
-          <div class="mt-2">
-            <input type="hidden"
-                   name="username"
-                   id="username"
-                   value="{{ user_summary.username }}"
-                   class="input-primary"
-                   autocomplete="off"
-                   autocorrect="off"
-                   autocapitalize="off"
-                   spellcheck="false"
-                   required>
-          </div>
-        </div>
-        {# End username -#}
-
-        {# Email -#}
-        <div class="col-span-3 hidden">
-          <label for="email" class="form-label">
-            Email <span class="asterisk">*</span>
-          </label>
-          <div class="mt-2">
-            <input type="hidden"
-                   name="email"
-                   id="email"
-                   value="{{ user_summary.email }}"
-                   class="input-primary"
-                   required>
-          </div>
-        </div>
-        {# End email -#}
       </div>
     </div>
 

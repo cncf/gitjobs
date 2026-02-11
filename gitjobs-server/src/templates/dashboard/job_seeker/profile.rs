@@ -2,14 +2,21 @@
 
 use askama::Template;
 use chrono::NaiveDate;
+use garde::Validate;
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use uuid::Uuid;
 
-use crate::templates::{
-    filters,
-    helpers::{DATE_FORMAT_2, build_dashboard_image_url, normalize},
-    misc::Location,
+use crate::{
+    templates::{
+        filters,
+        helpers::{DATE_FORMAT_2, build_dashboard_image_url, normalize},
+        misc::Location,
+    },
+    validation::{
+        MAX_LEN_BIO, MAX_LEN_DISPLAY_NAME, MAX_LEN_L, MAX_LEN_M, trimmed_non_empty, trimmed_non_empty_opt,
+        trimmed_non_empty_tag_vec,
+    },
 };
 
 // Pages templates.
@@ -34,48 +41,68 @@ pub(crate) struct UpdatePage {
 
 /// Represents a job seeker's profile and related information.
 #[skip_serializing_none]
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize, Validate)]
 pub(crate) struct JobSeekerProfile {
     /// Email address of the job seeker.
+    #[garde(email, length(max = MAX_LEN_M))]
     pub email: String,
     /// Full name of the job seeker.
+    #[garde(custom(trimmed_non_empty), length(max = MAX_LEN_DISPLAY_NAME))]
     pub name: String,
     /// Whether the profile is public.
+    #[garde(skip)]
     pub public: bool,
     /// Short summary or bio.
+    #[garde(custom(trimmed_non_empty), length(max = MAX_LEN_BIO))]
     pub summary: String,
 
     /// Bluesky profile URL.
+    #[garde(url, length(max = MAX_LEN_L))]
     pub bluesky_url: Option<String>,
     /// List of certifications.
+    #[garde(skip)]
     pub certifications: Option<Vec<Certification>>,
     /// List of education entries.
+    #[garde(skip)]
     pub education: Option<Vec<Education>>,
     /// List of work experiences.
+    #[garde(skip)]
     pub experience: Option<Vec<Experience>>,
     /// Facebook profile URL.
+    #[garde(url, length(max = MAX_LEN_L))]
     pub facebook_url: Option<String>,
     /// GitHub profile URL.
+    #[garde(url, length(max = MAX_LEN_L))]
     pub github_url: Option<String>,
     /// `LinkedIn` profile URL.
+    #[garde(url, length(max = MAX_LEN_L))]
     pub linkedin_url: Option<String>,
     /// Location of the job seeker.
+    #[garde(skip)]
     pub location: Option<Location>,
     /// Willingness to relocate.
+    #[garde(skip)]
     pub open_to_relocation: Option<bool>,
     /// Willingness to work remotely.
+    #[garde(skip)]
     pub open_to_remote: Option<bool>,
     /// Phone number.
+    #[garde(custom(trimmed_non_empty_opt), length(max = MAX_LEN_M))]
     pub phone: Option<String>,
     /// Photo identifier.
+    #[garde(skip)]
     pub photo_id: Option<Uuid>,
     /// List of projects.
+    #[garde(skip)]
     pub projects: Option<Vec<Project>>,
     /// List of skills.
+    #[garde(custom(trimmed_non_empty_tag_vec))]
     pub skills: Option<Vec<String>>,
     /// Twitter profile URL.
+    #[garde(url, length(max = MAX_LEN_L))]
     pub twitter_url: Option<String>,
     /// Personal website URL.
+    #[garde(url, length(max = MAX_LEN_L))]
     pub website_url: Option<String>,
 }
 

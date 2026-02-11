@@ -2,10 +2,11 @@
 
 use askama::Template;
 use chrono::{DateTime, Utc};
+use garde::Validate;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::templates::helpers::DATE_FORMAT;
+use crate::{templates::helpers::DATE_FORMAT, validation::MAX_LEN_M};
 
 // Pages templates.
 
@@ -56,8 +57,9 @@ pub(crate) struct TeamMember {
 }
 
 /// Information for adding a new team member.
-#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize, Validate)]
 pub(crate) struct NewTeamMember {
     /// Email address of the new member.
+    #[garde(email, length(max = MAX_LEN_M))]
     pub email: String,
 }

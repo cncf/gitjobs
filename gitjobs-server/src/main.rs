@@ -8,7 +8,7 @@ use clap::Parser;
 use deadpool_postgres::Runtime;
 use event_tracker::EventTrackerDB;
 use img::db::DbImageStore;
-use notifications::PgNotificationsManager;
+use notifications::{DynEmailSender, LettreEmailSender, PgNotificationsManager};
 use openssl::ssl::{SslConnector, SslMethod, SslVerifyMode};
 use postgres_openssl::MakeTlsConnector;
 use tokio::{net::TcpListener, signal};
@@ -87,12 +87,14 @@ async fn main() -> Result<()> {
     let image_store = Arc::new(DbImageStore::new(db.clone()));
 
     // Setup notifications manager.
+    let email_sender: DynEmailSender = Arc::new(LettreEmailSender::new(&cfg.email)?);
     let notifications_manager = Arc::new(PgNotificationsManager::new(
         db.clone(),
         &cfg.email,
+        &email_sender,
         &task_tracker,
         &cancellation_token,
-    )?);
+    ));
 
     // Setup event tracker.
     let event_tracker = Arc::new(EventTrackerDB::new(

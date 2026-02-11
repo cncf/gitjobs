@@ -121,7 +121,8 @@ pub(crate) async fn add_member(
         };
         let notification = NewNotification {
             kind: NotificationKind::TeamInvitation,
-            user_id,
+            recipients: vec![user_id],
+
             template_data: Some(serde_json::to_value(&template_data)?),
         };
         notifications_manager.enqueue(&notification).await?;
@@ -389,7 +390,7 @@ mod tests {
             .expect_enqueue()
             .times(1)
             .withf(move |notification| {
-                notification.user_id == invited_user_id
+                notification.recipients == vec![invited_user_id]
                     && notification_matches_kind(notification, &NotificationKind::TeamInvitation)
             })
             .returning(|_| Box::pin(async { Ok(()) }));

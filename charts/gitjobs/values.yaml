@@ -36,6 +36,8 @@ email:
   fromAddress: ""
   # From name used in emails
   fromName: ""
+  # Optional whitelist of allowed recipient email addresses
+  rcptsWhitelist: null
   # SMTP server configuration
   smtp:
     # Hostname

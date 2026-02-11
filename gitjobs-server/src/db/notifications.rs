@@ -38,13 +38,19 @@ impl DBNotifications for PgDB {
     async fn enqueue_notification(&self, notification: &NewNotification) -> Result<()> {
         trace!("db: enqueue notification");
 
+        // Nothing to enqueue
+        if notification.recipients.is_empty() {
+            return Ok(());
+        }
+
+        // Enqueue notification in database
         let db = self.pool.get().await?;
         db.execute(
-            "select enqueue_notification($1::text, $2::jsonb, $3::uuid);",
+            "select enqueue_notification($1::text, $2::jsonb, $3::uuid[]);",
             &[
                 &notification.kind.to_string(),
                 &notification.template_data,
-                &notification.user_id,
+                &notification.recipients,
             ],
         )
         .await?;

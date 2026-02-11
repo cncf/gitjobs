@@ -3,7 +3,7 @@
 -- ============================================================================
 
 begin;
-select plan(154);
+select plan(157);
 
 -- ============================================================================
 -- TESTS
@@ -36,6 +36,7 @@ select has_table('location');
 select has_table('member');
 select has_table('notification');
 select has_table('notification_kind');
+select has_table('notification_template_data');
 select has_table('project');
 select has_table('search_appearances');
 select has_table('seniority');
@@ -252,13 +253,21 @@ select columns_are('notification', array[
     'created_at',
     'error',
     'processed_at',
-    'template_data'
+    'notification_template_data_id'
 ]);
 
 -- Test: notification_kind columns should match expected
 select columns_are('notification_kind', array[
     'notification_kind_id',
     'name'
+]);
+
+-- Test: notification_template_data columns should match expected
+select columns_are('notification_template_data', array[
+    'notification_template_data_id',
+    'created_at',
+    'data',
+    'hash'
 ]);
 
 -- Test: project columns should match expected
@@ -403,6 +412,7 @@ select has_pk('location');
 select has_pk('member');
 select has_pk('notification');
 select has_pk('notification_kind');
+select has_pk('notification_template_data');
 select has_pk('project');
 select hasnt_pk('search_appearances');
 select has_pk('seniority');

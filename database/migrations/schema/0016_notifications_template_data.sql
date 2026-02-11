@@ -34,5 +34,7 @@ and ntd.hash = encode(digest(convert_to(n.template_data::text, 'utf8'), 'sha256'
 -- Drop inline template payload data after migration to normalized storage
 alter table notification drop column template_data;
 
--- Remove the legacy enqueue signature that accepted a single recipient
+-- Remove legacy function signatures before reloading updated definitions
 drop function if exists enqueue_notification(text, jsonb, uuid);
+drop function if exists search_applications(uuid, jsonb);
+drop function if exists search_jobs(jsonb);

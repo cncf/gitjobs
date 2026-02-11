@@ -56,14 +56,14 @@ select is(
 -- Should fail for invalid codes
 select throws_ok(
     $$ select verify_email('99999999-9999-9999-9999-999999999999'::uuid) $$,
-    'invalid email verification code',
+    'email verification failed: invalid or expired code',
     'Should fail for invalid codes'
 );
 
 -- Should fail for expired codes
 select throws_ok(
     $$ select verify_email('00000000-0000-0000-0000-000000000302'::uuid) $$,
-    'invalid email verification code',
+    'email verification failed: invalid or expired code',
     'Should fail for expired codes'
 );
 

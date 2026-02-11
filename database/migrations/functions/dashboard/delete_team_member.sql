@@ -31,7 +31,7 @@ begin
         ) > 1;
 
         if not found then
-            raise exception 'cannot delete last approved team member';
+            raise exception 'cannot remove last approved team member';
         end if;
     else
         -- Pending invitations can be deleted directly

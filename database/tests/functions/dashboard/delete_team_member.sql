@@ -59,7 +59,7 @@ select throws_ok(
         '00000000-0000-0000-0000-000000000101'::uuid,
         '00000000-0000-0000-0000-000000000202'::uuid
     ) $$,
-    'cannot delete last approved team member',
+    'cannot remove last approved team member',
     'Should prevent deleting the last approved team member'
 );
 

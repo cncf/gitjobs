@@ -27,9 +27,8 @@ returns json as $$
                 'name', p.name
             ))
             from project p
-            left join job_project jp using (project_id)
-            left join job j2 using (job_id)
-            where j2.job_id = p_job_id
+            join job_project jp on p.project_id = jp.project_id
+            where jp.job_id = j.job_id
         ),
         'published_at', j.published_at,
         'qualifications', j.qualifications,
@@ -53,9 +52,8 @@ returns json as $$
                 'logo_url', c.logo_url
             ))
             from certification c
-            left join job_certification jc using (certification_id)
-            left join job j2 using (job_id)
-            where j2.job_id = p_job_id
+            join job_certification jc on c.certification_id = jc.certification_id
+            where jc.job_id = j.job_id
         ),
         'tz_end', j.tz_end,
         'tz_start', j.tz_start,

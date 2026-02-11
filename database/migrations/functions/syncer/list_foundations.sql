@@ -1,4 +1,5 @@
 -- Lists all foundations with a configured landscape URL.
+-- Uses a syncer-specific name to avoid colliding with dashboard list_foundations().
 create or replace function syncer_list_foundations()
 returns json as $$
     select coalesce(json_agg(json_build_object(

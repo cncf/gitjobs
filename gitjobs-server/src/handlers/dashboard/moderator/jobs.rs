@@ -7,7 +7,7 @@ use axum::{
     response::{Html, IntoResponse},
 };
 use garde::Validate;
-use reqwest::StatusCode;
+use reqwest::{Client, StatusCode};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use tracing::{instrument, warn};
@@ -69,6 +69,7 @@ pub(crate) async fn approve(
     auth_session: AuthSession,
     State(cfg): State<HttpServerConfig>,
     State(db): State<DynDB>,
+    State(http_client): State<Client>,
     Path(job_id): Path<Uuid>,
 ) -> Result<impl IntoResponse, HandlerError> {
     // Get user from session
@@ -91,7 +92,7 @@ pub(crate) async fn approve(
         let payload = json!({
             "text": template.render()?,
         });
-        if let Err(err) = reqwest::Client::new().post(webhook_url).json(&payload).send().await {
+        if let Err(err) = http_client.post(webhook_url).json(&payload).send().await {
             warn!("error posting slack notification: {}", err);
         }
     }

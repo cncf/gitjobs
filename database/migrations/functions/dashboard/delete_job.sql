@@ -5,5 +5,6 @@ returns void as $$
     set
         status = 'deleted',
         deleted_at = current_timestamp
-    where job_id = p_job_id;
+    where job_id = p_job_id
+    and status <> 'deleted';
 $$ language sql;

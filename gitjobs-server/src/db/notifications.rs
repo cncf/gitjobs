@@ -40,6 +40,7 @@ impl DBNotifications for PgDB {
 
         // Nothing to enqueue
         if notification.recipients.is_empty() {
+            trace!("db: skip enqueue notification with empty recipients");
             return Ok(());
         }
 

@@ -135,7 +135,7 @@ impl DB for PgDB {
 
         // Make sure we get exclusive access to the client
         let Some(db) = Arc::into_inner(tx) else {
-            bail!("cannot commit transaction - client still in use");
+            bail!("cannot commit transaction {client_id} - client still in use");
         };
 
         // Commit transaction
@@ -157,7 +157,7 @@ impl DB for PgDB {
 
         // Make sure we get exclusive access to the client
         let Some(db) = Arc::into_inner(tx) else {
-            bail!("cannot rollback transaction - client still in use");
+            bail!("cannot rollback transaction {client_id} - client still in use");
         };
 
         // Rollback transaction

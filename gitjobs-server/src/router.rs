@@ -16,6 +16,7 @@ use axum::{
 use axum_extra::headers::{Authorization, Header, authorization::Basic};
 use axum_login::login_required;
 use axum_messages::MessagesManagerLayer;
+use reqwest::Client;
 use rust_embed::Embed;
 use serde_qs::axum::{QsQueryConfig, QsQueryRejection};
 use tower::ServiceBuilder;
@@ -63,6 +64,8 @@ pub(crate) struct State {
     pub notifications_manager: DynNotificationsManager,
     /// Event tracker handle.
     pub event_tracker: DynEventTracker,
+    /// Shared HTTP client for outbound requests.
+    pub http_client: Client,
 }
 
 /// Sets up the main application router and all sub-routers.
@@ -79,10 +82,11 @@ pub(crate) async fn setup(
     let state = State {
         cfg: cfg.clone(),
         db: db.clone(),
-        image_store,
-        serde_qs_de,
-        notifications_manager,
         event_tracker,
+        http_client: Client::new(),
+        image_store,
+        notifications_manager,
+        serde_qs_de,
     };
 
     // Setup authentication / authorization layer

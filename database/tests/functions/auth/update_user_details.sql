@@ -3,12 +3,13 @@
 -- ============================================================================
 
 begin;
-select plan(1);
+select plan(2);
 
 -- ============================================================================
 -- VARIABLES
 -- ============================================================================
 
+\set unknownUserID '00000000-0000-0000-0000-000000000999'
 \set userID '00000000-0000-0000-0000-000000000101'
 
 -- ============================================================================
@@ -21,6 +22,32 @@ insert into "user" (auth_hash, email, email_verified, name, user_id, username) v
 -- ============================================================================
 -- TESTS
 -- ============================================================================
+
+-- Should not update any row when the user does not exist
+select update_user_details(
+    :'unknownUserID'::uuid,
+    jsonb_build_object('name', 'Unknown User')
+);
+
+select is(
+    (
+        select jsonb_build_object(
+            'email', email,
+            'email_verified', email_verified,
+            'name', name,
+            'username', username
+        )
+        from "user"
+        where user_id = :'userID'::uuid
+    ),
+    jsonb_build_object(
+        'email', 'user@example.com',
+        'email_verified', true,
+        'name', 'Old Name',
+        'username', 'user'
+    ),
+    'Should not update any row when the user does not exist'
+);
 
 -- Should update the user name from the JSON payload
 select update_user_details(

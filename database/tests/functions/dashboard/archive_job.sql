@@ -3,14 +3,15 @@
 -- ============================================================================
 
 begin;
-select plan(2);
+select plan(3);
 
 -- ============================================================================
 -- VARIABLES
 -- ============================================================================
 
-\set employerID '00000000-0000-0000-0000-000000000101'
 \set draftJobID '00000000-0000-0000-0000-000000000301'
+\set employerID '00000000-0000-0000-0000-000000000101'
+\set pendingApprovalJobID '00000000-0000-0000-0000-000000000303'
 \set publishedJobID '00000000-0000-0000-0000-000000000302'
 
 -- ============================================================================
@@ -38,6 +39,15 @@ insert into job (job_id, employer_id, kind, status, title, workplace, descriptio
         'Published Role',
         'remote',
         'Published description'
+    ),
+    (
+        :'pendingApprovalJobID',
+        :'employerID',
+        'full-time',
+        'pending-approval',
+        'Pending Approval Role',
+        'remote',
+        'Pending approval description'
     );
 
 -- ============================================================================
@@ -57,6 +67,21 @@ select ok(
         and updated_at is not null
     ),
     'Should archive a published job and set archived_at'
+);
+
+-- Should archive a pending-approval job and set archived_at
+select archive_job(:'pendingApprovalJobID'::uuid);
+
+select ok(
+    exists (
+        select 1
+        from job
+        where job_id = :'pendingApprovalJobID'::uuid
+        and status = 'archived'
+        and archived_at is not null
+        and updated_at is not null
+    ),
+    'Should archive a pending-approval job and set archived_at'
 );
 
 -- Should not archive jobs outside the allowed statuses

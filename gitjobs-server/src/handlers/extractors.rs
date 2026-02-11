@@ -640,10 +640,11 @@ mod tests {
         router::State {
             cfg: test_http_server_cfg(),
             db,
-            image_store,
-            serde_qs_de: qs_config(),
-            notifications_manager,
             event_tracker,
+            http_client: reqwest::Client::new(),
+            image_store,
+            notifications_manager,
+            serde_qs_de: qs_config(),
         }
     }
 

@@ -194,9 +194,8 @@ fn extension_matches(format: &SupportedImageFormat, extension: &str) -> bool {
 
 /// Extracts the lowercase file extension from a file name.
 fn image_extension(file_name: &str) -> Result<Cow<'_, str>> {
-    let extension = file_name
-        .rsplit('.')
-        .next()
+    let (_, extension) = file_name
+        .rsplit_once('.')
         .ok_or_else(|| anyhow!("missing file extension"))?;
     if extension.is_empty() {
         return Err(anyhow!("missing file extension"));
@@ -558,6 +557,18 @@ mod tests {
         assert_eq!(parts.headers[CACHE_CONTROL], CACHE_CONTROL_IMMUTABLE);
         assert_eq!(parts.headers[CONTENT_TYPE], "image/png");
         assert!(!bytes.is_empty());
+    }
+
+    #[test]
+    fn test_image_extension_extracts_lowercase_extension() {
+        let extension = image_extension("avatar.SVG").unwrap();
+        assert_eq!(extension.as_ref(), "svg");
+    }
+
+    #[test]
+    fn test_image_extension_rejects_missing_extension() {
+        let error = image_extension("avatar").unwrap_err();
+        assert_eq!(error.to_string(), "missing file extension");
     }
 
     #[test]

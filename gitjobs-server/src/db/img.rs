@@ -43,7 +43,7 @@ impl DBImage for PgDB {
         let db = self.pool.get().await?;
         let Some(row) = db
             .query_opt(
-                "select data, format from get_image_version($1::uuid, $2::text)",
+                "select data, format from img_get_image_version($1::uuid, $2::text)",
                 &[&image_id, &version],
             )
             .await?

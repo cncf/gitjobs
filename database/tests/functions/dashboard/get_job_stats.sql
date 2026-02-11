@@ -53,7 +53,7 @@ insert into search_appearances (day, job_id, total) values
 
 -- Should return aggregated stats for the selected job and last month only
 select is(
-    get_job_stats(:'jobID'::uuid)::jsonb,
+    dashboard_employer_get_job_stats(:'jobID'::uuid)::jsonb,
     (
         select jsonb_build_object(
             'search_appearances_daily', jsonb_build_array(
@@ -85,7 +85,7 @@ select is(
 
 -- Should return empty stats when the job has no counters
 select is(
-    get_job_stats(:'unknownJobID'::uuid)::jsonb,
+    dashboard_employer_get_job_stats(:'unknownJobID'::uuid)::jsonb,
     '{
         "search_appearances_daily": [],
         "search_appearances_total_last_month": 0,

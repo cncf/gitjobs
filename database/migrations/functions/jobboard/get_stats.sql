@@ -1,5 +1,5 @@
 -- Returns some stats about the job board in json format.
-create or replace function get_stats()
+create or replace function jobboard_get_stats()
 returns json as $$
     select json_strip_nulls(json_build_object(
         'jobs', json_build_object(

@@ -10,6 +10,8 @@ use lettre::{
     message::{Mailbox, MessageBuilder, header::ContentType},
     transport::smtp::authentication::Credentials,
 };
+#[cfg(test)]
+use mockall::automock;
 use serde::{Deserialize, Serialize};
 use tokio::time::sleep;
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
@@ -33,6 +35,7 @@ const PAUSE_ON_NONE: Duration = Duration::from_secs(15);
 
 /// Trait for a notifications manager, responsible for delivering notifications.
 #[async_trait]
+#[cfg_attr(test, automock)]
 pub(crate) trait NotificationsManager {
     /// Enqueue a notification for delivery.
     async fn enqueue(&self, notification: &NewNotification) -> Result<()>;

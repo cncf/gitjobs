@@ -51,3 +51,54 @@ pub(crate) fn prepare_content() -> Result<String> {
     let html = markdown::to_html_with_options(md, &options).map_err(|e| anyhow!(e))?;
     Ok(html)
 }
+
+// Tests.
+
+#[cfg(test)]
+mod tests {
+    use axum::{
+        body::{Body, to_bytes},
+        http::{
+            Request, StatusCode,
+            header::{CACHE_CONTROL, CONTENT_TYPE},
+        },
+    };
+    use tower::ServiceExt;
+
+    use crate::{
+        db::mock::MockDB, handlers::tests::TestRouterBuilder, notifications::MockNotificationsManager,
+    };
+
+    use super::*;
+
+    #[tokio::test]
+    async fn test_page_returns_html_with_cache_headers() {
+        // Setup router and send request
+        let db = MockDB::new();
+        let router = TestRouterBuilder::new(db, MockNotificationsManager::new())
+            .build()
+            .await;
+        let request = Request::builder()
+            .method("GET")
+            .uri("/about")
+            .body(Body::empty())
+            .unwrap();
+        let response = router.oneshot(request).await.unwrap();
+        let (parts, body) = response.into_parts();
+        let bytes = to_bytes(body, usize::MAX).await.unwrap();
+
+        // Check response matches expectations
+        assert_eq!(parts.status, StatusCode::OK);
+        assert_eq!(parts.headers[CACHE_CONTROL], "max-age=0");
+        assert_eq!(parts.headers[CONTENT_TYPE], "text/html; charset=utf-8");
+        assert!(!bytes.is_empty());
+    }
+
+    #[test]
+    fn test_prepare_content_renders_html() {
+        let html = prepare_content().unwrap();
+
+        assert!(!html.is_empty());
+        assert!(html.contains('<'));
+    }
+}

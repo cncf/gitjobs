@@ -2,11 +2,12 @@
 
 use std::time::Duration;
 
-use anyhow::{Result, anyhow};
+use anyhow::Result;
 use async_trait::async_trait;
 use axum_login::tower_sessions::session;
 use cached::proc_macro::cached;
 use deadpool_postgres::Object;
+use tokio_postgres::types::Json;
 use tracing::{instrument, trace};
 use uuid::Uuid;
 
@@ -150,25 +151,7 @@ impl DBAuth for PgDB {
 
         let db = self.pool.get().await?;
         let user = db
-            .query_opt(
-                r#"
-                select
-                    u.user_id,
-                    u.auth_hash,
-                    u.email,
-                    u.email_verified,
-                    u.password is not null as has_password,
-                    u.moderator,
-                    u.name,
-                    u.username,
-                    p.job_seeker_profile_id is not null as has_profile
-                from "user" u
-                left join job_seeker_profile p on u.user_id = p.user_id
-                where u.email = $1::text
-                and u.email_verified = true;
-                "#,
-                &[&email],
-            )
+            .query_opt("select * from auth_get_user_by_email($1::text);", &[&email])
             .await?
             .map(|row| User {
                 user_id: row.get("user_id"),
@@ -193,22 +176,7 @@ impl DBAuth for PgDB {
         let db = self.pool.get().await?;
         let user = db
             .query_opt(
-                r#"
-                select
-                    u.user_id,
-                    u.auth_hash,
-                    u.email,
-                    u.email_verified,
-                    u.password is not null as has_password,
-                    u.moderator,
-                    u.name,
-                    u.username,
-                    p.job_seeker_profile_id is not null as has_profile
-                from "user" u
-                left join job_seeker_profile p on u.user_id = p.user_id
-                where u.user_id = $1::uuid
-                and email_verified = true;
-                "#,
+                "select * from auth_get_user_by_id_verified($1::uuid);",
                 &[&user_id],
             )
             .await?
@@ -234,27 +202,7 @@ impl DBAuth for PgDB {
 
         let db = self.pool.get().await?;
         let user = db
-            .query_opt(
-                r#"
-                select
-                    u.user_id,
-                    u.auth_hash,
-                    u.email,
-                    u.email_verified,
-                    u.password is not null as has_password,
-                    u.moderator,
-                    u.name,
-                    u.password,
-                    u.username,
-                    p.job_seeker_profile_id is not null as has_profile
-                from "user" u
-                left join job_seeker_profile p on u.user_id = p.user_id
-                where u.username = $1::text
-                and password is not null
-                and email_verified = true;
-                "#,
-                &[&username],
-            )
+            .query_opt("select * from auth_get_user_by_username($1::text);", &[&username])
             .await?
             .map(|row| User {
                 user_id: row.get("user_id"),
@@ -277,13 +225,10 @@ impl DBAuth for PgDB {
         trace!("db: get user password");
 
         let db = self.pool.get().await?;
-        let password = db
-            .query_opt(
-                r#"select password from "user" where user_id = $1::uuid;"#,
-                &[&user_id],
-            )
+        let password: Option<String> = db
+            .query_one("select auth_get_user_password($1::uuid);", &[&user_id])
             .await?
-            .map(|row| row.get("password"));
+            .get(0);
 
         Ok(password)
     }
@@ -301,22 +246,10 @@ impl DBAuth for PgDB {
             trace!("db: check if image is public");
 
             let row = db
-                .query_one(
-                    "
-                    select exists (
-                        select 1
-                        from employer e
-                        join job j using (employer_id)
-                        where e.logo_id = $1::uuid
-                        and j.first_published_at is not null
-                        limit 1
-                    ) as is_public;
-                    ",
-                    &[&image_id],
-                )
+                .query_one("select auth_is_image_public($1::uuid);", &[&image_id])
                 .await?;
 
-            Ok(row.get("is_public"))
+            Ok(row.get(0))
         }
 
         let db = self.pool.get().await?;
@@ -331,43 +264,11 @@ impl DBAuth for PgDB {
     ) -> Result<(User, Option<VerificationCode>)> {
         trace!("db: sign up user");
 
-        // Start a transaction
-        let mut db = self.pool.get().await?;
-        let tx = db.transaction().await?;
-
-        // Add user to the database
-        let row = tx
+        let db = self.pool.get().await?;
+        let row = db
             .query_one(
-                r#"
-                insert into "user" (
-                    auth_hash,
-                    email,
-                    email_verified,
-                    name,
-                    password,
-                    username
-                ) values (
-                    gen_random_bytes(32),
-                    $1::text,
-                    $2::boolean,
-                    $3::text,
-                    $4::text,
-                    $5::text
-                ) returning
-                    user_id,
-                    auth_hash,
-                    email,
-                    email_verified,
-                    name,
-                    username;
-                "#,
-                &[
-                    &user_summary.email,
-                    &email_verified,
-                    &user_summary.name,
-                    &user_summary.password,
-                    &user_summary.username,
-                ],
+                "select * from auth_sign_up_user($1::jsonb, $2::boolean);",
+                &[&Json(user_summary), &email_verified],
             )
             .await?;
         let user = User {
@@ -375,32 +276,14 @@ impl DBAuth for PgDB {
             auth_hash: row.get("auth_hash"),
             email: row.get("email"),
             email_verified: row.get("email_verified"),
-            has_password: Some(true),
-            has_profile: false,
-            moderator: false,
+            has_password: row.get("has_password"),
+            has_profile: row.get("has_profile"),
+            moderator: row.get("moderator"),
             name: row.get("name"),
             password: None,
             username: row.get("username"),
         };
-
-        // Create email verification code if the email is not yet verified
-        let mut email_verification_code = None;
-        if !email_verified {
-            let row = tx
-                .query_one(
-                    "
-                    insert into email_verification_code (user_id)
-                    values ($1::uuid)
-                    returning email_verification_code_id;
-                    ",
-                    &[&user.user_id],
-                )
-                .await?;
-            email_verification_code = Some(row.get("email_verification_code_id"));
-        }
-
-        // Commit the transaction
-        tx.commit().await?;
+        let email_verification_code = row.get("verification_code");
 
         Ok((user, email_verification_code))
     }
@@ -434,12 +317,8 @@ impl DBAuth for PgDB {
 
         let db = self.pool.get().await?;
         db.execute(
-            r#"
-            update "user" set
-                name = $2::text
-            where user_id = $1::uuid;
-            "#,
-            &[&user_id, &user_summary.name],
+            "select auth_update_user_details($1::uuid, $2::jsonb);",
+            &[&user_id, &Json(user_summary)],
         )
         .await?;
 
@@ -452,12 +331,7 @@ impl DBAuth for PgDB {
 
         let db = self.pool.get().await?;
         db.execute(
-            r#"
-            update "user" set
-                auth_hash = gen_random_bytes(32), -- Invalidate existing sessions
-                password = $2::text
-            where user_id = $1::uuid;
-            "#,
+            "select auth_update_user_password($1::uuid, $2::text);",
             &[&user_id, &new_password],
         )
         .await?;
@@ -472,7 +346,7 @@ impl DBAuth for PgDB {
         let db = self.pool.get().await?;
         let row = db
             .query_one(
-                "select user_has_image_access($1::uuid, $2::uuid);",
+                "select auth_user_has_image_access($1::uuid, $2::uuid);",
                 &[&user_id, &image_id],
             )
             .await?;
@@ -487,18 +361,7 @@ impl DBAuth for PgDB {
         let db = self.pool.get().await?;
         let row = db
             .query_one(
-                "
-                select exists (
-                    select 1
-                    from job_seeker_profile p
-                    join application a on p.job_seeker_profile_id = a.job_seeker_profile_id
-                    join job j on a.job_id = j.job_id
-                    join employer_team et on j.employer_id = et.employer_id
-                    where et.user_id = $1::uuid
-                    and p.job_seeker_profile_id = $2::uuid
-                    and et.approved = true
-                ) as has_access;
-                ",
+                "select auth_user_has_profile_access($1::uuid, $2::uuid);",
                 &[&user_id, &job_seeker_profile_id],
             )
             .await?;
@@ -513,20 +376,12 @@ impl DBAuth for PgDB {
         let db = self.pool.get().await?;
         let row = db
             .query_one(
-                "
-                select exists (
-                    select 1
-                    from employer_team
-                    where user_id = $1::uuid
-                    and employer_id = $2::uuid
-                    and approved = true
-                ) as owns_employer;
-                ",
+                "select auth_user_owns_employer($1::uuid, $2::uuid);",
                 &[&user_id, &employer_id],
             )
             .await?;
 
-        Ok(row.get("owns_employer"))
+        Ok(row.get(0))
     }
 
     #[instrument(skip(self), err)]
@@ -536,55 +391,20 @@ impl DBAuth for PgDB {
         let db = self.pool.get().await?;
         let row = db
             .query_one(
-                "
-                select exists (
-                    select 1
-                    from job j
-                    join employer_team et using (employer_id)
-                    where et.user_id = $1::uuid
-                    and j.job_id = $2::uuid
-                    and et.approved = true
-                ) as owns_job;
-                ",
+                "select auth_user_owns_job($1::uuid, $2::uuid);",
                 &[&user_id, &job_id],
             )
             .await?;
 
-        Ok(row.get("owns_job"))
+        Ok(row.get(0))
     }
 
     #[instrument(skip(self, code), err)]
     async fn verify_email(&self, code: &Uuid) -> Result<()> {
         trace!("db: verify email");
 
-        // Start a transaction
-        let mut db = self.pool.get().await?;
-        let tx = db.transaction().await?;
-
-        // Verify email
-        let user_id: Uuid = tx
-            .query_opt(
-                "
-                delete from email_verification_code
-                where email_verification_code_id = $1::uuid
-                and created_at > current_timestamp - interval '1 day'
-                returning user_id;
-                ",
-                &[&code],
-            )
-            .await?
-            .map(|row| row.get("user_id"))
-            .ok_or_else(|| anyhow!("invalid email verification code"))?;
-
-        // Mark email as verified
-        tx.execute(
-            r#"update "user" set email_verified = true where user_id = $1::uuid;"#,
-            &[&user_id],
-        )
-        .await?;
-
-        // Commit the transaction
-        tx.commit().await?;
+        let db = self.pool.get().await?;
+        db.execute("select auth_verify_email($1::uuid);", &[&code]).await?;
 
         Ok(())
     }

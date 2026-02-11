@@ -19,6 +19,9 @@ pub(crate) mod img;
 pub(crate) mod jobboard;
 /// Miscellaneous HTTP handlers.
 pub(crate) mod misc;
+/// Shared test helpers for handlers modules.
+#[cfg(test)]
+pub(crate) mod tests;
 
 /// Helper function to prepare headers for HTTP responses, including cache control and
 /// additional custom headers.

@@ -98,3 +98,219 @@ impl FromRequestParts<router::State> for SelectedEmployerIdRequired {
         }
     }
 }
+
+// Tests.
+
+#[cfg(test)]
+mod tests {
+    use std::sync::Arc;
+
+    use axum::{
+        Router,
+        body::Body,
+        extract::Path,
+        http::{Request, StatusCode, header::SET_COOKIE},
+        response::IntoResponse,
+        routing::{get, post},
+    };
+    use tower::ServiceExt;
+    use tower_sessions::{MemoryStore, Session, SessionManagerLayer};
+    use uuid::Uuid;
+
+    use crate::{
+        db::{DynDB, mock::MockDB},
+        event_tracker::{DynEventTracker, MockEventTracker},
+        handlers::auth::SELECTED_EMPLOYER_ID_KEY,
+        handlers::tests::{qs_config, test_http_server_cfg},
+        img::{DynImageStore, MockImageStore},
+        notifications::{DynNotificationsManager, MockNotificationsManager},
+    };
+
+    use super::*;
+
+    #[tokio::test]
+    async fn test_selected_employer_id_optional_returns_id_when_set() {
+        // Setup state and router
+        let db: DynDB = Arc::new(MockDB::new());
+        let image_store: DynImageStore = Arc::new(MockImageStore::new());
+        let notifications_manager: DynNotificationsManager = Arc::new(MockNotificationsManager::new());
+        let state = build_state(db, image_store, notifications_manager);
+        let router = Router::new()
+            .route(
+                "/optional",
+                get(
+                    |SelectedEmployerIdOptional(id): SelectedEmployerIdOptional| async move {
+                        id.map_or_else(|| "none".to_string(), |value| value.to_string())
+                    },
+                ),
+            )
+            .route(
+                "/set/{id}",
+                post(|session: Session, Path(id): Path<Uuid>| async move {
+                    session.insert(SELECTED_EMPLOYER_ID_KEY, id).await.unwrap();
+                    StatusCode::NO_CONTENT.into_response()
+                }),
+            )
+            .with_state(state)
+            .layer(SessionManagerLayer::new(MemoryStore::default()).with_secure(false));
+        let employer_id = Uuid::new_v4();
+
+        // Set selected employer in session
+        let set_request = Request::builder()
+            .method("POST")
+            .uri(format!("/set/{employer_id}"))
+            .body(Body::empty())
+            .unwrap();
+        let set_response = router.clone().oneshot(set_request).await.unwrap();
+        let cookie = session_cookie(&set_response);
+
+        // Send request and check response
+        let request = Request::builder()
+            .method("GET")
+            .uri("/optional")
+            .header("cookie", cookie)
+            .body(Body::empty())
+            .unwrap();
+        let response = router.oneshot(request).await.unwrap();
+        let body = axum::body::to_bytes(response.into_body(), usize::MAX).await.unwrap();
+
+        assert_eq!(body.as_ref(), employer_id.to_string().as_bytes());
+    }
+
+    #[tokio::test]
+    async fn test_selected_employer_id_optional_returns_none_when_not_set() {
+        // Setup state and router
+        let db: DynDB = Arc::new(MockDB::new());
+        let image_store: DynImageStore = Arc::new(MockImageStore::new());
+        let notifications_manager: DynNotificationsManager = Arc::new(MockNotificationsManager::new());
+        let state = build_state(db, image_store, notifications_manager);
+        let router = Router::new()
+            .route(
+                "/optional",
+                get(
+                    |SelectedEmployerIdOptional(id): SelectedEmployerIdOptional| async move {
+                        id.map_or_else(|| "none".to_string(), |value| value.to_string())
+                    },
+                ),
+            )
+            .with_state(state)
+            .layer(SessionManagerLayer::new(MemoryStore::default()).with_secure(false));
+
+        // Send request and check response
+        let request = Request::builder()
+            .method("GET")
+            .uri("/optional")
+            .body(Body::empty())
+            .unwrap();
+        let response = router.oneshot(request).await.unwrap();
+        let body = axum::body::to_bytes(response.into_body(), usize::MAX).await.unwrap();
+
+        assert_eq!(body.as_ref(), b"none");
+    }
+
+    #[tokio::test]
+    async fn test_selected_employer_id_required_returns_bad_request_when_not_set() {
+        // Setup state and router
+        let db: DynDB = Arc::new(MockDB::new());
+        let image_store: DynImageStore = Arc::new(MockImageStore::new());
+        let notifications_manager: DynNotificationsManager = Arc::new(MockNotificationsManager::new());
+        let state = build_state(db, image_store, notifications_manager);
+        let router = Router::new()
+            .route(
+                "/required",
+                get(|SelectedEmployerIdRequired(id): SelectedEmployerIdRequired| async move {
+                    id.to_string()
+                }),
+            )
+            .with_state(state)
+            .layer(SessionManagerLayer::new(MemoryStore::default()).with_secure(false));
+
+        // Send request and check response
+        let request = Request::builder()
+            .method("GET")
+            .uri("/required")
+            .body(Body::empty())
+            .unwrap();
+        let response = router.oneshot(request).await.unwrap();
+
+        assert_eq!(response.status(), StatusCode::BAD_REQUEST);
+    }
+
+    #[tokio::test]
+    async fn test_selected_employer_id_required_returns_id_when_set() {
+        // Setup state and router
+        let db: DynDB = Arc::new(MockDB::new());
+        let image_store: DynImageStore = Arc::new(MockImageStore::new());
+        let notifications_manager: DynNotificationsManager = Arc::new(MockNotificationsManager::new());
+        let state = build_state(db, image_store, notifications_manager);
+        let router = Router::new()
+            .route(
+                "/required",
+                get(
+                    |SelectedEmployerIdRequired(id): SelectedEmployerIdRequired| async move {
+                        id.to_string()
+                    },
+                ),
+            )
+            .route(
+                "/set/{id}",
+                post(|session: Session, Path(id): Path<Uuid>| async move {
+                    session.insert(SELECTED_EMPLOYER_ID_KEY, id).await.unwrap();
+                    StatusCode::NO_CONTENT.into_response()
+                }),
+            )
+            .with_state(state)
+            .layer(SessionManagerLayer::new(MemoryStore::default()).with_secure(false));
+        let employer_id = Uuid::new_v4();
+
+        // Set selected employer in session
+        let set_request = Request::builder()
+            .method("POST")
+            .uri(format!("/set/{employer_id}"))
+            .body(Body::empty())
+            .unwrap();
+        let set_response = router.clone().oneshot(set_request).await.unwrap();
+        let cookie = session_cookie(&set_response);
+
+        // Send request and check response
+        let request = Request::builder()
+            .method("GET")
+            .uri("/required")
+            .header("cookie", cookie)
+            .body(Body::empty())
+            .unwrap();
+        let response = router.oneshot(request).await.unwrap();
+        let body = axum::body::to_bytes(response.into_body(), usize::MAX).await.unwrap();
+
+        assert_eq!(body.as_ref(), employer_id.to_string().as_bytes());
+    }
+
+    // Helpers.
+
+    fn build_state(
+        db: DynDB,
+        image_store: DynImageStore,
+        notifications_manager: DynNotificationsManager,
+    ) -> router::State {
+        let event_tracker: DynEventTracker = Arc::new(MockEventTracker::new());
+
+        router::State {
+            cfg: test_http_server_cfg(),
+            db,
+            image_store,
+            serde_qs_de: qs_config(),
+            notifications_manager,
+            event_tracker,
+        }
+    }
+
+    fn session_cookie(response: &axum::response::Response) -> String {
+        response
+            .headers()
+            .get(SET_COOKIE)
+            .and_then(|value| value.to_str().ok())
+            .and_then(|set_cookie| set_cookie.split(';').next())
+            .expect("set-cookie header to include session cookie")
+            .to_string()
+    }
+}

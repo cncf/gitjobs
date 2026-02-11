@@ -3,7 +3,7 @@
 -- ============================================================================
 
 begin;
-select plan(5);
+select plan(3);
 
 -- ============================================================================
 -- VARIABLES
@@ -131,64 +131,153 @@ insert into application (
     job_id,
     job_seeker_profile_id
 ) values
-    (:'application1ID', current_timestamp - interval '1 day', :'job1ID', :'profile1ID'),
-    (:'application2ID', current_timestamp - interval '2 days', :'job2ID', :'profile2ID'),
-    (:'application3ID', current_timestamp - interval '3 days', :'job3DeletedID', :'profile3ID');
+    (:'application1ID', '2026-01-02 10:00:00+00', :'job1ID', :'profile1ID'),
+    (:'application2ID', '2026-01-01 10:00:00+00', :'job2ID', :'profile2ID'),
+    (:'application3ID', '2025-12-31 10:00:00+00', :'job3DeletedID', :'profile3ID');
 
 -- ============================================================================
 -- TESTS
 -- ============================================================================
 
--- Should return only applications for non-deleted employer jobs
+-- Should return full payload for non-deleted employer jobs
 select is(
-    (select total from search_applications(:'employerID'::uuid, '{}'::jsonb)),
-    2::bigint,
-    'Should return only applications for non-deleted employer jobs'
-);
-
--- Should sort applications by applied_at descending
-select is(
-    (
-        select (applications::jsonb->0->>'application_id')::uuid
-        from search_applications(:'employerID'::uuid, '{}'::jsonb)
+    dashboard_employer_search_applications(:'employerID'::uuid, '{}'::jsonb)::jsonb,
+    jsonb_build_object(
+        'applications',
+        jsonb_build_array(
+            jsonb_build_object(
+                'application_id',
+                :'application1ID'::uuid,
+                'applied_at',
+                '2026-01-02 10:00:00+00'::timestamptz,
+                'job_id',
+                :'job1ID'::uuid,
+                'job_location',
+                jsonb_build_object(
+                    'city',
+                    'San Francisco',
+                    'country',
+                    'United States',
+                    'location_id',
+                    :'locationID'::uuid,
+                    'state',
+                    'CA'
+                ),
+                'job_seeker_profile_id',
+                :'profile1ID'::uuid,
+                'job_title',
+                'Platform Engineer',
+                'job_workplace',
+                'remote',
+                'last_position',
+                'Staff Engineer at Acme',
+                'name',
+                'Alice',
+                'photo_id',
+                null
+            ),
+            jsonb_build_object(
+                'application_id',
+                :'application2ID'::uuid,
+                'applied_at',
+                '2026-01-01 10:00:00+00'::timestamptz,
+                'job_id',
+                :'job2ID'::uuid,
+                'job_location',
+                null,
+                'job_seeker_profile_id',
+                :'profile2ID'::uuid,
+                'job_title',
+                'Data Engineer',
+                'job_workplace',
+                'hybrid',
+                'last_position',
+                'Backend Engineer at Beta',
+                'name',
+                'Bob',
+                'photo_id',
+                null
+            )
+        ),
+        'total',
+        2
     ),
-    :'application1ID'::uuid,
-    'Should sort applications by applied_at descending'
-);
-
--- Should extract the latest role as last_position
-select is(
-    (
-        select applications::jsonb->0->>'last_position'
-        from search_applications(:'employerID'::uuid, '{}'::jsonb)
-    ),
-    'Staff Engineer at Acme',
-    'Should extract the latest role as last_position'
+    'Should return full payload for non-deleted employer jobs'
 );
 
 -- Should filter applications by job_id
 select is(
-    (
-        select total
-        from search_applications(
-            :'employerID'::uuid,
-            jsonb_build_object('job_id', :'job2ID'::text)
-        )
+    dashboard_employer_search_applications(
+        :'employerID'::uuid,
+        jsonb_build_object('job_id', :'job2ID'::text)
+    )::jsonb,
+    jsonb_build_object(
+        'applications',
+        jsonb_build_array(
+            jsonb_build_object(
+                'application_id',
+                :'application2ID'::uuid,
+                'applied_at',
+                '2026-01-01 10:00:00+00'::timestamptz,
+                'job_id',
+                :'job2ID'::uuid,
+                'job_location',
+                null,
+                'job_seeker_profile_id',
+                :'profile2ID'::uuid,
+                'job_title',
+                'Data Engineer',
+                'job_workplace',
+                'hybrid',
+                'last_position',
+                'Backend Engineer at Beta',
+                'name',
+                'Bob',
+                'photo_id',
+                null
+            )
+        ),
+        'total',
+        1
     ),
-    1::bigint,
     'Should filter applications by job_id'
 );
 
 -- Should respect limit and offset pagination
 select is(
-    (
-        select (applications::jsonb->0->>'application_id')::uuid
-        from search_applications(
-            :'employerID'::uuid,
-            jsonb_build_object('limit', 1, 'offset', 1)
-        )
+    dashboard_employer_search_applications(
+        :'employerID'::uuid,
+        jsonb_build_object('limit', 1, 'offset', 1)
+    )::jsonb,
+    jsonb_build_object(
+        'applications',
+        jsonb_build_array(
+            jsonb_build_object(
+                'application_id',
+                :'application2ID'::uuid,
+                'applied_at',
+                '2026-01-01 10:00:00+00'::timestamptz,
+                'job_id',
+                :'job2ID'::uuid,
+                'job_location',
+                null,
+                'job_seeker_profile_id',
+                :'profile2ID'::uuid,
+                'job_title',
+                'Data Engineer',
+                'job_workplace',
+                'hybrid',
+                'last_position',
+                'Backend Engineer at Beta',
+                'name',
+                'Bob',
+                'photo_id',
+                null
+            )
+        ),
+        'total',
+        2
     ),
-    :'application2ID'::uuid,
     'Should respect limit and offset pagination'
 );
 

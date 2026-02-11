@@ -60,10 +60,10 @@ jobs:
     permissions:
       contents: read
       packages: read
-    container: ghcr.io/cncf/open-community-groups/db-tests
+    container: ghcr.io/cncf/gitjobs/db-tests
     services:
       postgres:
-        image: ghcr.io/cncf/open-community-groups/postgres-db-tests
+        image: ghcr.io/cncf/gitjobs/postgres-db-tests
         env:
           POSTGRES_DB: tests
           POSTGRES_PASSWORD: tests

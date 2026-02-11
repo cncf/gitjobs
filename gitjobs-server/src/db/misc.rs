@@ -29,27 +29,10 @@ impl DBMisc for PgDB {
         trace!("db: search locations");
 
         let db = self.pool.get().await?;
-        let locations = db
-            .query(
-                "
-                select
-                    location_id,
-                    city,
-                    country,
-                    state
-                from search_locations($1::text);
-                ",
-                &[&ts_query],
-            )
-            .await?
-            .into_iter()
-            .map(|row| Location {
-                location_id: row.get("location_id"),
-                city: row.get("city"),
-                country: row.get("country"),
-                state: row.get("state"),
-            })
-            .collect();
+        let row = db
+            .query_one("select misc_search_locations_json($1::text)::text;", &[&ts_query])
+            .await?;
+        let locations = serde_json::from_str(&row.get::<_, String>(0))?;
 
         Ok(locations)
     }
@@ -59,32 +42,13 @@ impl DBMisc for PgDB {
         trace!("db: search members");
 
         let db = self.pool.get().await?;
-        let members = db
-            .query(
-                "
-                select
-                    member_id,
-                    foundation,
-                    level,
-                    logo_url,
-                    name
-                from member
-                where foundation = $1::text
-                and name ilike '%' || $2::text || '%'
-                limit 20;
-                ",
+        let row = db
+            .query_one(
+                "select misc_search_members($1::text, $2::text)::text",
                 &[&foundation, &member],
             )
-            .await?
-            .into_iter()
-            .map(|row| Member {
-                foundation: row.get("foundation"),
-                level: row.get("level"),
-                logo_url: row.get("logo_url"),
-                member_id: row.get("member_id"),
-                name: row.get("name"),
-            })
-            .collect();
+            .await?;
+        let members = serde_json::from_str(&row.get::<_, String>(0))?;
 
         Ok(members)
     }
@@ -94,32 +58,13 @@ impl DBMisc for PgDB {
         trace!("db: search projects");
 
         let db = self.pool.get().await?;
-        let projects = db
-            .query(
-                "
-                select
-                    project_id,
-                    foundation,
-                    logo_url,
-                    maturity,
-                    name
-                from project
-                where foundation = $1::text
-                and name ilike '%' || $2::text || '%'
-                limit 20;
-                ",
+        let row = db
+            .query_one(
+                "select misc_search_projects($1::text, $2::text)::text",
                 &[&foundation, &project],
             )
-            .await?
-            .into_iter()
-            .map(|row| Project {
-                project_id: row.get("project_id"),
-                foundation: row.get("foundation"),
-                logo_url: row.get("logo_url"),
-                maturity: row.get("maturity"),
-                name: row.get("name"),
-            })
-            .collect();
+            .await?;
+        let projects = serde_json::from_str(&row.get::<_, String>(0))?;
 
         Ok(projects)
     }

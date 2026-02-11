@@ -40,14 +40,11 @@ impl DBNotifications for PgDB {
 
         let db = self.pool.get().await?;
         db.execute(
-            "
-            insert into notification (kind, user_id, template_data)
-            values ($1::text, $2::uuid, $3::jsonb);
-            ",
+            "select notifications_enqueue_notification($1::text, $2::jsonb, $3::uuid);",
             &[
                 &notification.kind.to_string(),
-                &notification.user_id,
                 &notification.template_data,
+                &notification.user_id,
             ],
         )
         .await?;
@@ -68,22 +65,7 @@ impl DBNotifications for PgDB {
 
         // Get pending notification (if any)
         let notification = tx
-            .query_opt(
-                r#"
-                select
-                    n.kind,
-                    n.notification_id,
-                    n.template_data,
-                    u.email
-                from notification n
-                join "user" u using (user_id)
-                where processed = false
-                order by notification_id asc
-                limit 1
-                for update of n skip locked;
-                "#,
-                &[],
-            )
+            .query_opt("select * from notifications_get_pending_notification();", &[])
             .await?
             .map(|row| Notification {
                 email: row.get("email"),
@@ -121,13 +103,7 @@ impl DBNotifications for PgDB {
 
         // Update notification
         tx.execute(
-            "
-            update notification set
-                processed = true,
-                processed_at = current_timestamp,
-                error = $2::text
-            where notification_id = $1::uuid;
-            ",
+            "select notifications_update_notification($1::uuid, $2::text);",
             &[&notification.notification_id, &error],
         )
         .await?;

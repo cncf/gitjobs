@@ -158,3 +158,288 @@ pub(crate) async fn track_search_appearances(
 
     Ok(StatusCode::NO_CONTENT)
 }
+
+// Tests.
+
+#[cfg(test)]
+mod tests {
+    use axum::{
+        body::{Body, to_bytes},
+        http::{
+            Request, StatusCode,
+            header::{CACHE_CONTROL, CONTENT_TYPE, COOKIE},
+        },
+    };
+    use axum_login::tower_sessions::session;
+    use serde_json::json;
+    use tower::ServiceExt;
+    use uuid::Uuid;
+
+    use crate::{
+        db::mock::MockDB,
+        event_tracker::MockEventTracker,
+        handlers::tests::{
+            TestRouterBuilder, expect_track_search_appearances, expect_track_view, sample_auth_user,
+            sample_jobboard_filters_options, sample_jobboard_job, sample_jobboard_jobs_output,
+            sample_session_record,
+        },
+        notifications::MockNotificationsManager,
+    };
+
+    #[tokio::test]
+    async fn test_jobs_page_returns_html_with_results() {
+        // Setup identifiers and data structures
+        let employer_id = Uuid::new_v4();
+        let job_id = Uuid::new_v4();
+
+        // Setup database mock
+        let mut db = MockDB::new();
+        db.expect_get_jobs_filters_options()
+            .times(1)
+            .returning(|| Ok(sample_jobboard_filters_options()));
+        db.expect_search_jobs()
+            .times(1)
+            .returning(move |_| Ok(sample_jobboard_jobs_output(job_id, employer_id)));
+
+        // Setup router and send request
+        let router = TestRouterBuilder::new(db, MockNotificationsManager::new())
+            .build()
+            .await;
+        let request = Request::builder().method("GET").uri("/").body(Body::empty()).unwrap();
+        let response = router.oneshot(request).await.unwrap();
+        let (parts, body) = response.into_parts();
+        let bytes = to_bytes(body, usize::MAX).await.unwrap();
+
+        // Check response matches expectations
+        assert_eq!(parts.status, StatusCode::OK);
+        assert_eq!(parts.headers[CACHE_CONTROL], "max-age=0");
+        assert_eq!(parts.headers[CONTENT_TYPE], "text/html; charset=utf-8");
+        assert!(!bytes.is_empty());
+    }
+
+    #[tokio::test]
+    async fn test_results_section_returns_html() {
+        // Setup identifiers and data structures
+        let employer_id = Uuid::new_v4();
+        let job_id = Uuid::new_v4();
+
+        // Setup database mock
+        let mut db = MockDB::new();
+        db.expect_search_jobs()
+            .times(1)
+            .returning(move |_| Ok(sample_jobboard_jobs_output(job_id, employer_id)));
+
+        // Setup router and send request
+        let router = TestRouterBuilder::new(db, MockNotificationsManager::new())
+            .build()
+            .await;
+        let request = Request::builder()
+            .method("GET")
+            .uri("/section/jobs/results")
+            .body(Body::empty())
+            .unwrap();
+        let response = router.oneshot(request).await.unwrap();
+        let (parts, body) = response.into_parts();
+        let bytes = to_bytes(body, usize::MAX).await.unwrap();
+
+        // Check response matches expectations
+        assert_eq!(parts.status, StatusCode::OK);
+        assert_eq!(parts.headers[CACHE_CONTROL], "max-age=0");
+        assert_eq!(parts.headers[CONTENT_TYPE], "text/html; charset=utf-8");
+        assert!(!bytes.is_empty());
+    }
+
+    #[tokio::test]
+    async fn test_job_section_returns_not_found_when_job_is_missing() {
+        // Setup identifiers and data structures
+        let job_id = Uuid::new_v4();
+
+        // Setup database mock
+        let mut db = MockDB::new();
+        db.expect_get_job_jobboard()
+            .times(1)
+            .withf(move |id| *id == job_id)
+            .returning(|_| Ok(None));
+
+        // Setup router and send request
+        let router = TestRouterBuilder::new(db, MockNotificationsManager::new())
+            .build()
+            .await;
+        let request = Request::builder()
+            .method("GET")
+            .uri(format!("/section/jobs/{job_id}"))
+            .body(Body::empty())
+            .unwrap();
+        let response = router.oneshot(request).await.unwrap();
+
+        // Check response matches expectations
+        assert_eq!(response.status(), StatusCode::NOT_FOUND);
+    }
+
+    #[tokio::test]
+    async fn test_job_section_returns_html_when_job_exists() {
+        // Setup identifiers and data structures
+        let employer_id = Uuid::new_v4();
+        let job_id = Uuid::new_v4();
+
+        // Setup database mock
+        let mut db = MockDB::new();
+        db.expect_get_job_jobboard()
+            .times(1)
+            .withf(move |id| *id == job_id)
+            .returning(move |_| Ok(Some(sample_jobboard_job(job_id, employer_id))));
+
+        // Setup router and send request
+        let router = TestRouterBuilder::new(db, MockNotificationsManager::new())
+            .build()
+            .await;
+        let request = Request::builder()
+            .method("GET")
+            .uri(format!("/section/jobs/{job_id}"))
+            .body(Body::empty())
+            .unwrap();
+        let response = router.oneshot(request).await.unwrap();
+        let (parts, body) = response.into_parts();
+        let bytes = to_bytes(body, usize::MAX).await.unwrap();
+
+        // Check response matches expectations
+        assert_eq!(parts.status, StatusCode::OK);
+        assert_eq!(parts.headers[CACHE_CONTROL], "max-age=0");
+        assert_eq!(parts.headers[CONTENT_TYPE], "text/html; charset=utf-8");
+        assert!(!bytes.is_empty());
+    }
+
+    #[tokio::test]
+    async fn test_apply_returns_no_content_when_application_is_created() {
+        // Setup identifiers and data structures
+        let auth_hash = "hash";
+        let job_id = Uuid::new_v4();
+        let session_id = session::Id::default();
+        let user_id = Uuid::new_v4();
+        let session_record = sample_session_record(session_id, user_id, auth_hash, None);
+
+        // Setup database mock
+        let mut db = MockDB::new();
+        db.expect_get_session()
+            .times(1)
+            .withf(move |id| *id == session_id)
+            .returning(move |_| Ok(Some(session_record.clone())));
+        db.expect_get_user_by_id()
+            .times(1)
+            .withf(move |id| *id == user_id)
+            .returning(move |_| Ok(Some(sample_auth_user(user_id, auth_hash))));
+        db.expect_apply_to_job()
+            .times(1)
+            .withf(move |id, user| *id == job_id && *user == user_id)
+            .returning(|_, _| Ok(true));
+
+        // Setup router and send request
+        let router = TestRouterBuilder::new(db, MockNotificationsManager::new())
+            .build()
+            .await;
+        let request = Request::builder()
+            .method("POST")
+            .uri(format!("/jobs/{job_id}/apply"))
+            .header(COOKIE, format!("id={session_id}"))
+            .body(Body::empty())
+            .unwrap();
+        let response = router.oneshot(request).await.unwrap();
+
+        // Check response matches expectations
+        assert_eq!(response.status(), StatusCode::NO_CONTENT);
+    }
+
+    #[tokio::test]
+    async fn test_apply_returns_conflict_when_already_applied() {
+        // Setup identifiers and data structures
+        let auth_hash = "hash";
+        let job_id = Uuid::new_v4();
+        let session_id = session::Id::default();
+        let user_id = Uuid::new_v4();
+        let session_record = sample_session_record(session_id, user_id, auth_hash, None);
+
+        // Setup database mock
+        let mut db = MockDB::new();
+        db.expect_get_session()
+            .times(1)
+            .withf(move |id| *id == session_id)
+            .returning(move |_| Ok(Some(session_record.clone())));
+        db.expect_get_user_by_id()
+            .times(1)
+            .withf(move |id| *id == user_id)
+            .returning(move |_| Ok(Some(sample_auth_user(user_id, auth_hash))));
+        db.expect_apply_to_job()
+            .times(1)
+            .withf(move |id, user| *id == job_id && *user == user_id)
+            .returning(|_, _| Ok(false));
+
+        // Setup router and send request
+        let router = TestRouterBuilder::new(db, MockNotificationsManager::new())
+            .build()
+            .await;
+        let request = Request::builder()
+            .method("POST")
+            .uri(format!("/jobs/{job_id}/apply"))
+            .header(COOKIE, format!("id={session_id}"))
+            .body(Body::empty())
+            .unwrap();
+        let response = router.oneshot(request).await.unwrap();
+
+        // Check response matches expectations
+        assert_eq!(response.status(), StatusCode::CONFLICT);
+    }
+
+    #[tokio::test]
+    async fn test_track_view_returns_no_content() {
+        // Setup identifiers and data structures
+        let job_id = Uuid::new_v4();
+
+        // Setup event tracker mock
+        let mut event_tracker = MockEventTracker::new();
+        expect_track_view(&mut event_tracker, job_id);
+
+        // Setup router and send request
+        let db = MockDB::new();
+        let router = TestRouterBuilder::new(db, MockNotificationsManager::new())
+            .with_event_tracker(event_tracker)
+            .build()
+            .await;
+        let request = Request::builder()
+            .method("POST")
+            .uri(format!("/jobs/{job_id}/views"))
+            .body(Body::empty())
+            .unwrap();
+        let response = router.oneshot(request).await.unwrap();
+
+        // Check response matches expectations
+        assert_eq!(response.status(), StatusCode::NO_CONTENT);
+    }
+
+    #[tokio::test]
+    async fn test_track_search_appearances_returns_no_content() {
+        // Setup identifiers and data structures
+        let job_ids = vec![Uuid::new_v4(), Uuid::new_v4()];
+
+        // Setup event tracker mock
+        let mut event_tracker = MockEventTracker::new();
+        expect_track_search_appearances(&mut event_tracker, job_ids.clone());
+
+        // Setup router and send request
+        let body = json!(job_ids).to_string();
+        let db = MockDB::new();
+        let router = TestRouterBuilder::new(db, MockNotificationsManager::new())
+            .with_event_tracker(event_tracker)
+            .build()
+            .await;
+        let request = Request::builder()
+            .method("POST")
+            .uri("/jobs/search-appearances")
+            .header(CONTENT_TYPE, "application/json")
+            .body(Body::from(body))
+            .unwrap();
+        let response = router.oneshot(request).await.unwrap();
+
+        // Check response matches expectations
+        assert_eq!(response.status(), StatusCode::NO_CONTENT);
+    }
+}

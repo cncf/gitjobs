@@ -62,3 +62,89 @@ pub(crate) async fn job_card(
 
     Ok((headers, template.render()?))
 }
+
+// Tests.
+
+#[cfg(test)]
+mod tests {
+    use axum::{
+        body::{Body, to_bytes},
+        http::{
+            Request, StatusCode,
+            header::{CACHE_CONTROL, CONTENT_TYPE},
+        },
+    };
+    use tower::ServiceExt;
+    use uuid::Uuid;
+
+    use crate::{
+        db::mock::MockDB,
+        handlers::tests::{TestRouterBuilder, sample_jobboard_job, sample_jobboard_jobs_output},
+        notifications::MockNotificationsManager,
+    };
+
+    #[tokio::test]
+    async fn test_jobs_page_returns_html_embed() {
+        // Setup identifiers and data structures
+        let employer_id = Uuid::new_v4();
+        let job_id = Uuid::new_v4();
+
+        // Setup database mock
+        let mut db = MockDB::new();
+        db.expect_search_jobs()
+            .times(1)
+            .returning(move |_| Ok(sample_jobboard_jobs_output(job_id, employer_id)));
+
+        // Setup router and send request
+        let router = TestRouterBuilder::new(db, MockNotificationsManager::new())
+            .build()
+            .await;
+        let request = Request::builder()
+            .method("GET")
+            .uri("/embed")
+            .body(Body::empty())
+            .unwrap();
+        let response = router.oneshot(request).await.unwrap();
+        let (parts, body) = response.into_parts();
+        let bytes = to_bytes(body, usize::MAX).await.unwrap();
+
+        // Check response matches expectations
+        assert_eq!(parts.status, StatusCode::OK);
+        assert_eq!(parts.headers[CACHE_CONTROL], "max-age=0");
+        assert_eq!(parts.headers[CONTENT_TYPE], "text/html; charset=utf-8");
+        assert!(!bytes.is_empty());
+    }
+
+    #[tokio::test]
+    async fn test_job_card_returns_svg() {
+        // Setup identifiers and data structures
+        let employer_id = Uuid::new_v4();
+        let job_id = Uuid::new_v4();
+
+        // Setup database mock
+        let mut db = MockDB::new();
+        db.expect_get_job_jobboard()
+            .times(1)
+            .withf(move |id| *id == job_id)
+            .returning(move |_| Ok(Some(sample_jobboard_job(job_id, employer_id))));
+
+        // Setup router and send request
+        let router = TestRouterBuilder::new(db, MockNotificationsManager::new())
+            .build()
+            .await;
+        let request = Request::builder()
+            .method("GET")
+            .uri(format!("/embed/job/{job_id}/card.svg"))
+            .body(Body::empty())
+            .unwrap();
+        let response = router.oneshot(request).await.unwrap();
+        let (parts, body) = response.into_parts();
+        let bytes = to_bytes(body, usize::MAX).await.unwrap();
+
+        // Check response matches expectations
+        assert_eq!(parts.status, StatusCode::OK);
+        assert_eq!(parts.headers[CACHE_CONTROL], "max-age=0");
+        assert_eq!(parts.headers[CONTENT_TYPE], "image/svg+xml");
+        assert!(!bytes.is_empty());
+    }
+}

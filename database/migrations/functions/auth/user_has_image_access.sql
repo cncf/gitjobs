@@ -1,5 +1,5 @@
 -- Check if the user has access to the image provided.
-create or replace function user_has_image_access(p_user_id uuid, p_image_id uuid)
+create or replace function auth_user_has_image_access(p_user_id uuid, p_image_id uuid)
 returns boolean as $$
 begin
     -- User is a moderator

@@ -39,7 +39,7 @@ insert into job (
 -- ============================================================================
 
 -- Should insert counters only for published jobs
-select update_search_appearances(
+select jobboard_update_search_appearances(
     42,
     jsonb_build_array(
         jsonb_build_array(:'publishedJobID'::text, current_date::text, 6),
@@ -50,12 +50,23 @@ select update_search_appearances(
 
 select is(
     (
-        select total
+        select jsonb_agg(
+            jsonb_build_object(
+                'day', day::text,
+                'job_id', job_id::text,
+                'total', total
+            )
+            order by day, job_id
+        )
         from search_appearances
-        where day = current_date
-        and job_id = :'publishedJobID'::uuid
     ),
-    6,
+    jsonb_build_array(
+        jsonb_build_object(
+            'day', current_date::text,
+            'job_id', :'publishedJobID',
+            'total', 6
+        )
+    ),
     'Should insert counters only for published jobs'
 );
 
@@ -67,7 +78,7 @@ select is(
 );
 
 -- Should increment existing counters on conflict
-select update_search_appearances(
+select jobboard_update_search_appearances(
     43,
     jsonb_build_array(
         jsonb_build_array(:'publishedJobID'::text, current_date::text, 5)
@@ -76,12 +87,23 @@ select update_search_appearances(
 
 select is(
     (
-        select total
+        select jsonb_agg(
+            jsonb_build_object(
+                'day', day::text,
+                'job_id', job_id::text,
+                'total', total
+            )
+            order by day, job_id
+        )
         from search_appearances
-        where day = current_date
-        and job_id = :'publishedJobID'::uuid
     ),
-    11,
+    jsonb_build_array(
+        jsonb_build_object(
+            'day', current_date::text,
+            'job_id', :'publishedJobID',
+            'total', 11
+        )
+    ),
     'Should increment existing counters on conflict'
 );
 

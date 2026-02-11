@@ -4,12 +4,15 @@ use std::{io::Cursor, sync::Arc};
 
 use anyhow::Result;
 use async_trait::async_trait;
+#[cfg(test)]
+use mockall::automock;
 use uuid::Uuid;
 
 pub(crate) mod db;
 
 /// Trait for image storage backends supporting get and save operations.
 #[async_trait]
+#[cfg_attr(test, automock)]
 pub(crate) trait ImageStore {
     /// Retrieve an image version from the store.
     async fn get(&self, image_id: Uuid, version: &str) -> Result<Option<(Vec<u8>, ImageFormat)>>;

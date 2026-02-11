@@ -1835,6 +1835,7 @@ dependencies = [
  "regex",
  "reqwest 0.13.2",
  "serde",
+ "serde_json",
  "tokio",
  "tokio-postgres",
  "tracing",

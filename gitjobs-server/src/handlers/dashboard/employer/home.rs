@@ -131,3 +131,122 @@ pub(crate) async fn page(
 
     Ok(Html(template.render()?).into_response())
 }
+
+// Tests.
+
+#[cfg(test)]
+mod tests {
+    use axum::{
+        body::Body,
+        http::{Request, StatusCode, header::COOKIE},
+    };
+    use axum_login::tower_sessions::session;
+    use tower::ServiceExt;
+    use uuid::Uuid;
+
+    use crate::{
+        db::mock::MockDB,
+        handlers::tests::{
+            TestRouterBuilder, sample_auth_user, sample_employer_job_summary, sample_employer_summary,
+            sample_session_record, sample_team_invitation,
+        },
+        notifications::MockNotificationsManager,
+    };
+
+    #[tokio::test]
+    async fn test_page_renders_jobs_tab_for_authenticated_user() {
+        // Setup identifiers and data structures
+        let auth_hash = "hash";
+        let employer_id = Uuid::new_v4();
+        let job_id = Uuid::new_v4();
+        let session_id = session::Id::default();
+        let user_id = Uuid::new_v4();
+        let session_record = sample_session_record(session_id, user_id, auth_hash, Some(employer_id));
+
+        // Setup database mock
+        let mut db = MockDB::new();
+        db.expect_get_session()
+            .times(1)
+            .withf(move |id| *id == session_id)
+            .returning(move |_| Ok(Some(session_record.clone())));
+        db.expect_get_user_by_id()
+            .times(1)
+            .withf(move |id| *id == user_id)
+            .returning(move |_| Ok(Some(sample_auth_user(user_id, auth_hash))));
+        db.expect_get_user_invitations_count()
+            .times(1)
+            .withf(move |id| *id == user_id)
+            .returning(|_| Ok(0));
+        db.expect_list_employers()
+            .times(1)
+            .withf(move |id| *id == user_id)
+            .returning(move |_| Ok(vec![sample_employer_summary(employer_id)]));
+        db.expect_list_employer_jobs()
+            .times(1)
+            .withf(move |id| *id == employer_id)
+            .returning(move |_| Ok(vec![sample_employer_job_summary(job_id)]));
+
+        // Setup router and send request
+        let router = TestRouterBuilder::new(db, MockNotificationsManager::new())
+            .build()
+            .await;
+        let request = Request::builder()
+            .method("GET")
+            .uri("/dashboard/employer")
+            .header(COOKIE, format!("id={session_id}"))
+            .body(Body::empty())
+            .unwrap();
+        let response = router.oneshot(request).await.unwrap();
+
+        // Check response matches expectations
+        assert_eq!(response.status(), StatusCode::OK);
+    }
+
+    #[tokio::test]
+    async fn test_page_falls_back_to_invitations_tab_when_no_selected_employer() {
+        // Setup identifiers and data structures
+        let auth_hash = "hash";
+        let employer_id = Uuid::new_v4();
+        let session_id = session::Id::default();
+        let user_id = Uuid::new_v4();
+        let session_record = sample_session_record(session_id, user_id, auth_hash, None);
+
+        // Setup database mock
+        let mut db = MockDB::new();
+        db.expect_get_session()
+            .times(1)
+            .withf(move |id| *id == session_id)
+            .returning(move |_| Ok(Some(session_record.clone())));
+        db.expect_get_user_by_id()
+            .times(1)
+            .withf(move |id| *id == user_id)
+            .returning(move |_| Ok(Some(sample_auth_user(user_id, auth_hash))));
+        db.expect_get_user_invitations_count()
+            .times(1)
+            .withf(move |id| *id == user_id)
+            .returning(|_| Ok(1));
+        db.expect_list_employers()
+            .times(1)
+            .withf(move |id| *id == user_id)
+            .returning(move |_| Ok(vec![sample_employer_summary(employer_id)]));
+        db.expect_list_user_invitations()
+            .times(1)
+            .withf(move |id| *id == user_id)
+            .returning(move |_| Ok(vec![sample_team_invitation(employer_id)]));
+
+        // Setup router and send request
+        let router = TestRouterBuilder::new(db, MockNotificationsManager::new())
+            .build()
+            .await;
+        let request = Request::builder()
+            .method("GET")
+            .uri("/dashboard/employer?tab=jobs")
+            .header(COOKIE, format!("id={session_id}"))
+            .body(Body::empty())
+            .unwrap();
+        let response = router.oneshot(request).await.unwrap();
+
+        // Check response matches expectations
+        assert_eq!(response.status(), StatusCode::OK);
+    }
+}

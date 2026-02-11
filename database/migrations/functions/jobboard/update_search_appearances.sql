@@ -1,5 +1,5 @@
 -- update_search_appearances updates the search appearances of the jobs provided.
-create or replace function update_search_appearances(p_lock_key bigint, p_data jsonb)
+create or replace function jobboard_update_search_appearances(p_lock_key bigint, p_data jsonb)
 returns void as $$
     -- Make sure only one batch of updates is processed at a time
     select pg_advisory_xact_lock(p_lock_key);

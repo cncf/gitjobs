@@ -39,7 +39,7 @@ insert into job (
 -- ============================================================================
 
 -- Should insert counters only for published jobs
-select update_jobs_views(
+select jobboard_update_jobs_views(
     42,
     jsonb_build_array(
         jsonb_build_array(:'publishedJobID'::text, current_date::text, 3),
@@ -50,12 +50,23 @@ select update_jobs_views(
 
 select is(
     (
-        select total
+        select jsonb_agg(
+            jsonb_build_object(
+                'day', day::text,
+                'job_id', job_id::text,
+                'total', total
+            )
+            order by day, job_id
+        )
         from job_views
-        where day = current_date
-        and job_id = :'publishedJobID'::uuid
     ),
-    3,
+    jsonb_build_array(
+        jsonb_build_object(
+            'day', current_date::text,
+            'job_id', :'publishedJobID',
+            'total', 3
+        )
+    ),
     'Should insert counters only for published jobs'
 );
 
@@ -67,7 +78,7 @@ select is(
 );
 
 -- Should increment existing counters on conflict
-select update_jobs_views(
+select jobboard_update_jobs_views(
     43,
     jsonb_build_array(
         jsonb_build_array(:'publishedJobID'::text, current_date::text, 4)
@@ -76,12 +87,23 @@ select update_jobs_views(
 
 select is(
     (
-        select total
+        select jsonb_agg(
+            jsonb_build_object(
+                'day', day::text,
+                'job_id', job_id::text,
+                'total', total
+            )
+            order by day, job_id
+        )
         from job_views
-        where day = current_date
-        and job_id = :'publishedJobID'::uuid
     ),
-    7,
+    jsonb_build_array(
+        jsonb_build_object(
+            'day', current_date::text,
+            'job_id', :'publishedJobID',
+            'total', 7
+        )
+    ),
     'Should increment existing counters on conflict'
 );
 

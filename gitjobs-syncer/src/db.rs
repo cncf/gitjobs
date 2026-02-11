@@ -64,14 +64,7 @@ impl DB for PgDB {
 
         let db = self.pool.get().await?;
         db.execute(
-            "
-            insert into member (
-                foundation,
-                name,
-                level,
-                logo_url
-            ) values ($1, $2, $3, $4);
-            ",
+            "select syncer_add_member($1::text, $2::text, $3::text, $4::text)",
             &[&member.foundation, &member.name, &member.level, &member.logo_url],
         )
         .await?;
@@ -85,14 +78,7 @@ impl DB for PgDB {
 
         let db = self.pool.get().await?;
         db.execute(
-            "
-            insert into project (
-                foundation,
-                name,
-                maturity,
-                logo_url
-            ) values ($1, $2, $3, $4);
-            ",
+            "select syncer_add_project($1::text, $2::text, $3::text, $4::text)",
             &[
                 &project.foundation,
                 &project.name,
@@ -110,24 +96,8 @@ impl DB for PgDB {
         trace!("db: list foundations");
 
         let db = self.pool.get().await?;
-        let foundations = db
-            .query(
-                "
-                select
-                    name,
-                    landscape_url
-                from foundation
-                where landscape_url is not null;
-                ",
-                &[],
-            )
-            .await?
-            .into_iter()
-            .map(|row| Foundation {
-                name: row.get("name"),
-                landscape_url: row.get("landscape_url"),
-            })
-            .collect();
+        let row = db.query_one("select syncer_list_foundations()::text", &[]).await?;
+        let foundations = serde_json::from_str(&row.get::<_, String>(0))?;
 
         Ok(foundations)
     }
@@ -137,27 +107,10 @@ impl DB for PgDB {
         trace!("db: list members");
 
         let db = self.pool.get().await?;
-        let members = db
-            .query(
-                "
-                select
-                    name,
-                    level,
-                    logo_url
-                from member
-                where foundation = $1;
-                ",
-                &[&foundation],
-            )
-            .await?
-            .into_iter()
-            .map(|row| Member {
-                foundation: foundation.to_string(),
-                name: row.get("name"),
-                level: row.get("level"),
-                logo_url: row.get("logo_url"),
-            })
-            .collect();
+        let row = db
+            .query_one("select syncer_list_members($1::text)::text", &[&foundation])
+            .await?;
+        let members = serde_json::from_str(&row.get::<_, String>(0))?;
 
         Ok(members)
     }
@@ -167,27 +120,10 @@ impl DB for PgDB {
         trace!("db: list projects");
 
         let db = self.pool.get().await?;
-        let projects = db
-            .query(
-                "
-                select
-                    name,
-                    logo_url,
-                    maturity
-                from project
-                where foundation = $1;
-                ",
-                &[&foundation],
-            )
-            .await?
-            .into_iter()
-            .map(|row| Project {
-                foundation: foundation.to_string(),
-                name: row.get("name"),
-                logo_url: row.get("logo_url"),
-                maturity: row.get("maturity"),
-            })
-            .collect();
+        let row = db
+            .query_one("select syncer_list_projects($1::text)::text", &[&foundation])
+            .await?;
+        let projects = serde_json::from_str(&row.get::<_, String>(0))?;
 
         Ok(projects)
     }
@@ -198,7 +134,7 @@ impl DB for PgDB {
 
         let db = self.pool.get().await?;
         db.execute(
-            "delete from member where foundation = $1 and name = $2;",
+            "select syncer_remove_member($1::text, $2::text);",
             &[&foundation, &member_name],
         )
         .await?;
@@ -212,7 +148,7 @@ impl DB for PgDB {
 
         let db = self.pool.get().await?;
         db.execute(
-            "delete from project where foundation = $1 and name = $2;",
+            "select syncer_remove_project($1::text, $2::text);",
             &[&foundation, &project_name],
         )
         .await?;
@@ -226,12 +162,7 @@ impl DB for PgDB {
 
         let db = self.pool.get().await?;
         db.execute(
-            "
-            update member set
-                level = $3,
-                logo_url = $4
-            where foundation = $1 and name = $2;
-            ",
+            "select syncer_update_member($1::text, $2::text, $3::text, $4::text);",
             &[&member.foundation, &member.name, &member.level, &member.logo_url],
         )
         .await?;
@@ -245,12 +176,7 @@ impl DB for PgDB {
 
         let db = self.pool.get().await?;
         db.execute(
-            "
-            update project set
-                maturity = $3,
-                logo_url = $4
-            where foundation = $1 and name = $2;
-            ",
+            "select syncer_update_project($1::text, $2::text, $3::text, $4::text);",
             &[
                 &project.foundation,
                 &project.name,

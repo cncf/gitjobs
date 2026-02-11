@@ -37,21 +37,30 @@ from generate_series(1, 25) as g;
 
 -- Should support prefix matching in full text search
 select is(
-    (select location_id from search_locations('san fra')),
-    :'sanFranciscoID'::uuid,
+    (
+        select row_to_json(location_result)::jsonb
+        from misc_search_locations('san fra') as location_result
+        limit 1
+    ),
+    jsonb_build_object(
+        'city', 'San Francisco',
+        'country', 'United States',
+        'location_id', :'sanFranciscoID',
+        'state', 'CA'
+    ),
     'Should support prefix matching in full text search'
 );
 
 -- Should cap the number of returned matches at 20
 select is(
-    (select count(*) from search_locations('matchv')),
+    (select count(*) from misc_search_locations('matchv')),
     20::bigint,
     'Should cap the number of returned matches at 20'
 );
 
 -- Should return no matches for unrelated queries
 select is(
-    (select count(*) from search_locations('totally unrelated query')),
+    (select count(*) from misc_search_locations('totally unrelated query')),
     0::bigint,
     'Should return no matches for unrelated queries'
 );

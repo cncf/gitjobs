@@ -100,7 +100,7 @@ values (:'jobID', :'jobSeekerProfileID');
 
 -- Should allow moderators to access any image
 select ok(
-    user_has_image_access(
+    auth_user_has_image_access(
         :'moderatorUserID'::uuid,
         'ffffffff-ffff-ffff-ffff-ffffffffffff'::uuid
     ),
@@ -109,31 +109,31 @@ select ok(
 
 -- Should allow users to access images they created
 select ok(
-    user_has_image_access(:'creatorUserID'::uuid, :'ownedImageID'::uuid),
+    auth_user_has_image_access(:'creatorUserID'::uuid, :'ownedImageID'::uuid),
     'Should allow users to access images they created'
 );
 
 -- Should allow approved employer members to access candidate profile photos
 select ok(
-    user_has_image_access(:'teamUserID'::uuid, :'profilePhotoImageID'::uuid),
+    auth_user_has_image_access(:'teamUserID'::uuid, :'profilePhotoImageID'::uuid),
     'Should allow approved employer members to access candidate profile photos'
 );
 
 -- Should allow approved employer members to access employer logos
 select ok(
-    user_has_image_access(:'teamUserID'::uuid, :'employerLogoImageID'::uuid),
+    auth_user_has_image_access(:'teamUserID'::uuid, :'employerLogoImageID'::uuid),
     'Should allow approved employer members to access employer logos'
 );
 
 -- Should deny access to unapproved employer members for employer logos
 select ok(
-    not user_has_image_access(:'unapprovedTeamUserID'::uuid, :'employerLogoImageID'::uuid),
+    not auth_user_has_image_access(:'unapprovedTeamUserID'::uuid, :'employerLogoImageID'::uuid),
     'Should deny access to unapproved employer members for employer logos'
 );
 
 -- Should deny access when no access rule matches
 select ok(
-    not user_has_image_access(:'jobSeekerUserID'::uuid, :'nonAccessibleImageID'::uuid),
+    not auth_user_has_image_access(:'jobSeekerUserID'::uuid, :'nonAccessibleImageID'::uuid),
     'Should deny access when no access rule matches'
 );
 

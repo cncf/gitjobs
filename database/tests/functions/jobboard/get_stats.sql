@@ -95,7 +95,7 @@ select is(
     (
         select stats->'jobs'->'published_per_foundation'
         from (
-            select get_stats()::jsonb as stats
+            select jobboard_get_stats()::jsonb as stats
         ) t
     ),
     '[["cncf", 2], ["lf", 1]]'::jsonb,
@@ -107,7 +107,7 @@ select is(
     (
         select stats->'jobs'->'views_daily'
         from (
-            select get_stats()::jsonb as stats
+            select jobboard_get_stats()::jsonb as stats
         ) t
     ),
     (
@@ -126,7 +126,7 @@ select is(
     (
         select stats->'jobs'->'views_monthly'
         from (
-            select get_stats()::jsonb as stats
+            select jobboard_get_stats()::jsonb as stats
         ) t
     ),
     (
@@ -148,7 +148,7 @@ select is(
 select ok(
     (
         with stats as (
-            select get_stats()::jsonb as s
+            select jobboard_get_stats()::jsonb as s
         )
         select
             (s->>'ts_now')::bigint > (s->>'ts_one_month_ago')::bigint

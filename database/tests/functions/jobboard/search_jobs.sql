@@ -3,7 +3,7 @@
 -- ============================================================================
 
 begin;
-select plan(6);
+select plan(5);
 
 -- ============================================================================
 -- VARIABLES
@@ -82,9 +82,9 @@ insert into job (
         'published',
         :'location1ID',
         'remote',
-        current_timestamp - interval '2 days',
+        '2026-01-01 10:00:00+00',
         'Build Kubernetes control plane components',
-        current_timestamp - interval '1 day',
+        '2026-01-03 10:00:00+00',
         150000,
         'USD',
         200000,
@@ -94,7 +94,7 @@ insert into job (
         'year',
         array['rust', 'kubernetes'],
         'Kubernetes Platform Engineer',
-        current_timestamp - interval '1 day',
+        '2026-01-03 11:00:00+00',
         70,
         80
     ),
@@ -106,9 +106,9 @@ insert into job (
         'published',
         :'location2ID',
         'hybrid',
-        current_timestamp - interval '3 days',
+        '2025-12-31 10:00:00+00',
         'Build frontend interfaces',
-        current_timestamp - interval '2 days',
+        '2026-01-02 10:00:00+00',
         70000,
         'USD',
         100000,
@@ -118,7 +118,7 @@ insert into job (
         'year',
         array['javascript', 'react'],
         'Frontend Engineer',
-        current_timestamp - interval '2 days',
+        '2026-01-02 11:00:00+00',
         30,
         20
     ),
@@ -130,7 +130,7 @@ insert into job (
         'draft',
         :'location1ID',
         'remote',
-        current_timestamp - interval '1 day',
+        '2025-12-30 10:00:00+00',
         'Draft role that must not appear',
         null,
         300000,
@@ -142,7 +142,7 @@ insert into job (
         'year',
         array['go'],
         'Draft Principal Engineer',
-        current_timestamp - interval '1 day',
+        '2025-12-30 11:00:00+00',
         90,
         95
     );
@@ -155,28 +155,123 @@ insert into job_project (job_id, project_id) values
 -- TESTS
 -- ============================================================================
 
--- Should return only published jobs by default
+-- Should return full payload for published jobs by default
 select is(
-    (select total from search_jobs('{}'::jsonb)),
-    2::bigint,
-    'Should return only published jobs by default'
-);
-
--- Should sort by published_at descending by default
-select is(
-    (
-        select (jobs::jsonb->0->>'job_id')::uuid
-        from search_jobs('{}'::jsonb)
+    jobboard_search_jobs('{}'::jsonb)::jsonb,
+    jsonb_build_object(
+        'jobs',
+        jsonb_build_array(
+            jsonb_build_object(
+                'employer',
+                jsonb_build_object(
+                    'company', 'Acme Corp',
+                    'employer_id', :'employer1ID'::text,
+                    'members',
+                    jsonb_build_array(
+                        jsonb_build_object(
+                            'foundation', 'cncf',
+                            'level', 'platinum',
+                            'logo_url', 'https://example.com/member-cncf.svg',
+                            'member_id', :'memberCNCFID'::text,
+                            'name', 'Acme Foundation'
+                        )
+                    )
+                ),
+                'job_id', :'job1ID'::text,
+                'kind', 'full-time',
+                'location',
+                jsonb_build_object(
+                    'city', 'San Francisco',
+                    'country', 'United States',
+                    'location_id', :'location1ID'::text,
+                    'state', 'CA'
+                ),
+                'open_source', 80,
+                'projects',
+                jsonb_build_array(
+                    jsonb_build_object(
+                        'foundation', 'cncf',
+                        'logo_url', 'https://example.com/project-cncf.svg',
+                        'maturity', 'graduated',
+                        'name', 'Kubernetes',
+                        'project_id', :'projectCNCFID'::text
+                    )
+                ),
+                'published_at', to_jsonb('2026-01-03 10:00:00+00'::timestamptz),
+                'salary', 150000,
+                'salary_currency', 'USD',
+                'salary_max', 200000,
+                'salary_min', 100000,
+                'salary_period', 'year',
+                'seniority', 'senior',
+                'skills', jsonb_build_array('rust', 'kubernetes'),
+                'title', 'Kubernetes Platform Engineer',
+                'updated_at', to_jsonb('2026-01-03 11:00:00+00'::timestamptz),
+                'upstream_commitment', 70,
+                'workplace', 'remote'
+            ),
+            jsonb_build_object(
+                'employer',
+                jsonb_build_object(
+                    'company', 'Beta Inc',
+                    'employer_id', :'employer2ID'::text,
+                    'members',
+                    jsonb_build_array(
+                        jsonb_build_object(
+                            'foundation', 'lf',
+                            'level', 'gold',
+                            'logo_url', 'https://example.com/member-lf.svg',
+                            'member_id', :'memberLFID'::text,
+                            'name', 'Beta Foundation'
+                        )
+                    )
+                ),
+                'job_id', :'job2ID'::text,
+                'kind', 'full-time',
+                'location',
+                jsonb_build_object(
+                    'city', 'New York',
+                    'country', 'United States',
+                    'location_id', :'location2ID'::text,
+                    'state', 'NY'
+                ),
+                'open_source', 20,
+                'projects',
+                jsonb_build_array(
+                    jsonb_build_object(
+                        'foundation', 'lf',
+                        'logo_url', 'https://example.com/project-lf.svg',
+                        'maturity', 'incubating',
+                        'name', 'OpenTofu',
+                        'project_id', :'projectLFID'::text
+                    )
+                ),
+                'published_at', to_jsonb('2026-01-02 10:00:00+00'::timestamptz),
+                'salary', 70000,
+                'salary_currency', 'USD',
+                'salary_max', 100000,
+                'salary_min', 60000,
+                'salary_period', 'year',
+                'seniority', 'junior',
+                'skills', jsonb_build_array('javascript', 'react'),
+                'title', 'Frontend Engineer',
+                'updated_at', to_jsonb('2026-01-02 11:00:00+00'::timestamptz),
+                'upstream_commitment', 30,
+                'workplace', 'hybrid'
+            )
+        ),
+        'total', 2
     ),
-    :'job1ID'::uuid,
-    'Should sort by published_at descending by default'
+    'Should return full payload for published jobs by default'
 );
 
 -- Should filter by foundation
 select is(
     (
         select total
-        from search_jobs('{"foundation":"cncf"}'::jsonb)
+        from (
+            select (jobboard_search_jobs('{"foundation":"cncf"}'::jsonb)->>'total')::bigint as total
+        ) t
     ),
     1::bigint,
     'Should filter by foundation'
@@ -186,7 +281,9 @@ select is(
 select is(
     (
         select total
-        from search_jobs('{"ts_query":"kuber"}'::jsonb)
+        from (
+            select (jobboard_search_jobs('{"ts_query":"kuber"}'::jsonb)->>'total')::bigint as total
+        ) t
     ),
     1::bigint,
     'Should filter by full text query with prefix matching'
@@ -196,7 +293,9 @@ select is(
 select is(
     (
         select total
-        from search_jobs('{"membership":"lf"}'::jsonb)
+        from (
+            select (jobboard_search_jobs('{"membership":"lf"}'::jsonb)->>'total')::bigint as total
+        ) t
     ),
     1::bigint,
     'Should filter by employer membership foundation'
@@ -206,7 +305,7 @@ select is(
 select is(
     (
         select (jobs::jsonb->0->>'job_id')::uuid
-        from search_jobs('{"sort":"salary"}'::jsonb)
+        from (select jobboard_search_jobs('{"sort":"salary"}'::jsonb)->'jobs' as jobs) t
     ),
     :'job1ID'::uuid,
     'Should sort by salary when requested'

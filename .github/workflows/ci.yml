@@ -77,7 +77,7 @@ jobs:
         uses: actions/checkout@v5
       - name: Apply database migrations
         working-directory: ./database/migrations
-        run: TERN_CONF=${{ github.workspace }}/.github/workflows/tern.conf PGPORT=${{ job.services.postgres.ports[5432] }} ./migrate.sh
+        run: TERN_CONF=../../../.github/workflows/tern.conf PGPORT=${{ job.services.postgres.ports[5432] }} ./migrate.sh
       - name: Install pgtap database extension
         run: PGPASSWORD=tests psql -h postgres -p ${{ job.services.postgres.ports[5432] }} -U tests tests -c 'create extension pgtap;'
       - name: Run database tests

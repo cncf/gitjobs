@@ -46,7 +46,9 @@
                  spellcheck="false"
                  required>
         </div>
-        <p class="form-legend">Your company's trade name.</p>
+        <p class="form-legend">
+          Your company's trade name. Max {{ crate::validation::MAX_LEN_ENTITY_NAME }} characters.
+        </p>
       </div>
       {# End Company name -#}
 
@@ -94,7 +96,9 @@
         <div class="mt-2">
           <markdown-editor id="description" content="{{ employer.description }}" required></markdown-editor>
         </div>
-        <p class="form-legend">A short introduction of your company. You can use markdown to format the text.</p>
+        <p class="form-legend">
+          A short introduction of your company. You can use markdown to format the text. Max {{ crate::validation::MAX_LEN_DESCRIPTION }} characters.
+        </p>
       </div>
       {# End Description -#}
 

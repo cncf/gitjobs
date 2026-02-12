@@ -250,6 +250,9 @@
                         maxlength="{{ crate::validation::MAX_LEN_DESCRIPTION_SHORT }}"
                         class="block p-2.5 w-full text-sm text-stone-900 bg-white border border-stone-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                         placeholder="Please indicate the publisher the reason the job was rejected."></textarea>
+              <p class="form-legend mt-3">
+                Max {{ crate::validation::MAX_LEN_DESCRIPTION_SHORT }} characters.
+              </p>
             </div>
             <div class="flex justify-end">
               <button type="submit" class="btn-primary mb-2">Reject</button>

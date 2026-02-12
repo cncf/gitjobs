@@ -128,6 +128,7 @@
                        spellcheck="false"
                        required>
               </div>
+              <p class="form-legend">Max {{ crate::validation::MAX_LEN_DISPLAY_NAME }} characters.</p>
             </div>
             {# End name -#}
 
@@ -146,6 +147,7 @@
                        autocapitalize="off"
                        spellcheck="false">
               </div>
+              <p class="form-legend">Max {{ crate::validation::MAX_LEN_M }} characters.</p>
             </div>
             {# End phone -#}
 
@@ -163,6 +165,7 @@
                        class="input-primary"
                        required>
               </div>
+              <p class="form-legend">Max {{ crate::validation::MAX_LEN_M }} characters.</p>
             </div>
             {# End email -#}
 
@@ -185,7 +188,9 @@
               <div class="mt-2">
                 <markdown-editor id="summary" content="{{ profile.summary }}" required></markdown-editor>
               </div>
-              <p class="form-legend">A short introduction of yourself. You can use markdown to format the text.</p>
+              <p class="form-legend">
+                A short introduction of yourself. You can use markdown to format the text. Max {{ crate::validation::MAX_LEN_BIO }} characters.
+              </p>
             </div>
             {# End Summary -#}
 

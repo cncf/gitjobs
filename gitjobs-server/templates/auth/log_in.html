@@ -55,6 +55,7 @@
                    autocapitalize="off"
                    spellcheck="false"
                    required />
+            <p class="form-legend">Max {{ crate::validation::MAX_LEN_S }} characters.</p>
           </div>
           <div>
             <label for="password" class="block mb-2 text-sm font-medium text-stone-900">Password</label>
@@ -65,6 +66,9 @@
                    maxlength="{{ crate::validation::MAX_LEN_S }}"
                    class="input-primary"
                    required />
+            <p class="form-legend">
+              Min {{ crate::validation::MIN_PASSWORD_LEN }} characters.
+            </p>
           </div>
 
           {# Submit button -#}

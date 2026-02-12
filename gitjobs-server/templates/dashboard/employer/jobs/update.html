@@ -62,7 +62,9 @@
                    spellcheck="false"
                    required>
           </div>
-          <p class="form-legend">Job position (e.g. Backend engineer).</p>
+          <p class="form-legend">
+            Job position (e.g. Backend engineer). Max {{ crate::validation::MAX_LEN_ENTITY_NAME }} characters.
+          </p>
         </div>
         {# End Job title -#}
 
@@ -177,7 +179,9 @@
           <div class="mt-2">
             <markdown-editor id="description" content="{{ job.description }}" required></markdown-editor>
           </div>
-          <p class="form-legend">Description of the job. You can use markdown to format the text.</p>
+          <p class="form-legend">
+            Description of the job. You can use markdown to format the text. Max {{ crate::validation::MAX_LEN_DESCRIPTION }} characters.
+          </p>
         </div>
         {# End Job Description -#}
 
@@ -208,7 +212,7 @@
             <markdown-editor id="responsibilities" content="{{ job.responsibilities|display_some }}"></markdown-editor>
           </div>
           <p class="form-legend">
-            Explain to potential candidates what they will do at this job and what their responsibilities will be.
+            Explain to potential candidates what they will do at this job and what their responsibilities will be. Max {{ crate::validation::MAX_LEN_DESCRIPTION }} characters.
           </p>
         </div>
         {# End Job responsibilities -#}
@@ -219,7 +223,9 @@
           <div class="mt-2">
             <markdown-editor id="qualifications" content="{{ job.qualifications|display_some }}"></markdown-editor>
           </div>
-          <p class="form-legend">Education, experience and skills required for the job.</p>
+          <p class="form-legend">
+            Education, experience and skills required for the job. Max {{ crate::validation::MAX_LEN_DESCRIPTION }} characters.
+          </p>
         </div>
         {# End Job qualifications -#}
 
@@ -241,7 +247,9 @@
           <div class="mt-2">
             <markdown-editor id="apply_instructions" content="{{ job.apply_instructions|display_some }}"></markdown-editor>
           </div>
-          <p class="form-legend">Additional instructions on how to apply to the job position.</p>
+          <p class="form-legend">
+            Additional instructions on how to apply to the job position. Max {{ crate::validation::MAX_LEN_DESCRIPTION }} characters.
+          </p>
         </div>
         {# End apply instructions -#}
 

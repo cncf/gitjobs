@@ -61,6 +61,7 @@
                        spellcheck="false"
                        required>
               </div>
+              <p class="form-legend">Max {{ crate::validation::MAX_LEN_DISPLAY_NAME }} characters.</p>
             </div>
             {# End name -#}
 
@@ -77,6 +78,7 @@
                        class="input-primary"
                        required>
               </div>
+              <p class="form-legend">Max {{ crate::validation::MAX_LEN_M }} characters.</p>
             </div>
             {# End Email -#}
 
@@ -97,6 +99,7 @@
                        spellcheck="false"
                        required>
               </div>
+              <p class="form-legend">Max {{ crate::validation::MAX_LEN_S }} characters.</p>
             </div>
             {# End Username -#}
 
@@ -114,6 +117,9 @@
                        class="input-primary"
                        required>
               </div>
+              <p class="form-legend">
+                Min {{ crate::validation::MIN_PASSWORD_LEN }} characters.
+              </p>
             </div>
             {# End Password -#}
 
@@ -131,6 +137,9 @@
                        class="input-primary"
                        required>
               </div>
+              <p class="form-legend">
+                Min {{ crate::validation::MIN_PASSWORD_LEN }} characters.
+              </p>
             </div>
             {# End Repeat password -#}
           </div>

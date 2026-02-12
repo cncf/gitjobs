@@ -21,6 +21,7 @@
                    name="name"
                    id="name"
                    value="{{ user_summary.name }}"
+                   maxlength="{{ crate::validation::MAX_LEN_DISPLAY_NAME }}"
                    class="input-primary"
                    autocomplete="off"
                    autocorrect="off"
@@ -70,6 +71,8 @@
               <input type="password"
                      id="old_password"
                      name="old_password"
+                     minlength="{{ crate::validation::MIN_PASSWORD_LEN }}"
+                     maxlength="{{ crate::validation::MAX_LEN_M }}"
                      class="input-primary"
                      required>
             </div>
@@ -85,6 +88,8 @@
               <input type="password"
                      id="new_password"
                      name="new_password"
+                     minlength="{{ crate::validation::MIN_PASSWORD_LEN }}"
+                     maxlength="{{ crate::validation::MAX_LEN_S }}"
                      class="input-primary"
                      required>
             </div>
@@ -98,6 +103,8 @@
               <input type="password"
                      id="password_confirmation"
                      name="password_confirmation"
+                     minlength="{{ crate::validation::MIN_PASSWORD_LEN }}"
+                     maxlength="{{ crate::validation::MAX_LEN_S }}"
                      class="input-primary"
                      required>
             </div>

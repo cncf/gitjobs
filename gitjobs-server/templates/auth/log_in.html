@@ -48,6 +48,7 @@
             <input type="text"
                    id="username"
                    name="username"
+                   maxlength="{{ crate::validation::MAX_LEN_S }}"
                    class="input-primary"
                    autocomplete="off"
                    autocorrect="off"
@@ -60,6 +61,8 @@
             <input type="password"
                    id="password"
                    name="password"
+                   minlength="{{ crate::validation::MIN_PASSWORD_LEN }}"
+                   maxlength="{{ crate::validation::MAX_LEN_S }}"
                    class="input-primary"
                    required />
           </div>

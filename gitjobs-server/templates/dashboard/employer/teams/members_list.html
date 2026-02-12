@@ -136,7 +136,11 @@
 
             <label for="reject-reason"
                    class="block mb-4 text-sm font-medium text-stone-900">Email</label>
-            <input id="email" name="email" type="email" class="input-primary">
+            <input id="email"
+                   name="email"
+                   type="email"
+                   maxlength="{{ crate::validation::MAX_LEN_M }}"
+                   class="input-primary">
           </div>
           <div class="flex justify-end">
             <button id="add-member-submit-button" type="submit" class="btn-primary my-2">

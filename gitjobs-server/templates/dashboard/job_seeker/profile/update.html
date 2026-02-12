@@ -120,6 +120,7 @@
                        name="name"
                        id="name"
                        value="{{ profile.name }}"
+                       maxlength="{{ crate::validation::MAX_LEN_DISPLAY_NAME }}"
                        class="input-primary"
                        autocomplete="off"
                        autocorrect="off"
@@ -138,6 +139,7 @@
                        name="phone"
                        id="phone"
                        value="{{ profile.phone|display_some }}"
+                       maxlength="{{ crate::validation::MAX_LEN_M }}"
                        class="input-primary"
                        autocomplete="off"
                        autocorrect="off"
@@ -157,6 +159,7 @@
                        name="email"
                        id="email"
                        value="{{ profile.email }}"
+                       maxlength="{{ crate::validation::MAX_LEN_M }}"
                        class="input-primary"
                        required>
               </div>

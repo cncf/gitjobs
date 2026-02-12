@@ -1,0 +1,11 @@
+# Build extensions
+FROM postgres:16 AS builder
+RUN apt-get update
+RUN apt-get install -y git make postgresql-server-dev-16 gcc
+RUN git clone https://github.com/theory/pgtap
+RUN cd pgtap && make && make install && cd ..
+
+# Build final image
+FROM postgres:16
+RUN apt-get update && apt-get install -y postgis postgresql-16-postgis-3 && rm -rf /var/lib/apt/lists/*
+COPY --from=builder /usr/share/postgresql/16/extension/pgtap* /usr/share/postgresql/16/extension/

@@ -194,12 +194,15 @@ fn setup_employer_dashboard_router(state: State) -> Router<State> {
     // Setup middleware
     let check_user_has_profile_access =
         middleware::from_fn_with_state(state.clone(), auth::user_has_profile_access);
-    let check_user_owns_employer = middleware::from_fn_with_state(state.clone(), auth::user_owns_employer);
-    let check_user_owns_job = middleware::from_fn_with_state(state, auth::user_owns_job);
+    let check_user_owns_job = middleware::from_fn_with_state(state.clone(), auth::user_owns_job);
+    let check_user_owns_path_employer =
+        middleware::from_fn_with_state(state.clone(), auth::user_owns_path_employer);
+    let check_user_owns_selected_employer =
+        middleware::from_fn_with_state(state, auth::user_owns_selected_employer);
 
     // Setup router
     Router::new()
-        .route("/", get(dashboard::employer::home::page))
+        // Routes that require selected employer context
         .route(
             "/applications/list",
             get(dashboard::employer::applications::list_page),
@@ -210,26 +213,14 @@ fn setup_employer_dashboard_router(state: State) -> Router<State> {
                 .layer(check_user_has_profile_access.clone()),
         )
         .route(
-            "/employers/add",
-            get(dashboard::employer::employers::add_page).post(dashboard::employer::employers::add),
-        )
-        .route(
             "/employers/update",
             get(dashboard::employer::employers::update_page).put(dashboard::employer::employers::update),
         )
         .route(
-            "/employers/{employer_id}/select",
-            put(dashboard::employer::employers::select).layer(check_user_owns_employer.clone()),
-        )
-        .route(
-            "/invitations",
-            get(dashboard::employer::team::user_invitations_list_page),
-        )
-        .route("/jobs/list", get(dashboard::employer::jobs::list_page))
-        .route(
             "/jobs/add",
             get(dashboard::employer::jobs::add_page).post(dashboard::employer::jobs::add),
         )
+        .route("/jobs/list", get(dashboard::employer::jobs::list_page))
         .route(
             "/jobs/preview",
             post(dashboard::employer::jobs::preview_page_w_job),
@@ -261,14 +252,6 @@ fn setup_employer_dashboard_router(state: State) -> Router<State> {
                 .put(dashboard::employer::jobs::update)
                 .layer(check_user_owns_job.clone()),
         )
-        .route(
-            "/team/invitations/{employer_id}/accept",
-            put(dashboard::employer::team::accept_invitation),
-        )
-        .route(
-            "/team/invitations/{employer_id}/reject",
-            put(dashboard::employer::team::reject_invitation),
-        )
         .route("/team/members/add", post(dashboard::employer::team::add_member))
         .route(
             "/team/members/list",
@@ -277,6 +260,29 @@ fn setup_employer_dashboard_router(state: State) -> Router<State> {
         .route(
             "/team/members/{user_id}/delete",
             delete(dashboard::employer::team::delete_member),
+        )
+        .route_layer(check_user_owns_selected_employer)
+        // Routes that do not require selected employer context
+        .route("/", get(dashboard::employer::home::page))
+        .route(
+            "/employers/add",
+            get(dashboard::employer::employers::add_page).post(dashboard::employer::employers::add),
+        )
+        .route(
+            "/employers/{employer_id}/select",
+            put(dashboard::employer::employers::select).layer(check_user_owns_path_employer.clone()),
+        )
+        .route(
+            "/invitations",
+            get(dashboard::employer::team::user_invitations_list_page),
+        )
+        .route(
+            "/team/invitations/{employer_id}/accept",
+            put(dashboard::employer::team::accept_invitation),
+        )
+        .route(
+            "/team/invitations/{employer_id}/reject",
+            put(dashboard::employer::team::reject_invitation),
         )
 }
 

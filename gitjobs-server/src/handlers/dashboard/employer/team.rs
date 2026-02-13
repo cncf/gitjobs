@@ -381,6 +381,10 @@ mod tests {
             .times(1)
             .withf(move |id| *id == user_id)
             .returning(move |_| Ok(Some(sample_auth_user(user_id, auth_hash))));
+        db.expect_user_owns_employer()
+            .times(1)
+            .withf(move |id, employer| *id == user_id && *employer == employer_id)
+            .returning(|_, _| Ok(true));
         db.expect_add_team_member()
             .times(1)
             .withf(move |id, email| *id == employer_id && email == "invitee@example.test")
@@ -432,6 +436,10 @@ mod tests {
             .times(1)
             .withf(move |id| *id == user_id)
             .returning(move |_| Ok(Some(sample_auth_user(user_id, auth_hash))));
+        db.expect_user_owns_employer()
+            .times(1)
+            .withf(move |id, employer| *id == user_id && *employer == employer_id)
+            .returning(|_, _| Ok(true));
         db.expect_add_team_member()
             .times(1)
             .withf(move |id, email| *id == employer_id && email == "invitee@example.test")
@@ -474,6 +482,10 @@ mod tests {
             .times(1)
             .withf(move |id| *id == user_id)
             .returning(move |_| Ok(Some(sample_auth_user(user_id, auth_hash))));
+        db.expect_user_owns_employer()
+            .times(1)
+            .withf(move |id, employer| *id == user_id && *employer == employer_id)
+            .returning(|_, _| Ok(true));
         db.expect_add_team_member().times(0);
         db.expect_update_session().times(0..).returning(|_| Ok(()));
 
@@ -516,6 +528,10 @@ mod tests {
             .times(1)
             .withf(move |id| *id == user_id)
             .returning(move |_| Ok(Some(sample_auth_user(user_id, auth_hash))));
+        db.expect_user_owns_employer()
+            .times(1)
+            .withf(move |id, employer| *id == user_id && *employer == selected_employer_id)
+            .returning(|_, _| Ok(true));
         db.expect_delete_team_member()
             .times(1)
             .withf(move |employer, user| *employer == selected_employer_id && *user == user_id)
@@ -571,6 +587,10 @@ mod tests {
             .times(1)
             .withf(move |id| *id == user_id)
             .returning(move |_| Ok(Some(sample_auth_user(user_id, auth_hash))));
+        db.expect_user_owns_employer()
+            .times(1)
+            .withf(move |id, employer| *id == user_id && *employer == selected_employer_id)
+            .returning(|_, _| Ok(true));
         db.expect_delete_team_member()
             .times(1)
             .withf(move |employer, user| *employer == selected_employer_id && *user == user_id)

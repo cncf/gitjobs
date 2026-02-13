@@ -340,6 +340,10 @@ mod tests {
             .times(1)
             .withf(move |id| *id == user_id)
             .returning(move |_| Ok(Some(sample_auth_user(user_id, auth_hash))));
+        db.expect_user_owns_employer()
+            .times(1)
+            .withf(move |id, employer| *id == user_id && *employer == employer_id)
+            .returning(|_, _| Ok(true));
         db.expect_update_employer()
             .times(1)
             .withf(move |id, _| *id == employer_id)

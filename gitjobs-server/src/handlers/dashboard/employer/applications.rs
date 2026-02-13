@@ -184,10 +184,12 @@ mod tests {
     async fn test_profile_preview_route_returns_forbidden_when_access_is_denied() {
         // Setup identifiers and data structures
         let auth_hash = "hash";
+        let selected_employer_id = Uuid::new_v4();
         let profile_id = Uuid::new_v4();
         let session_id = session::Id::default();
         let user_id = Uuid::new_v4();
-        let session_record = sample_session_record(session_id, user_id, auth_hash, None);
+        let session_record =
+            sample_session_record(session_id, user_id, auth_hash, Some(selected_employer_id));
 
         // Setup database mock
         let mut db = MockDB::new();
@@ -199,6 +201,10 @@ mod tests {
             .times(1)
             .withf(move |id| *id == user_id)
             .returning(move |_| Ok(Some(sample_auth_user(user_id, auth_hash))));
+        db.expect_user_owns_employer()
+            .times(1)
+            .withf(move |id, employer| *id == user_id && *employer == selected_employer_id)
+            .returning(|_, _| Ok(true));
         db.expect_user_has_profile_access()
             .times(1)
             .withf(move |id, profile| *id == user_id && *profile == profile_id)

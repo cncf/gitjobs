@@ -284,6 +284,10 @@ mod tests {
             .times(1)
             .withf(move |id| *id == user_id)
             .returning(move |_| Ok(Some(sample_auth_user(user_id, auth_hash))));
+        db.expect_user_owns_employer()
+            .times(1)
+            .withf(move |id, employer| *id == user_id && *employer == employer_id)
+            .returning(|_, _| Ok(true));
         db.expect_add_job().times(0);
         db.expect_update_session().times(0..).returning(|_| Ok(()));
 
@@ -356,9 +360,11 @@ mod tests {
         // Setup identifiers and data structures
         let auth_hash = "hash";
         let job_id = Uuid::new_v4();
+        let selected_employer_id = Uuid::new_v4();
         let session_id = session::Id::default();
         let user_id = Uuid::new_v4();
-        let session_record = sample_session_record(session_id, user_id, auth_hash, None);
+        let session_record =
+            sample_session_record(session_id, user_id, auth_hash, Some(selected_employer_id));
 
         // Setup database mock
         let mut db = MockDB::new();
@@ -370,6 +376,10 @@ mod tests {
             .times(1)
             .withf(move |id| *id == user_id)
             .returning(move |_| Ok(Some(sample_auth_user(user_id, auth_hash))));
+        db.expect_user_owns_employer()
+            .times(1)
+            .withf(move |id, employer| *id == user_id && *employer == selected_employer_id)
+            .returning(|_, _| Ok(true));
         db.expect_user_owns_job()
             .times(1)
             .withf(move |id, job| *id == user_id && *job == job_id)

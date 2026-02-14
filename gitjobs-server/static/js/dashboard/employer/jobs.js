@@ -1,5 +1,4 @@
-import { handleHtmxResponse, handlePreviewResponse } from "/static/js/common/alerts.js";
-import { toggleModalVisibility } from "/static/js/common/common.js";
+import { handleHtmxResponse, handlePreviewModalResponse } from "/static/js/common/alerts.js";
 
 /**
  * Triggers an HTMX action on a form element.
@@ -218,15 +217,11 @@ export const initializeEmployerJobForm = ({ successMessage, errorMessage, publis
   const previewButton = document.getElementById("preview-button");
   if (previewButton) {
     previewButton.addEventListener("htmx:afterRequest", (event) => {
-      if (
-        handlePreviewResponse({
-          xhr: event.detail.xhr,
-          invalidMessage: "You must fill in all required fields to be able to preview the job.",
-          errorMessage: "Something went wrong previewing the data. Please try again later.",
-        })
-      ) {
-        toggleModalVisibility("preview-modal", "open");
-      }
+      handlePreviewModalResponse({
+        xhr: event.detail.xhr,
+        invalidMessage: "You must fill in all required fields to be able to preview the job.",
+        errorMessage: "Something went wrong previewing the data. Please try again later.",
+      });
     });
   }
 };

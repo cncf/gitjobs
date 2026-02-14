@@ -198,10 +198,7 @@
 
 <script type="module">
   import {
-    toggleModalVisibility
-  } from '/static/js/common/common.js';
-  import {
-    handlePreviewResponse,
+    handlePreviewModalResponse,
   } from '/static/js/common/alerts.js';
 
   const jobsBtn = document.getElementById('jobs-btn');
@@ -229,12 +226,10 @@
   const previewButtons = document.querySelectorAll('.preview-button');
   previewButtons.forEach((button) => {
     button.addEventListener('htmx:afterRequest', (e) => {
-      if (handlePreviewResponse({
-          xhr: e.detail.xhr,
-          errorMessage: 'Something went wrong previewing the data. Please try again later.'
-        })) {
-        toggleModalVisibility('preview-modal', "open");
-      }
+      handlePreviewModalResponse({
+        xhr: e.detail.xhr,
+        errorMessage: 'Something went wrong previewing the data. Please try again later.'
+      });
     });
   });
 </script>

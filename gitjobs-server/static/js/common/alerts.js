@@ -1,3 +1,5 @@
+import { toggleModalVisibility } from "/static/js/common/common.js";
+
 /**
  * Returns common configuration options for all alert dialogs.
  * Includes positioning, styling, and custom CSS classes.
@@ -141,6 +143,29 @@ export const handlePreviewResponse = ({ xhr, errorMessage, invalidMessage = "" }
   }
 
   return handleHtmxResponse({ xhr, errorMessage });
+};
+
+/**
+ * Handles preview request responses and opens the preview modal on success.
+ * @param {Object} params - Preview modal response params
+ * @param {XMLHttpRequest} params.xhr - XHR object from HTMX event
+ * @param {string} params.errorMessage - Generic preview error message
+ * @param {string} [params.invalidMessage] - Optional message for 422 invalid input
+ * @param {string} [params.modalId="preview-modal"] - Preview modal id
+ * @returns {boolean} True when preview modal is opened
+ */
+export const handlePreviewModalResponse = ({
+  xhr,
+  errorMessage,
+  invalidMessage = "",
+  modalId = "preview-modal",
+}) => {
+  if (!handlePreviewResponse({ xhr, errorMessage, invalidMessage })) {
+    return false;
+  }
+
+  toggleModalVisibility(modalId, "open");
+  return true;
 };
 
 /**

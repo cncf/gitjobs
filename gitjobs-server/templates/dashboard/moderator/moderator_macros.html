@@ -65,6 +65,7 @@
                   {% if kind == "pending" -%}
                     <div>
                       <button hx-put="/dashboard/moderator/jobs/{{ job.job_id }}/approve"
+                              data-approve-job-button="true"
                               hx-disabled-elt="this"
                               class="btn-tertiary p-2"
                               title="Approve">
@@ -127,6 +128,7 @@
       {% if kind == "pending" -%}
         <div>
           <button hx-put="/dashboard/moderator/jobs/{{ job.job_id }}/approve"
+                  data-approve-job-button="true"
                   hx-disabled-elt="this"
                   class="btn-primary-outline btn-mini flex items-center justify-center space-x-2 group w-[95px]">
             <div class="svg-icon size-3 icon-check group-hover:bg-white"></div>
@@ -250,9 +252,7 @@
                         maxlength="{{ crate::validation::MAX_LEN_DESCRIPTION_SHORT }}"
                         class="block p-2.5 w-full text-sm text-stone-900 bg-white border border-stone-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                         placeholder="Please indicate the publisher the reason the job was rejected."></textarea>
-              <p class="form-legend mt-3">
-                Max {{ crate::validation::MAX_LEN_DESCRIPTION_SHORT }} characters.
-              </p>
+              <p class="form-legend mt-3">Max {{ crate::validation::MAX_LEN_DESCRIPTION_SHORT }} characters.</p>
             </div>
             <div class="flex justify-end">
               <button type="submit" class="btn-primary mb-2">Reject</button>
@@ -265,8 +265,21 @@
   </div>
   <script type="module">
     import {
+      handleHtmxResponse
+    } from '/static/js/common/alerts.js';
+    import {
       toggleModalVisibility
     } from '/static/js/common/common.js';
+
+    const approveButtons = document.querySelectorAll('[data-approve-job-button]');
+    approveButtons.forEach((button) => {
+      button.addEventListener('htmx:afterRequest', (e) => {
+        handleHtmxResponse({
+          xhr: e.detail.xhr,
+          errorMessage: 'Something went wrong approving this job. Please try again later.'
+        });
+      });
+    });
 
     // On reject button click, show the reject modal
     const rejectButtons = document.querySelectorAll('.reject-modal');
@@ -281,6 +294,19 @@
         toggleModalVisibility('reject-modal', "open");
       });
     });
+
+    const rejectJobForm = document.getElementById('reject-job-form');
+    if (rejectJobForm) {
+      rejectJobForm.addEventListener('htmx:afterRequest', (e) => {
+        if (handleHtmxResponse({
+            xhr: e.detail.xhr,
+            errorMessage: 'Something went wrong rejecting this job. Please try again later.'
+          })) {
+          rejectJobForm.reset();
+          toggleModalVisibility('reject-modal', "close");
+        }
+      });
+    }
 
     // Close reject modal
     const closeRejectModal = document.getElementById('close-reject-modal');

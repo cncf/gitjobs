@@ -44,6 +44,7 @@
               {# Disabled button on approved member when approved members number of team is 1 -#}
               {% let disabledButton = approved_members_count == 1 && member.approved -%}
               <button id="remove-member-{{ member.user_id }}"
+                      data-remove-member-button="true"
                       hx-delete="/dashboard/employer/team/members/{{ member.user_id }}/delete"
                       hx-disabled-elt="this"
                       hx-trigger="confirmed"
@@ -56,25 +57,6 @@
                       {% endif -%}>
                 <div class="svg-icon size-4 icon-trash"></div>
               </button>
-              <script type="module">
-                import {
-                  showConfirmAlert,
-                  handleHtmxResponse,
-                } from '/static/js/common/alerts.js';
-                const removeMemberButton = document.getElementById('remove-member-{{ member.user_id }}');
-                if (removeMemberButton) {
-                  removeMemberButton.addEventListener('click', (event) => {
-                    showConfirmAlert("Are you sure you would like to delete this team member?", "remove-member-{{ member.user_id }}", "Yes");
-                  });
-
-                  removeMemberButton.addEventListener("htmx:afterRequest", (e) => {
-                    handleHtmxResponse({
-                      xhr: e.detail.xhr,
-                      errorMessage: "Something went wrong deleting this team member. Please try again later."
-                    });
-                  });
-                }
-              </script>
             </div>
           </td>
           {# End actions -#}
@@ -156,6 +138,10 @@
 
 <script type="module">
   import {
+    showConfirmAlert,
+    handleHtmxResponse,
+  } from '/static/js/common/alerts.js';
+  import {
     toggleModalVisibility,
   } from '/static/js/common/common.js';
 
@@ -181,4 +167,18 @@
       toggleModalVisibility('add-member-modal', "close");
     });
   }
+
+  const removeMemberButtons = document.querySelectorAll('[data-remove-member-button]');
+  removeMemberButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      showConfirmAlert("Are you sure you would like to delete this team member?", button.id, "Yes");
+    });
+
+    button.addEventListener('htmx:afterRequest', (e) => {
+      handleHtmxResponse({
+        xhr: e.detail.xhr,
+        errorMessage: "Something went wrong deleting this team member. Please try again later."
+      });
+    });
+  });
 </script>

@@ -48,6 +48,7 @@
 
                 <div>
                   <button id="reject-employer-{{ invitation.employer_id }}"
+                          data-reject-invitation-button="true"
                           hx-put="/dashboard/employer/team/invitations/{{ invitation.employer_id }}/reject"
                           hx-trigger="confirmed"
                           hx-disabled-elt="this"
@@ -55,25 +56,6 @@
                           title="Reject">
                     <div class="svg-icon size-2.5 md:size-3.5 icon-cancel"></div>
                   </button>
-                  <script type="module">
-                    import {
-                      showConfirmAlert,
-                      handleHtmxResponse,
-                    } from '/static/js/common/alerts.js';
-                    const rejectEmployerButton = document.getElementById('reject-employer-{{ invitation.employer_id }}');
-                    if (rejectEmployerButton) {
-                      rejectEmployerButton.addEventListener('click', (event) => {
-                        showConfirmAlert("Are you sure you would like to reject this invitation?", "reject-employer-{{ invitation.employer_id }}", "Yes");
-                      });
-
-                      rejectEmployerButton.addEventListener("htmx:afterRequest", (e) => {
-                        handleHtmxResponse({
-                          xhr: e.detail.xhr,
-                          errorMessage: "Something went wrong rejecting this invitation. Please try again later."
-                        });
-                      });
-                    }
-                  </script>
                 </div>
               </div>
             </td>
@@ -85,3 +67,24 @@
   </table>
 </div>
 {# End invitations Table -#}
+
+<script type="module">
+  import {
+    showConfirmAlert,
+    handleHtmxResponse
+  } from '/static/js/common/alerts.js';
+
+  const rejectButtons = document.querySelectorAll('[data-reject-invitation-button]');
+  rejectButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      showConfirmAlert("Are you sure you would like to reject this invitation?", button.id, "Yes");
+    });
+
+    button.addEventListener('htmx:afterRequest', (e) => {
+      handleHtmxResponse({
+        xhr: e.detail.xhr,
+        errorMessage: "Something went wrong rejecting this invitation. Please try again later."
+      });
+    });
+  });
+</script>

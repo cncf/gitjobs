@@ -143,29 +143,16 @@
               <div class="flex items-center gap-x-1 xl:gap-x-3">
                 {# Views job button -#}
                 <div>
-                  <button id="btn-stats-{{ job.job_id }}" class="btn-tertiary p-2 relative">
+                  <button id="btn-stats-{{ job.job_id }}"
+                          data-job-stats-button="true"
+                          data-job-id="{{ job.job_id }}"
+                          class="btn-tertiary p-2 relative">
                     <div class="svg-icon size-4 icon-stats"></div>
                     <div class="hidden" id="spinner-stats-{{ job.job_id }}">
                       {# Spinner for loading stats -#}
                       {{ macros::btn_spinner(id = format!("spinner-{}", job.job_id) , size = "size-6.5", htmx = false) -}}
                     </div>
                   </button>
-                  <script type="module">
-                    import {
-                      showStats
-                    } from '/static/js/dashboard/jobs/list.js';
-
-                    const btnStats = document.getElementById('btn-stats-{{ job.job_id }}');
-                    if (btnStats) {
-                      btnStats.addEventListener('click', () => {
-                        const spinnerStats = document.getElementById(`spinner-stats-{{ job.job_id }}`);
-                        if (spinnerStats) {
-                          spinnerStats.classList.remove('hidden');
-                        }
-                        showStats("{{job.job_id}}");
-                      });
-                    }
-                  </script>
                 </div>
                 {# End views job button -#}
 
@@ -210,6 +197,7 @@
                       {# Delete button -#}
                       <li>
                         <button id="delete-job-{{ job.job_id }}"
+                                data-delete-job-button="true"
                                 hx-delete="/dashboard/employer/jobs/{{ job.job_id }}/delete"
                                 hx-target="#dashboard-content"
                                 hx-indicator="#dashboard-spinner"
@@ -220,26 +208,6 @@
                             <div class="ms-2">Delete</div>
                           </div>
                         </button>
-                        <script type="module">
-                          import {
-                            showConfirmAlert,
-                            handleHtmxResponse,
-                          } from '/static/js/common/alerts.js';
-                          const deleteJobButton = document.getElementById('delete-job-{{ job.job_id }}');
-                          if (deleteJobButton) {
-                            deleteJobButton.addEventListener('click', (event) => {
-                              showConfirmAlert("Are you sure you wish to delete this job?", "delete-job-{{ job.job_id }}", "Yes");
-                            });
-
-                            deleteJobButton.addEventListener("htmx:afterRequest", (e) => {
-                              handleHtmxResponse({
-                                xhr: e.detail.xhr,
-                                successMessage: "You have successfully deleted the job.",
-                                errorMessage: "An error occurred deleting this job. Please try again later."
-                              });
-                            });
-                          }
-                        </script>
                       </li>
                       {# Archive button -#}
                       {% if job.status == JobStatus::Published -%}
@@ -269,6 +237,46 @@
     </tbody>
 
     <script type="module">
+      import {
+        showConfirmAlert,
+        handleHtmxResponse
+      } from '/static/js/common/alerts.js';
+      import {
+        showStats
+      } from '/static/js/dashboard/jobs/list.js';
+
+      const statsButtons = document.querySelectorAll('[data-job-stats-button]');
+      statsButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+          const jobId = button.dataset.jobId;
+          if (!jobId) {
+            return;
+          }
+
+          const spinnerStats = document.getElementById(`spinner-stats-${jobId}`);
+          if (spinnerStats) {
+            spinnerStats.classList.remove('hidden');
+          }
+
+          showStats(jobId);
+        });
+      });
+
+      const deleteJobButtons = document.querySelectorAll('[data-delete-job-button]');
+      deleteJobButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+          showConfirmAlert("Are you sure you wish to delete this job?", button.id, "Yes");
+        });
+
+        button.addEventListener('htmx:afterRequest', (e) => {
+          handleHtmxResponse({
+            xhr: e.detail.xhr,
+            successMessage: "You have successfully deleted the job.",
+            errorMessage: "An error occurred deleting this job. Please try again later."
+          });
+        });
+      });
+
       const btnActions = document.querySelectorAll('.btn-actions');
       btnActions.forEach((btnAction) => {
         btnAction.addEventListener('click', () => {

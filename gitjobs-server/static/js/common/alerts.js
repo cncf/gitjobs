@@ -126,6 +126,24 @@ export const handleHtmxResponse = ({
 };
 
 /**
+ * Handles common preview request responses.
+ * Returns true when preview content can be displayed.
+ * @param {Object} params - Preview response params
+ * @param {XMLHttpRequest} params.xhr - XHR object from HTMX event
+ * @param {string} params.errorMessage - Generic preview error message
+ * @param {string} [params.invalidMessage] - Optional message for 422 invalid input
+ * @returns {boolean} True when preview can be shown
+ */
+export const handlePreviewResponse = ({ xhr, errorMessage, invalidMessage = "" }) => {
+  if (xhr?.status === 422 && invalidMessage) {
+    showErrorAlert(invalidMessage);
+    return false;
+  }
+
+  return handleHtmxResponse({ xhr, errorMessage });
+};
+
+/**
  * Displays an informational alert with plain text message.
  * Auto-dismisses after 10 seconds.
  * @param {string} message - The info message to display

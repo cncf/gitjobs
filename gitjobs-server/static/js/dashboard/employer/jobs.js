@@ -1,4 +1,4 @@
-import { handleHtmxResponse, showErrorAlert } from "/static/js/common/alerts.js";
+import { handleHtmxResponse, handlePreviewResponse } from "/static/js/common/alerts.js";
 import { toggleModalVisibility } from "/static/js/common/common.js";
 
 /**
@@ -218,14 +218,10 @@ export const initializeEmployerJobForm = ({ successMessage, errorMessage, publis
   const previewButton = document.getElementById("preview-button");
   if (previewButton) {
     previewButton.addEventListener("htmx:afterRequest", (event) => {
-      if (event.detail.xhr.status === 422) {
-        showErrorAlert("You must fill in all required fields to be able to preview the job.");
-        return;
-      }
-
       if (
-        handleHtmxResponse({
+        handlePreviewResponse({
           xhr: event.detail.xhr,
+          invalidMessage: "You must fill in all required fields to be able to preview the job.",
           errorMessage: "Something went wrong previewing the data. Please try again later.",
         })
       ) {

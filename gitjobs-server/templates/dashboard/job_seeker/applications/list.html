@@ -101,13 +101,14 @@
   import {
     showConfirmAlert,
     handleHtmxResponse,
+    handlePreviewResponse,
   } from '/static/js/common/alerts.js';
 
   // On preview button click, show the preview modal
   const previewButtons = document.querySelectorAll('.preview-button');
   previewButtons.forEach((button) => {
     button.addEventListener('htmx:afterRequest', (e) => {
-      if (handleHtmxResponse({
+      if (handlePreviewResponse({
           xhr: e.detail.xhr,
           errorMessage: 'Something went wrong previewing the data. Please try again later.'
         })) {

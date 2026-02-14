@@ -198,29 +198,22 @@
 
 <script type="module">
   import {
+    initializeButtonDropdown
+  } from '/static/js/common/common.js';
+  import {
     handlePreviewModalResponse,
   } from '/static/js/common/alerts.js';
 
-  const jobsBtn = document.getElementById('jobs-btn');
-  const dropdownJobs = document.getElementById('dropdown-jobs');
-  if (jobsBtn) {
-    jobsBtn.addEventListener('click', () => {
-      const isOpen = dropdownJobs.classList.contains('hidden');
-      dropdownJobs.classList.toggle('hidden');
+  const hideJobsDropdown = initializeButtonDropdown({
+    buttonId: 'jobs-btn',
+    dropdownId: 'dropdown-jobs',
+    guardKey: '__gitjobsApplicationsDropdownBound'
+  });
 
-      // Close dropdown jobs when clicking outside
-      if (isOpen) {
-        document.addEventListener('click', (event) => {
-          if (!dropdownJobs.contains(event.target) && !jobsBtn.contains(event.target)) {
-            dropdownJobs.classList.add('hidden');
-          }
-        });
-      } else {
-        // Remove event listener when dropdown is closed
-        document.removeEventListener('click', () => {});
-      }
-    });
-  }
+  const dropdownJobButtons = document.querySelectorAll('#dropdown-jobs button');
+  dropdownJobButtons.forEach((button) => {
+    button.addEventListener('htmx:beforeRequest', hideJobsDropdown);
+  });
 
   // On preview button click, show the preview modal
   const previewButtons = document.querySelectorAll('.preview-button');

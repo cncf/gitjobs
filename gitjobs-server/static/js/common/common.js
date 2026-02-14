@@ -98,6 +98,74 @@ export const toggleModalVisibility = (modalId, status) => {
 };
 
 /**
+ * Initializes dropdown lifecycle for a button and menu pair.
+ * Supports outside-click close, Escape close, and duplicate-listener guards.
+ * @param {Object} options - Dropdown initialization options
+ * @param {string} options.buttonId - Trigger button element id
+ * @param {string} options.dropdownId - Dropdown menu element id
+ * @param {string} options.guardKey - Document key used to bind global listeners once
+ * @returns {Function} Function that closes the dropdown
+ */
+export const initializeButtonDropdown = ({ buttonId, dropdownId, guardKey }) => {
+  const hideDropdown = () => {
+    const currentButton = document.getElementById(buttonId);
+    const currentDropdown = document.getElementById(dropdownId);
+    if (!currentDropdown) {
+      return;
+    }
+
+    currentDropdown.classList.add("hidden");
+    if (currentButton) {
+      currentButton.setAttribute("aria-expanded", "false");
+    }
+  };
+
+  const button = document.getElementById(buttonId);
+  const dropdown = document.getElementById(dropdownId);
+  if (button && dropdown) {
+    button.addEventListener("click", (event) => {
+      event.stopPropagation();
+      const willOpen = dropdown.classList.contains("hidden");
+      dropdown.classList.toggle("hidden");
+      button.setAttribute("aria-expanded", willOpen ? "true" : "false");
+    });
+  }
+
+  if (guardKey && !document[guardKey]) {
+    document.addEventListener("click", (event) => {
+      const currentButton = document.getElementById(buttonId);
+      const currentDropdown = document.getElementById(dropdownId);
+      if (!currentButton || !currentDropdown || currentDropdown.classList.contains("hidden")) {
+        return;
+      }
+
+      if (!currentDropdown.contains(event.target) && !currentButton.contains(event.target)) {
+        hideDropdown();
+      }
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key !== "Escape") {
+        return;
+      }
+
+      const currentButton = document.getElementById(buttonId);
+      const currentDropdown = document.getElementById(dropdownId);
+      if (!currentButton || !currentDropdown || currentDropdown.classList.contains("hidden")) {
+        return;
+      }
+
+      hideDropdown();
+      currentButton.focus();
+    });
+
+    document[guardKey] = true;
+  }
+
+  return hideDropdown;
+};
+
+/**
  * Creates a debounced version of a function that delays execution.
  * Useful for limiting API calls on user input.
  * @param {Function} func - The function to debounce

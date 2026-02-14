@@ -278,28 +278,48 @@
       });
 
       const btnActions = document.querySelectorAll('.btn-actions');
-      btnActions.forEach((btnAction) => {
-        btnAction.addEventListener('click', () => {
-          const jobId = btnAction.dataset.jobId;
+      const closeActionsDropdowns = () => {
+        const allActionDropdowns = document.querySelectorAll('[id^="dropdown-actions-"]');
+        allActionDropdowns.forEach((dropdown) => {
+          dropdown.classList.add('hidden');
+        });
+      };
 
+      btnActions.forEach((btnAction) => {
+        btnAction.addEventListener('click', (event) => {
+          event.stopPropagation();
+          const jobId = btnAction.dataset.jobId;
           const dropdownActions = document.getElementById(`dropdown-actions-${jobId}`);
-          if (dropdownActions) {
-            const isOpen = dropdownActions.classList.contains('hidden');
-            dropdownActions.classList.toggle('hidden');
-            if (isOpen) {
-              // Close dropdown actions when clicking outside
-              document.addEventListener('click', (event) => {
-                if (!dropdownActions.contains(event.target) && !btnAction.contains(event.target)) {
-                  dropdownActions.classList.add('hidden');
-                }
-              });
-            } else {
-              // Remove event listener when dropdown is closed
-              document.removeEventListener('click', () => {});
-            }
+          if (!dropdownActions) {
+            return;
+          }
+
+          const shouldOpen = dropdownActions.classList.contains('hidden');
+          closeActionsDropdowns();
+          if (shouldOpen) {
+            dropdownActions.classList.remove('hidden');
           }
         });
       });
+
+      // Bind once to avoid duplicate document listeners across HTMX swaps.
+      if (!document.__gitjobsJobActionsDropdownBound) {
+        document.addEventListener('click', (event) => {
+          const clickedActionButton = event.target.closest('.btn-actions');
+          const clickedActionDropdown = event.target.closest('[id^="dropdown-actions-"]');
+          if (!clickedActionButton && !clickedActionDropdown) {
+            closeActionsDropdowns();
+          }
+        });
+
+        document.addEventListener('keydown', (event) => {
+          if (event.key === 'Escape') {
+            closeActionsDropdowns();
+          }
+        });
+
+        document.__gitjobsJobActionsDropdownBound = true;
+      }
     </script>
   </table>
 </div>

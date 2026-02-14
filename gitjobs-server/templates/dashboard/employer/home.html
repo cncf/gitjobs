@@ -99,36 +99,19 @@
 
   <script type="module">
     import {
-      processNewHtmxUrl
+      initializeButtonDropdown
     } from '/static/js/common/common.js';
 
-    const employerBtn = document.getElementById('employer-btn');
-    const dropdownEmployers = document.getElementById('dropdown-employers');
-    if (employerBtn) {
-      employerBtn.addEventListener('click', () => {
-        const isOpen = dropdownEmployers.classList.contains('hidden');
-        dropdownEmployers.classList.toggle('hidden');
+    const hideEmployersDropdown = initializeButtonDropdown({
+      buttonId: 'employer-btn',
+      dropdownId: 'dropdown-employers',
+      guardKey: '__gitjobsEmployersDropdownBound'
+    });
 
-        // Close dropdown employers when clicking outside
-        if (isOpen) {
-          document.addEventListener('click', (event) => {
-            if (!dropdownEmployers.contains(event.target) && !employerBtn.contains(event.target)) {
-              dropdownEmployers.classList.add('hidden');
-            }
-          });
-        } else {
-          // Remove event listener when dropdown is closed
-          document.removeEventListener('click', () => {});
-        }
-      });
-    }
-
-    const dropdownEmployerBtns = document.querySelectorAll('button.employer-button');
-    dropdownEmployerBtns.forEach((btn) => {
-      btn.addEventListener("htmx:beforeRequest", () => {
-        dropdownEmployers.classList.add('hidden');
-      });
-    })
+    const dropdownEmployerButtons = document.querySelectorAll('button.employer-button');
+    dropdownEmployerButtons.forEach((button) => {
+      button.addEventListener("htmx:beforeRequest", hideEmployersDropdown);
+    });
 
     const addEmployerButton = document.getElementById('add-employer-button');
     if (addEmployerButton) {

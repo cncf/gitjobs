@@ -383,6 +383,11 @@ input[type="range"]:focus-visible {
   -webkit-mask-image: url("/static/images/icons/clipboard.svg");
 }
 
+.icon-clock {
+  mask-image: url("/static/images/icons/clock.svg");
+  -webkit-mask-image: url("/static/images/icons/clock.svg");
+}
+
 .icon-close {
   mask-image: url("/static/images/icons/close.svg");
   -webkit-mask-image: url("/static/images/icons/close.svg");

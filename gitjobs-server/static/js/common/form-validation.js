@@ -367,6 +367,10 @@ const handleConfigRequest = (event) => {
     return;
   }
 
+  if (requestElement.id === "cancel-button" || requestElement.dataset?.skipValidation === "true") {
+    return;
+  }
+
   if (requestElement.matches("form")) {
     if (!validateForm(requestElement)) {
       event.preventDefault();

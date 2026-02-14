@@ -59,6 +59,7 @@
                 hx-target="#preview-content"
                 hx-indicator="#preview-spinner"
                 hx-disabled-elt="#update-profile-button, #preview-button"
+                data-skip-validation="true"
                 type="button"
                 class="group btn-primary-outline w-24">
           <span class="hidden md:block">Preview</span>
@@ -79,12 +80,22 @@
                 hx-ext="no-empty-vals"
                 hx-include="[name=photo_id], #profile-form, #experience-form, #education-form, #projects-form"
                 hx-indicator="#dashboard-spinner, #save-spinner"
-                hx-disabled-elt="#update-profile-button, #preview-button">
+                hx-disabled-elt="#update-profile-button, #preview-button"
+                data-skip-validation="true">
           {{ macros::btn_spinner(id = "save-spinner", spinner_type = "2") -}}
           Save
         </button>
       </div>
       {# End save button -#}
+    </div>
+  </div>
+
+  <div id="pending-changes-alert" class="hidden">
+    <div class="flex flex-wrap items-center justify-between gap-3 rounded-md border border-primary-200 bg-primary-50 px-4 py-3 text-primary-900">
+      <div class="flex min-w-0 flex-1 items-start gap-3">
+        <div class="svg-icon size-5 bg-primary-700 icon-clock mt-0.5 shrink-0"></div>
+        <p class="text-sm/6">You have pending changes. If you leave without saving, changes will be lost.</p>
+      </div>
     </div>
   </div>
 
@@ -378,6 +389,9 @@
     displayActiveSection,
     validateFormData
   } from '/static/js/dashboard/jobseeker/form.js';
+  import {
+    initializePendingChangesAlert
+  } from '/static/js/dashboard/jobseeker/pending-changes-alert.js';
 
   const sectionsBtn = document.querySelectorAll('[data-section]');
   sectionsBtn.forEach((btn) => {
@@ -385,6 +399,11 @@
       const section = btn.getAttribute('data-section');
       displayActiveSection(section);
     });
+  });
+
+  const pendingChangesAlert = initializePendingChangesAlert({
+    alertId: 'pending-changes-alert',
+    formIds: ['profile-form', 'experience-form', 'education-form', 'projects-form']
   });
 
   // On update button click, validate the form
@@ -397,11 +416,13 @@
     });
 
     updateBtn.addEventListener('htmx:afterRequest', (e) => {
-      handleHtmxResponse({
-        xhr: e.detail.xhr,
-        successMessage: 'Profile updated successfully.',
-        errorMessage: 'Something went wrong updating the profile. Please try again later.'
-      });
+      if (handleHtmxResponse({
+          xhr: e.detail.xhr,
+          successMessage: 'Profile updated successfully.',
+          errorMessage: 'Something went wrong updating the profile. Please try again later.'
+        })) {
+        pendingChangesAlert.markCurrentAsClean();
+      }
     });
   }
 

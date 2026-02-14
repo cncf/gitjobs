@@ -299,22 +299,6 @@
             </div>
           </div>
         </div>
-        <script type="module">
-          const salaryOptions = document.querySelectorAll('input[name="salary_kind"]');
-          const salaryOptionFixed = document.getElementById('salary_kind_fixed');
-          const salaryOptionRange = document.getElementById('salary_kind_range');
-          salaryOptions.forEach((option) => {
-            option.addEventListener('change', () => {
-              if (option.id === 'fixed') {
-                salaryOptionFixed.classList.remove('hidden');
-                salaryOptionRange.classList.add('hidden');
-              } else {
-                salaryOptionFixed.classList.add('hidden');
-                salaryOptionRange.classList.remove('hidden');
-              }
-            });
-          });
-        </script>
         {# End salary kind -#}
 
         {# Salary -#}
@@ -499,76 +483,14 @@
 
   <script type="module">
     import {
-      triggerActionOnForm,
-      checkSalaryBeforeSubmit,
-      checkOpenSourceValues,
-      checkJobTitle
+      initializeEmployerJobForm,
+      initializeSalaryKindToggle
     } from '/static/js/dashboard/employer/jobs.js';
-    import {
-      toggleModalVisibility,
-    } from '/static/js/common/common.js';
-    import {
-      handleHtmxResponse,
-      showErrorAlert,
-    } from '/static/js/common/alerts.js';
 
-    const jobsForm = document.getElementById('jobs-form');
-    const jobTitleInput = document.getElementById('title');
-    if (jobTitleInput) {
-      jobTitleInput.addEventListener('input', () => {
-        checkJobTitle(jobTitleInput);
-      });
-    }
-
-    // Check open source values on input change
-    const openSourceInput = document.querySelector('input[name="open_source"]');
-    if (openSourceInput) {
-      openSourceInput.addEventListener('input', checkOpenSourceValues);
-    }
-
-    // Check upstream commitment values on input change
-    const upstreamCommitmentInput = document.querySelector('input[name="upstream_commitment"]');
-    if (upstreamCommitmentInput) {
-      upstreamCommitmentInput.addEventListener('input', checkOpenSourceValues);
-    }
-
-    if (jobsForm) {
-      // Before the form is submitted, check the salary option selected
-      jobsForm.addEventListener('htmx:trigger', () => {
-        checkSalaryBeforeSubmit();
-      });
-
-      jobsForm.addEventListener('htmx:afterRequest', (e) => {
-        // Check if the form is the jobs form and not the input ts_query requesting locations
-        if (e.detail.elt.id === 'jobs-form') {
-          // Update hx-spinner
-          jobsForm.setAttribute('hx-indicator', '#dashboard-spinner, #save-spinner');
-
-          handleHtmxResponse({
-            xhr: e.detail.xhr,
-            successMessage: 'Job updated successfully.',
-            errorMessage: 'Something went wrong updating the job. Please try again later.'
-          });
-        }
-      });
-    }
-
-    // On preview button click, show the preview modal
-    const previewButton = document.getElementById('preview-button');
-    if (previewButton) {
-      previewButton.addEventListener('htmx:afterRequest', (e) => {
-        if (e.detail.xhr.status == 422) {
-          showErrorAlert('You must fill in all required fields to be able to preview the job.');
-          return;
-        }
-
-        if (handleHtmxResponse({
-            xhr: e.detail.xhr,
-            errorMessage: 'Something went wrong previewing the data. Please try again later.'
-          })) {
-          toggleModalVisibility('preview-modal', "open");
-        }
-      });
-    }
+    initializeSalaryKindToggle();
+    initializeEmployerJobForm({
+      successMessage: 'Job updated successfully.',
+      errorMessage: 'Something went wrong updating the job. Please try again later.'
+    });
   </script>
   {# End Jobs form -#}

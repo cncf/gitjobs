@@ -1,3 +1,6 @@
+import { handleHtmxResponse, showErrorAlert } from "/static/js/common/alerts.js";
+import { toggleModalVisibility } from "/static/js/common/common.js";
+
 /**
  * Triggers an HTMX action on a form element.
  * @param {string} formId - The ID of the form element
@@ -118,5 +121,116 @@ export const checkJobTitle = (input) => {
   const jobTitle = input.value.trim();
   if (jobTitle.toLowerCase().includes("remote")) {
     input.setCustomValidity("Please use the workplace field to indicate that a job is remote");
+  }
+};
+
+/**
+ * Wires salary kind toggle behavior for fixed/range sections.
+ */
+export const initializeSalaryKindToggle = () => {
+  const salaryOptions = document.querySelectorAll('input[name="salary_kind"]');
+  const salaryOptionFixed = document.getElementById("salary_kind_fixed");
+  const salaryOptionRange = document.getElementById("salary_kind_range");
+
+  if (!salaryOptions.length || !salaryOptionFixed || !salaryOptionRange) {
+    return;
+  }
+
+  salaryOptions.forEach((option) => {
+    option.addEventListener("change", () => {
+      if (option.id === "fixed") {
+        salaryOptionFixed.classList.remove("hidden");
+        salaryOptionRange.classList.add("hidden");
+      } else {
+        salaryOptionFixed.classList.add("hidden");
+        salaryOptionRange.classList.remove("hidden");
+      }
+    });
+  });
+};
+
+/**
+ * Initializes shared behavior for employer job add/update forms.
+ * @param {Object} options - Form behavior options
+ * @param {string} options.successMessage - Success message for save/update requests
+ * @param {string} options.errorMessage - Error message for save/update requests
+ * @param {string} [options.publishButtonId] - Optional publish button id
+ */
+export const initializeEmployerJobForm = ({ successMessage, errorMessage, publishButtonId = "" }) => {
+  const jobsForm = document.getElementById("jobs-form");
+  if (!jobsForm) {
+    return;
+  }
+
+  const jobTitleInput = document.getElementById("title");
+  if (jobTitleInput) {
+    jobTitleInput.addEventListener("input", () => {
+      checkJobTitle(jobTitleInput);
+    });
+  }
+
+  const openSourceInput = document.querySelector('input[name="open_source"]');
+  if (openSourceInput) {
+    openSourceInput.addEventListener("input", checkOpenSourceValues);
+  }
+
+  const upstreamCommitmentInput = document.querySelector('input[name="upstream_commitment"]');
+  if (upstreamCommitmentInput) {
+    upstreamCommitmentInput.addEventListener("input", checkOpenSourceValues);
+  }
+
+  jobsForm.addEventListener("htmx:trigger", () => {
+    checkSalaryBeforeSubmit();
+  });
+
+  jobsForm.addEventListener("htmx:afterRequest", (event) => {
+    if (event.detail.elt.id !== "jobs-form") {
+      return;
+    }
+
+    jobsForm.setAttribute("hx-indicator", "#dashboard-spinner, #save-spinner");
+    handleHtmxResponse({
+      xhr: event.detail.xhr,
+      successMessage,
+      errorMessage,
+    });
+  });
+
+  if (publishButtonId) {
+    const publishButton = document.getElementById(publishButtonId);
+    if (publishButton) {
+      publishButton.addEventListener("click", () => {
+        jobsForm.setAttribute("hx-indicator", "#dashboard-spinner, #publish-spinner");
+        const statusInput = jobsForm.querySelector('input[name="status"]');
+        if (statusInput) {
+          statusInput.value = "pending-approval";
+        }
+
+        if (!jobsForm.checkValidity()) {
+          jobsForm.reportValidity();
+        } else {
+          triggerActionOnForm("jobs-form", "submit");
+        }
+      });
+    }
+  }
+
+  const previewButton = document.getElementById("preview-button");
+  if (previewButton) {
+    previewButton.addEventListener("htmx:afterRequest", (event) => {
+      if (event.detail.xhr.status === 422) {
+        showErrorAlert("You must fill in all required fields to be able to preview the job.");
+        return;
+      }
+
+      if (
+        handleHtmxResponse({
+          xhr: event.detail.xhr,
+          errorMessage: "Something went wrong previewing the data. Please try again later.",
+        })
+      ) {
+        toggleModalVisibility("preview-modal", "open");
+      }
+    });
   }
 };

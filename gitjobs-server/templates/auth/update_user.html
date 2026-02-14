@@ -92,6 +92,7 @@
               <input type="password"
                      id="new_password"
                      name="new_password"
+                     data-password
                      minlength="{{ crate::validation::MIN_PASSWORD_LEN }}"
                      maxlength="{{ crate::validation::MAX_LEN_S }}"
                      class="input-primary"
@@ -110,6 +111,7 @@
               <input type="password"
                      id="password_confirmation"
                      name="password_confirmation"
+                     data-password-confirmation
                      minlength="{{ crate::validation::MIN_PASSWORD_LEN }}"
                      maxlength="{{ crate::validation::MAX_LEN_S }}"
                      class="input-primary"
@@ -135,43 +137,27 @@
 
 <script type="module">
   import {
-    showErrorAlert
+    handleHtmxResponse
   } from '/static/js/common/alerts.js';
-  import {
-    isSuccessfulXHRStatus
-  } from '/static/js/common/common.js';
 
   const userDetailsForm = document.getElementById('user-details-form');
   const passwordForm = document.getElementById('password-form');
 
   if (userDetailsForm) {
     userDetailsForm.addEventListener('htmx:afterRequest', (e) => {
-      if (!isSuccessfulXHRStatus(e.detail.xhr.status)) {
-        showErrorAlert('Something went wrong updating the user details, please try again later.');
-      }
+      handleHtmxResponse({
+        xhr: e.detail.xhr,
+        errorMessage: 'Something went wrong updating the user details. Please try again later.'
+      });
     });
   }
 
   if (passwordForm) {
-    const password = document.getElementById('new_password');
-    const passwordConfirmation = document.getElementById('password_confirmation');
-
-    const isValidPassword = () => {
-      // Check if passwords match
-      if (password.value !== passwordConfirmation.value) {
-        passwordConfirmation.setCustomValidity('Passwords do not match');
-      } else {
-        passwordConfirmation.setCustomValidity('');
-      }
-    };
-
-    password.addEventListener('input', isValidPassword);
-    passwordConfirmation.addEventListener('input', isValidPassword);
-
     passwordForm.addEventListener('htmx:afterRequest', (e) => {
-      if (!isSuccessfulXHRStatus(e.detail.xhr.status)) {
-        showErrorAlert('Something went wrong updating the password, please try again later.');
-      }
+      handleHtmxResponse({
+        xhr: e.detail.xhr,
+        errorMessage: 'Something went wrong updating the password. Please try again later.'
+      });
     });
   }
 </script>

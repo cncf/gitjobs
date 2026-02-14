@@ -368,12 +368,11 @@
 
 <script type="module">
   import {
-    toggleModalVisibility,
-    isSuccessfulXHRStatus
+    toggleModalVisibility
   } from '/static/js/common/common.js';
   import {
-    showErrorAlert,
-    showSuccessAlert
+    handleHtmxResponse,
+    showErrorAlert
   } from '/static/js/common/alerts.js';
   import {
     displayActiveSection,
@@ -398,11 +397,11 @@
     });
 
     updateBtn.addEventListener('htmx:afterRequest', (e) => {
-      if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
-        showSuccessAlert('Profile updated successfully.');
-      } else {
-        showErrorAlert('Something went wrong updating the profile, please try again later.');
-      }
+      handleHtmxResponse({
+        xhr: e.detail.xhr,
+        successMessage: 'Profile updated successfully.',
+        errorMessage: 'Something went wrong updating the profile. Please try again later.'
+      });
     });
   }
 
@@ -410,15 +409,16 @@
   const previewButton = document.getElementById('preview-button');
   if (previewButton) {
     previewButton.addEventListener('htmx:afterRequest', (e) => {
-      if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
+      if (e.detail.xhr.status == 422) {
+        showErrorAlert('You must fill in all required fields to be able to preview the profile.');
+        return;
+      }
+
+      if (handleHtmxResponse({
+          xhr: e.detail.xhr,
+          errorMessage: 'Something went wrong previewing the data. Please try again later.'
+        })) {
         toggleModalVisibility('preview-modal', "open");
-      } else {
-        // When the preview is not available, show an error message
-        if (e.detail.xhr.status == 422) {
-          showErrorAlert('You must fill in all required fields to be able to preview the profile.');
-        } else {
-          showErrorAlert('Something went wrong previewing the data, please try again later.');
-        }
       }
     });
   }

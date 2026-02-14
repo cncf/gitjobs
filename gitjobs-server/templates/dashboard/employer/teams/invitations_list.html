@@ -58,12 +58,8 @@
                   <script type="module">
                     import {
                       showConfirmAlert,
-                      showErrorAlert,
-                      showSuccessAlert,
+                      handleHtmxResponse,
                     } from '/static/js/common/alerts.js';
-                    import {
-                      isSuccessfulXHRStatus
-                    } from '/static/js/common/common.js';
                     const rejectEmployerButton = document.getElementById('reject-employer-{{ invitation.employer_id }}');
                     if (rejectEmployerButton) {
                       rejectEmployerButton.addEventListener('click', (event) => {
@@ -71,9 +67,10 @@
                       });
 
                       rejectEmployerButton.addEventListener("htmx:afterRequest", (e) => {
-                        if (!isSuccessfulXHRStatus(e.detail.xhr.status)) {
-                          showErrorAlert("Something went wrong rejecting this invitation. Please try again later.");
-                        }
+                        handleHtmxResponse({
+                          xhr: e.detail.xhr,
+                          errorMessage: "Something went wrong rejecting this invitation. Please try again later."
+                        });
                       });
                     }
                   </script>

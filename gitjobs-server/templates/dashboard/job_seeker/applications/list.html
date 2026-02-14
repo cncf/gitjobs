@@ -81,12 +81,8 @@
                 <script type="module">
                   import {
                     showConfirmAlert,
-                    showErrorAlert,
-                    showSuccessAlert,
+                    handleHtmxResponse
                   } from '/static/js/common/alerts.js';
-                  import {
-                    isSuccessfulXHRStatus
-                  } from '/static/js/common/common.js';
                   const cancelApplicationButton = document.getElementById('cancel-application-{{ application.application_id }}');
                   if (cancelApplicationButton) {
                     cancelApplicationButton.addEventListener('click', (event) => {
@@ -94,11 +90,11 @@
                     });
 
                     cancelApplicationButton.addEventListener("htmx:afterRequest", (e) => {
-                      if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
-                        showSuccessAlert("You have successfully canceled the application.");
-                      } else {
-                        showErrorAlert("An error occurred canceling this application, please try again later.");
-                      }
+                      handleHtmxResponse({
+                        xhr: e.detail.xhr,
+                        successMessage: "You have successfully canceled the application.",
+                        errorMessage: "An error occurred canceling this application. Please try again later."
+                      });
                     });
                   }
                 </script>
@@ -120,21 +116,20 @@
 <script type="module">
   import {
     toggleModalVisibility,
-    isSuccessfulXHRStatus
   } from '/static/js/common/common.js';
   import {
-    showErrorAlert,
+    handleHtmxResponse,
   } from '/static/js/common/alerts.js';
 
   // On preview button click, show the preview modal
   const previewButtons = document.querySelectorAll('.preview-button');
   previewButtons.forEach((button) => {
     button.addEventListener('htmx:afterRequest', (e) => {
-      if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
+      if (handleHtmxResponse({
+          xhr: e.detail.xhr,
+          errorMessage: 'Something went wrong previewing the data. Please try again later.'
+        })) {
         toggleModalVisibility('preview-modal', "open");
-      } else {
-        // When the preview is not available, show an error message
-        showErrorAlert('Something went wrong previewing the data, please try again later.');
       }
     });
   });

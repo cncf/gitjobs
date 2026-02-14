@@ -202,11 +202,7 @@
 
   <script type="module">
     import {
-      isSuccessfulXHRStatus
-    } from '/static/js/common/common.js';
-    import {
-      showErrorAlert,
-      showSuccessAlert
+      handleHtmxResponse
     } from '/static/js/common/alerts.js';
 
     const cleanImage = document.getElementById('clean-image');
@@ -218,16 +214,19 @@
     if (imagesForm && image && inputHidden && placeholderImage) {
       // On image upload, show the image and enable clear button, and hide the placeholder
       imagesForm.addEventListener('htmx:afterRequest', (e) => {
-        if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
-          showSuccessAlert('Image added successfully.');
+        if (handleHtmxResponse({
+            xhr: e.detail.xhr,
+            successMessage: 'Image added successfully.',
+            errorMessage: 'Something went wrong adding the image. Please try again later.<br /><br /><div class="text-sm text-stone-500">Images must be at least 400x400, preferably in square format. Maximum file size: 1MB. Formats supported: SVG, PNG, JPEG, GIF, WEBP and TIFF.</div>',
+            errorWithHtml: true,
+            treatUnprocessableAsGenericError: true
+          })) {
           const imageId = e.detail.xhr.response;
           inputHidden.value = imageId;
           image.setAttribute('src', `/dashboard/images/${imageId}/small`);
           image.classList.remove('hidden');
           placeholderImage.classList.add('hidden');
           cleanImage.removeAttribute('disabled');
-        } else {
-          showErrorAlert('Something went wrong adding the image, please try again later.<br /><br /><div class="text-sm text-stone-500">Images must be at least 400x400, preferably in square format. Maximum file size: 1MB. Formats supported: SVG, PNG, JPEG, GIF, WEBP and TIFF.</div>', true);
         }
       });
 

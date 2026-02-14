@@ -66,21 +66,22 @@
     updateResults
   } from '/static/js/jobboard/filters.js';
   import {
-    toggleModalVisibility,
-    isSuccessfulXHRStatus,
     addParamToQueryString,
     trackerJobView,
     trackSearchAppearances
   } from '/static/js/common/common.js';
   import {
-    showErrorAlert,
+    handleHtmxResponse,
   } from '/static/js/common/alerts.js';
 
   const previewBtns = document.querySelectorAll('[data-preview-job]');
 
   previewBtns.forEach((btn) => {
     btn.addEventListener('htmx:afterRequest', (e) => {
-      if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
+      if (handleHtmxResponse({
+          xhr: e.detail.xhr,
+          errorMessage: 'This job is no longer available. It may have been removed recently.'
+        })) {
         const job_id =  btn.dataset.jobId
         addParamToQueryString('job_id',job_id, { modal_preview: true });
         // Register views for the job on click and open-modal events
@@ -89,9 +90,6 @@
         if (['open-modal', 'click'].includes(e.detail.requestConfig.triggeringEvent.type)) {
           trackerJobView(job_id);
         }
-      } else {
-        // When the preview is not available, show an error message
-        showErrorAlert('This job is no longer available. It may have been removed recently.');
       }
     });
   });

@@ -461,11 +461,10 @@
   } from '/static/js/dashboard/employer/jobs.js';
   import {
     toggleModalVisibility,
-    isSuccessfulXHRStatus
   } from '/static/js/common/common.js';
   import {
+    handleHtmxResponse,
     showErrorAlert,
-    showSuccessAlert
   } from '/static/js/common/alerts.js';
 
   const jobsForm = document.getElementById('jobs-form');
@@ -501,11 +500,11 @@
         // Update hx-spinner
         jobsForm.setAttribute('hx-indicator', '#dashboard-spinner, #save-spinner');
 
-        if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
-          showSuccessAlert('Job added successfully.');
-        } else {
-          showErrorAlert('Something went wrong adding the job, please try again later.');
-        }
+        handleHtmxResponse({
+          xhr: e.detail.xhr,
+          successMessage: 'Job added successfully.',
+          errorMessage: 'Something went wrong adding the job. Please try again later.'
+        });
       }
     });
   }
@@ -534,15 +533,16 @@
   const previewButton = document.getElementById('preview-button');
   if (previewButton) {
     previewButton.addEventListener('htmx:afterRequest', (e) => {
-      if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
+      if (e.detail.xhr.status == 422) {
+        showErrorAlert('You must fill in all required fields to be able to preview the job.');
+        return;
+      }
+
+      if (handleHtmxResponse({
+          xhr: e.detail.xhr,
+          errorMessage: 'Something went wrong previewing the data. Please try again later.'
+        })) {
         toggleModalVisibility('preview-modal', "open");
-      } else {
-        // When the preview is not available, show an error message
-        if (e.detail.xhr.status == 422) {
-          showErrorAlert('You must fill in all required fields to be able to preview the job.');
-        } else {
-          showErrorAlert('Something went wrong previewing the data, please try again later.');
-        }
       }
     });
   }

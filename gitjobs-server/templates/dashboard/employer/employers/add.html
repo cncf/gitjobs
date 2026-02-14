@@ -124,20 +124,18 @@
 </div>
 <script type="module">
   import {
-    showErrorAlert,
+    handleHtmxResponse
   } from '/static/js/common/alerts.js';
-  import {
-    isSuccessfulXHRStatus,
-  } from '/static/js/common/common.js';
 
   const employerForm = document.getElementById('employer-form');
   if (employerForm) {
     employerForm.addEventListener('htmx:afterRequest', (e) => {
       // Check if the form is the employer form and not the input ts_query requesting locations
       if (e.detail.elt.id === 'employer-form') {
-        if (!isSuccessfulXHRStatus(e.detail.xhr.status)) {
-          showErrorAlert('Something went wrong adding the profile, please try again later.');
-        }
+        handleHtmxResponse({
+          xhr: e.detail.xhr,
+          errorMessage: 'Something went wrong adding the profile. Please try again later.'
+        });
       }
     });
   }

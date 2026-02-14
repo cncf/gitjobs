@@ -41,20 +41,88 @@ export const showSuccessAlert = (message) => {
  * Auto-dismisses after 30 seconds to ensure user sees errors.
  * @param {string} message - The error message to display
  * @param {boolean} withHtml - Whether to display the message as HTML content
+ * @param {boolean} persist - Whether to keep the alert until dismissed
  */
-export const showErrorAlert = (message, withHtml = false) => {
+export const showErrorAlert = (message, withHtml = false, persist = false) => {
   const alertOptions = {
     text: message,
     icon: "error",
     showConfirmButton: true,
-    timer: 30000,
     ...getCommonAlertOptions(),
   };
+  if (!persist) {
+    alertOptions.timer = 30000;
+  }
   if (withHtml) {
     alertOptions.html = message; // Use HTML content if specified
   }
 
   Swal.fire(alertOptions);
+};
+
+/**
+ * Displays a server error with a warning box when available (e.g., 422 errors).
+ * @param {string} baseMessage - Fallback human message
+ * @param {string} serverError - Raw server response text (optional)
+ */
+export const showServerErrorAlert = (baseMessage, serverError) => {
+  const warningBox = serverError
+    ? `<div class="mt-4 mb-2 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 text-left">${serverError}</div>`
+    : "";
+  showErrorAlert(`${baseMessage}${warningBox}`, true, true);
+};
+
+/**
+ * Removes retry guidance suffixes from error messages.
+ * @param {string} message - Message to normalize
+ * @returns {string} Normalized message
+ */
+const stripRetryMessage = (message) => {
+  if (!message) {
+    return message;
+  }
+
+  return message.replace(/\s*Please try again later\.?/i, "").trim();
+};
+
+/**
+ * Handles common HTMX response patterns and displays alerts.
+ * Returns true on success (2xx), false otherwise.
+ * @param {Object} params - Response handling params
+ * @param {XMLHttpRequest} params.xhr - XHR object from HTMX event
+ * @param {string} params.successMessage - Optional success alert message
+ * @param {string} params.errorMessage - Generic error alert message
+ * @param {boolean} [params.errorWithHtml=false] - Render error message as HTML
+ * @param {boolean} [params.treatUnprocessableAsGenericError=false] - Skip 422 server details
+ * @returns {boolean} True on success status
+ */
+export const handleHtmxResponse = ({
+  xhr,
+  successMessage,
+  errorMessage,
+  errorWithHtml = false,
+  treatUnprocessableAsGenericError = false,
+}) => {
+  if (!xhr) {
+    showErrorAlert(errorMessage, errorWithHtml);
+    return false;
+  }
+
+  if (xhr.status >= 200 && xhr.status < 300) {
+    if (successMessage) {
+      showSuccessAlert(successMessage);
+    }
+    return true;
+  }
+
+  if (xhr.status === 422 && !treatUnprocessableAsGenericError) {
+    const cleanedErrorMessage = stripRetryMessage(errorMessage);
+    showServerErrorAlert(cleanedErrorMessage, xhr.responseText?.trim());
+    return false;
+  }
+
+  showErrorAlert(errorMessage, errorWithHtml);
+  return false;
 };
 
 /**

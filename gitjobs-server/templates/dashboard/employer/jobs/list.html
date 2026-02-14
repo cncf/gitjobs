@@ -223,12 +223,8 @@
                         <script type="module">
                           import {
                             showConfirmAlert,
-                            showErrorAlert,
-                            showSuccessAlert,
+                            handleHtmxResponse,
                           } from '/static/js/common/alerts.js';
-                          import {
-                            isSuccessfulXHRStatus
-                          } from '/static/js/common/common.js';
                           const deleteJobButton = document.getElementById('delete-job-{{ job.job_id }}');
                           if (deleteJobButton) {
                             deleteJobButton.addEventListener('click', (event) => {
@@ -236,11 +232,11 @@
                             });
 
                             deleteJobButton.addEventListener("htmx:afterRequest", (e) => {
-                              if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
-                                showSuccessAlert("You have successfully deleted the job.");
-                              } else {
-                                showErrorAlert("An error occurred deleting this job, please try again later.");
-                              }
+                              handleHtmxResponse({
+                                xhr: e.detail.xhr,
+                                successMessage: "You have successfully deleted the job.",
+                                errorMessage: "An error occurred deleting this job. Please try again later."
+                              });
                             });
                           }
                         </script>

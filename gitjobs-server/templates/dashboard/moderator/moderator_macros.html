@@ -304,22 +304,21 @@
 
   <script type="module">
     import {
-      toggleModalVisibility,
-      isSuccessfulXHRStatus
+      toggleModalVisibility
     } from '/static/js/common/common.js';
     import {
-      showErrorAlert,
+      handleHtmxResponse,
     } from '/static/js/common/alerts.js';
 
     // On preview button click, show the preview modal
     const previewButtons = document.querySelectorAll('.preview-button');
     previewButtons.forEach((button) => {
       button.addEventListener('htmx:afterRequest', (e) => {
-        if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
+        if (handleHtmxResponse({
+            xhr: e.detail.xhr,
+            errorMessage: 'Something went wrong previewing the data. Please try again later.'
+          })) {
           toggleModalVisibility('preview-modal', "open");
-        } else {
-          // When the preview is not available, show an error message
-          showErrorAlert('Something went wrong previewing the data, please try again later.');
         }
       });
     });

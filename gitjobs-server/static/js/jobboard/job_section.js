@@ -1,10 +1,4 @@
-import {
-  showConfirmAlert,
-  showErrorAlert,
-  showInfoAlert,
-  showSuccessAlert,
-} from "/static/js/common/alerts.js";
-import { isSuccessfulXHRStatus } from "/static/js/common/common.js";
+import { handleHtmxResponse, showConfirmAlert, showInfoAlert } from "/static/js/common/alerts.js";
 
 /**
  * Initializes the job application button functionality.
@@ -54,11 +48,11 @@ export const initializeApplyButton = () => {
         });
 
         applyButton.addEventListener("htmx:afterRequest", (e) => {
-          if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
-            showSuccessAlert("You have successfully applied to this job!");
-          } else {
-            showErrorAlert("An error occurred applying to this job, please try again later.");
-          }
+          handleHtmxResponse({
+            xhr: e.detail.xhr,
+            successMessage: "You have successfully applied to this job!",
+            errorMessage: "An error occurred applying to this job. Please try again later.",
+          });
         });
       }
     }

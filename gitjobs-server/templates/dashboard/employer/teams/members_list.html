@@ -59,12 +59,8 @@
               <script type="module">
                 import {
                   showConfirmAlert,
-                  showErrorAlert,
-                  showSuccessAlert,
+                  handleHtmxResponse,
                 } from '/static/js/common/alerts.js';
-                import {
-                  isSuccessfulXHRStatus
-                } from '/static/js/common/common.js';
                 const removeMemberButton = document.getElementById('remove-member-{{ member.user_id }}');
                 if (removeMemberButton) {
                   removeMemberButton.addEventListener('click', (event) => {
@@ -72,9 +68,10 @@
                   });
 
                   removeMemberButton.addEventListener("htmx:afterRequest", (e) => {
-                    if (!isSuccessfulXHRStatus(e.detail.xhr.status)) {
-                      showErrorAlert("Something went wrong deleting this team member. Please try again later.");
-                    }
+                    handleHtmxResponse({
+                      xhr: e.detail.xhr,
+                      errorMessage: "Something went wrong deleting this team member. Please try again later."
+                    });
                   });
                 }
               </script>

@@ -1,3 +1,9 @@
+{% import "macros.html" as macros -%}
+{% let first_spinner_id = "pagination-first-spinner" -%}
+{% let prev_spinner_id = "pagination-prev-spinner" -%}
+{% let next_spinner_id = "pagination-next-spinner" -%}
+{% let last_spinner_id = "pagination-last-spinner" -%}
+
 {# Pagination -#}
 <div id="pagination" class="flex items-end justify-center pt-12 pb-8">
   <div hx-boost="true" class="inline-flex" role="group">
@@ -7,9 +13,13 @@
          hx-get="{{ first.hx_url }}"
          hx-target="#items-list"
          hx-swap="innerHTML show:body:top"
-         class="group cursor-pointer inline-flex items-center pr-4 pl-3 py-2 text-sm text-primary-500 bg-transparent border border-primary-500 rounded-s-full hover:bg-primary-500 hover:text-white focus:z-10 focus:ring-2 focus:ring-primary-300 focus:bg-primary-500 focus:text-white">
-        <div class="svg-icon me-2 size-5 bg-primary-500 group-hover:bg-white icon-arrow_left_double"></div>
-        First
+         hx-indicator="#{{ first_spinner_id }}"
+         class="group relative overflow-hidden cursor-pointer inline-flex items-center pr-4 pl-3 py-2 text-sm text-primary-500 bg-transparent border border-primary-500 rounded-s-full hover:bg-primary-500 hover:text-white focus:z-10 focus:ring-2 focus:ring-primary-300 focus:bg-primary-500 focus:text-white">
+        <span class="inline-flex items-center">
+          <div class="svg-icon me-2 size-5 bg-primary-500 group-hover:bg-white icon-arrow_left_double"></div>
+          First
+        </span>
+        {{ macros::btn_spinner(id = first_spinner_id, size = "size-4") -}}
       </a>
     {% else -%}
       <button type="button"
@@ -27,9 +37,13 @@
          hx-get="{{ prev.hx_url }}"
          hx-target="#items-list"
          hx-swap="innerHTML show:body:top"
-         class="group cursor-pointer inline-flex items-center pr-4 pl-[0.6rem] py-2 text-sm text-primary-500 bg-transparent border-t border-b border-e border-primary-500 hover:bg-primary-500 hover:text-white focus:z-10 focus:ring-2 focus:ring-primary-300 focus:bg-primary-500 focus:text-white">
-        <div class="svg-icon me-2 size-5 bg-primary-500 group-hover:bg-white icon-arrow_left"></div>
-        Prev
+         hx-indicator="#{{ prev_spinner_id }}"
+         class="group relative overflow-hidden cursor-pointer inline-flex items-center pr-4 pl-[0.6rem] py-2 text-sm text-primary-500 bg-transparent border-t border-b border-e border-primary-500 hover:bg-primary-500 hover:text-white focus:z-10 focus:ring-2 focus:ring-primary-300 focus:bg-primary-500 focus:text-white">
+        <span class="inline-flex items-center">
+          <div class="svg-icon me-2 size-5 bg-primary-500 group-hover:bg-white icon-arrow_left"></div>
+          Prev
+        </span>
+        {{ macros::btn_spinner(id = prev_spinner_id, size = "size-4") -}}
       </a>
     {% else -%}
       <button type="button"
@@ -47,9 +61,13 @@
          hx-get="{{ next.hx_url }}"
          hx-target="#items-list"
          hx-swap="innerHTML show:body:top"
-         class="group cursor-pointer inline-flex items-center pl-4 pr-[0.6rem] py-2 text-sm text-primary-500 bg-transparent border-t border-b border-s -ml-[1px] border-primary-500 hover:bg-primary-500 hover:text-white focus:z-10 focus:ring-2 focus:ring-primary-300 focus:bg-primary-500 focus:text-white">
-        Next
-        <div class="svg-icon ms-2 size-5 bg-primary-500 group-hover:bg-white icon-arrow_right"></div>
+         hx-indicator="#{{ next_spinner_id }}"
+         class="group relative overflow-hidden cursor-pointer inline-flex items-center pl-4 pr-[0.6rem] py-2 text-sm text-primary-500 bg-transparent border-t border-b border-s -ml-[1px] border-primary-500 hover:bg-primary-500 hover:text-white focus:z-10 focus:ring-2 focus:ring-primary-300 focus:bg-primary-500 focus:text-white">
+        <span class="inline-flex items-center">
+          Next
+          <div class="svg-icon ms-2 size-5 bg-primary-500 group-hover:bg-white icon-arrow_right"></div>
+        </span>
+        {{ macros::btn_spinner(id = next_spinner_id, size = "size-4") -}}
       </a>
     {% else -%}
       <button type="button"
@@ -67,9 +85,13 @@
          hx-get="{{ last.hx_url }}"
          hx-target="#items-list"
          hx-swap="innerHTML show:body:top"
-         class="group cursor-pointer inline-flex items-center pl-4 pr-3 py-2 text-sm text-primary-500 bg-transparent border border-primary-500 rounded-e-full hover:bg-primary-500 hover:text-white focus:z-10 focus:ring-2 focus:ring-primary-300 focus:bg-primary-500 focus:text-white">
-        Last
-        <div class="svg-icon ms-2 size-5 bg-primary-500 group-hover:bg-white icon-arrow_right_double"></div>
+         hx-indicator="#{{ last_spinner_id }}"
+         class="group relative overflow-hidden cursor-pointer inline-flex items-center pl-4 pr-3 py-2 text-sm text-primary-500 bg-transparent border border-primary-500 rounded-e-full hover:bg-primary-500 hover:text-white focus:z-10 focus:ring-2 focus:ring-primary-300 focus:bg-primary-500 focus:text-white">
+        <span class="inline-flex items-center">
+          Last
+          <div class="svg-icon ms-2 size-5 bg-primary-500 group-hover:bg-white icon-arrow_right_double"></div>
+        </span>
+        {{ macros::btn_spinner(id = last_spinner_id, size = "size-4") -}}
       </a>
     {% else -%}
       <button type="button"

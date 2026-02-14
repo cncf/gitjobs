@@ -1,19 +1,99 @@
 /**
+ * Locks body scroll by setting overflow to hidden. Uses a counter to handle
+ * multiple modals. Only locks scroll when the first modal opens.
+ */
+export const lockBodyScroll = () => {
+  const body = document.body;
+  const current = Number.parseInt(body.dataset.modalOpenCount || "0", 10);
+  const next = Number.isNaN(current) ? 1 : current + 1;
+  body.dataset.modalOpenCount = String(next);
+
+  if (next !== 1) {
+    return;
+  }
+
+  const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+  body.dataset.modalOverflow = body.style.overflow || "";
+  body.dataset.modalPaddingRight = body.style.paddingRight || "";
+
+  if (scrollbarWidth > 0) {
+    const currentPaddingRight = Number.parseFloat(window.getComputedStyle(body).paddingRight || "0");
+    body.style.paddingRight = `${currentPaddingRight + scrollbarWidth}px`;
+  }
+
+  body.style.overflow = "hidden";
+};
+
+/**
+ * Unlocks body scroll by restoring overflow. Uses a counter to handle multiple
+ * modals. Only unlocks scroll when all modals are closed.
+ */
+export const unlockBodyScroll = () => {
+  const body = document.body;
+  const current = Number.parseInt(body.dataset.modalOpenCount || "0", 10);
+  const next = Number.isNaN(current) ? 0 : Math.max(0, current - 1);
+  body.dataset.modalOpenCount = String(next);
+
+  if (next !== 0) {
+    return;
+  }
+
+  const previousOverflow = body.dataset.modalOverflow ?? "";
+  const previousPaddingRight = body.dataset.modalPaddingRight ?? "";
+  body.style.overflow = previousOverflow;
+  body.style.paddingRight = previousPaddingRight;
+  delete body.dataset.modalOverflow;
+  delete body.dataset.modalPaddingRight;
+};
+
+/**
  * Shows or hides a modal by ID.
- * Controls body scroll behavior when modal is open/closed.
  * @param {string} modalId - The ID of the modal element
- * @param {'open'|'close'} status - Whether to open or close the modal
+ * @param {'open'|'close'} [status] - Whether to open or close the modal
  */
 export const toggleModalVisibility = (modalId, status) => {
   const modal = document.getElementById(modalId);
-  if (status === "open" && modal) {
+  if (!modal) {
+    return;
+  }
+
+  const isOpen = !modal.classList.contains("hidden");
+
+  if (status === "open") {
+    if (isOpen) {
+      modal.dataset.open = "true";
+      modal.setAttribute("aria-hidden", "false");
+      return;
+    }
+
     modal.classList.remove("hidden");
-    // This is used to hide body scroll when the modal is open
     modal.dataset.open = "true";
-  } else if (status === "close") {
-    modal.classList.add("hidden");
-    // This is used to show body scroll when the modal is open
+    modal.setAttribute("aria-hidden", "false");
+    lockBodyScroll();
+    return;
+  }
+
+  if (status === "close") {
+    if (isOpen) {
+      modal.classList.add("hidden");
+      unlockBodyScroll();
+    }
+
+    modal.setAttribute("aria-hidden", "true");
     modal.dataset.open = "false";
+    return;
+  }
+
+  if (isOpen) {
+    modal.classList.add("hidden");
+    modal.setAttribute("aria-hidden", "true");
+    modal.dataset.open = "false";
+    unlockBodyScroll();
+  } else {
+    modal.classList.remove("hidden");
+    modal.setAttribute("aria-hidden", "false");
+    modal.dataset.open = "true";
+    lockBodyScroll();
   }
 };
 

@@ -140,13 +140,26 @@
 
 <script type="module">
   import {
+    lockBodyScroll,
     toggleModalVisibility,
     removeParamFromQueryString
   } from '/static/js/common/common.js';
 
+  const previewModal = document.getElementById('preview-modal');
+  if (previewModal &&
+    previewModal.dataset.open === "true" &&
+    !previewModal.classList.contains('hidden') &&
+    previewModal.dataset.initialScrollLockApplied !== "true") {
+    lockBodyScroll();
+    previewModal.dataset.initialScrollLockApplied = "true";
+  }
+
   const onCloseModal = () => {
     // Reset the scroll position
     document.getElementById('preview-content').scrollTop = 0;
+    if (previewModal) {
+      previewModal.dataset.initialScrollLockApplied = "false";
+    }
     // Close the preview modal
     removeParamFromQueryString('job_id', {
       modal_preview: false

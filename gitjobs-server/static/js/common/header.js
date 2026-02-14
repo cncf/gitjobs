@@ -1,37 +1,142 @@
-/**
- * Toggles the user dropdown menu visibility and manages event listeners.
- * Handles click-outside-to-close functionality.
- */
-export const onClickDropdown = () => {
-  const dropdownButton = document.getElementById("user-dropdown-button");
-  const dropdownMenu = document.getElementById("dropdown-user");
+let documentHandlersBound = false;
+let lifecycleListenersBound = false;
 
-  if (dropdownMenu) {
-    const isHidden = dropdownMenu.classList.contains("hidden");
+const getDropdownButton = () => document.getElementById("user-dropdown-button");
 
-    if (isHidden) {
-      dropdownMenu.classList.remove("hidden");
+const getDropdownMenu = () => {
+  return document.getElementById("dropdown-user") || document.getElementById("user-dropdown");
+};
 
-      const menuLinks = dropdownMenu.querySelectorAll("a");
-      menuLinks.forEach((link) => {
-        // Close dropdown actions when clicking on an action before loading the new page
-        link.addEventListener("htmx:beforeOnLoad", () => {
-          const menu = document.getElementById("dropdown-user");
-          menu.classList.add("hidden");
-        });
-      });
+const hideDropdown = () => {
+  const button = getDropdownButton();
+  const dropdown = getDropdownMenu();
+  if (!dropdown) {
+    return;
+  }
 
-      if (dropdownButton) {
-        // Close dropdown actions when clicking outside
-        document.addEventListener("click", (event) => {
-          if (!dropdownMenu.contains(event.target) && !dropdownButton.contains(event.target)) {
-            dropdownMenu.classList.add("hidden");
-          }
-        });
-      }
-    } else {
-      dropdownMenu.classList.add("hidden");
-      // TODO: Store and remove the actual event listener function
-    }
+  dropdown.classList.add("hidden");
+  if (button) {
+    button.setAttribute("aria-expanded", "false");
   }
 };
+
+const showDropdown = () => {
+  const button = getDropdownButton();
+  const dropdown = getDropdownMenu();
+  if (!dropdown) {
+    return;
+  }
+
+  dropdown.classList.remove("hidden");
+  if (button) {
+    button.setAttribute("aria-expanded", "true");
+  }
+};
+
+const toggleDropdownVisibility = (event) => {
+  const dropdown = getDropdownMenu();
+  if (!dropdown) {
+    return;
+  }
+
+  if (event && typeof event.stopPropagation === "function") {
+    event.stopPropagation();
+  }
+  if (dropdown.classList.contains("hidden")) {
+    showDropdown();
+  } else {
+    hideDropdown();
+  }
+};
+
+const ensureDocumentHandlers = () => {
+  if (documentHandlersBound) {
+    return;
+  }
+
+  const handleDocumentClick = (event) => {
+    const button = getDropdownButton();
+    const dropdown = getDropdownMenu();
+    if (!button || !dropdown) {
+      return;
+    }
+
+    const clickedButton = button.contains(event.target);
+    const clickedDropdown = dropdown.contains(event.target);
+    if (!clickedButton && !clickedDropdown) {
+      hideDropdown();
+    }
+  };
+
+  const handleKeydown = (event) => {
+    if (event.key !== "Escape") {
+      return;
+    }
+
+    const button = getDropdownButton();
+    const dropdown = getDropdownMenu();
+    if (!button || !dropdown || dropdown.classList.contains("hidden")) {
+      return;
+    }
+
+    hideDropdown();
+    button.focus();
+  };
+
+  document.addEventListener("click", handleDocumentClick);
+  document.addEventListener("keydown", handleKeydown);
+
+  documentHandlersBound = true;
+};
+
+const bindLifecycleListeners = () => {
+  if (lifecycleListenersBound) {
+    return;
+  }
+
+  document.addEventListener("htmx:historyRestore", initUserDropdown);
+  document.addEventListener("htmx:afterSwap", initUserDropdown);
+  window.addEventListener("pageshow", () => initUserDropdown());
+
+  lifecycleListenersBound = true;
+};
+
+export const initUserDropdown = () => {
+  ensureDocumentHandlers();
+  bindLifecycleListeners();
+
+  const button = getDropdownButton();
+  const dropdown = getDropdownMenu();
+  if (!button || !dropdown) {
+    return;
+  }
+
+  button.setAttribute("aria-expanded", dropdown.classList.contains("hidden") ? "false" : "true");
+
+  if (!button.__gitjobsDropdownInitialized) {
+    button.addEventListener("click", toggleDropdownVisibility);
+    button.__gitjobsDropdownInitialized = true;
+  }
+
+  if (!dropdown.__gitjobsCloseOnLinkBound) {
+    dropdown.addEventListener(
+      "click",
+      (event) => {
+        const link = event.target.closest("a");
+        if (!link) {
+          return;
+        }
+
+        if (link.querySelector(".hx-spinner")) {
+          return;
+        }
+
+        hideDropdown();
+      },
+      true,
+    );
+    dropdown.__gitjobsCloseOnLinkBound = true;
+  }
+};
+
+initUserDropdown();

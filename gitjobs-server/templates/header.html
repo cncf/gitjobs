@@ -85,8 +85,13 @@
 {% macro user_menu(user, auth_provider) -%}
   {% if user.logged_in -%}
     <button id="user-dropdown-button"
+            type="button"
             data-logged-in="true"
             data-has-profile="{%- if user.has_profile -%}true{%- else -%}false{%- endif -%}"
+            aria-haspopup="true"
+            aria-expanded="false"
+            aria-controls="dropdown-user"
+            aria-label="Open user menu"
             class="cursor-pointer group rounded-full bg-white border text-xl border-primary-500 text-primary-600 hover:text-primary-800 hover:border-primary-800 size-[38px] p-0.5 overflow-hidden">
       {% let name = user.name|display_some -%}
       {% let initial = name.chars().nth(0).unwrap_or('-') -%}
@@ -198,8 +203,13 @@
     {# End dropdown user -#}
   {% else -%}
     <button id="user-dropdown-button"
+            type="button"
             data-logged-in="false"
             data-has-profile="false"
+            aria-haspopup="true"
+            aria-expanded="false"
+            aria-controls="dropdown-user"
+            aria-label="Open user menu"
             class="cursor-pointer group rounded-full bg-white border text-xl border-primary-500 text-primary-600 hover:text-primary-800 hover:border-primary-800 size-[38px] p-0.5 overflow-hidden">
       <div class="svg-icon size-4 mx-auto bg-primary-500 group-hover:bg-primary-800 icon-user"></div>
     </button>
@@ -269,13 +279,9 @@
   {# Dropdown script -#}
   <script type="module">
     import {
-      onClickDropdown
+      initUserDropdown
     } from '/static/js/common/header.js';
-    const dropdownButton = document.getElementById('user-dropdown-button');
-
-    if (dropdownButton) {
-      dropdownButton.addEventListener('click', onClickDropdown);
-    }
+    initUserDropdown();
   </script>
   {# End dropdown script -#}
 {% endmacro user_menu -%}

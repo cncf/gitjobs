@@ -17,7 +17,9 @@
   {# End lit components -#}
 
   {# Header -#}
-  <nav class="bg-white fixed w-full z-20 top-0 start-0 border-b border-stone-200 h-20 drop-shadow-sm flex items-center justify-between px-3 lg:px-5">
+  <nav class="bg-white fixed w-full z-20 top-0 start-0 border-b border-stone-200 h-20 drop-shadow-sm flex items-center justify-between px-3 lg:px-5"
+       role="navigation"
+       aria-label="Main navigation">
     {% include "header.html" -%}
   </nav>
   {# End Header -#}
@@ -67,7 +69,9 @@
     </aside>
     {# End sticky menu -#}
 
-    <main class="w-[calc(100%-225px)] lg:w-[calc(100%-300px)] bg-white border border-stone-200 rounded-lg m-5 ms-0 mt-[6.25rem] relative">
+    <main id="main-content"
+          class="w-[calc(100%-225px)] lg:w-[calc(100%-300px)] bg-white border border-stone-200 rounded-lg m-5 ms-0 mt-[6.25rem] relative"
+          role="main">
       {% block dashboard_main -%}
       {% endblock dashboard_main -%}
     </main>

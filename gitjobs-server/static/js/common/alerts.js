@@ -1,4 +1,4 @@
-import { toggleModalVisibility } from "/static/js/common/common.js";
+import { scrollToDashboardTop, toggleModalVisibility } from "/static/js/common/common.js";
 
 /**
  * Returns common configuration options for all alert dialogs.
@@ -106,6 +106,7 @@ export const handleHtmxResponse = ({
   treatUnprocessableAsGenericError = false,
 }) => {
   if (!xhr) {
+    scrollToDashboardTop();
     showErrorAlert(errorMessage, errorWithHtml);
     return false;
   }
@@ -119,10 +120,12 @@ export const handleHtmxResponse = ({
 
   if (xhr.status === 422 && !treatUnprocessableAsGenericError) {
     const cleanedErrorMessage = stripRetryMessage(errorMessage);
+    scrollToDashboardTop();
     showServerErrorAlert(cleanedErrorMessage, xhr.responseText?.trim());
     return false;
   }
 
+  scrollToDashboardTop();
   showErrorAlert(errorMessage, errorWithHtml);
   return false;
 };

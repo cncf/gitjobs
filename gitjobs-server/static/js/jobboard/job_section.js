@@ -19,7 +19,7 @@ import { shareJob } from "/static/js/jobboard/share.js";
  */
 export const initializeApplyButton = (root = document) => {
   const applyButton = root.querySelector("#apply-button");
-  if (!applyButton) {
+  if (!applyButton || applyButton.dataset.applyBound === "true") {
     return;
   }
 
@@ -74,6 +74,8 @@ export const initializeApplyButton = (root = document) => {
       }
     }
   }
+
+  applyButton.dataset.applyBound = "true";
 };
 
 /**

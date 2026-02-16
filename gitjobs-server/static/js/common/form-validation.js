@@ -5,18 +5,10 @@
  */
 
 import { passwordsMatch, trimmedNonEmpty } from "/static/js/common/validators.js";
+import { isDashboardPath, isElementInView } from "/static/js/common/common.js";
 
 const FIELD_SELECTOR =
   'input:not([type="hidden"]):not([type="file"]):not([type="checkbox"]):not([type="radio"]), textarea';
-
-/**
- * Checks if the current path is a dashboard route.
- * @returns {boolean} True when on a dashboard page
- */
-const isDashboardPath = () => {
-  const path = window?.location?.pathname || "";
-  return path.startsWith("/dashboard");
-};
 
 /**
  * Checks if a field is a password input.
@@ -39,23 +31,6 @@ const normalizeField = (field) => {
   if (trimmedValue !== field.value) {
     field.value = trimmedValue;
   }
-};
-
-/**
- * Checks whether an element is fully visible in the viewport.
- * @param {HTMLElement} element - Element to check
- * @returns {boolean} True if element is fully visible
- */
-const isElementInView = (element) => {
-  if (!element || typeof element.getBoundingClientRect !== "function") {
-    return true;
-  }
-
-  const rect = element.getBoundingClientRect();
-  const viewHeight = window.innerHeight || document.documentElement.clientHeight;
-  const viewWidth = window.innerWidth || document.documentElement.clientWidth;
-
-  return rect.top >= 0 && rect.left >= 0 && rect.bottom <= viewHeight && rect.right <= viewWidth;
 };
 
 /**

@@ -47,6 +47,43 @@ export const unlockBodyScroll = () => {
 };
 
 /**
+ * Checks if the current path is a dashboard route.
+ * @returns {boolean} True when on a dashboard page
+ */
+export const isDashboardPath = () => {
+  const path = window?.location?.pathname || "";
+  return path.startsWith("/dashboard");
+};
+
+/**
+ * Scrolls to the top of the dashboard so alerts stay visible.
+ */
+export const scrollToDashboardTop = () => {
+  if (!isDashboardPath() || typeof window?.scrollTo !== "function") {
+    return;
+  }
+
+  window.scrollTo({ top: 0, behavior: "auto" });
+};
+
+/**
+ * Checks whether an element is fully visible in the viewport.
+ * @param {HTMLElement} element - Element to check
+ * @returns {boolean} True if element is fully visible
+ */
+export const isElementInView = (element) => {
+  if (!element || typeof element.getBoundingClientRect !== "function") {
+    return true;
+  }
+
+  const rect = element.getBoundingClientRect();
+  const viewHeight = window.innerHeight || document.documentElement.clientHeight;
+  const viewWidth = window.innerWidth || document.documentElement.clientWidth;
+
+  return rect.top >= 0 && rect.left >= 0 && rect.bottom <= viewHeight && rect.right <= viewWidth;
+};
+
+/**
  * Shows or hides a modal by ID.
  * @param {string} modalId - The ID of the modal element
  * @param {'open'|'close'} [status] - Whether to open or close the modal
@@ -246,6 +283,70 @@ export const debounce = (func, timeout = 300) => {
       func.apply(this, args);
     }, timeout);
   };
+};
+
+/**
+ * Registers the HTMX extension that strips empty values from requests.
+ * Filters blank and "0" values from both GET and non-GET submissions.
+ */
+export const initializeNoEmptyValuesExtension = () => {
+  const htmxInstance = window.htmx;
+  if (window.__gitjobsNoEmptyValsRegistered || typeof htmxInstance?.defineExtension !== "function") {
+    return;
+  }
+
+  const removeEmptyValues = (source) => {
+    const filteredEntries = [];
+
+    for (const [key, rawValue] of source.entries()) {
+      const value = typeof rawValue === "string" ? rawValue.trim() : String(rawValue);
+      if (value === "" || value === "0") {
+        continue;
+      }
+
+      filteredEntries.push([key, typeof rawValue === "string" ? value : rawValue]);
+    }
+
+    return filteredEntries;
+  };
+
+  htmxInstance.defineExtension("no-empty-vals", {
+    onEvent: (name, event) => {
+      if (name !== "htmx:configRequest") {
+        return true;
+      }
+
+      const request = event.detail;
+      if (request.verb !== "get" || !request.useUrlParams) {
+        return true;
+      }
+
+      const filteredParameters = new FormData();
+      for (const [key, value] of removeEmptyValues(request.formData)) {
+        filteredParameters.append(key, value);
+      }
+
+      request.formData = filteredParameters;
+      request.parameters = filteredParameters;
+
+      return true;
+    },
+    encodeParameters: (xhr, parameters, elt) => {
+      const filteredEntries = removeEmptyValues(parameters);
+
+      for (const key of [...parameters.keys()]) {
+        parameters.delete(key);
+      }
+
+      for (const [key, value] of filteredEntries) {
+        parameters.append(key, value);
+      }
+
+      return null;
+    },
+  });
+
+  window.__gitjobsNoEmptyValsRegistered = true;
 };
 
 /**

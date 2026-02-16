@@ -399,6 +399,29 @@ test.describe('GitJobs', () => {
     await expect(dropdown).toHaveAttribute('aria-hidden', 'true');
   });
 
+  test('should close employer job actions dropdown on outside click', async ({ page }) => {
+    await loginWithCredentials(page, 'test', 'test1234');
+    await page.goto('/dashboard/employer?tab=jobs');
+
+    const actionsDropdown = await openEmployerActionsDropdown(page);
+    if (!actionsDropdown) {
+      throw new Error('Expected at least one employer job action button.');
+    }
+
+    const { actionButton, dropdown } = actionsDropdown;
+    await expect(dropdown).toBeVisible();
+    await expect(actionButton).toHaveAttribute('aria-expanded', 'true');
+    await expect(dropdown).toHaveAttribute('aria-hidden', 'false');
+
+    await page.locator('#dashboard-content').first().click({
+      position: { x: 8, y: 8 },
+    });
+
+    await expect(dropdown).toBeHidden();
+    await expect(actionButton).toHaveAttribute('aria-expanded', 'false');
+    await expect(dropdown).toHaveAttribute('aria-hidden', 'true');
+  });
+
   test('should close employer selector dropdown after choosing an employer', async ({ page }) => {
     await loginWithCredentials(page, 'test', 'test1234');
     await page.goto('/dashboard/employer');

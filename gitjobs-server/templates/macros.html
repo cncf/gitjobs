@@ -51,13 +51,17 @@
          name="toggle_{{ id }}"
          value="{{ id }}"
          type="checkbox"
-         data-toggle-hidden-target="{{ id }}"
          class="sr-only peer"
          {% if checked %}checked{% endif %}>
   <input type="hidden" id="{{ id }}" name="{{ id }}" value="{{ checked }}">
   <div class="relative w-11 h-6 bg-stone-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-stone-300 after:border after:border-stone-200 after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600">
   </div>
 
+  <script>
+    document.getElementById('toggle_{{ id }}').addEventListener('change', () => {
+      document.getElementById('{{ id }}').value = document.getElementById('toggle_{{ id }}').checked;
+    });
+  </script>
 {% endmacro toggle_checkbox -%}
 {# End toggle checkbox #}
 
@@ -136,11 +140,6 @@
   {% let empty_image = value.is_empty() -%}
   {# Images form #}
   <form id="images-form"
-        data-images-form="true"
-        data-hidden-input-id="{{ name }}"
-        data-clean-button-id="clean-image"
-        data-image-id="image"
-        data-placeholder-id="placeholder-image"
         hx-post="/dashboard/images"
         hx-encoding="multipart/form-data"
         hx-trigger="change from:#logo"
@@ -200,6 +199,16 @@
   {# Input hidden -#}
   <input id="{{ name }}" type="hidden" name="{{ name }}" value="{{ value }}">
   {# End input hidden -#}
+
+  <script type="module">
+    import {
+      initializeImagesForm
+    } from '/static/js/common/images-form.js';
+
+    initializeImagesForm({
+      hiddenInputId: '{{ name }}'
+    });
+  </script>
 {% endmacro images_form -%}
 {# End form image #}
 
@@ -282,28 +291,42 @@
 {% macro cookie_button(id = "btn-cookies", close_drawer = false, extra_styles = "") -%}
   <div class="flex items-center justify-center {{ extra_styles }}">
     <button id="{{ id }}"
-            data-cookie-preferences-button="true"
-            data-close-drawer="{{ close_drawer }}"
             class="text-xs text-stone-400 hover:text-stine-600 text-center cursor-pointer">
       Cookie Preferences
     </button>
+    {# djlint:off #}
+      <script type="module">
+        import {
+          initializeCookiePreferencesButton
+        } from '/static/js/common/common.js';
+
+        initializeCookiePreferencesButton({
+          buttonId: "{{ id }}",
+          closeDrawer: {% if close_drawer -%}true{%- else -%}false{%- endif %}
+        });
+</script>
+    {# djlint:on #}
   </div>
 {% endmacro cookie_button -%}
 {# End Osano cookie btn #}
 
 {# Alerts #}
+{# djlint:off #}
 {% macro alerts(messages) -%}
-  <div class="hidden" aria-hidden="true">
+  <script type="module">
+    import { showErrorAlert, showSuccessAlert } from '/static/js/common/alerts.js';
+
     {% for message in messages -%}
       {% match message.level -%}
-      {% when Level::Success -%}
-      <span data-flash-alert="success" data-flash-message="{{ message }}"></span>
-      {% when Level::Error -%}
-      <span data-flash-alert="error" data-flash-message="{{ message }}"></span>
-      {% when _ -%}
-      {# Do nothing #}
-    {% endmatch -%}
-  {% endfor -%}
-</div>
+        {% when Level::Success -%}
+          showSuccessAlert('{{ message }}');
+        {% when Level::Error -%}
+          showErrorAlert('{{ message }}');
+        {% when _ -%}
+          {# Do nothing #}
+      {% endmatch -%}
+    {% endfor -%}
+</script>
 {% endmacro alerts -%}
+{# djlint:on #}
 {# End alerts #}

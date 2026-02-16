@@ -276,4 +276,12 @@
     </div>
     {# End dropdown user -#}
   {% endif -%}
+  {# Dropdown script -#}
+  <script type="module">
+    import {
+      initUserDropdown
+    } from '/static/js/common/header.js';
+    initUserDropdown();
+  </script>
+  {# End dropdown script -#}
 {% endmacro user_menu -%}

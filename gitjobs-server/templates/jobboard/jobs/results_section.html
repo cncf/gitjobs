@@ -49,19 +49,25 @@
 {% if jobs.len() > 0 %}{{ navigation_links|safe }}{% endif %}
 {# End pagination -#}
 
-{% if jobs.len() > 0 -%}
-  <div class="hidden"
-       aria-hidden="true"
-       data-jobboard-results-config="true"
-       data-has-jobs="true"
-       data-current-page-content="{{ jobs_macros::current_page(total, jobs.len() , offset) -}}"></div>
-{% else -%}
-  <div class="hidden"
-       aria-hidden="true"
-       data-jobboard-results-config="true"
-       data-has-jobs="false"
-       data-current-page-content=""></div>
-{% endif -%}
+{# djlint:off #}
+<script type="module">
+  import {
+    initializeJobboardResults
+  } from '/static/js/jobboard/results.js';
+
+  {% if jobs.len() > 0 -%}
+    initializeJobboardResults({
+      hasJobs: true,
+      currentPageContent: '{{ jobs_macros::current_page(total, jobs.len(), offset) -}}'
+    });
+  {% else -%}
+    initializeJobboardResults({
+      hasJobs: false,
+      currentPageContent: ''
+    });
+  {% endif -%}
+</script>
+{# djlint:on #}
 {# End list view -#}
 
 {% macro job_card(job) -%}

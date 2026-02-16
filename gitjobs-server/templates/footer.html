@@ -31,13 +31,21 @@
       {%- if let Some(osano_script_url) = analytics.osano_script_url -%}
         <button type="button"
                 id="cookie-preferences-button"
-                data-cookie-preferences-button="true"
                 class="cursor-pointer absolute size-[30px] bottom-[30px] right-[30px] opacity-[0.9] hover:opacity-100 hover:scale-[1.1] transition-all duration-300 ease-in-out">
           <img src="/static/images/icons/cookie.svg"
                height="30"
                width="30"
                alt="Cookie icon" />
         </button>
+        <script type="module">
+          import {
+            initializeCookiePreferencesButton
+          } from '/static/js/common/common.js';
+
+          initializeCookiePreferencesButton({
+            buttonId: 'cookie-preferences-button'
+          });
+        </script>
       {%- endif -%}
       {# End Osano -#}
     {% endif -%}

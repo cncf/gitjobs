@@ -131,48 +131,6 @@ export const initializePreviewModalCloseHandlers = ({ cleanJobIdParam = false } 
 };
 
 /**
- * Initializes preview modal close handlers for modals marked as auto-bind.
- * @param {Document|HTMLElement} [root=document] - Root where preview modal is searched
- */
-export const initializePreviewModalHandlers = (root = document) => {
-  const previewModal =
-    root instanceof Element && root.id === "preview-modal"
-      ? root
-      : typeof root.querySelector === "function"
-        ? root.querySelector("#preview-modal")
-        : null;
-
-  if (
-    !previewModal ||
-    previewModal.dataset.previewCloseAuto !== "true" ||
-    previewModal.dataset.previewCloseBound === "true"
-  ) {
-    return;
-  }
-
-  initializePreviewModalCloseHandlers({
-    cleanJobIdParam: previewModal.dataset.cleanJobIdParam === "true",
-  });
-  previewModal.dataset.previewCloseBound = "true";
-
-  if (document.__gitjobsPreviewModalLifecycleBound) {
-    return;
-  }
-
-  document.addEventListener("htmx:afterSwap", (event) => {
-    initializePreviewModalHandlers(event.target);
-  });
-  document.addEventListener("htmx:historyRestore", () => {
-    initializePreviewModalHandlers(document);
-  });
-  window.addEventListener("pageshow", () => {
-    initializePreviewModalHandlers(document);
-  });
-
-  document.__gitjobsPreviewModalLifecycleBound = true;
-};
-
-/**
  * Initializes dropdown lifecycle for a button and menu pair.
  * Supports outside-click close, Escape close, and duplicate-listener guards.
  * @param {Object} options - Dropdown initialization options
@@ -410,40 +368,6 @@ export const initializeGlobalPopstateHandlers = () => {
 };
 
 /**
- * Initializes delegated checkbox-to-hidden-input syncing for toggle controls.
- */
-export const initializeToggleCheckboxes = () => {
-  if (document.__gitjobsToggleCheckboxesBound) {
-    return;
-  }
-
-  document.addEventListener("change", (event) => {
-    if (!(event.target instanceof Element)) {
-      return;
-    }
-
-    const toggleCheckbox = event.target.closest("input[data-toggle-hidden-target]");
-    if (!toggleCheckbox) {
-      return;
-    }
-
-    const targetId = toggleCheckbox.dataset.toggleHiddenTarget;
-    if (!targetId) {
-      return;
-    }
-
-    const hiddenInput = document.getElementById(targetId);
-    if (!hiddenInput) {
-      return;
-    }
-
-    hiddenInput.value = toggleCheckbox.checked ? "true" : "false";
-  });
-
-  document.__gitjobsToggleCheckboxesBound = true;
-};
-
-/**
  * Initializes an Osano cookie preferences button.
  * @param {Object} options - Button options
  * @param {string} options.buttonId - Cookie button id
@@ -477,50 +401,6 @@ export const initializeCookiePreferencesButton = ({ buttonId, closeDrawer = fals
   });
 
   cookieButton.dataset.cookieBound = "true";
-};
-
-/**
- * Initializes all Osano cookie preferences buttons found in the DOM.
- * @param {Document|HTMLElement} [root=document] - Root where buttons are searched
- */
-export const initializeCookiePreferencesButtons = (root = document) => {
-  const selector = '[data-cookie-preferences-button="true"]';
-  const cookieButtons = [];
-
-  if (root instanceof Element && root.matches(selector)) {
-    cookieButtons.push(root);
-  }
-
-  if (typeof root.querySelectorAll === "function") {
-    cookieButtons.push(...root.querySelectorAll(selector));
-  }
-
-  cookieButtons.forEach((button) => {
-    if (!button.id) {
-      return;
-    }
-
-    initializeCookiePreferencesButton({
-      buttonId: button.id,
-      closeDrawer: button.dataset.closeDrawer === "true",
-    });
-  });
-
-  if (document.__gitjobsCookieButtonsLifecycleBound) {
-    return;
-  }
-
-  document.addEventListener("htmx:afterSwap", (event) => {
-    initializeCookiePreferencesButtons(event.target);
-  });
-  document.addEventListener("htmx:historyRestore", () => {
-    initializeCookiePreferencesButtons(document);
-  });
-  window.addEventListener("pageshow", () => {
-    initializeCookiePreferencesButtons(document);
-  });
-
-  document.__gitjobsCookieButtonsLifecycleBound = true;
 };
 
 /**

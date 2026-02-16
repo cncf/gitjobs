@@ -569,33 +569,6 @@ export const initializeNoEmptyValuesExtension = () => {
 };
 
 /**
- * Updates an element's HTMX URL attribute by replacing placeholders.
- * Processes the element to enable HTMX functionality.
- * @param {string} elementId - The ID of the element to update
- * @param {string} method - The HTTP method (get, post, etc.)
- * @param {string} data - The value to replace in the URL
- */
-export const processNewHtmxUrl = (elementId, method, data) => {
-  const element = document.getElementById(elementId);
-  if (!element || typeof htmx?.process !== "function") {
-    return;
-  }
-
-  const url = element.dataset.url;
-  if (url) {
-    const replacement = element.dataset.replacement;
-    if (!replacement) {
-      return;
-    }
-
-    const newUrl = url.replace(`{:${replacement}}`, data);
-    element.setAttribute(`hx-${method}`, newUrl);
-    // Process new URL
-    htmx.process(element);
-  }
-};
-
-/**
  * Triggers an HTMX action on a form element.
  * @param {string} formId - The ID of the form element
  * @param {string} action - The action to trigger

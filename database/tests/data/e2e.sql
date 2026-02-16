@@ -1,5 +1,5 @@
 INSERT INTO "user" (user_id, auth_hash, created_at, email, email_verified, name, username, password, moderator)
-VALUES ('f39a95c8-9903-4537-8873-2d81bfb86b35', gen_random_bytes(32), '2025-08-25 08:43:11.605766+02', 'test@t.com', true, 'test', 'test', '$argon2id$v=19$m=19456,t=2,p=1$vUCLsb/lDAepJiWB7VSFNw$yAYeJVIKW0gK3cOJAnpiV9H5uPZDATJh13fDWGivjZM', true);
+VALUES ('f39a95c8-9903-4537-8873-2d81bfb86b35', gen_random_bytes(32), '2025-08-25 08:43:11.605766+02', 'test@t.com', true, 'test', 'test', '$argon2id$v=19$m=19456,t=2,p=1$bw1sZnCys+4fBpkaFqAEsQ$OnYSK/WUXUMJTsnSmJw3oPnT9skGNMtIwlqPy0EvCoA', true);
 
 INSERT INTO employer (employer_id, company, created_at, description, public)
 VALUES ('18fff2d7-c794-4130-85e4-76b9d7c60b72', 'Test Inc.', '2025-08-25 09:20:05.88454+02', 'test', false);

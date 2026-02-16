@@ -217,11 +217,11 @@ test.describe('GitJobs', () => {
   });
 
   test('should log in a user', async ({ page }) => {
-    await loginWithCredentials(page, 'test', 'test');
+    await loginWithCredentials(page, 'test', 'test1234');
   });
 
   test('should log out a user', async ({ page }) => {
-    await loginWithCredentials(page, 'test', 'test');
+    await loginWithCredentials(page, 'test', 'test1234');
 
     await expect(page).toHaveURL(/\/$/);
     await openUserMenu(page);
@@ -240,7 +240,7 @@ test.describe('GitJobs', () => {
   });
 
   test('should send experience fields using bracket keys on profile update', async ({ page }) => {
-    await loginWithCredentials(page, 'test', 'test');
+    await loginWithCredentials(page, 'test', 'test1234');
     await page.goto('/dashboard/job-seeker');
 
     await page.locator('#name').fill('Test User');
@@ -269,7 +269,7 @@ test.describe('GitJobs', () => {
   });
 
   test('should add a new job', async ({ page }) => {
-    await loginWithCredentials(page, 'test', 'test');
+    await loginWithCredentials(page, 'test', 'test1234');
     await page.goto('/');
 
     await page.getByRole('link', { name: 'Post a job' }).click();
@@ -327,12 +327,14 @@ test.describe('GitJobs', () => {
       const element = page.getByTitle(button.title);
       await expect(element).toBeVisible();
       if (button.title !== 'Copy link' && button.title !== 'Email share link') {
+        await expect.poll(async () => (await element.getAttribute('href')) || '').not.toBe('');
         const href = await element.getAttribute('href');
         expect(href).toBeTruthy();
         expect(href).toMatch(/^https?:\/\//);
         expect(href).toContain(button.name.toLowerCase());
       } else {
         if (button.title === 'Email share link') {
+          await expect.poll(async () => (await element.getAttribute('href')) || '').not.toBe('');
           const href = await element.getAttribute('href');
           expect(href).toBeTruthy();
           expect(href).toMatch(/^mailto:/);

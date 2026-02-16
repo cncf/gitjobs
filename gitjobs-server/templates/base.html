@@ -49,73 +49,12 @@
     <script type="text/javascript" src="/static/vendor/js/htmx.v2.0.7.min.js"></script>
     <script src="/static/vendor/js/easymde.v2.20.0.min.js"></script>
     <script src="/static/vendor/js/sweetalert2.v11.23.0.min.js"></script>
+    <script type="module" src="/static/js/common/header.js"></script>
+    <script type="module" src="/static/js/common/htmx-no-empty-values.js"></script>
+    <script type="module" src="/static/js/common/common-init.js"></script>
     <script type="module" src="/static/js/common/form-validation.js"></script>
-
-    <script type="text/javascript">
-      // Trim string values and filter out empty or "0" entries before HTMX serializes them.
-      const removeEmptyValues = (source) => {
-        const filteredEntries = [];
-
-        for (const [key, rawValue] of source.entries()) {
-          const value = typeof rawValue === "string" ? rawValue.trim() : String(rawValue);
-          if (value === "" || value === "0") {
-            continue;
-          }
-
-          filteredEntries.push([key, typeof rawValue === "string" ? value : rawValue]);
-        }
-
-        return filteredEntries;
-      };
-
-      // htmx extension to remove empty values from the parameters.
-      htmx.defineExtension("no-empty-vals", {
-        onEvent: (name, event) => {
-          if (name !== "htmx:configRequest") {
-            return true;
-          }
-
-          const request = event.detail;
-          // For GET requests, filter formData directly because HTMX builds URL params from it.
-          if (request.verb !== "get" || !request.useUrlParams) {
-            return true;
-          }
-
-          const filteredParameters = new FormData();
-          for (const [key, value] of removeEmptyValues(request.formData)) {
-            filteredParameters.append(key, value);
-          }
-
-          request.formData = filteredParameters;
-          request.parameters = filteredParameters;
-
-          return true;
-        },
-        encodeParameters: (xhr, parameters, elt) => {
-          // For non-GET requests, mutate parameters in place and let HTMX encode normally.
-          const filteredEntries = removeEmptyValues(parameters);
-
-          for (const key of [...parameters.keys()]) {
-            parameters.delete(key);
-          }
-
-          for (const [key, value] of filteredEntries) {
-            parameters.append(key, value);
-          }
-
-          return null;
-        }
-      });
-    </script>
-    <script type="module">
-      import {
-        initializeGlobalPopstateHandlers,
-        initializeToggleCheckboxes
-      } from '/static/js/common/common.js';
-
-      initializeGlobalPopstateHandlers();
-      initializeToggleCheckboxes();
-    </script>
+    <script type="module" src="/static/js/common/flash-alerts.js"></script>
+    <script type="module" src="/static/js/common/images-form.js"></script>
 
     {# Analytics -#}
     {%- if let Some(analytics) = cfg.analytics -%}

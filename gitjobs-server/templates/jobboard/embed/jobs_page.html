@@ -45,30 +45,15 @@
             {% let upstream_commitment = job.upstream_commitment.unwrap_or_default() -%}
 
             <a href="{{ base_url }}/?job_id={{ job.job_id }}"
+               data-embed-job-id="{{ job.job_id }}"
                target="_blank"
                rel="noopener noreferrer"
                class="relative mx-4 md:mx-7 text-start bg-white cursor-pointer border rounded-lg hover:outline hover:outline-1 p-5 md:p-7 {%- if upstream_commitment > 0 %} border-lime-500 bg-lime-50/20 hover:outline-lime-500{%- else if open_source > 0 %} border-lime-300 bg-lime-50/20 hover:outline-lime-300{%- else %} border-stone-200 hover:outline-stone-200{%- endif -%}">{{ macros::job_card(job = job) -}}</a>
           {% endfor -%}
-
-          {# djlint:off #}
-          <script type="module">
-            import {
-              trackSearchAppearances
-            } from '{{ base_url }}/static/js/common/common.js';
-
-            // Track search appearances for all visible jobs in embed
-            const jobIds = [
-              {%- for job in jobs -%}
-                "{{ job.job_id }}"{% if !loop.last %},{% endif %}
-              {%- endfor -%}
-            ];
-
-            trackSearchAppearances(jobIds);
-</script>
-          {# djlint:on #}
         {% endif -%}
       </div>
     </div>
+    <script type="module" src="{{ base_url }}/static/js/jobboard/embed.js"></script>
     <script type="module"
             src="{{base_url}}/static/vendor/js/open-iframe-resizer.v1.6.1.min.js"></script>
   </body>

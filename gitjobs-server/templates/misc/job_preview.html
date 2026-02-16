@@ -247,12 +247,6 @@
                       data-apply-url="{{ job.apply_url|display_some }}"
                       class="btn-primary w-full block mt-4 md:mt-2 mb-2 xl:mt-6"
                       disabled>Apply</button>
-              <script type="module">
-                import {
-                  initializeApplyButton
-                } from '/static/js/jobboard/job_section.js';
-                initializeApplyButton();
-              </script>
             {% else -%}
               <button class="btn-primary w-full block mt-4 md:mt-2 mb-2 xl:mt-6" disabled>Apply</button>
             {% endif -%}
@@ -326,14 +320,6 @@
               </div>
             </div>
             {# End social share -#}
-
-            <script type="module">
-              import {
-                shareJob
-              } from '/static/js/jobboard/share.js';
-
-              shareJob();
-            </script>
           {% endif -%}
 
           {% if !base_url.is_empty() && !job_id.is_empty() -%}

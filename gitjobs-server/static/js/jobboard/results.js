@@ -68,3 +68,51 @@ export const initializeJobboardResults = ({
 
   updateResults("");
 };
+
+/**
+ * Initializes results behavior from server-rendered config elements.
+ * @param {Document|HTMLElement} [root=document] - Root where config is searched
+ */
+export const initializeJobboardResultsFromDom = (root = document) => {
+  const selector = '[data-jobboard-results-config="true"]';
+  const resultConfigs = [];
+
+  if (root instanceof Element && root.matches(selector)) {
+    resultConfigs.push(root);
+  }
+
+  if (typeof root.querySelectorAll === "function") {
+    resultConfigs.push(...root.querySelectorAll(selector));
+  }
+
+  resultConfigs.forEach((resultConfig) => {
+    if (resultConfig.dataset.jobboardResultsBound === "true") {
+      return;
+    }
+
+    initializeJobboardResults({
+      hasJobs: resultConfig.dataset.hasJobs === "true",
+      currentPageContent: resultConfig.dataset.currentPageContent || "",
+    });
+
+    resultConfig.dataset.jobboardResultsBound = "true";
+  });
+
+  if (document.__gitjobsJobboardResultsLifecycleBound) {
+    return;
+  }
+
+  document.addEventListener("htmx:afterSwap", (event) => {
+    initializeJobboardResultsFromDom(event.target);
+  });
+  document.addEventListener("htmx:historyRestore", () => {
+    initializeJobboardResultsFromDom(document);
+  });
+  window.addEventListener("pageshow", () => {
+    initializeJobboardResultsFromDom(document);
+  });
+
+  document.__gitjobsJobboardResultsLifecycleBound = true;
+};
+
+initializeJobboardResultsFromDom();

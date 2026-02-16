@@ -9,19 +9,25 @@ import {
   removeParamFromQueryString,
   toggleModalVisibility,
 } from "/static/js/common/common.js";
+import { shareJob } from "/static/js/jobboard/share.js";
 
 /**
  * Initializes the job application button functionality.
  * Handles different states: logged out, external URL, no profile.
+ * @param {Document|HTMLElement} [root=document] - Root element containing the apply button
  */
-export const initializeApplyButton = () => {
-  const applyButton = document.getElementById("apply-button");
+export const initializeApplyButton = (root = document) => {
+  const applyButton = root.querySelector("#apply-button");
   if (!applyButton) {
     return;
   }
 
   const applyUrl = applyButton.dataset.applyUrl;
   const userButton = document.getElementById("user-dropdown-button");
+  if (!userButton) {
+    return;
+  }
+
   const isUserLoggedIn = userButton.dataset.loggedIn;
   const hasProfile = userButton.dataset.hasProfile;
 
@@ -130,6 +136,18 @@ export const initializeJobPreviewModal = () => {
     toggleModalVisibility("preview-modal", "close");
   };
 
+  const initializePreviewContentActions = (root) => {
+    initializeApplyButton(root);
+    shareJob(root);
+  };
+
+  const previewContent = document.getElementById("preview-content");
+  if (previewContent) {
+    initializePreviewContentActions(previewContent);
+  } else {
+    initializePreviewContentActions();
+  }
+
   const backdropPreviewModal = document.getElementById("backdrop-preview-modal");
   if (backdropPreviewModal && backdropPreviewModal.dataset.closeBound !== "true") {
     backdropPreviewModal.addEventListener("click", onCloseModal);
@@ -221,4 +239,11 @@ export const initializeJobPreviewModal = () => {
 
     copyButton.dataset.copyBound = "true";
   });
+
+  if (previewContent && previewContent.dataset.previewActionsBound !== "true") {
+    previewContent.addEventListener("htmx:afterSwap", () => {
+      initializePreviewContentActions(previewContent);
+    });
+    previewContent.dataset.previewActionsBound = "true";
+  }
 };

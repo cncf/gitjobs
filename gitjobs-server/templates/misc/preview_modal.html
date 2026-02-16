@@ -4,6 +4,8 @@
        tabindex="-1"
        aria-hidden="true"
        role="dialog"
+       data-preview-close-auto="true"
+       data-clean-job-id-param="{{ on_close == "clean_job_id_param" }}"
        data-open="false"
        class="hidden fixed w-full h-full top-0 left-0 z-50 flex items-center justify-center">
     <div id="backdrop-preview-modal"
@@ -23,15 +25,4 @@
   </div>
   {# End preview modal -#}
 
-  {# djlint:off #}
-  <script type="module">
-    import {
-      initializePreviewModalCloseHandlers
-    } from '/static/js/common/common.js';
-
-    initializePreviewModalCloseHandlers({
-      cleanJobIdParam: {% if on_close == "clean_job_id_param" -%}true{%- else -%}false{%- endif %}
-    });
-</script>
-  {# djlint:on #}
 {% endmacro modal -%}

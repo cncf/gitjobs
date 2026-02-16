@@ -1,5 +1,5 @@
 import { initializeConfirmHtmxButtons } from "/static/js/common/alerts.js";
-import { toggleModalVisibility } from "/static/js/common/common.js";
+import { initializeModalCloseHandlers, toggleModalVisibility } from "/static/js/common/common.js";
 
 /**
  * Initializes employer team members page interactions.
@@ -13,21 +13,10 @@ export const initializeEmployerTeamMembersList = () => {
     addMemberButton.dataset.addMemberBound = "true";
   }
 
-  const backdropAddMemberModal = document.getElementById("backdrop-add-member-modal");
-  if (backdropAddMemberModal && backdropAddMemberModal.dataset.backdropCloseBound !== "true") {
-    backdropAddMemberModal.addEventListener("click", () => {
-      toggleModalVisibility("add-member-modal", "close");
-    });
-    backdropAddMemberModal.dataset.backdropCloseBound = "true";
-  }
-
-  const closeAddMemberModal = document.getElementById("close-add-member-modal");
-  if (closeAddMemberModal && closeAddMemberModal.dataset.closeButtonBound !== "true") {
-    closeAddMemberModal.addEventListener("click", () => {
-      toggleModalVisibility("add-member-modal", "close");
-    });
-    closeAddMemberModal.dataset.closeButtonBound = "true";
-  }
+  initializeModalCloseHandlers({
+    modalId: "add-member-modal",
+    triggerIds: ["close-add-member-modal", "backdrop-add-member-modal"],
+  });
 
   initializeConfirmHtmxButtons({
     selector: "[data-remove-member-button]",

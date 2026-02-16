@@ -98,12 +98,48 @@ export const toggleModalVisibility = (modalId, status) => {
 };
 
 /**
+ * Initializes click handlers that close a modal.
+ * @param {Object} options - Close handler options
+ * @param {string} options.modalId - The target modal id
+ * @param {string[]} options.triggerIds - Element ids that trigger modal close
+ * @param {Function} [options.onClose] - Optional callback before closing
+ */
+export const initializeModalCloseHandlers = ({ modalId, triggerIds, onClose } = {}) => {
+  if (!modalId || !Array.isArray(triggerIds) || triggerIds.length === 0) {
+    return;
+  }
+
+  const closeModal = () => {
+    if (typeof onClose === "function") {
+      onClose();
+    }
+
+    toggleModalVisibility(modalId, "close");
+  };
+
+  triggerIds.forEach((triggerId) => {
+    const trigger = document.getElementById(triggerId);
+    if (!trigger || trigger.dataset.modalCloseBound === "true") {
+      return;
+    }
+
+    trigger.addEventListener("click", closeModal);
+    trigger.dataset.modalCloseBound = "true";
+  });
+};
+
+/**
  * Initializes preview modal close handlers for backdrop and close button.
  * @param {Object} [options] - Close behavior options
  * @param {boolean} [options.cleanJobIdParam=false] - Remove job_id query param
+ * @param {Function} [options.onClose] - Optional callback executed before close
  */
-export const initializePreviewModalCloseHandlers = ({ cleanJobIdParam = false } = {}) => {
+export const initializePreviewModalCloseHandlers = ({ cleanJobIdParam = false, onClose } = {}) => {
   const onCloseModal = () => {
+    if (typeof onClose === "function") {
+      onClose();
+    }
+
     const previewContent = document.getElementById("preview-content");
     if (previewContent) {
       previewContent.scrollTop = 0;
@@ -401,6 +437,25 @@ export const initializeCookiePreferencesButton = ({ buttonId, closeDrawer = fals
   });
 
   cookieButton.dataset.cookieBound = "true";
+};
+
+/**
+ * Binds a toggle checkbox to its hidden input mirror value.
+ * @param {Object} options - Toggle binding options
+ * @param {string} options.toggleId - Toggle checkbox id
+ * @param {string} options.hiddenInputId - Hidden input id
+ */
+export const bindToggleCheckbox = ({ toggleId, hiddenInputId }) => {
+  const toggleCheckbox = document.getElementById(toggleId);
+  const hiddenInput = document.getElementById(hiddenInputId);
+  if (!toggleCheckbox || !hiddenInput || toggleCheckbox.dataset.toggleMirrorBound === "true") {
+    return;
+  }
+
+  toggleCheckbox.addEventListener("change", () => {
+    hiddenInput.value = toggleCheckbox.checked;
+  });
+  toggleCheckbox.dataset.toggleMirrorBound = "true";
 };
 
 /**

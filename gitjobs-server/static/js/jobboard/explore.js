@@ -6,7 +6,11 @@ import {
   searchOnEnter,
   triggerActionOnForm,
 } from "/static/js/jobboard/filters.js";
-import { shouldDisplayJobModal, toggleModalVisibility } from "/static/js/common/common.js";
+import {
+  initializeModalCloseHandlers,
+  shouldDisplayJobModal,
+  toggleModalVisibility,
+} from "/static/js/common/common.js";
 import { copyEmbedCodeToClipboard, renderEmbedCode } from "/static/js/jobboard/job_section.js";
 
 /**
@@ -154,21 +158,10 @@ export const initializeJobboardExplore = () => {
     copyEmbedCodeButton.dataset.boundCopyEmbed = "true";
   }
 
-  const closeEmbedModal = document.getElementById("close-embed-modal");
-  if (closeEmbedModal && closeEmbedModal.dataset.boundCloseEmbed !== "true") {
-    closeEmbedModal.addEventListener("click", () => {
-      toggleModalVisibility("embed-modal", "close");
-    });
-    closeEmbedModal.dataset.boundCloseEmbed = "true";
-  }
-
-  const backdropEmbedModal = document.getElementById("backdrop-embed-modal");
-  if (backdropEmbedModal && backdropEmbedModal.dataset.boundBackdropEmbed !== "true") {
-    backdropEmbedModal.addEventListener("click", () => {
-      toggleModalVisibility("embed-modal", "close");
-    });
-    backdropEmbedModal.dataset.boundBackdropEmbed = "true";
-  }
+  initializeModalCloseHandlers({
+    modalId: "embed-modal",
+    triggerIds: ["close-embed-modal", "backdrop-embed-modal"],
+  });
 
   shouldDisplayJobModal(true);
 };

@@ -5,8 +5,9 @@ import {
   showSuccessAlert,
 } from "/static/js/common/alerts.js";
 import {
+  initializeModalCloseHandlers,
+  initializePreviewModalCloseHandlers,
   lockBodyScroll,
-  removeParamFromQueryString,
   toggleModalVisibility,
 } from "/static/js/common/common.js";
 import { shareJob } from "/static/js/jobboard/share.js";
@@ -120,21 +121,14 @@ export const initializeJobPreviewModal = () => {
     previewModal.dataset.initialScrollLockApplied = "true";
   }
 
-  const onCloseModal = () => {
-    const previewContent = document.getElementById("preview-content");
-    if (previewContent) {
-      previewContent.scrollTop = 0;
-    }
-
-    if (previewModal) {
-      previewModal.dataset.initialScrollLockApplied = "false";
-    }
-
-    removeParamFromQueryString("job_id", {
-      modal_preview: false,
-    });
-    toggleModalVisibility("preview-modal", "close");
-  };
+  initializePreviewModalCloseHandlers({
+    cleanJobIdParam: true,
+    onClose: () => {
+      if (previewModal) {
+        previewModal.dataset.initialScrollLockApplied = "false";
+      }
+    },
+  });
 
   const initializePreviewContentActions = (root) => {
     initializeApplyButton(root);
@@ -146,18 +140,6 @@ export const initializeJobPreviewModal = () => {
     initializePreviewContentActions(previewContent);
   } else {
     initializePreviewContentActions();
-  }
-
-  const backdropPreviewModal = document.getElementById("backdrop-preview-modal");
-  if (backdropPreviewModal && backdropPreviewModal.dataset.closeBound !== "true") {
-    backdropPreviewModal.addEventListener("click", onCloseModal);
-    backdropPreviewModal.dataset.closeBound = "true";
-  }
-
-  const closePreviewModal = document.getElementById("close-preview-modal");
-  if (closePreviewModal && closePreviewModal.dataset.closeBound !== "true") {
-    closePreviewModal.addEventListener("click", onCloseModal);
-    closePreviewModal.dataset.closeBound = "true";
   }
 
   const tabs = document.querySelectorAll(".tab");
@@ -197,21 +179,10 @@ export const initializeJobPreviewModal = () => {
     embedCodeButton.dataset.embedOpenBound = "true";
   }
 
-  const closeEmbedCodeModal = document.getElementById("close-embed-code-modal");
-  if (closeEmbedCodeModal && closeEmbedCodeModal.dataset.embedCloseBound !== "true") {
-    closeEmbedCodeModal.addEventListener("click", () => {
-      toggleModalVisibility("embed-code-modal", "close");
-    });
-    closeEmbedCodeModal.dataset.embedCloseBound = "true";
-  }
-
-  const embedCodeModalBackdrop = document.getElementById("backdrop-embed-code-modal");
-  if (embedCodeModalBackdrop && embedCodeModalBackdrop.dataset.embedCloseBound !== "true") {
-    embedCodeModalBackdrop.addEventListener("click", () => {
-      toggleModalVisibility("embed-code-modal", "close");
-    });
-    embedCodeModalBackdrop.dataset.embedCloseBound = "true";
-  }
+  initializeModalCloseHandlers({
+    modalId: "embed-code-modal",
+    triggerIds: ["close-embed-code-modal", "backdrop-embed-code-modal"],
+  });
 
   const copyButtons = document.querySelectorAll("[data-copy-button]");
   copyButtons.forEach((copyButton) => {

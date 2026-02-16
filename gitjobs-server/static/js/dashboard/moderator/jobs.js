@@ -1,5 +1,5 @@
 import { handleHtmxResponse, initializePreviewButtons } from "/static/js/common/alerts.js";
-import { toggleModalVisibility } from "/static/js/common/common.js";
+import { initializeModalCloseHandlers, toggleModalVisibility } from "/static/js/common/common.js";
 
 /**
  * Initializes moderation actions for approve and reject job workflows.
@@ -59,21 +59,10 @@ export const initializeModeratorJobs = () => {
     rejectJobForm.dataset.rejectSubmitBound = "true";
   }
 
-  const closeRejectModal = document.getElementById("close-reject-modal");
-  if (closeRejectModal && closeRejectModal.dataset.rejectCloseBound !== "true") {
-    closeRejectModal.addEventListener("click", () => {
-      toggleModalVisibility("reject-modal", "close");
-    });
-    closeRejectModal.dataset.rejectCloseBound = "true";
-  }
-
-  const rejectModalBackdrop = document.getElementById("backdrop-reject-modal");
-  if (rejectModalBackdrop && rejectModalBackdrop.dataset.rejectBackdropBound !== "true") {
-    rejectModalBackdrop.addEventListener("click", () => {
-      toggleModalVisibility("reject-modal", "close");
-    });
-    rejectModalBackdrop.dataset.rejectBackdropBound = "true";
-  }
+  initializeModalCloseHandlers({
+    modalId: "reject-modal",
+    triggerIds: ["close-reject-modal", "backdrop-reject-modal"],
+  });
 };
 
 /**

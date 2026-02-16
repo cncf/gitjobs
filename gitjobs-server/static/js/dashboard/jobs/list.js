@@ -1,5 +1,9 @@
 import { getBarStatsOptions, gitjobsChartTheme } from "/static/js/jobboard/stats.js";
-import { prettifyNumber, toggleModalVisibility } from "/static/js/common/common.js";
+import {
+  initializeModalCloseHandlers,
+  prettifyNumber,
+  toggleModalVisibility,
+} from "/static/js/common/common.js";
 import { initializeConfirmHtmxButtons, showErrorAlert, showInfoAlert } from "/static/js/common/alerts.js";
 import { initializeDashboardActionButton } from "/static/js/dashboard/employer/dashboard-actions.js";
 
@@ -287,17 +291,11 @@ export const initializeEmployerJobsListTable = () => {
  * Initializes stats modal controls and chart theme registration.
  */
 export const initializeEmployerJobsStats = () => {
-  const closeStatsModalButton = document.getElementById("close-stats-modal");
-  if (closeStatsModalButton && closeStatsModalButton.dataset.closeStatsBound !== "true") {
-    closeStatsModalButton.addEventListener("click", closeStats);
-    closeStatsModalButton.dataset.closeStatsBound = "true";
-  }
-
-  const backdropStatsModal = document.getElementById("backdrop-stats-modal");
-  if (backdropStatsModal && backdropStatsModal.dataset.backdropStatsBound !== "true") {
-    backdropStatsModal.addEventListener("click", closeStats);
-    backdropStatsModal.dataset.backdropStatsBound = "true";
-  }
+  initializeModalCloseHandlers({
+    modalId: "stats-modal",
+    triggerIds: ["close-stats-modal", "backdrop-stats-modal"],
+    closeHandler: closeStats,
+  });
 
   if (!document.__gitjobsEchartsThemeRegistered) {
     registerEchartsTheme();

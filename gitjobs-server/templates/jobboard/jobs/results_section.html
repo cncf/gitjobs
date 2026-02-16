@@ -55,17 +55,10 @@
     initializeJobboardResults
   } from '/static/js/jobboard/results.js';
 
-  {% if jobs.len() > 0 -%}
-    initializeJobboardResults({
-      hasJobs: true,
-      currentPageContent: '{{ jobs_macros::current_page(total, jobs.len(), offset) -}}'
-    });
-  {% else -%}
-    initializeJobboardResults({
-      hasJobs: false,
-      currentPageContent: ''
-    });
-  {% endif -%}
+  initializeJobboardResults({
+    hasJobs: {% if jobs.len() > 0 -%}true{%- else -%}false{%- endif %},
+    currentPageContent: '{% if jobs.len() > 0 -%}{{ jobs_macros::current_page(total, jobs.len(), offset) -}}{%- endif %}'
+  });
 </script>
 {# djlint:on #}
 {# End list view -#}

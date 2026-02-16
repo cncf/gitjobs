@@ -103,8 +103,9 @@ export const toggleModalVisibility = (modalId, status) => {
  * @param {string} options.modalId - The target modal id
  * @param {string[]} options.triggerIds - Element ids that trigger modal close
  * @param {Function} [options.onClose] - Optional callback before closing
+ * @param {Function} [options.closeHandler] - Optional custom close function
  */
-export const initializeModalCloseHandlers = ({ modalId, triggerIds, onClose } = {}) => {
+export const initializeModalCloseHandlers = ({ modalId, triggerIds, onClose, closeHandler } = {}) => {
   if (!modalId || !Array.isArray(triggerIds) || triggerIds.length === 0) {
     return;
   }
@@ -112,6 +113,11 @@ export const initializeModalCloseHandlers = ({ modalId, triggerIds, onClose } = 
   const closeModal = () => {
     if (typeof onClose === "function") {
       onClose();
+    }
+
+    if (typeof closeHandler === "function") {
+      closeHandler();
+      return;
     }
 
     toggleModalVisibility(modalId, "close");
@@ -135,35 +141,26 @@ export const initializeModalCloseHandlers = ({ modalId, triggerIds, onClose } = 
  * @param {Function} [options.onClose] - Optional callback executed before close
  */
 export const initializePreviewModalCloseHandlers = ({ cleanJobIdParam = false, onClose } = {}) => {
-  const onCloseModal = () => {
-    if (typeof onClose === "function") {
-      onClose();
-    }
+  initializeModalCloseHandlers({
+    modalId: "preview-modal",
+    triggerIds: ["backdrop-preview-modal", "close-preview-modal"],
+    onClose: () => {
+      const previewContent = document.getElementById("preview-content");
+      if (previewContent) {
+        previewContent.scrollTop = 0;
+      }
 
-    const previewContent = document.getElementById("preview-content");
-    if (previewContent) {
-      previewContent.scrollTop = 0;
-    }
+      if (cleanJobIdParam) {
+        removeParamFromQueryString("job_id", {
+          modal_preview: false,
+        });
+      }
 
-    if (cleanJobIdParam) {
-      removeParamFromQueryString("job_id", {
-        modal_preview: false,
-      });
-    }
-    toggleModalVisibility("preview-modal", "close");
-  };
-
-  const backdropPreviewModal = document.getElementById("backdrop-preview-modal");
-  if (backdropPreviewModal && backdropPreviewModal.dataset.previewCloseBound !== "true") {
-    backdropPreviewModal.addEventListener("click", onCloseModal);
-    backdropPreviewModal.dataset.previewCloseBound = "true";
-  }
-
-  const closePreviewModal = document.getElementById("close-preview-modal");
-  if (closePreviewModal && closePreviewModal.dataset.previewCloseBound !== "true") {
-    closePreviewModal.addEventListener("click", onCloseModal);
-    closePreviewModal.dataset.previewCloseBound = "true";
-  }
+      if (typeof onClose === "function") {
+        onClose();
+      }
+    },
+  });
 };
 
 /**

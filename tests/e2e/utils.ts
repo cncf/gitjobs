@@ -135,9 +135,10 @@ export const loginWithCredentials = async (
   username: string,
   password: string
 ): Promise<void> => {
-  await page.goto('/log-in');
+  await page.goto('/log-in', { waitUntil: 'domcontentloaded' });
+  await page.locator('#username').waitFor({ state: 'visible', timeout: 10000 });
   await page.locator('#username').fill(username);
   await page.locator('#password').fill(password);
   await page.getByRole('button', { name: 'Submit' }).click();
-  await page.waitForURL((url) => url.pathname !== '/log-in');
+  await page.waitForURL((url) => url.pathname !== '/log-in', { timeout: 10000 });
 };

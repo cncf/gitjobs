@@ -48,6 +48,7 @@ export class SearchProjects extends LitWrapper {
     this.alignment = "bottom";
     this.activeIndex = null;
     this.selectedFoundation = null;
+    this._debouncedGetProjects = debounce(() => this._getProjects(), 300);
   }
 
   connectedCallback() {
@@ -57,7 +58,7 @@ export class SearchProjects extends LitWrapper {
 
   disconnectedCallback() {
     super.disconnectedCallback();
-    window.addEventListener("mousedown", this._handleClickOutside);
+    window.removeEventListener("mousedown", this._handleClickOutside);
   }
 
   /**
@@ -115,8 +116,9 @@ export class SearchProjects extends LitWrapper {
    */
   _filterOptions() {
     if (this.enteredValue.length > 2) {
-      debounce(this._getProjects(this.enteredValue), 300);
+      this._debouncedGetProjects();
     } else {
+      this._debouncedGetProjects.cancel?.();
       this.visibleOptions = null;
       this.visibleDropdown = false;
       this.activeIndex = null;

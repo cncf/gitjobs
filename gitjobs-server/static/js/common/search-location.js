@@ -60,6 +60,7 @@ export class SearchLocation extends LitWrapper {
     this.isLoading = false;
     this.activeIndex = null;
     this.defaultDistance = "100000";
+    this._debouncedFetchData = debounce((value) => this._fetchData(value), 300);
   }
 
   connectedCallback() {
@@ -150,12 +151,18 @@ export class SearchLocation extends LitWrapper {
    * @private
    */
   _onInputChange(event) {
-    this._isLoading = true;
     const value = event.target.value;
     this.value = value;
     if (value.length > 2) {
-      debounce(this._fetchData(value), 300);
+      this.isLoading = true;
+      this._debouncedFetchData(value);
+      return;
     }
+
+    this._debouncedFetchData.cancel?.();
+    this.isLoading = false;
+    this.options = null;
+    this.activeIndex = null;
   }
 
   /**

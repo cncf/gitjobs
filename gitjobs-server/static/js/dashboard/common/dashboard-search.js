@@ -50,6 +50,7 @@ export class DashboardSearch extends LitWrapper {
     this.activeIndex = null;
     this.selectedFoundation = this.defaultFoundation;
     this.isLoading = false;
+    this._debouncedGetItems = debounce(() => this._getItems(), 300);
   }
 
   connectedCallback() {
@@ -59,7 +60,7 @@ export class DashboardSearch extends LitWrapper {
 
   disconnectedCallback() {
     super.disconnectedCallback();
-    window.addEventListener("mousedown", this._handleClickOutside);
+    window.removeEventListener("mousedown", this._handleClickOutside);
   }
 
   /**
@@ -126,8 +127,10 @@ export class DashboardSearch extends LitWrapper {
     const minLength = this.type === "certifications" ? 0 : 2;
     if (this.enteredValue.length >= minLength) {
       this.isLoading = true;
-      debounce(this._getItems(this.enteredValue), 300);
+      this._debouncedGetItems();
     } else {
+      this._debouncedGetItems.cancel?.();
+      this.isLoading = false;
       this.visibleOptions = [];
       this.visibleDropdown = false;
       this.activeIndex = null;

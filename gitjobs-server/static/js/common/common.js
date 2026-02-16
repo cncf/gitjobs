@@ -313,16 +313,21 @@ export const initializeButtonDropdown = ({ buttonId, dropdownId, guardKey }) => 
  * Useful for limiting API calls on user input.
  * @param {Function} func - The function to debounce
  * @param {number} [timeout=300] - Delay in milliseconds
- * @returns {Function} The debounced function
+ * @returns {Function & {cancel: Function}} Debounced function with cancel()
  */
 export const debounce = (func, timeout = 300) => {
   let timer;
-  return (...args) => {
+  const debounced = (...args) => {
     clearTimeout(timer);
     timer = setTimeout(() => {
       func.apply(this, args);
     }, timeout);
   };
+  debounced.cancel = () => {
+    clearTimeout(timer);
+  };
+
+  return debounced;
 };
 
 /**

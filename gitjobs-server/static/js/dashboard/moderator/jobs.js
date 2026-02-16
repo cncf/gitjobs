@@ -1,4 +1,4 @@
-import { handleHtmxResponse } from "/static/js/common/alerts.js";
+import { handleHtmxResponse, initializePreviewButtons } from "/static/js/common/alerts.js";
 import { toggleModalVisibility } from "/static/js/common/common.js";
 
 /**
@@ -74,4 +74,13 @@ export const initializeModeratorJobs = () => {
     });
     rejectModalBackdrop.dataset.rejectBackdropBound = "true";
   }
+};
+
+/**
+ * Initializes moderator preview buttons.
+ */
+export const initializeModeratorPreviewButtons = () => {
+  initializePreviewButtons({
+    errorMessage: "Something went wrong previewing the data. Please try again later.",
+  });
 };

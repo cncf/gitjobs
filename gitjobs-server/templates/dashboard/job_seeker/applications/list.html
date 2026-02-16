@@ -96,20 +96,10 @@
 
 <script type="module">
   import {
-    initializeConfirmHtmxButtons,
-    initializePreviewButtons,
-  } from '/static/js/common/alerts.js';
+    initializeJobSeekerApplicationsList
+  } from '/static/js/dashboard/jobseeker/applications.js';
 
-  initializePreviewButtons({
-    errorMessage: 'Something went wrong previewing the data. Please try again later.'
-  });
-
-  initializeConfirmHtmxButtons({
-    selector: '[data-cancel-application-button]',
-    confirmMessage: 'Are you sure you wish to cancel this application?',
-    successMessage: 'You have successfully canceled the application.',
-    errorMessage: 'An error occurred canceling this application. Please try again later.'
-  });
+  initializeJobSeekerApplicationsList();
 </script>
 
 {% macro location_content(workplace, job_location) -%}

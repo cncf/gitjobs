@@ -1,30 +1,14 @@
 import { getBarStatsOptions, gitjobsChartTheme } from "/static/js/jobboard/stats.js";
 import {
-  debounce,
   initializeModalCloseHandlers,
   prettifyNumber,
+  registerChartResizeHandler,
   toggleModalVisibility,
 } from "/static/js/common/common.js";
 import { initializeConfirmHtmxButtons, showErrorAlert, showInfoAlert } from "/static/js/common/alerts.js";
 import { initializeDashboardActionButton } from "/static/js/dashboard/employer/dashboard-actions.js";
 
 const JOBS_STATS_CHART_IDS = ["job-chart-views", "job-chart-search-appearances"];
-
-const resizeStatsCharts = () => {
-  JOBS_STATS_CHART_IDS.forEach((chartId) => {
-    const chartDom = document.getElementById(chartId);
-    if (!chartDom) {
-      return;
-    }
-
-    const chartInstance = echarts.getInstanceByDom(chartDom);
-    if (chartInstance) {
-      chartInstance.resize();
-    }
-  });
-};
-
-const debouncedResizeStatsCharts = debounce(resizeStatsCharts, 150);
 
 /**
  * Shows statistics for a specific job in a modal
@@ -317,10 +301,10 @@ export const initializeEmployerJobsStats = () => {
     document.__gitjobsEchartsThemeRegistered = true;
   }
 
-  if (!document.__gitjobsStatsChartsResizeBound) {
-    window.addEventListener("resize", debouncedResizeStatsCharts);
-    document.__gitjobsStatsChartsResizeBound = true;
-  }
+  registerChartResizeHandler({
+    chartIds: JOBS_STATS_CHART_IDS,
+    guardKey: "__gitjobsStatsChartsResizeBound",
+  });
 };
 
 /**

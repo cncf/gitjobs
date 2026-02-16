@@ -6,34 +6,13 @@ import {
   showSuccessAlert,
 } from "/static/js/common/alerts.js";
 import {
+  copyToClipboard,
   initializeModalCloseHandlers,
   initializePreviewModalCloseHandlers,
   lockBodyScroll,
   toggleModalVisibility,
 } from "/static/js/common/common.js";
 import { shareJob } from "/static/js/jobboard/share.js";
-
-/**
- * Copies text to clipboard using Clipboard API with a textarea fallback.
- * @param {string} content - Text content to copy
- * @returns {Promise<void>} Resolves when content is copied
- */
-const copyToClipboard = async (content) => {
-  if (navigator.clipboard?.writeText) {
-    await navigator.clipboard.writeText(content);
-    return;
-  }
-
-  const temporaryInput = document.createElement("textarea");
-  temporaryInput.value = content;
-  temporaryInput.setAttribute("readonly", "");
-  temporaryInput.style.position = "absolute";
-  temporaryInput.style.left = "-9999px";
-  document.body.appendChild(temporaryInput);
-  temporaryInput.select();
-  document.execCommand("copy");
-  document.body.removeChild(temporaryInput);
-};
 
 /**
  * Initializes the job application button functionality.

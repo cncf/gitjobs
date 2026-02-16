@@ -67,6 +67,28 @@ export const scrollToDashboardTop = () => {
 };
 
 /**
+ * Copies text to clipboard using Clipboard API with a textarea fallback.
+ * @param {string} content - Text content to copy
+ * @returns {Promise<void>} Resolves when content is copied
+ */
+export const copyToClipboard = async (content) => {
+  if (navigator.clipboard?.writeText) {
+    await navigator.clipboard.writeText(content);
+    return;
+  }
+
+  const temporaryInput = document.createElement("textarea");
+  temporaryInput.value = content;
+  temporaryInput.setAttribute("readonly", "");
+  temporaryInput.style.position = "absolute";
+  temporaryInput.style.left = "-9999px";
+  document.body.appendChild(temporaryInput);
+  temporaryInput.select();
+  document.execCommand("copy");
+  document.body.removeChild(temporaryInput);
+};
+
+/**
  * Checks whether an element is fully visible in the viewport.
  * @param {HTMLElement} element - Element to check
  * @returns {boolean} True if element is fully visible
@@ -331,6 +353,49 @@ export const debounce = (func, timeout = 300) => {
   };
 
   return debounced;
+};
+
+/**
+ * Registers a debounced resize handler for ECharts instances by element id.
+ * Uses an optional guard key to bind only once.
+ * @param {Object} options - Resize handler options
+ * @param {string[]} options.chartIds - Chart container element ids
+ * @param {string} [options.guardKey] - Document flag key for one-time binding
+ * @param {number} [options.delay=150] - Debounce delay in milliseconds
+ */
+export const registerChartResizeHandler = ({ chartIds, guardKey, delay = 150 }) => {
+  if (!Array.isArray(chartIds) || chartIds.length === 0) {
+    return;
+  }
+
+  if (guardKey && document[guardKey]) {
+    return;
+  }
+
+  const resizeCharts = debounce(() => {
+    const echartsApi = window.echarts;
+    if (!echartsApi || typeof echartsApi.getInstanceByDom !== "function") {
+      return;
+    }
+
+    chartIds.forEach((chartId) => {
+      const chartDom = document.getElementById(chartId);
+      if (!chartDom) {
+        return;
+      }
+
+      const chartInstance = echartsApi.getInstanceByDom(chartDom);
+      if (chartInstance) {
+        chartInstance.resize();
+      }
+    });
+  }, delay);
+
+  window.addEventListener("resize", resizeCharts);
+
+  if (guardKey) {
+    document[guardKey] = true;
+  }
 };
 
 /**

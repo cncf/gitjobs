@@ -1,4 +1,6 @@
 import "/static/vendor/js/sharer.v0.5.3.min.js";
+import { showErrorAlert } from "/static/js/common/alerts.js";
+import { copyToClipboard } from "/static/js/common/common.js";
 
 /**
  * Builds share metadata and fallback links for a job ID.
@@ -21,28 +23,6 @@ const getShareMetadata = (jobId) => {
       email: `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`${message} ${shareUrl}`)}`,
     },
   };
-};
-
-/**
- * Copies text to clipboard using Clipboard API with a fallback.
- * @param {string} content - Text content to copy
- * @returns {Promise<void>} Resolves when content is copied
- */
-const copyToClipboard = async (content) => {
-  if (navigator.clipboard?.writeText) {
-    await navigator.clipboard.writeText(content);
-    return;
-  }
-
-  const temporaryInput = document.createElement("textarea");
-  temporaryInput.value = content;
-  temporaryInput.setAttribute("readonly", "");
-  temporaryInput.style.position = "absolute";
-  temporaryInput.style.left = "-9999px";
-  document.body.appendChild(temporaryInput);
-  temporaryInput.select();
-  document.execCommand("copy");
-  document.body.removeChild(temporaryInput);
 };
 
 /**
@@ -97,7 +77,13 @@ export const shareJob = (root = document) => {
     if (copyLink && copyLink.dataset.copyInitialized !== "true") {
       copyLink.addEventListener("click", async (event) => {
         event.preventDefault();
-        await copyToClipboard(shareUrl);
+        try {
+          await copyToClipboard(shareUrl);
+        } catch (error) {
+          showErrorAlert("Something went wrong copying the link. Please try again later.");
+          return;
+        }
+
         const tooltip = socialLinks.querySelector("#copy-link-tooltip");
         if (tooltip) {
           tooltip.classList.add("opacity-100", "z-10");

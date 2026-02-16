@@ -1,4 +1,4 @@
-import { debounce, prettifyNumber } from "/static/js/common/common.js";
+import { prettifyNumber, registerChartResizeHandler } from "/static/js/common/common.js";
 
 /**
  * ECharts theme configuration for GitJobs charts.
@@ -367,22 +367,6 @@ export const gitjobsChartTheme = {
 const MESSAGE_EMPTY_STATS = "No data available yet";
 const JOBBOARD_STATS_CHART_IDS = ["line-chart", "bar-daily", "bar-monthly"];
 
-const resizeStatsCharts = () => {
-  JOBBOARD_STATS_CHART_IDS.forEach((chartId) => {
-    const chartDom = document.getElementById(chartId);
-    if (!chartDom) {
-      return;
-    }
-
-    const chartInstance = echarts.getInstanceByDom(chartDom);
-    if (chartInstance) {
-      chartInstance.resize();
-    }
-  });
-};
-
-const debouncedResizeStatsCharts = debounce(resizeStatsCharts, 150);
-
 /**
  * Finds the smallest value in an array of numbers.
  * @param {Array<number>} numbers - Array of numbers to search
@@ -721,10 +705,10 @@ export const renderStats = () => {
     document.__gitjobsStatsThemeRegistered = true;
   }
 
-  if (!document.__gitjobsJobboardStatsResizeBound) {
-    window.addEventListener("resize", debouncedResizeStatsCharts);
-    document.__gitjobsJobboardStatsResizeBound = true;
-  }
+  registerChartResizeHandler({
+    chartIds: JOBBOARD_STATS_CHART_IDS,
+    guardKey: "__gitjobsJobboardStatsResizeBound",
+  });
 
   if (!stats.jobs.published_running_total) {
     const chartDom = document.getElementById("line-chart");

@@ -169,6 +169,38 @@ export const handlePreviewModalResponse = ({
 };
 
 /**
+ * Binds preview buttons to open the preview modal after successful HTMX responses.
+ * @param {Object} params - Preview binding params
+ * @param {string} [params.selector=".preview-button"] - Preview button selector
+ * @param {string} params.errorMessage - Generic preview error message
+ * @param {string} [params.invalidMessage] - Optional message for 422 invalid input
+ * @param {string} [params.modalId="preview-modal"] - Preview modal id
+ */
+export const initializePreviewButtons = ({
+  selector = ".preview-button",
+  errorMessage,
+  invalidMessage = "",
+  modalId = "preview-modal",
+}) => {
+  const previewButtons = document.querySelectorAll(selector);
+  previewButtons.forEach((button) => {
+    if (button.dataset.previewButtonBound === "true") {
+      return;
+    }
+
+    button.addEventListener("htmx:afterRequest", (event) => {
+      handlePreviewModalResponse({
+        xhr: event.detail.xhr,
+        errorMessage,
+        invalidMessage,
+        modalId,
+      });
+    });
+    button.dataset.previewButtonBound = "true";
+  });
+};
+
+/**
  * Displays an informational alert with plain text message.
  * Auto-dismisses after 10 seconds.
  * @param {string} message - The info message to display

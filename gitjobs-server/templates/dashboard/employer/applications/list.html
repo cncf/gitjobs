@@ -201,7 +201,7 @@
     initializeButtonDropdown
   } from '/static/js/common/common.js';
   import {
-    handlePreviewModalResponse,
+    initializePreviewButtons,
   } from '/static/js/common/alerts.js';
 
   const hideJobsDropdown = initializeButtonDropdown({
@@ -215,14 +215,7 @@
     button.addEventListener('htmx:beforeRequest', hideJobsDropdown);
   });
 
-  // On preview button click, show the preview modal
-  const previewButtons = document.querySelectorAll('.preview-button');
-  previewButtons.forEach((button) => {
-    button.addEventListener('htmx:afterRequest', (e) => {
-      handlePreviewModalResponse({
-        xhr: e.detail.xhr,
-        errorMessage: 'Something went wrong previewing the data. Please try again later.'
-      });
-    });
+  initializePreviewButtons({
+    errorMessage: 'Something went wrong previewing the data. Please try again later.'
   });
 </script>

@@ -141,21 +141,11 @@
 </div>
 <script type="module">
   import {
-    handleHtmxResponse
-  } from '/static/js/common/alerts.js';
+    initializeEmployerProfileForm
+  } from '/static/js/dashboard/employer/employers.js';
 
-  const employerForm = document.getElementById('employer-form');
-  if (employerForm) {
-    employerForm.addEventListener('htmx:afterRequest', (e) => {
-      // Check if the form is the employer form and not the input ts_query requesting locations
-      if (e.detail.elt.id === 'employer-form') {
-        if (!handleHtmxResponse({
-            xhr: e.detail.xhr,
-            errorMessage: 'Something went wrong updating the profile. Please try again later.'
-          })) {
-          window.scrollTo(0, 0);
-        }
-      }
-    });
-  }
+  initializeEmployerProfileForm({
+    errorMessage: 'Something went wrong updating the profile. Please try again later.',
+    scrollToTopOnError: true
+  });
 </script>

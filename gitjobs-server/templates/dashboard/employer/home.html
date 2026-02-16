@@ -48,7 +48,8 @@
           <div id="dropdown-employers"
                class="hidden absolute top-10 start-0 w-full z-10 bg-white rounded-lg shadow-sm border border-stone-200"
                role="menu"
-               aria-labelledby="employer-btn">
+               aria-labelledby="employer-btn"
+               aria-hidden="true">
             <ul class="max-h-48 overflow-y-auto text-stone-700" role="none">
               {% for employer in employers -%}
                 {% let is_selected = selected_employer.employer_id == employer.employer_id -%}

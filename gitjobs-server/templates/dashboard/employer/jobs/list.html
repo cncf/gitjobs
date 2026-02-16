@@ -176,7 +176,8 @@
                   <div id="dropdown-actions-{{ job.job_id }}"
                        class="dropdown absolute hidden z-10 end-0 top-8 w-[200px] bg-white divide-y divide-stone-100 rounded-lg shadow border border-stone-200"
                        role="menu"
-                       aria-labelledby="actions-btn-{{ job.job_id }}">
+                       aria-labelledby="actions-btn-{{ job.job_id }}"
+                       aria-hidden="true">
                     <ul class="py-2 text-sm text-stone-700" role="none">
                       {# Publish button -#}
                       {% if job.status != JobStatus::Published && job.status != JobStatus::PendingApproval -%}

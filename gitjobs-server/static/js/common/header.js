@@ -15,6 +15,7 @@ const hideDropdown = () => {
   }
 
   dropdown.classList.add("hidden");
+  dropdown.setAttribute("aria-hidden", "true");
   if (button) {
     button.setAttribute("aria-expanded", "false");
   }
@@ -28,6 +29,7 @@ const showDropdown = () => {
   }
 
   dropdown.classList.remove("hidden");
+  dropdown.setAttribute("aria-hidden", "false");
   if (button) {
     button.setAttribute("aria-expanded", "true");
   }
@@ -139,6 +141,7 @@ export const initUserDropdown = () => {
   }
 
   button.setAttribute("aria-expanded", dropdown.classList.contains("hidden") ? "false" : "true");
+  dropdown.setAttribute("aria-hidden", dropdown.classList.contains("hidden") ? "true" : "false");
 
   if (!button.__gitjobsDropdownInitialized) {
     button.addEventListener("click", toggleDropdownVisibility);

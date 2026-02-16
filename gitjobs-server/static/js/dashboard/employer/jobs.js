@@ -1,16 +1,5 @@
 import { handleHtmxResponse, handlePreviewModalResponse } from "/static/js/common/alerts.js";
-
-/**
- * Triggers an HTMX action on a form element.
- * @param {string} formId - The ID of the form element
- * @param {string} action - The action to trigger
- */
-export const triggerActionOnForm = (formId, action) => {
-  const form = document.getElementById(formId);
-  if (form) {
-    htmx.trigger(form, action);
-  }
-};
+import { triggerActionOnForm } from "/static/js/common/common.js";
 
 /**
  * Validates and adjusts salary fields based on selected salary type.

@@ -1,7 +1,7 @@
 import { html, nothing } from "/static/vendor/js/lit-all.v3.3.1.min.js";
 import { LitWrapper } from "/static/js/common/lit-wrapper.js";
 import { debounce } from "/static/js/common/common.js";
-import { triggerActionOnForm } from "/static/js/jobboard/filters.js";
+import { triggerActionOnForm } from "/static/js/common/common.js";
 
 /**
  * Location search component with autocomplete and distance filter.

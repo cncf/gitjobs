@@ -4,9 +4,8 @@ import { handleHtmxResponse } from "/static/js/common/alerts.js";
  * Initializes HTMX response handling for employer profile add/update forms.
  * @param {Object} params - Initialization options
  * @param {string} params.errorMessage - Error message for failed requests
- * @param {boolean} [params.scrollToTopOnError=false] - Scroll to top after errors
  */
-export const initializeEmployerProfileForm = ({ errorMessage, scrollToTopOnError = false }) => {
+export const initializeEmployerProfileForm = ({ errorMessage }) => {
   const employerForm = document.getElementById("employer-form");
   if (!employerForm) {
     return;
@@ -18,12 +17,9 @@ export const initializeEmployerProfileForm = ({ errorMessage, scrollToTopOnError
       return;
     }
 
-    const ok = handleHtmxResponse({
+    handleHtmxResponse({
       xhr: event.detail.xhr,
       errorMessage,
     });
-    if (!ok && scrollToTopOnError) {
-      window.scrollTo(0, 0);
-    }
   });
 };

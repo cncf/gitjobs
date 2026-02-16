@@ -1,18 +1,11 @@
+import { initializeModalCloseHandlers, setDrawerVisibility } from "/static/js/common/common.js";
+
 /**
  * Opens the mobile navigation drawer menu.
  * Adds transition effects and manages backdrop visibility.
  */
 export const openNavigationDrawer = () => {
-  const navigationDrawer = document.getElementById("drawer-menu");
-  if (navigationDrawer) {
-    navigationDrawer.classList.add("transition-transform");
-    navigationDrawer.classList.remove("-translate-x-full");
-    navigationDrawer.dataset.open = "true";
-  }
-  const backdrop = document.getElementById("drawer-backdrop");
-  if (backdrop) {
-    backdrop.classList.remove("hidden");
-  }
+  setDrawerVisibility({ drawerId: "drawer-menu", open: true });
 };
 
 /**
@@ -20,17 +13,7 @@ export const openNavigationDrawer = () => {
  * Removes transition effects and resets scroll position.
  */
 export const closeNavigationDrawer = () => {
-  const navigationDrawer = document.getElementById("drawer-menu");
-  if (navigationDrawer) {
-    navigationDrawer.classList.add("-translate-x-full");
-    navigationDrawer.classList.remove("transition-transform");
-    navigationDrawer.dataset.open = "false";
-    navigationDrawer.scrollTop = 0;
-  }
-  const backdrop = document.getElementById("drawer-backdrop");
-  if (backdrop) {
-    backdrop.classList.add("hidden");
-  }
+  setDrawerVisibility({ drawerId: "drawer-menu", open: false });
 };
 
 /**
@@ -57,15 +40,8 @@ export const initializeCloseMenuControls = ({
   closeButtonId = "close-menu",
   backdropId = "drawer-backdrop",
 } = {}) => {
-  const closeMenuButton = document.getElementById(closeButtonId);
-  if (closeMenuButton && closeMenuButton.dataset.closeMenuBound !== "true") {
-    closeMenuButton.addEventListener("click", closeNavigationDrawer);
-    closeMenuButton.dataset.closeMenuBound = "true";
-  }
-
-  const backdropMenu = document.getElementById(backdropId);
-  if (backdropMenu && backdropMenu.dataset.backdropMenuBound !== "true") {
-    backdropMenu.addEventListener("click", closeNavigationDrawer);
-    backdropMenu.dataset.backdropMenuBound = "true";
-  }
+  initializeModalCloseHandlers({
+    triggerIds: [closeButtonId, backdropId],
+    closeHandler: closeNavigationDrawer,
+  });
 };

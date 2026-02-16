@@ -1,6 +1,6 @@
 import { html } from "/static/vendor/js/lit-all.v3.3.1.min.js";
 import { unnormalize } from "/static/js/common/common.js";
-import { triggerActionOnForm } from "/static/js/jobboard/filters.js";
+import { triggerActionOnForm } from "/static/js/common/common.js";
 import { LitWrapper } from "/static/js/common/lit-wrapper.js";
 import { getBenefits } from "/static/js/common/data.js";
 

@@ -1,18 +1,11 @@
+import { setDrawerVisibility, triggerActionOnForm as triggerFormAction } from "/static/js/common/common.js";
+
 /**
  * Opens the mobile filters drawer.
  * Adds transition effects and manages backdrop visibility.
  */
 export const openFiltersDrawer = () => {
-  const filtersDrawer = document.getElementById("drawer-filters");
-  if (filtersDrawer) {
-    filtersDrawer.classList.add("transition-transform");
-    filtersDrawer.classList.remove("-translate-x-full");
-    filtersDrawer.dataset.open = "true";
-  }
-  const backdrop = document.getElementById("drawer-backdrop");
-  if (backdrop) {
-    backdrop.classList.remove("hidden");
-  }
+  setDrawerVisibility({ drawerId: "drawer-filters", open: true });
 };
 
 /**
@@ -20,17 +13,7 @@ export const openFiltersDrawer = () => {
  * Removes transition effects and resets scroll position.
  */
 export const closeFiltersDrawer = () => {
-  const filtersDrawer = document.getElementById("drawer-filters");
-  if (filtersDrawer) {
-    filtersDrawer.classList.add("-translate-x-full");
-    filtersDrawer.classList.remove("transition-transform");
-    filtersDrawer.dataset.open = "false";
-    filtersDrawer.scrollTop = 0;
-  }
-  const backdrop = document.getElementById("drawer-backdrop");
-  if (backdrop) {
-    backdrop.classList.add("hidden");
-  }
+  setDrawerVisibility({ drawerId: "drawer-filters", open: false });
 };
 
 /**
@@ -48,10 +31,7 @@ export const triggerActionOnForm = (formId, action, fromSearch) => {
     }
   }
 
-  const form = document.getElementById(formId);
-  if (form) {
-    htmx.trigger(form, action);
-  }
+  triggerFormAction(formId, action);
 };
 
 /**

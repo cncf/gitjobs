@@ -23,17 +23,10 @@ export const initializeJobboardExplore = () => {
     openFiltersButton.dataset.boundOpenFilters = "true";
   }
 
-  const closeFiltersButton = document.getElementById("close-filters");
-  if (closeFiltersButton && closeFiltersButton.dataset.boundCloseFilters !== "true") {
-    closeFiltersButton.addEventListener("click", closeFiltersDrawer);
-    closeFiltersButton.dataset.boundCloseFilters = "true";
-  }
-
-  const filtersBackdrop = document.getElementById("drawer-backdrop");
-  if (filtersBackdrop && filtersBackdrop.dataset.boundBackdropFilters !== "true") {
-    filtersBackdrop.addEventListener("click", closeFiltersDrawer);
-    filtersBackdrop.dataset.boundBackdropFilters = "true";
-  }
+  initializeModalCloseHandlers({
+    triggerIds: ["close-filters", "drawer-backdrop"],
+    closeHandler: closeFiltersDrawer,
+  });
 
   const sortSelectDesktop = document.getElementById("sort-desktop");
   if (sortSelectDesktop && sortSelectDesktop.dataset.boundSortDesktop !== "true") {

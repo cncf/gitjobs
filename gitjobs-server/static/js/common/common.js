@@ -84,6 +84,40 @@ export const isElementInView = (element) => {
 };
 
 /**
+ * Sets drawer visibility and backdrop state.
+ * @param {Object} options - Drawer visibility options
+ * @param {string} options.drawerId - Drawer element id
+ * @param {boolean} options.open - Whether drawer should be open
+ * @param {string} [options.backdropId="drawer-backdrop"] - Backdrop element id
+ */
+export const setDrawerVisibility = ({ drawerId, open, backdropId = "drawer-backdrop" }) => {
+  const drawer = document.getElementById(drawerId);
+  if (drawer) {
+    if (open) {
+      drawer.classList.add("transition-transform");
+      drawer.classList.remove("-translate-x-full");
+      drawer.dataset.open = "true";
+    } else {
+      drawer.classList.add("-translate-x-full");
+      drawer.classList.remove("transition-transform");
+      drawer.dataset.open = "false";
+      drawer.scrollTop = 0;
+    }
+  }
+
+  const backdrop = document.getElementById(backdropId);
+  if (!backdrop) {
+    return;
+  }
+
+  if (open) {
+    backdrop.classList.remove("hidden");
+  } else {
+    backdrop.classList.add("hidden");
+  }
+};
+
+/**
  * Shows or hides a modal by ID.
  * @param {string} modalId - The ID of the modal element
  * @param {'open'|'close'} [status] - Whether to open or close the modal
@@ -137,13 +171,17 @@ export const toggleModalVisibility = (modalId, status) => {
 /**
  * Initializes click handlers that close a modal.
  * @param {Object} options - Close handler options
- * @param {string} options.modalId - The target modal id
+ * @param {string} [options.modalId] - The target modal id
  * @param {string[]} options.triggerIds - Element ids that trigger modal close
  * @param {Function} [options.onClose] - Optional callback before closing
  * @param {Function} [options.closeHandler] - Optional custom close function
  */
 export const initializeModalCloseHandlers = ({ modalId, triggerIds, onClose, closeHandler } = {}) => {
-  if (!modalId || !Array.isArray(triggerIds) || triggerIds.length === 0) {
+  if (!Array.isArray(triggerIds) || triggerIds.length === 0) {
+    return;
+  }
+
+  if (!modalId && typeof closeHandler !== "function") {
     return;
   }
 
@@ -157,7 +195,9 @@ export const initializeModalCloseHandlers = ({ modalId, triggerIds, onClose, clo
       return;
     }
 
-    toggleModalVisibility(modalId, "close");
+    if (modalId) {
+      toggleModalVisibility(modalId, "close");
+    }
   };
 
   triggerIds.forEach((triggerId) => {
@@ -370,6 +410,18 @@ export const processNewHtmxUrl = (elementId, method, data) => {
 };
 
 /**
+ * Triggers an HTMX action on a form element.
+ * @param {string} formId - The ID of the form element
+ * @param {string} action - The action to trigger
+ */
+export const triggerActionOnForm = (formId, action) => {
+  const form = document.getElementById(formId);
+  if (form) {
+    htmx.trigger(form, action);
+  }
+};
+
+/**
  * Checks if an object is empty after removing the 'id' property.
  * @param {Object} obj - The object to check
  * @returns {boolean} True if all properties (except id) are null/empty/undefined
@@ -515,18 +567,7 @@ export const initializeCookiePreferencesButton = ({ buttonId, closeDrawer = fals
 
   cookieButton.addEventListener("click", () => {
     if (closeDrawer) {
-      const navigationDrawer = document.getElementById("drawer-menu");
-      if (navigationDrawer) {
-        navigationDrawer.classList.add("-translate-x-full");
-        navigationDrawer.classList.remove("transition-transform");
-        navigationDrawer.dataset.open = "false";
-        navigationDrawer.scrollTop = 0;
-      }
-
-      const backdrop = document.getElementById("drawer-backdrop");
-      if (backdrop) {
-        backdrop.classList.add("hidden");
-      }
+      setDrawerVisibility({ drawerId: "drawer-menu", open: false });
     }
 
     if (window.Osano?.cm?.showDrawer) {

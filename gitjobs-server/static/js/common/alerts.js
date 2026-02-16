@@ -84,7 +84,7 @@ const stripRetryMessage = (message) => {
     return message;
   }
 
-  return message.replace(/\s*Please try again later\.?/i, "").trim();
+  return message.replace(/\s*[,;:]?\s*please try again(?: later)?\.?\s*$/i, "").trim();
 };
 
 /**
@@ -210,6 +210,8 @@ export const initializePreviewButtons = ({
  * @param {string} params.confirmMessage - Confirmation text
  * @param {string} params.errorMessage - Error message for failed responses
  * @param {string} [params.confirmText="Yes"] - Confirmation button label
+ * @param {string} [params.cancelText="No"] - Confirmation cancel button label
+ * @param {boolean} [params.confirmWithHtml=false] - Render confirm message as HTML
  * @param {string} [params.successMessage=""] - Success message for 2xx responses
  */
 export const initializeConfirmHtmxButtons = ({
@@ -217,6 +219,8 @@ export const initializeConfirmHtmxButtons = ({
   confirmMessage,
   errorMessage,
   confirmText = "Yes",
+  cancelText = "No",
+  confirmWithHtml = false,
   successMessage = "",
 }) => {
   const actionButtons = document.querySelectorAll(selector);
@@ -226,7 +230,7 @@ export const initializeConfirmHtmxButtons = ({
     }
 
     button.addEventListener("click", () => {
-      showConfirmAlert(confirmMessage, button.id, confirmText);
+      showConfirmAlert(confirmMessage, button.id, confirmText, cancelText, confirmWithHtml);
     });
 
     button.addEventListener("htmx:afterRequest", (event) => {
@@ -267,16 +271,25 @@ export const showInfoAlert = (message, withHtml = false) => {
  * @param {string} message - The confirmation message to display
  * @param {string} buttonId - ID of the button to trigger on confirmation
  * @param {string} confirmText - Text for the confirm button
+ * @param {string} [cancelText="No"] - Text for the cancel button
+ * @param {boolean} [withHtml=false] - Whether to render message as HTML
  */
-export const showConfirmAlert = (message, buttonId, confirmText) => {
-  Swal.fire({
+export const showConfirmAlert = (message, buttonId, confirmText, cancelText = "No", withHtml = false) => {
+  const alertOptions = {
     text: message,
     icon: "warning",
     showCancelButton: true,
     confirmButtonText: confirmText,
-    cancelButtonText: "No",
+    cancelButtonText: cancelText,
     ...getCommonAlertOptions(),
-  }).then((result) => {
+    position: "center",
+    backdrop: true,
+  };
+  if (withHtml) {
+    alertOptions.html = message;
+  }
+
+  Swal.fire(alertOptions).then((result) => {
     if (result.isConfirmed) {
       htmx.trigger(`#${buttonId}`, "confirmed");
     }

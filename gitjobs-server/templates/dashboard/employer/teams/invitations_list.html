@@ -70,21 +70,12 @@
 
 <script type="module">
   import {
-    showConfirmAlert,
-    handleHtmxResponse
-  } from '/static/js/common/alerts.js';
+    initializeConfirmHtmxButtons
+  } from '/static/js/dashboard/employer/dashboard-actions.js';
 
-  const rejectButtons = document.querySelectorAll('[data-reject-invitation-button]');
-  rejectButtons.forEach((button) => {
-    button.addEventListener('click', () => {
-      showConfirmAlert("Are you sure you would like to reject this invitation?", button.id, "Yes");
-    });
-
-    button.addEventListener('htmx:afterRequest', (e) => {
-      handleHtmxResponse({
-        xhr: e.detail.xhr,
-        errorMessage: "Something went wrong rejecting this invitation. Please try again later."
-      });
-    });
+  initializeConfirmHtmxButtons({
+    selector: '[data-reject-invitation-button]',
+    confirmMessage: 'Are you sure you would like to reject this invitation?',
+    errorMessage: 'Something went wrong rejecting this invitation. Please try again later.'
   });
 </script>

@@ -41,20 +41,15 @@
 
   <script type="module">
     import {
-      handleHtmxResponse
-    } from '/static/js/common/alerts.js';
+      initializeDashboardActionButton
+    } from '/static/js/dashboard/employer/dashboard-actions.js';
 
-    const addJobButton = document.getElementById('add-job-button');
-    if (addJobButton) {
-      addJobButton.addEventListener('htmx:afterRequest', (e) => {
-        if (handleHtmxResponse({
-            xhr: e.detail.xhr,
-            errorMessage: 'Something went wrong loading the add job form. Please try again later.'
-          })) {
-          history.pushState({}, "Jobs list", '/dashboard/employer?tab=jobs');
-        }
-      });
-    }
+    initializeDashboardActionButton({
+      buttonId: 'add-job-button',
+      errorMessage: 'Something went wrong loading the add job form. Please try again later.',
+      pushStateTitle: 'Jobs list',
+      pushStateUrl: '/dashboard/employer?tab=jobs'
+    });
 
     const cleanSearchJobs = document.getElementById('clean-search-jobs');
     if (cleanSearchJobs) {

@@ -138,9 +138,8 @@
 
 <script type="module">
   import {
-    showConfirmAlert,
-    handleHtmxResponse,
-  } from '/static/js/common/alerts.js';
+    initializeConfirmHtmxButtons
+  } from '/static/js/dashboard/employer/dashboard-actions.js';
   import {
     toggleModalVisibility,
   } from '/static/js/common/common.js';
@@ -168,17 +167,9 @@
     });
   }
 
-  const removeMemberButtons = document.querySelectorAll('[data-remove-member-button]');
-  removeMemberButtons.forEach((button) => {
-    button.addEventListener('click', () => {
-      showConfirmAlert("Are you sure you would like to delete this team member?", button.id, "Yes");
-    });
-
-    button.addEventListener('htmx:afterRequest', (e) => {
-      handleHtmxResponse({
-        xhr: e.detail.xhr,
-        errorMessage: "Something went wrong deleting this team member. Please try again later."
-      });
-    });
+  initializeConfirmHtmxButtons({
+    selector: '[data-remove-member-button]',
+    confirmMessage: 'Are you sure you would like to delete this team member?',
+    errorMessage: 'Something went wrong deleting this team member. Please try again later.'
   });
 </script>

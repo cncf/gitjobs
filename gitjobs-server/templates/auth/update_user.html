@@ -131,27 +131,8 @@
 
 <script type="module">
   import {
-    handleHtmxResponse
-  } from '/static/js/common/alerts.js';
+    initializeAccountUpdateForms
+  } from '/static/js/dashboard/account.js';
 
-  const userDetailsForm = document.getElementById('user-details-form');
-  const passwordForm = document.getElementById('password-form');
-
-  if (userDetailsForm) {
-    userDetailsForm.addEventListener('htmx:afterRequest', (e) => {
-      handleHtmxResponse({
-        xhr: e.detail.xhr,
-        errorMessage: 'Something went wrong updating the user details. Please try again later.'
-      });
-    });
-  }
-
-  if (passwordForm) {
-    passwordForm.addEventListener('htmx:afterRequest', (e) => {
-      handleHtmxResponse({
-        xhr: e.detail.xhr,
-        errorMessage: 'Something went wrong updating the password. Please try again later.'
-      });
-    });
-  }
+  initializeAccountUpdateForms();
 </script>

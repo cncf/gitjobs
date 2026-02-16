@@ -4,7 +4,7 @@
 <div class="flex items-center gap-x-6">
   {# Logo -#}
   <div class="me-3">
-    <a hx-boost="true" href="/">
+    <a hx-boost="true" href="/" aria-label="Go to homepage">
       <div class="flex items-top gap-x-2">
         <div class="h-[28px] w-[138px] md:h-[33px] md:w-[162px] ms-[2px]">
           <img src="/static/images/gitjobs.png"
@@ -70,6 +70,8 @@
 {% macro header_link(text, href, active = false) -%}
   <a href="{{ href }}"
      hx-boost="true"
+     {%- if active %} aria-current="page"
+     {% endif -%}
      class="mx-3 pb-1 border-0 border-primary-500 text-base font-semibold tracking-widest text-primary-500 uppercase border-b-2
             {% if active -%}
               border-primary-500{%- else -%}border-transparent hover:border-primary-300{%- endif -%}">{{ text }}</a>
@@ -100,9 +102,11 @@
 
     {# Dropdown user -#}
     <div id="dropdown-user"
-         class="dropdown absolute hidden z-10 end-0 top-10 w-[250px] bg-white divide-y divide-stone-100 rounded-lg shadow border border-stone-200">
-      <ul class="text-stone-700 my-2">
-        <li>
+         class="dropdown absolute hidden z-10 end-0 top-10 w-[250px] bg-white divide-y divide-stone-100 rounded-lg shadow border border-stone-200"
+         role="menu"
+         aria-labelledby="user-dropdown-button">
+      <ul class="text-stone-700 my-2" role="none">
+        <li role="none">
           <div class="flex flex-col px-4 py-2">
             <div class="font-medium text-sm/6 truncate text-stone-700 mb-3">{{ user.username|display_some }}</div>
             <div class="text-xs/4 truncate">{{ name }}</div>
@@ -121,11 +125,13 @@
         </li>
 
         {# Stats page for mobile -#}
-        <li class="border-t border-stone-200 mt-2 pt-2 block md:hidden">
+        <li class="border-t border-stone-200 mt-2 pt-2 block md:hidden"
+            role="none">
           <a hx-boost="true"
              href="/stats"
              hx-target="body"
-             class="inline-block w-full text-start px-4 py-2 hover:bg-stone-100">
+             class="inline-block w-full text-start px-4 py-2 hover:bg-stone-100"
+             role="menuitem">
             <div class="flex items-center">
               <div class="svg-icon size-4 icon-stats bg-stone-600"></div>
               <div class="ms-2 text-xs/6">Stats</div>
@@ -135,11 +141,12 @@
         {# End stats page for mobile -#}
 
         {# About page for mobile -#}
-        <li class="block md:hidden">
+        <li class="block md:hidden" role="none">
           <a hx-boost="true"
              href="/about"
              hx-target="body"
-             class="inline-block w-full text-start px-4 py-2 hover:bg-stone-100">
+             class="inline-block w-full text-start px-4 py-2 hover:bg-stone-100"
+             role="menuitem">
             <div class="flex items-center">
               <div class="svg-icon size-4 icon-info bg-stone-600"></div>
               <div class="ms-2 text-xs/6">About</div>
@@ -148,22 +155,25 @@
         </li>
         {# End about page for mobile -#}
 
-        <li class="border-t border-stone-200 mt-2 pt-2 hidden md:block">
+        <li class="border-t border-stone-200 mt-2 pt-2 hidden md:block"
+            role="none">
           <a hx-boost="true"
              href="/dashboard/employer"
              hx-target="body"
-             class="inline-block w-full text-start px-4 py-2 hover:bg-stone-100">
+             class="inline-block w-full text-start px-4 py-2 hover:bg-stone-100"
+             role="menuitem">
             <div class="flex items-center">
               <div class="svg-icon size-4 icon-company bg-stone-600 relative -mt-px"></div>
               <div class="ms-2 text-xs/6">Employer dashboard</div>
             </div>
           </a>
         </li>
-        <li class="hidden md:block">
+        <li class="hidden md:block" role="none">
           <a hx-boost="true"
              href="/dashboard/job-seeker"
              hx-target="body"
-             class="inline-block w-full text-start px-4 py-2 hover:bg-stone-100">
+             class="inline-block w-full text-start px-4 py-2 hover:bg-stone-100"
+             role="menuitem">
             <div class="flex items-center">
               <div class="svg-icon size-4 icon-search bg-stone-600"></div>
               <div class="ms-2 text-xs/6">Job seeker dashboard</div>
@@ -173,11 +183,13 @@
 
         {# Moderator -#}
         {% if user.moderator -%}
-          <li class="border-t border-stone-200 mt-2 pt-2 md:border-0 md:mt-0 md:pt-0">
+          <li class="border-t border-stone-200 mt-2 pt-2 md:border-0 md:mt-0 md:pt-0"
+              role="none">
             <a hx-boost="true"
                href="/dashboard/moderator"
                hx-target="body"
-               class="inline-block w-full text-start px-4 py-2 hover:bg-stone-100">
+               class="inline-block w-full text-start px-4 py-2 hover:bg-stone-100"
+               role="menuitem">
               <div class="flex items-center">
                 <div class="svg-icon size-4 icon-microphone bg-stone-600"></div>
                 <div class="ms-2 text-xs/6">Moderator dashboard</div>
@@ -187,11 +199,12 @@
         {% endif -%}
         {# End moderator -#}
 
-        <li class="border-t border-stone-200 mt-2 pt-2">
+        <li class="border-t border-stone-200 mt-2 pt-2" role="none">
           <a href="/log-out"
              hx-boost="false"
              target="_self"
-             class="inline-block w-full text-start px-4 py-2 hover:bg-stone-100">
+             class="inline-block w-full text-start px-4 py-2 hover:bg-stone-100"
+             role="menuitem">
             <div class="flex items-center">
               <div class="svg-icon size-4 icon-logout bg-stone-600"></div>
               <div class="ms-2 text-xs/6">Log out</div>
@@ -215,14 +228,17 @@
     </button>
     {# Dropdown user -#}
     <div id="dropdown-user"
-         class="dropdown absolute hidden z-10 end-0 top-10 w-[250px] bg-white divide-y divide-stone-100 rounded-lg shadow border border-stone-200">
-      <ul class="text-stone-700 my-2">
+         class="dropdown absolute hidden z-10 end-0 top-10 w-[250px] bg-white divide-y divide-stone-100 rounded-lg shadow border border-stone-200"
+         role="menu"
+         aria-labelledby="user-dropdown-button">
+      <ul class="text-stone-700 my-2" role="none">
         {# Stats page for mobile -#}
-        <li class="block xl:hidden">
+        <li class="block xl:hidden" role="none">
           <a hx-boost="true"
              href="/stats"
              hx-target="body"
-             class="inline-block w-full text-start px-4 py-2 hover:bg-stone-100">
+             class="inline-block w-full text-start px-4 py-2 hover:bg-stone-100"
+             role="menuitem">
             <div class="flex items-center">
               <div class="svg-icon size-4 icon-stats bg-stone-600"></div>
               <div class="ms-2 text-xs/6">Stats</div>
@@ -232,11 +248,13 @@
         {# End stats page for mobile -#}
 
         {# About page for mobile -#}
-        <li class="border-b border-stone-200 mb-2 pb-2 block xl:hidden">
+        <li class="border-b border-stone-200 mb-2 pb-2 block xl:hidden"
+            role="none">
           <a hx-boost="true"
              href="/about"
              hx-target="body"
-             class="inline-block w-full text-start px-4 py-2 hover:bg-stone-100">
+             class="inline-block w-full text-start px-4 py-2 hover:bg-stone-100"
+             role="menuitem">
             <div class="flex items-center">
               <div class="svg-icon size-4 icon-info bg-stone-600"></div>
               <div class="ms-2 text-xs/6">About</div>
@@ -246,11 +264,12 @@
         {# End about page for mobile -#}
 
         {# Sign up -#}
-        <li>
+        <li role="none">
           <a hx-boost="true"
              href="/sign-up"
              hx-target="body"
-             class="inline-block w-full text-start px-4 py-2 hover:bg-stone-100">
+             class="inline-block w-full text-start px-4 py-2 hover:bg-stone-100"
+             role="menuitem">
             <div class="flex items-center">
               <div class="svg-icon size-4 icon-user_plus bg-stone-600"></div>
               <div class="ms-2 text-xs/6">Sign up</div>
@@ -260,11 +279,12 @@
         {# End sign up -#}
 
         {# Login -#}
-        <li>
+        <li role="none">
           <a hx-boost="true"
              href="/log-in"
              hx-target="body"
-             class="inline-block w-full text-start px-4 py-2 hover:bg-stone-100">
+             class="inline-block w-full text-start px-4 py-2 hover:bg-stone-100"
+             role="menuitem">
             <div class="flex items-center">
               <div class="svg-icon size-4 icon-login bg-stone-600"></div>
               <div class="ms-2 text-xs/6">Log in</div>

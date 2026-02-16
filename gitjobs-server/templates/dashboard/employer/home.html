@@ -31,7 +31,13 @@
         {% let selected_employer = &self::find_employer(selected_employer_id.as_ref(), employers) -%}
         {% if let Some(selected_employer) = selected_employer -%}
           {# Employer button to open dropdown -#}
-          <button id="employer-btn" class="cursor-pointer select select-primary">
+          <button id="employer-btn"
+                  type="button"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                  aria-controls="dropdown-employers"
+                  aria-label="Select employer"
+                  class="cursor-pointer select select-primary">
             <div class="flex items-center relative">
               {{ employer_content_list(company = selected_employer.company, logo_id = selected_employer.logo_id) -}}
             </div>
@@ -40,16 +46,19 @@
 
           {# Dropdown employers -#}
           <div id="dropdown-employers"
-               class="hidden absolute top-10 start-0 w-full z-10 bg-white rounded-lg shadow-sm border border-stone-200">
-            <ul class="max-h-48 overflow-y-auto text-stone-700">
+               class="hidden absolute top-10 start-0 w-full z-10 bg-white rounded-lg shadow-sm border border-stone-200"
+               role="menu"
+               aria-labelledby="employer-btn">
+            <ul class="max-h-48 overflow-y-auto text-stone-700" role="none">
               {% for employer in employers -%}
                 {% let is_selected = selected_employer.employer_id == employer.employer_id -%}
-                <li>
+                <li role="none">
                   <button hx-put="/dashboard/employer/employers/{{ employer.employer_id }}/select"
                           hx-trigger="click"
                           hx-target="#dashboard-content"
                           hx-indicator="#dashboard-spinner"
                           hx-disabled-elt=".employer-button"
+                          role="menuitem"
                           class="employer-button cursor-pointer w-full flex items-center px-4 py-2 text-sm/6 hover:bg-stone-100
                                  {% if is_selected -%}bg-stone-100{%- endif %}"
                           {% if is_selected %}disabled{% endif %}>

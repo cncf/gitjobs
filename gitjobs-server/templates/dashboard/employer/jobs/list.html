@@ -161,22 +161,30 @@
                 {# End update job button -#}
 
                 <div class="group relative">
-                  <button data-job-id="{{ job.job_id }}"
+                  <button id="actions-btn-{{ job.job_id }}"
+                          type="button"
+                          data-job-id="{{ job.job_id }}"
+                          aria-haspopup="true"
+                          aria-expanded="false"
+                          aria-controls="dropdown-actions-{{ job.job_id }}"
+                          aria-label="Open job actions menu"
                           class="btn-actions btn-tertiary p-2 group-has-[.dropdown:not(.hidden)]:bg-stone-50">
                     <div class="svg-icon size-4 icon-vertical_dots"></div>
                   </button>
 
                   {# Dropdown actions -#}
                   <div id="dropdown-actions-{{ job.job_id }}"
-                       class="dropdown absolute hidden z-10 end-0 top-8 w-[200px] bg-white divide-y divide-stone-100 rounded-lg shadow border border-stone-200">
-                    <ul class="py-2 text-sm text-stone-700"
-                        aria-labelledby="dropdownDefaultButton">
+                       class="dropdown absolute hidden z-10 end-0 top-8 w-[200px] bg-white divide-y divide-stone-100 rounded-lg shadow border border-stone-200"
+                       role="menu"
+                       aria-labelledby="actions-btn-{{ job.job_id }}">
+                    <ul class="py-2 text-sm text-stone-700" role="none">
                       {# Publish button -#}
                       {% if job.status != JobStatus::Published && job.status != JobStatus::PendingApproval -%}
-                        <li>
+                        <li role="none">
                           <button hx-put="/dashboard/employer/jobs/{{ job.job_id }}/publish"
                                   hx-target="#dashboard-content"
                                   hx-indicator="#dashboard-spinner"
+                                  role="menuitem"
                                   class="cursor-pointer w-full text-start px-4 py-2 hover:bg-stone-100">
                             <div class="flex items-center">
                               <div class="svg-icon size-4 icon-send bg-stone-600"></div>
@@ -187,13 +195,14 @@
                       {% endif -%}
                       {# End publish button -#}
                       {# Delete button -#}
-                      <li>
+                      <li role="none">
                         <button id="delete-job-{{ job.job_id }}"
                                 data-delete-job-button="true"
                                 hx-delete="/dashboard/employer/jobs/{{ job.job_id }}/delete"
                                 hx-target="#dashboard-content"
                                 hx-indicator="#dashboard-spinner"
                                 hx-trigger="confirmed"
+                                role="menuitem"
                                 class="cursor-pointer w-full text-start px-4 py-2 hover:bg-stone-100">
                           <div class="flex items-center">
                             <div class="svg-icon size-4 icon-trash bg-stone-600"></div>
@@ -203,10 +212,11 @@
                       </li>
                       {# Archive button -#}
                       {% if job.status == JobStatus::Published -%}
-                        <li>
+                        <li role="none">
                           <button hx-put="/dashboard/employer/jobs/{{ job.job_id }}/archive"
                                   hx-target="#dashboard-content"
                                   hx-indicator="#dashboard-spinner"
+                                  role="menuitem"
                                   class="cursor-pointer w-full text-start px-4 py-2 hover:bg-stone-100">
                             <div class="flex items-center">
                               <div class="svg-icon size-4 icon-archive bg-stone-600"></div>

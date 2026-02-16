@@ -9,11 +9,13 @@
   {# End lit components -#}
 
   {# Header -#}
-  <nav class="flex items-center justify-between border-b border-transparent h-20 min-h-20 px-4 lg:px-5"
-       role="navigation"
-       aria-label="Main navigation">
-    {% include "header.html" -%}
-  </nav>
+  <header id="header" class="w-full" role="banner">
+    <nav class="flex items-center justify-between border-b border-transparent h-20 min-h-20 px-4 lg:px-5"
+         role="navigation"
+         aria-label="Main navigation">
+      {% include "header.html" -%}
+    </nav>
+  </header>
   {# End Header -#}
 
   <main id="main-content" class="flex grow" role="main">

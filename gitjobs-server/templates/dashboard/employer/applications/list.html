@@ -7,6 +7,11 @@
   <div class="relative w-1/2">
     {# Jobs button to open dropdown -#}
     <button id="jobs-btn"
+            type="button"
+            aria-haspopup="true"
+            aria-expanded="false"
+            aria-controls="dropdown-jobs"
+            aria-label="Filter applications by job"
             class="select select-primary flex items-center enabled:cursor-pointer"
             {% if filters_options.jobs.is_empty() -%}
             disabled
@@ -30,20 +35,24 @@
 
     {# Dropdown jobs -#}
     <div id="dropdown-jobs"
-         class="hidden absolute top-10 start-0 w-full z-10 bg-white rounded-lg shadow-sm border border-stone-200">
-      <ul class="max-h-48 overflow-y-auto text-stone-700">
-        <li>
+         class="hidden absolute top-10 start-0 w-full z-10 bg-white rounded-lg shadow-sm border border-stone-200"
+         role="menu"
+         aria-labelledby="jobs-btn">
+      <ul class="max-h-48 overflow-y-auto text-stone-700" role="none">
+        <li role="none">
           <button hx-get="/dashboard/employer/applications/list"
                   hx-trigger="click"
                   hx-target="#dashboard-content"
+                  role="menuitem"
                   class="w-full flex items-center px-4 py-2 text-sm/6 hover:bg-stone-100 disabled:bg-stone-100 enabled:cursor-pointer"
                   {% if filters.job_id.is_none() %}disabled{% endif %}>All jobs</button>
         </li>
         {% for job in filters_options.jobs -%}
-          <li>
+          <li role="none">
             <button hx-get="/dashboard/employer/applications/list?job_id={{ job.job_id }}"
                     hx-trigger="click"
                     hx-target="#dashboard-content"
+                    role="menuitem"
                     class="w-full flex items-center px-4 py-2 text-sm/6 hover:bg-stone-100 disabled:bg-stone-100 enabled:cursor-pointer"
                     {% if let Some(job_id) = filters.job_id -%}
                     {%- if job_id == &job.job_id -%}

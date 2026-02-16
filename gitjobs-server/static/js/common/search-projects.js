@@ -58,6 +58,7 @@ export class SearchProjects extends LitWrapper {
 
   disconnectedCallback() {
     super.disconnectedCallback();
+    this._debouncedGetProjects.cancel?.();
     window.removeEventListener("mousedown", this._handleClickOutside);
   }
 
@@ -110,6 +111,7 @@ export class SearchProjects extends LitWrapper {
    * @private
    */
   _handleFoundationChange(event) {
+    this._debouncedGetProjects.cancel?.();
     const selectedFoundation = event.target.value;
     if (selectedFoundation === "") {
       this.selectedFoundation = null;
@@ -151,6 +153,7 @@ export class SearchProjects extends LitWrapper {
    * @private
    */
   _cleanEnteredValue() {
+    this._debouncedGetProjects.cancel?.();
     this.enteredValue = "";
     this.visibleDropdown = false;
     this.visibleOptions = null;
@@ -189,7 +192,6 @@ export class SearchProjects extends LitWrapper {
         if (this.activeIndex !== null && this.visibleOptions !== null && this.visibleOptions.length > 0) {
           const activeItem = this.visibleOptions[this.activeIndex];
           if (activeItem) {
-            const activeItem = this.visibleOptions[this.activeIndex];
             this._onSelect(activeItem);
           }
         }
@@ -227,6 +229,7 @@ export class SearchProjects extends LitWrapper {
    * @private
    */
   async _onSelect(value) {
+    this._debouncedGetProjects.cancel?.();
     this.selected.push(value);
     this.enteredValue = "";
     this.visibleDropdown = false;

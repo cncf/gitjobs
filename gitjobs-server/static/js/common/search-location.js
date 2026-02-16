@@ -71,6 +71,7 @@ export class SearchLocation extends LitWrapper {
 
   disconnectedCallback() {
     super.disconnectedCallback();
+    this._debouncedFetchData.cancel?.();
     window.removeEventListener("mousedown", this._handleClickOutside);
   }
 
@@ -78,6 +79,8 @@ export class SearchLocation extends LitWrapper {
    * Public method to reset location state.
    */
   async cleanLocation() {
+    this._debouncedFetchData.cancel?.();
+    this.isLoading = false;
     this.locationId = "";
     this.city = "";
     this.state = "";
@@ -113,6 +116,8 @@ export class SearchLocation extends LitWrapper {
    */
   _handleClickOutside = (event) => {
     if (!this.contains(event.target)) {
+      this._debouncedFetchData.cancel?.();
+      this.isLoading = false;
       if (this.locationId !== "") {
         this.value = this._formatLocation(this.city, this.state, this.country);
       } else {

@@ -60,6 +60,7 @@ export class DashboardSearch extends LitWrapper {
 
   disconnectedCallback() {
     super.disconnectedCallback();
+    this._debouncedGetItems.cancel?.();
     window.removeEventListener("mousedown", this._handleClickOutside);
   }
 
@@ -132,6 +133,8 @@ export class DashboardSearch extends LitWrapper {
    * @private
    */
   _handleFoundationChange(event) {
+    this._debouncedGetItems.cancel?.();
+    this.isLoading = false;
     const selectedFoundation = event.target.value;
     if (selectedFoundation === "") {
       this.selectedFoundation = this.defaultFoundation;
@@ -178,6 +181,8 @@ export class DashboardSearch extends LitWrapper {
    */
   _onInputFocus() {
     if (this.type === "certifications") {
+      this._debouncedGetItems.cancel?.();
+      this.isLoading = false;
       // Show all certifications immediately on focus
       this.visibleOptions = this.certifications;
       this.visibleDropdown = true;
@@ -190,6 +195,8 @@ export class DashboardSearch extends LitWrapper {
    * @private
    */
   _cleanEnteredValue() {
+    this._debouncedGetItems.cancel?.();
+    this.isLoading = false;
     this.enteredValue = "";
     this.visibleDropdown = false;
     this.visibleOptions = [];
@@ -266,6 +273,8 @@ export class DashboardSearch extends LitWrapper {
    * @private
    */
   _onSelect(item) {
+    this._debouncedGetItems.cancel?.();
+    this.isLoading = false;
     if (this.type === "projects" || this.type === "certifications" || this.type === "members") {
       this.selected.push(item);
     } else {

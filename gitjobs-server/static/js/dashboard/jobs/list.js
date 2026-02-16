@@ -1,5 +1,6 @@
 import { getBarStatsOptions, gitjobsChartTheme } from "/static/js/jobboard/stats.js";
 import {
+  debounce,
   initializeModalCloseHandlers,
   prettifyNumber,
   toggleModalVisibility,
@@ -22,6 +23,8 @@ const resizeStatsCharts = () => {
     }
   });
 };
+
+const debouncedResizeStatsCharts = debounce(resizeStatsCharts, 150);
 
 /**
  * Shows statistics for a specific job in a modal
@@ -160,11 +163,13 @@ const renderChart = (data, chartId, chartType) => {
   const chartDom = document.getElementById(chartId);
   if (!chartDom) return;
 
-  // Initialize the ECharts instance
-  const chart = echarts.init(chartDom, "gitjobs", {
-    renderer: "svg",
-    useDirtyRect: false,
-  });
+  // Initialize or reuse the ECharts instance
+  const chart =
+    echarts.getInstanceByDom(chartDom) ||
+    echarts.init(chartDom, "gitjobs", {
+      renderer: "svg",
+      useDirtyRect: false,
+    });
   chart.clear();
 
   // Configure chart options
@@ -313,7 +318,7 @@ export const initializeEmployerJobsStats = () => {
   }
 
   if (!document.__gitjobsStatsChartsResizeBound) {
-    window.addEventListener("resize", resizeStatsCharts);
+    window.addEventListener("resize", debouncedResizeStatsCharts);
     document.__gitjobsStatsChartsResizeBound = true;
   }
 };

@@ -1,4 +1,4 @@
-import { prettifyNumber } from "/static/js/common/common.js";
+import { debounce, prettifyNumber } from "/static/js/common/common.js";
 
 /**
  * ECharts theme configuration for GitJobs charts.
@@ -381,6 +381,8 @@ const resizeStatsCharts = () => {
   });
 };
 
+const debouncedResizeStatsCharts = debounce(resizeStatsCharts, 150);
+
 /**
  * Finds the smallest value in an array of numbers.
  * @param {Array<number>} numbers - Array of numbers to search
@@ -442,10 +444,13 @@ const renderLineChart = (data) => {
   const chartDom = document.getElementById("line-chart");
   if (!chartDom) return;
 
-  const myChart = echarts.init(chartDom, "gitjobs", {
-    renderer: "svg",
-    useDirtyRect: false,
-  });
+  const myChart =
+    echarts.getInstanceByDom(chartDom) ||
+    echarts.init(chartDom, "gitjobs", {
+      renderer: "svg",
+      useDirtyRect: false,
+    });
+  myChart.clear();
 
   const option = {
     dataset: [
@@ -604,10 +609,13 @@ const renderBarDailyChart = (data, max, min) => {
   const chartDom = document.getElementById("bar-daily");
   if (!chartDom) return;
 
-  const myChart = echarts.init(chartDom, "gitjobs", {
-    renderer: "svg",
-    useDirtyRect: false,
-  });
+  const myChart =
+    echarts.getInstanceByDom(chartDom) ||
+    echarts.init(chartDom, "gitjobs", {
+      renderer: "svg",
+      useDirtyRect: false,
+    });
+  myChart.clear();
 
   const option = {
     ...getBarStatsOptions(),
@@ -654,10 +662,13 @@ const renderBarMonthlyChart = (data, max, min) => {
   const chartDom = document.getElementById("bar-monthly");
   if (!chartDom) return;
 
-  const myChart = echarts.init(chartDom, "gitjobs", {
-    renderer: "svg",
-    useDirtyRect: false,
-  });
+  const myChart =
+    echarts.getInstanceByDom(chartDom) ||
+    echarts.init(chartDom, "gitjobs", {
+      renderer: "svg",
+      useDirtyRect: false,
+    });
+  myChart.clear();
 
   const option = {
     ...getBarStatsOptions(),
@@ -711,7 +722,7 @@ export const renderStats = () => {
   }
 
   if (!document.__gitjobsJobboardStatsResizeBound) {
-    window.addEventListener("resize", resizeStatsCharts);
+    window.addEventListener("resize", debouncedResizeStatsCharts);
     document.__gitjobsJobboardStatsResizeBound = true;
   }
 

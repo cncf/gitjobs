@@ -365,6 +365,21 @@ export const gitjobsChartTheme = {
 };
 
 const MESSAGE_EMPTY_STATS = "No data available yet";
+const JOBBOARD_STATS_CHART_IDS = ["line-chart", "bar-daily", "bar-monthly"];
+
+const resizeStatsCharts = () => {
+  JOBBOARD_STATS_CHART_IDS.forEach((chartId) => {
+    const chartDom = document.getElementById(chartId);
+    if (!chartDom) {
+      return;
+    }
+
+    const chartInstance = echarts.getInstanceByDom(chartDom);
+    if (chartInstance) {
+      chartInstance.resize();
+    }
+  });
+};
 
 /**
  * Finds the smallest value in an array of numbers.
@@ -430,10 +445,6 @@ const renderLineChart = (data) => {
   const myChart = echarts.init(chartDom, "gitjobs", {
     renderer: "svg",
     useDirtyRect: false,
-  });
-
-  window.addEventListener("resize", function () {
-    myChart.resize();
   });
 
   const option = {
@@ -598,10 +609,6 @@ const renderBarDailyChart = (data, max, min) => {
     useDirtyRect: false,
   });
 
-  window.addEventListener("resize", function () {
-    myChart.resize();
-  });
-
   const option = {
     ...getBarStatsOptions(),
     dataset: [
@@ -652,10 +659,6 @@ const renderBarMonthlyChart = (data, max, min) => {
     useDirtyRect: false,
   });
 
-  window.addEventListener("resize", function () {
-    myChart.resize();
-  });
-
   const option = {
     ...getBarStatsOptions(),
     dataset: [
@@ -702,7 +705,15 @@ export const renderStats = () => {
   if (!stats) return;
 
   // Register the GitJobs theme for ECharts
-  echarts.registerTheme("gitjobs", gitjobsChartTheme);
+  if (!document.__gitjobsStatsThemeRegistered) {
+    echarts.registerTheme("gitjobs", gitjobsChartTheme);
+    document.__gitjobsStatsThemeRegistered = true;
+  }
+
+  if (!document.__gitjobsJobboardStatsResizeBound) {
+    window.addEventListener("resize", resizeStatsCharts);
+    document.__gitjobsJobboardStatsResizeBound = true;
+  }
 
   if (!stats.jobs.published_running_total) {
     const chartDom = document.getElementById("line-chart");

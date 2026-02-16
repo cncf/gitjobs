@@ -323,8 +323,7 @@ test.describe('GitJobs', () => {
 
     const actionsDropdown = await openEmployerActionsDropdown(page);
     if (!actionsDropdown) {
-      console.log('No job action buttons visible, skipping test.');
-      return;
+      throw new Error('Expected at least one employer job action button.');
     }
 
     const { actionButton, dropdown } = actionsDropdown;
@@ -346,8 +345,7 @@ test.describe('GitJobs', () => {
 
     const actionsDropdown = await openEmployerActionsDropdown(page);
     if (!actionsDropdown) {
-      console.log('No job action buttons visible, skipping test.');
-      return;
+      throw new Error('Expected at least one employer job action button.');
     }
 
     const { actionButton, dropdown } = actionsDropdown;
@@ -389,15 +387,8 @@ test.describe('GitJobs', () => {
     await page.goto('/dashboard/employer?tab=applications');
 
     const jobsButton = page.locator('#jobs-btn');
-    if ((await jobsButton.count()) === 0) {
-      console.log('Applications jobs filter button not visible, skipping test.');
-      return;
-    }
-
-    if (await jobsButton.isDisabled()) {
-      console.log('Applications jobs filter button disabled, skipping test.');
-      return;
-    }
+    await expect(jobsButton).toHaveCount(1);
+    await expect(jobsButton).toBeEnabled();
 
     const dropdown = page.locator('#dropdown-jobs');
     await jobsButton.click();
@@ -406,10 +397,7 @@ test.describe('GitJobs', () => {
     await expect(dropdown).toHaveAttribute('aria-hidden', 'false');
 
     const selectableFilters = dropdown.locator('button:not([disabled])');
-    if ((await selectableFilters.count()) === 0) {
-      console.log('No selectable jobs filter option visible, skipping test.');
-      return;
-    }
+    expect(await selectableFilters.count()).toBeGreaterThan(0);
 
     await selectableFilters.first().click();
 
@@ -479,10 +467,7 @@ test.describe('GitJobs', () => {
 
   test('should allow paginating through jobs', async ({ page }) => {
     const nextButton = page.getByRole('link', { name: 'Next' });
-    if (!(await nextButton.isVisible())) {
-      console.log('Pagination next button not visible, skipping test.');
-      return;
-    }
+    await expect(nextButton).toBeVisible();
     await nextButton.click();
     await expect(page).toHaveURL(/offset=20/);
     await expect(page.locator('#results')).toHaveText('21 - 21 of 21 results');

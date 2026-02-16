@@ -39,14 +39,23 @@ const userMenu = async (page: Page): Promise<Locator> => {
 };
 
 export const openUserMenu = async (page: Page): Promise<void> => {
-  const button = userMenuButton(page);
-  const menu = await userMenu(page);
-  if (await menu.isVisible()) {
-    return;
-  }
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const button = userMenuButton(page);
+    const menu = await userMenu(page);
+    if (await menu.isVisible()) {
+      return;
+    }
 
-  await button.click();
-  await menu.waitFor({ state: 'visible' });
+    await button.click();
+    try {
+      await menu.waitFor({ state: 'visible', timeout: 3000 });
+      return;
+    } catch {
+      if (attempt === 1) {
+        throw new Error('Failed to open user menu.');
+      }
+    }
+  }
 };
 
 export const clickUserMenuItem = async (page: Page, label: string): Promise<void> => {
@@ -74,12 +83,14 @@ export const clickUserMenuItem = async (page: Page, label: string): Promise<void
 export const openEmployerActionsDropdown = async (
   page: Page
 ): Promise<{ actionButton: Locator; dropdown: Locator; jobId: string } | null> => {
-  const actionButtons = page.locator('.btn-actions');
-  if ((await actionButtons.count()) === 0) {
+  const actionButton = page.locator('.btn-actions:visible').first();
+
+  try {
+    await actionButton.waitFor({ state: 'visible', timeout: 5000 });
+  } catch {
     return null;
   }
 
-  const actionButton = actionButtons.first();
   const jobId = await actionButton.getAttribute('data-job-id');
   if (!jobId) {
     return null;

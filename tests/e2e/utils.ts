@@ -91,15 +91,50 @@ export const clickUserMenuItem = async (page: Page, label: string): Promise<void
   await menu.locator(`a:has-text("${label}")`).filter({ visible: true }).first().click();
 };
 
+export const switchEmployerIfAvailable = async (page: Page): Promise<boolean> => {
+  const employerButton = page.locator('#employer-btn');
+  if ((await employerButton.count()) === 0) {
+    return false;
+  }
+
+  const dropdown = page.locator('#dropdown-employers');
+  await employerButton.click();
+  try {
+    await dropdown.waitFor({ state: 'visible', timeout: 5000 });
+  } catch {
+    return false;
+  }
+
+  const selectableEmployers = dropdown.locator('button.employer-button:not([disabled])');
+  if ((await selectableEmployers.count()) === 0) {
+    return false;
+  }
+
+  await selectableEmployers.first().click();
+  await page.locator('#dashboard-content').waitFor({ state: 'visible', timeout: 10000 });
+
+  return true;
+};
+
 export const openEmployerActionsDropdown = async (
   page: Page
 ): Promise<{ actionButton: Locator; dropdown: Locator; jobId: string } | null> => {
-  const actionButton = page.locator('.btn-actions:visible').first();
+  let actionButton = page.locator('.btn-actions:visible').first();
 
   try {
     await actionButton.waitFor({ state: 'visible', timeout: 5000 });
   } catch {
-    return null;
+    const switched = await switchEmployerIfAvailable(page);
+    if (!switched) {
+      return null;
+    }
+
+    actionButton = page.locator('.btn-actions:visible').first();
+    try {
+      await actionButton.waitFor({ state: 'visible', timeout: 5000 });
+    } catch {
+      return null;
+    }
   }
 
   const jobId = await actionButton.getAttribute('data-job-id');
@@ -135,7 +170,22 @@ export const loginWithCredentials = async (
   username: string,
   password: string
 ): Promise<void> => {
-  await page.goto('/log-in', { waitUntil: 'domcontentloaded' });
+  let loadedLoginPage = false;
+  let lastError: unknown;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      await page.goto('/log-in', { waitUntil: 'domcontentloaded' });
+      loadedLoginPage = true;
+      break;
+    } catch (error) {
+      lastError = error;
+    }
+  }
+
+  if (!loadedLoginPage) {
+    throw new Error(`Failed to open log in page after 3 attempts: ${String(lastError)}`);
+  }
+
   await page.locator('#username').waitFor({ state: 'visible', timeout: 10000 });
   await page.locator('#username').fill(username);
   await page.locator('#password').fill(password);

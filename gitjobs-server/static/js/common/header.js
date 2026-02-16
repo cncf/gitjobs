@@ -1,94 +1,28 @@
-let documentHandlersBound = false;
+import { initializeButtonDropdown } from "/static/js/common/common.js";
+
 let lifecycleListenersBound = false;
 
 const getDropdownButton = () => document.getElementById("user-dropdown-button");
 
+const getDropdownMenuId = () => {
+  if (document.getElementById("dropdown-user")) {
+    return "dropdown-user";
+  }
+
+  if (document.getElementById("user-dropdown")) {
+    return "user-dropdown";
+  }
+
+  return "";
+};
+
 const getDropdownMenu = () => {
-  return document.getElementById("dropdown-user") || document.getElementById("user-dropdown");
-};
-
-const hideDropdown = () => {
-  const button = getDropdownButton();
-  const dropdown = getDropdownMenu();
-  if (!dropdown) {
-    return;
+  const dropdownMenuId = getDropdownMenuId();
+  if (!dropdownMenuId) {
+    return null;
   }
 
-  dropdown.classList.add("hidden");
-  dropdown.setAttribute("aria-hidden", "true");
-  if (button) {
-    button.setAttribute("aria-expanded", "false");
-  }
-};
-
-const showDropdown = () => {
-  const button = getDropdownButton();
-  const dropdown = getDropdownMenu();
-  if (!dropdown) {
-    return;
-  }
-
-  dropdown.classList.remove("hidden");
-  dropdown.setAttribute("aria-hidden", "false");
-  if (button) {
-    button.setAttribute("aria-expanded", "true");
-  }
-};
-
-const toggleDropdownVisibility = (event) => {
-  const dropdown = getDropdownMenu();
-  if (!dropdown) {
-    return;
-  }
-
-  if (event && typeof event.stopPropagation === "function") {
-    event.stopPropagation();
-  }
-  if (dropdown.classList.contains("hidden")) {
-    showDropdown();
-  } else {
-    hideDropdown();
-  }
-};
-
-const ensureDocumentHandlers = () => {
-  if (documentHandlersBound) {
-    return;
-  }
-
-  const handleDocumentClick = (event) => {
-    const button = getDropdownButton();
-    const dropdown = getDropdownMenu();
-    if (!button || !dropdown) {
-      return;
-    }
-
-    const clickedButton = button.contains(event.target);
-    const clickedDropdown = dropdown.contains(event.target);
-    if (!clickedButton && !clickedDropdown) {
-      hideDropdown();
-    }
-  };
-
-  const handleKeydown = (event) => {
-    if (event.key !== "Escape") {
-      return;
-    }
-
-    const button = getDropdownButton();
-    const dropdown = getDropdownMenu();
-    if (!button || !dropdown || dropdown.classList.contains("hidden")) {
-      return;
-    }
-
-    hideDropdown();
-    button.focus();
-  };
-
-  document.addEventListener("click", handleDocumentClick);
-  document.addEventListener("keydown", handleKeydown);
-
-  documentHandlersBound = true;
+  return document.getElementById(dropdownMenuId);
 };
 
 const shouldResetDashboardScroll = (event) => {
@@ -131,42 +65,24 @@ const bindLifecycleListeners = () => {
 };
 
 export const initUserDropdown = () => {
-  ensureDocumentHandlers();
   bindLifecycleListeners();
 
   const button = getDropdownButton();
+  const dropdownMenuId = getDropdownMenuId();
   const dropdown = getDropdownMenu();
-  if (!button || !dropdown) {
+  if (!button || !dropdown || !dropdownMenuId) {
     return;
   }
 
+  initializeButtonDropdown({
+    buttonId: "user-dropdown-button",
+    dropdownId: dropdownMenuId,
+    guardKey: `__gitjobsUserDropdownBound:${dropdownMenuId}`,
+    closeOnItemClickSelector: "a",
+  });
+
   button.setAttribute("aria-expanded", dropdown.classList.contains("hidden") ? "false" : "true");
   dropdown.setAttribute("aria-hidden", dropdown.classList.contains("hidden") ? "true" : "false");
-
-  if (!button.__gitjobsDropdownInitialized) {
-    button.addEventListener("click", toggleDropdownVisibility);
-    button.__gitjobsDropdownInitialized = true;
-  }
-
-  if (!dropdown.__gitjobsCloseOnLinkBound) {
-    dropdown.addEventListener(
-      "click",
-      (event) => {
-        const link = event.target.closest("a");
-        if (!link) {
-          return;
-        }
-
-        if (link.querySelector(".hx-spinner")) {
-          return;
-        }
-
-        hideDropdown();
-      },
-      true,
-    );
-    dropdown.__gitjobsCloseOnLinkBound = true;
-  }
 };
 
 initUserDropdown();

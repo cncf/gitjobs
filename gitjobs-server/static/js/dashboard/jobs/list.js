@@ -18,72 +18,80 @@ export const showStats = async (id) => {
   // Get loading spinner reference
   const spinnerStats = document.getElementById(`spinner-stats-${id}`);
 
-  // Fetch job statistics from the API
-  const response = await fetch(`/dashboard/employer/jobs/${id}/stats`, {
-    method: "GET",
-  });
-  if (!response.ok) {
+  try {
+    // Fetch job statistics from the API
+    const response = await fetch(`/dashboard/employer/jobs/${id}/stats`, {
+      method: "GET",
+    });
+    if (!response.ok) {
+      if (spinnerStats) {
+        spinnerStats.classList.add("hidden");
+      }
+      showErrorAlert("Something went wrong fetching the stats, please try again later.");
+      return;
+    }
+
+    const data = await response.json();
+    if (spinnerStats) {
+      spinnerStats.classList.add("hidden");
+    }
+
+    // Process and display the statistics data
+    if (data) {
+      const hasViewsData = data.views_daily && data.views_daily.length > 0;
+      const hasSearchAppearancesData =
+        data.search_appearances_daily && data.search_appearances_daily.length > 0;
+
+      if (hasViewsData || hasSearchAppearancesData) {
+        // Open the statistics modal if we have data for at least one chart
+        toggleModalVisibility(`stats-modal`, "open");
+
+        // Render views chart if data exists
+        if (hasViewsData) {
+          renderChart(data.views_daily, "job-chart-views", "views");
+          if (data.views_total_last_month !== undefined) {
+            const totalViewsElement = document.getElementById("total-views");
+            if (totalViewsElement) {
+              totalViewsElement.textContent = prettifyNumber(data.views_total_last_month);
+            }
+          }
+        } else {
+          // Hide views chart if no data is available
+          const viewsChartWrapper = document.querySelector('[data-chart="views"]');
+          if (viewsChartWrapper) {
+            viewsChartWrapper.classList.add("hidden");
+          }
+        }
+
+        // Render search appearances chart if data exists
+        if (hasSearchAppearancesData) {
+          renderChart(data.search_appearances_daily, "job-chart-search-appearances", "search_appearances");
+          if (data.search_appearances_total_last_month !== undefined) {
+            const totalSearchElement = document.getElementById("total-search-appearances");
+            if (totalSearchElement) {
+              totalSearchElement.textContent = prettifyNumber(data.search_appearances_total_last_month);
+            }
+          }
+        } else {
+          // Hide search appearances chart if no data is available
+          const searchAppearancesChartWrapper = document.querySelector('[data-chart="search-appearances"]');
+          if (searchAppearancesChartWrapper) {
+            searchAppearancesChartWrapper.classList.add("hidden");
+          }
+        }
+      } else {
+        // Show message when no data is available for either chart
+        showInfoAlert(
+          'We don\'t have statistics data for this job yet.<div class="mt-2">Please check again later.</div>',
+          true,
+        );
+      }
+    }
+  } catch (error) {
     if (spinnerStats) {
       spinnerStats.classList.add("hidden");
     }
     showErrorAlert("Something went wrong fetching the stats, please try again later.");
-    return;
-  }
-  const data = await response.json();
-  if (spinnerStats) {
-    spinnerStats.classList.add("hidden");
-  }
-
-  // Process and display the statistics data
-  if (data) {
-    const hasViewsData = data.views_daily && data.views_daily.length > 0;
-    const hasSearchAppearancesData =
-      data.search_appearances_daily && data.search_appearances_daily.length > 0;
-
-    if (hasViewsData || hasSearchAppearancesData) {
-      // Open the statistics modal if we have data for at least one chart
-      toggleModalVisibility(`stats-modal`, "open");
-
-      // Render views chart if data exists
-      if (hasViewsData) {
-        renderChart(data.views_daily, "job-chart-views", "views");
-        if (data.views_total_last_month !== undefined) {
-          const totalViewsElement = document.getElementById("total-views");
-          if (totalViewsElement) {
-            totalViewsElement.textContent = prettifyNumber(data.views_total_last_month);
-          }
-        }
-      } else {
-        // Hide views chart if no data is available
-        const viewsChartWrapper = document.querySelector('[data-chart="views"]');
-        if (viewsChartWrapper) {
-          viewsChartWrapper.classList.add("hidden");
-        }
-      }
-
-      // Render search appearances chart if data exists
-      if (hasSearchAppearancesData) {
-        renderChart(data.search_appearances_daily, "job-chart-search-appearances", "search_appearances");
-        if (data.search_appearances_total_last_month !== undefined) {
-          const totalSearchElement = document.getElementById("total-search-appearances");
-          if (totalSearchElement) {
-            totalSearchElement.textContent = prettifyNumber(data.search_appearances_total_last_month);
-          }
-        }
-      } else {
-        // Hide search appearances chart if no data is available
-        const searchAppearancesChartWrapper = document.querySelector('[data-chart="search-appearances"]');
-        if (searchAppearancesChartWrapper) {
-          searchAppearancesChartWrapper.classList.add("hidden");
-        }
-      }
-    } else {
-      // Show message when no data is available for either chart
-      showInfoAlert(
-        'We don\'t have statistics data for this job yet.<div class="mt-2">Please check again later.</div>',
-        true,
-      );
-    }
   }
 };
 

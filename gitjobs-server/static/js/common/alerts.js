@@ -229,6 +229,13 @@ export const initializeConfirmHtmxButtons = ({
       return;
     }
 
+    if (!button.id) {
+      const currentCounter = Number.parseInt(document.__gitjobsConfirmButtonCounter || "0", 10);
+      const nextCounter = Number.isNaN(currentCounter) ? 1 : currentCounter + 1;
+      document.__gitjobsConfirmButtonCounter = String(nextCounter);
+      button.id = `gitjobs-confirm-button-${nextCounter}`;
+    }
+
     button.addEventListener("click", () => {
       showConfirmAlert(confirmMessage, button.id, confirmText, cancelText, confirmWithHtml);
     });
@@ -291,7 +298,10 @@ export const showConfirmAlert = (message, buttonId, confirmText, cancelText = "N
 
   Swal.fire(alertOptions).then((result) => {
     if (result.isConfirmed) {
-      htmx.trigger(`#${buttonId}`, "confirmed");
+      const confirmButton = document.getElementById(buttonId);
+      if (confirmButton && typeof htmx?.trigger === "function") {
+        htmx.trigger(confirmButton, "confirmed");
+      }
     }
   });
 };

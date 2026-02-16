@@ -86,6 +86,10 @@ export const initializeApplyButton = (root = document) => {
  */
 export const renderEmbedCode = () => {
   const embedCode = document.getElementById("embed-code");
+  if (!embedCode) {
+    return;
+  }
+
   const params = new URLSearchParams(window.location.search);
   params.append("limit", "10");
   embedCode.textContent = `

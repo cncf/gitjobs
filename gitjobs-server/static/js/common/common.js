@@ -84,8 +84,11 @@ export const copyToClipboard = async (content) => {
   temporaryInput.style.left = "-9999px";
   document.body.appendChild(temporaryInput);
   temporaryInput.select();
-  document.execCommand("copy");
+  const copied = document.execCommand("copy");
   document.body.removeChild(temporaryInput);
+  if (!copied) {
+    throw new Error("Failed to copy text.");
+  }
 };
 
 /**
@@ -197,8 +200,15 @@ export const toggleModalVisibility = (modalId, status) => {
  * @param {string[]} options.triggerIds - Element ids that trigger modal close
  * @param {Function} [options.onClose] - Optional callback before closing
  * @param {Function} [options.closeHandler] - Optional custom close function
+ * @param {boolean} [options.closeOnEscape=true] - Close modal when Escape is pressed
  */
-export const initializeModalCloseHandlers = ({ modalId, triggerIds, onClose, closeHandler } = {}) => {
+export const initializeModalCloseHandlers = ({
+  modalId,
+  triggerIds,
+  onClose,
+  closeHandler,
+  closeOnEscape = true,
+} = {}) => {
   if (!Array.isArray(triggerIds) || triggerIds.length === 0) {
     return;
   }
@@ -231,6 +241,27 @@ export const initializeModalCloseHandlers = ({ modalId, triggerIds, onClose, clo
     trigger.addEventListener("click", closeModal);
     trigger.dataset.modalCloseBound = "true";
   });
+
+  if (closeOnEscape && modalId) {
+    const escapeGuardKey = `__gitjobsModalEscapeBound:${modalId}`;
+    if (!document[escapeGuardKey]) {
+      document.addEventListener("keydown", (event) => {
+        if (event.key !== "Escape" || event.__gitjobsModalClosed) {
+          return;
+        }
+
+        const modal = document.getElementById(modalId);
+        if (!modal || modal.classList.contains("hidden")) {
+          return;
+        }
+
+        closeModal();
+        event.__gitjobsModalClosed = true;
+      });
+
+      document[escapeGuardKey] = true;
+    }
+  }
 };
 
 /**
@@ -471,14 +502,21 @@ export const initializeNoEmptyValuesExtension = () => {
  */
 export const processNewHtmxUrl = (elementId, method, data) => {
   const element = document.getElementById(elementId);
-  if (element) {
-    const url = element.dataset.url;
-    if (url) {
-      const newUrl = url.replace(`{:${element.dataset.replacement}}`, data);
-      element.setAttribute(`hx-${method}`, newUrl);
-      // Process new URL
-      htmx.process(`#${elementId}`);
+  if (!element || typeof htmx?.process !== "function") {
+    return;
+  }
+
+  const url = element.dataset.url;
+  if (url) {
+    const replacement = element.dataset.replacement;
+    if (!replacement) {
+      return;
     }
+
+    const newUrl = url.replace(`{:${replacement}}`, data);
+    element.setAttribute(`hx-${method}`, newUrl);
+    // Process new URL
+    htmx.process(element);
   }
 };
 
@@ -489,7 +527,7 @@ export const processNewHtmxUrl = (elementId, method, data) => {
  */
 export const triggerActionOnForm = (formId, action) => {
   const form = document.getElementById(formId);
-  if (form) {
+  if (form && typeof htmx?.trigger === "function") {
     htmx.trigger(form, action);
   }
 };
@@ -679,7 +717,7 @@ export const trackerJobView = async (jobId) => {
   if (!jobId) return;
 
   try {
-    fetch(`/jobs/${jobId}/views`, {
+    await fetch(`/jobs/${jobId}/views`, {
       method: "POST",
     });
   } catch (error) {

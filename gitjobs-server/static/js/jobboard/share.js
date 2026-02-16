@@ -58,6 +58,11 @@ export const shareJob = (root = document) => {
       anchorTag.setAttribute("data-url", shareUrl);
       if (platform === "email") {
         anchorTag.setAttribute("data-subject", subject);
+        anchorTag.removeAttribute("target");
+        anchorTag.removeAttribute("rel");
+      } else {
+        anchorTag.setAttribute("target", "_blank");
+        anchorTag.setAttribute("rel", "noopener noreferrer");
       }
 
       if (anchorTag.dataset.sharerInitialized === "true" || !window.Sharer) {
@@ -75,6 +80,10 @@ export const shareJob = (root = document) => {
     // Copy link to clipboard
     const copyLink = socialLinks.querySelector("#copy-link");
     if (copyLink && copyLink.dataset.copyInitialized !== "true") {
+      copyLink.setAttribute("href", shareUrl);
+      copyLink.setAttribute("target", "_blank");
+      copyLink.setAttribute("rel", "noopener noreferrer");
+
       copyLink.addEventListener("click", async (event) => {
         event.preventDefault();
         try {

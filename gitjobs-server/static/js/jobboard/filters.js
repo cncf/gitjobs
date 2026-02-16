@@ -26,9 +26,11 @@ export const triggerActionOnForm = (formId, action, fromSearch) => {
   // Prevent empty search submissions
   if (fromSearch) {
     const searchInput = document.getElementById("searchbar");
-    if (searchInput.value === "") {
+    if (!searchInput || searchInput.value.trim() === "") {
       return;
     }
+
+    searchInput.value = searchInput.value.trim();
   }
 
   triggerFormAction(formId, action);
@@ -44,9 +46,9 @@ export const searchOnEnter = (event, formId) => {
     if (formId) {
       triggerActionOnForm(formId, "submit");
     } else {
-      const searchValue = event.currentTarget.value;
+      const searchValue = event.currentTarget.value.trim();
       if (searchValue !== "") {
-        document.location.href = `/jobs?ts_query=${searchValue}`;
+        document.location.href = `/jobs?ts_query=${encodeURIComponent(searchValue)}`;
       }
     }
     event.currentTarget.blur();
@@ -60,6 +62,10 @@ export const searchOnEnter = (event, formId) => {
  */
 export const cleanInputField = (inputId, formId) => {
   const input = document.getElementById(inputId);
+  if (!input) {
+    return;
+  }
+
   input.value = "";
 
   if (formId) {
@@ -73,6 +79,10 @@ export const cleanInputField = (inputId, formId) => {
  */
 export const updateResults = (content) => {
   const resultsContainer = document.getElementById("results");
+  if (!resultsContainer) {
+    return;
+  }
+
   resultsContainer.innerHTML = content;
 };
 

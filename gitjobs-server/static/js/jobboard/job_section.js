@@ -6,6 +6,7 @@ import {
   showSuccessAlert,
 } from "/static/js/common/alerts.js";
 import {
+  bindHtmxAfterRequestOnce,
   copyToClipboard,
   ensureElementId,
   initializeModalCloseHandlers,
@@ -73,12 +74,16 @@ export const initializeApplyButton = (root = document) => {
           showConfirmAlert("Are you sure you want to apply to this job?", applyButton.id, "Yes");
         });
 
-        applyButton.addEventListener("htmx:afterRequest", (e) => {
-          handleHtmxResponse({
-            xhr: e.detail.xhr,
-            successMessage: "You have successfully applied to this job!",
-            errorMessage: "An error occurred applying to this job. Please try again later.",
-          });
+        bindHtmxAfterRequestOnce({
+          selector: `#${applyButton.id}`,
+          handler: (event) => {
+            handleHtmxResponse({
+              xhr: event.detail.xhr,
+              successMessage: "You have successfully applied to this job!",
+              errorMessage: "An error occurred applying to this job. Please try again later.",
+            });
+          },
+          boundAttribute: "applyAfterRequestBound",
         });
       }
     }

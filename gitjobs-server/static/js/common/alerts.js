@@ -1,4 +1,9 @@
-import { ensureElementId, scrollToDashboardTop, toggleModalVisibility } from "/static/js/common/common.js";
+import {
+  bindHtmxAfterRequestOnce,
+  ensureElementId,
+  scrollToDashboardTop,
+  toggleModalVisibility,
+} from "/static/js/common/common.js";
 
 /**
  * Returns common configuration options for all alert dialogs.
@@ -185,21 +190,17 @@ export const initializePreviewButtons = ({
   invalidMessage = "",
   modalId = "preview-modal",
 }) => {
-  const previewButtons = document.querySelectorAll(selector);
-  previewButtons.forEach((button) => {
-    if (button.dataset.previewButtonBound === "true") {
-      return;
-    }
-
-    button.addEventListener("htmx:afterRequest", (event) => {
+  bindHtmxAfterRequestOnce({
+    selector,
+    handler: (event) => {
       handlePreviewModalResponse({
         xhr: event.detail.xhr,
         errorMessage,
         invalidMessage,
         modalId,
       });
-    });
-    button.dataset.previewButtonBound = "true";
+    },
+    boundAttribute: "previewButtonBound",
   });
 };
 
@@ -239,12 +240,16 @@ export const initializeConfirmHtmxButtons = ({
       showConfirmAlert(confirmMessage, button.id, confirmText, cancelText, confirmWithHtml);
     });
 
-    button.addEventListener("htmx:afterRequest", (event) => {
-      handleHtmxResponse({
-        xhr: event.detail.xhr,
-        successMessage,
-        errorMessage,
-      });
+    bindHtmxAfterRequestOnce({
+      selector: `#${button.id}`,
+      handler: (event) => {
+        handleHtmxResponse({
+          xhr: event.detail.xhr,
+          successMessage,
+          errorMessage,
+        });
+      },
+      boundAttribute: "confirmHtmxAfterRequestBound",
     });
 
     button.dataset.confirmHtmxBound = "true";

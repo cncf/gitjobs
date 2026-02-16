@@ -316,31 +316,28 @@ test.describe('GitJobs', () => {
     await expect(page.locator('#preview-modal .text-xl')).toBeVisible({ timeout: 10000 });
 
     const shareButtons = [
-      { title: 'Twitter share link', name: 'Twitter' },
-      { title: 'Facebook share link', name: 'Facebook' },
-      { title: 'LinkedIn share link', name: 'LinkedIn' },
-      { title: 'Email share link', name: 'Email' },
-      { title: 'Copy link', name: 'Copy' },
+      { title: 'Twitter share link', sharer: 'twitter' },
+      { title: 'Facebook share link', sharer: 'facebook' },
+      { title: 'LinkedIn share link', sharer: 'linkedin' },
+      { title: 'Email share link', sharer: 'email' },
+      { title: 'Copy link', sharer: '' },
     ];
 
     for (const button of shareButtons) {
       const element = page.getByTitle(button.title);
       await expect(element).toBeVisible();
-      if (button.title !== 'Copy link' && button.title !== 'Email share link') {
-        await expect.poll(async () => (await element.getAttribute('href')) || '').not.toBe('');
+      if (button.title !== 'Copy link') {
+        await expect.poll(async () => (await element.getAttribute('data-sharer')) || '').toBe(button.sharer);
+        await expect.poll(async () => (await element.getAttribute('data-url')) || '').toContain('job_id=');
         const href = await element.getAttribute('href');
         expect(href).toBeTruthy();
-        expect(href).toMatch(/^https?:\/\//);
-        expect(href).toContain(button.name.toLowerCase());
-      } else {
         if (button.title === 'Email share link') {
-          await expect.poll(async () => (await element.getAttribute('href')) || '').not.toBe('');
-          const href = await element.getAttribute('href');
-          expect(href).toBeTruthy();
           expect(href).toMatch(/^mailto:/);
         } else {
-          await expect(element).toBeEnabled();
+          expect(href).toMatch(/^https?:\/\//);
         }
+      } else {
+        await expect(element).toBeEnabled();
       }
     }
   });

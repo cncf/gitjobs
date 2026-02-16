@@ -68,6 +68,10 @@ export class DashboardSearch extends LitWrapper {
    * @private
    */
   async _getItems() {
+    const requestValue = this.enteredValue;
+    const requestFoundation = this.selectedFoundation;
+    const requestType = this.type;
+
     if (this.type === "certifications") {
       // Filter certifications locally from provided data
       this.visibleOptions = this.certifications.filter(
@@ -84,7 +88,7 @@ export class DashboardSearch extends LitWrapper {
     // Fetch projects or members from server
     const url = `${
       this.type === "members" ? "/dashboard/members/search?member=" : "/projects/search?project="
-    }${encodeURIComponent(this.enteredValue)}&foundation=${this.selectedFoundation}`;
+    }${encodeURIComponent(requestValue)}&foundation=${requestFoundation}`;
     try {
       const response = await fetch(url);
       if (!response.ok) {
@@ -92,10 +96,31 @@ export class DashboardSearch extends LitWrapper {
       }
 
       const json = await response.json();
+      if (
+        this.enteredValue !== requestValue ||
+        this.selectedFoundation !== requestFoundation ||
+        this.type !== requestType
+      ) {
+        return;
+      }
       this.visibleOptions = json;
     } catch (error) {
-      // TODO: Implement error handling
+      if (
+        this.enteredValue !== requestValue ||
+        this.selectedFoundation !== requestFoundation ||
+        this.type !== requestType
+      ) {
+        return;
+      }
+      this.visibleOptions = [];
     } finally {
+      if (
+        this.enteredValue !== requestValue ||
+        this.selectedFoundation !== requestFoundation ||
+        this.type !== requestType
+      ) {
+        return;
+      }
       this.visibleDropdown = true;
       this.isLoading = false;
     }

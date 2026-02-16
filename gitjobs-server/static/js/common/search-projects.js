@@ -77,7 +77,9 @@ export class SearchProjects extends LitWrapper {
    * @private
    */
   async _getProjects() {
-    const url = `/projects/search?project=${encodeURIComponent(this.enteredValue)}&foundation=${this.selectedFoundation}`;
+    const requestValue = this.enteredValue;
+    const requestFoundation = this.selectedFoundation;
+    const url = `/projects/search?project=${encodeURIComponent(requestValue)}&foundation=${requestFoundation}`;
     try {
       const response = await fetch(url);
       if (!response.ok) {
@@ -85,10 +87,19 @@ export class SearchProjects extends LitWrapper {
       }
 
       const json = await response.json();
+      if (this.enteredValue !== requestValue || this.selectedFoundation !== requestFoundation) {
+        return;
+      }
       this.visibleOptions = json;
     } catch (error) {
-      // TODO: Implement error handling
+      if (this.enteredValue !== requestValue || this.selectedFoundation !== requestFoundation) {
+        return;
+      }
+      this.visibleOptions = [];
     } finally {
+      if (this.enteredValue !== requestValue || this.selectedFoundation !== requestFoundation) {
+        return;
+      }
       this.visibleDropdown = true;
     }
   }

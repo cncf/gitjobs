@@ -129,6 +129,7 @@ export class SearchLocation extends LitWrapper {
    * @private
    */
   async _fetchData(value) {
+    const requestValue = value;
     const url = `/locations/search?ts_query=${encodeURIComponent(value)}`;
     try {
       const response = await fetch(url);
@@ -137,10 +138,19 @@ export class SearchLocation extends LitWrapper {
       }
 
       const json = await response.json();
+      if (this.value !== requestValue || requestValue.length <= 2) {
+        return;
+      }
       this.options = json;
     } catch (error) {
-      // TODO: Implement error handling
+      if (this.value !== requestValue) {
+        return;
+      }
+      this.options = [];
     } finally {
+      if (this.value !== requestValue) {
+        return;
+      }
       this.isLoading = false;
     }
   }
@@ -223,6 +233,8 @@ export class SearchLocation extends LitWrapper {
    * @private
    */
   async _selectLocation(location) {
+    this._debouncedFetchData.cancel?.();
+    this.isLoading = false;
     this.locationId = location.location_id;
     this.city = location.city;
     this.state = location.state;
@@ -265,6 +277,8 @@ export class SearchLocation extends LitWrapper {
    * @private
    */
   async _cleanInput() {
+    this._debouncedFetchData.cancel?.();
+    this.isLoading = false;
     this.locationId = "";
     this.city = "";
     this.state = "";

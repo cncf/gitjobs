@@ -138,38 +138,8 @@
 
 <script type="module">
   import {
-    initializeConfirmHtmxButtons
-  } from '/static/js/common/alerts.js';
-  import {
-    toggleModalVisibility,
-  } from '/static/js/common/common.js';
+    initializeEmployerTeamMembersList
+  } from '/static/js/dashboard/employer/team.js';
 
-  const addMemberButton = document.getElementById('add-member-button');
-  if (addMemberButton) {
-    addMemberButton.addEventListener('click', () => {
-      toggleModalVisibility('add-member-modal', "open");
-    });
-  }
-
-  // Close the add member modal on backdrop click
-  const backdropAddMemberModal = document.querySelector('#backdrop-add-member-modal');
-  if (backdropAddMemberModal) {
-    backdropAddMemberModal.addEventListener('click', () => {
-      toggleModalVisibility('add-member-modal', "close");
-    });
-  }
-
-  // Close the add member modal on close button click
-  const closeAddMemberModal = document.querySelector('#close-add-member-modal');
-  if (closeAddMemberModal) {
-    closeAddMemberModal.addEventListener('click', () => {
-      toggleModalVisibility('add-member-modal', "close");
-    });
-  }
-
-  initializeConfirmHtmxButtons({
-    selector: '[data-remove-member-button]',
-    confirmMessage: 'Are you sure you would like to delete this team member?',
-    errorMessage: 'Something went wrong deleting this team member. Please try again later.'
-  });
+  initializeEmployerTeamMembersList();
 </script>

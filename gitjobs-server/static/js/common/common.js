@@ -368,6 +368,40 @@ export const initializeGlobalPopstateHandlers = () => {
 };
 
 /**
+ * Initializes delegated checkbox-to-hidden-input syncing for toggle controls.
+ */
+export const initializeToggleCheckboxes = () => {
+  if (document.__gitjobsToggleCheckboxesBound) {
+    return;
+  }
+
+  document.addEventListener("change", (event) => {
+    if (!(event.target instanceof Element)) {
+      return;
+    }
+
+    const toggleCheckbox = event.target.closest("input[data-toggle-hidden-target]");
+    if (!toggleCheckbox) {
+      return;
+    }
+
+    const targetId = toggleCheckbox.dataset.toggleHiddenTarget;
+    if (!targetId) {
+      return;
+    }
+
+    const hiddenInput = document.getElementById(targetId);
+    if (!hiddenInput) {
+      return;
+    }
+
+    hiddenInput.value = toggleCheckbox.checked ? "true" : "false";
+  });
+
+  document.__gitjobsToggleCheckboxesBound = true;
+};
+
+/**
  * Initializes an Osano cookie preferences button.
  * @param {Object} options - Button options
  * @param {string} options.buttonId - Cookie button id

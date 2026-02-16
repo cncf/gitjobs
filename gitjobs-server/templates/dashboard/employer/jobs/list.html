@@ -41,22 +41,10 @@
 
   <script type="module">
     import {
-      initializeDashboardActionButton
-    } from '/static/js/dashboard/employer/dashboard-actions.js';
+      initializeEmployerJobsListHeader
+    } from '/static/js/dashboard/jobs/list.js';
 
-    initializeDashboardActionButton({
-      buttonId: 'add-job-button',
-      errorMessage: 'Something went wrong loading the add job form. Please try again later.',
-      pushStateTitle: 'Jobs list',
-      pushStateUrl: '/dashboard/employer?tab=jobs'
-    });
-
-    const cleanSearchJobs = document.getElementById('clean-search-jobs');
-    if (cleanSearchJobs) {
-      cleanSearchJobs.addEventListener('click', () => {
-        document.getElementById('search_jobs').value = '';
-      });
-    }
+    initializeEmployerJobsListHeader();
   </script>
 </div>
 

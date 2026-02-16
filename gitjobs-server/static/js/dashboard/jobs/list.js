@@ -1,6 +1,7 @@
 import { getBarStatsOptions, gitjobsChartTheme } from "/static/js/jobboard/stats.js";
 import { prettifyNumber, toggleModalVisibility } from "/static/js/common/common.js";
 import { initializeConfirmHtmxButtons, showErrorAlert, showInfoAlert } from "/static/js/common/alerts.js";
+import { initializeDashboardActionButton } from "/static/js/dashboard/employer/dashboard-actions.js";
 
 /**
  * Shows statistics for a specific job in a modal
@@ -301,5 +302,28 @@ export const initializeEmployerJobsStats = () => {
   if (!document.__gitjobsEchartsThemeRegistered) {
     registerEchartsTheme();
     document.__gitjobsEchartsThemeRegistered = true;
+  }
+};
+
+/**
+ * Initializes employer jobs list header controls.
+ */
+export const initializeEmployerJobsListHeader = () => {
+  initializeDashboardActionButton({
+    buttonId: "add-job-button",
+    errorMessage: "Something went wrong loading the add job form. Please try again later.",
+    pushStateTitle: "Jobs list",
+    pushStateUrl: "/dashboard/employer?tab=jobs",
+  });
+
+  const cleanSearchJobs = document.getElementById("clean-search-jobs");
+  if (cleanSearchJobs && cleanSearchJobs.dataset.cleanSearchBound !== "true") {
+    cleanSearchJobs.addEventListener("click", () => {
+      const searchJobsInput = document.getElementById("search_jobs");
+      if (searchJobsInput) {
+        searchJobsInput.value = "";
+      }
+    });
+    cleanSearchJobs.dataset.cleanSearchBound = "true";
   }
 };

@@ -51,17 +51,13 @@
          name="toggle_{{ id }}"
          value="{{ id }}"
          type="checkbox"
+         data-toggle-hidden-target="{{ id }}"
          class="sr-only peer"
          {% if checked %}checked{% endif %}>
   <input type="hidden" id="{{ id }}" name="{{ id }}" value="{{ checked }}">
   <div class="relative w-11 h-6 bg-stone-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-stone-300 after:border after:border-stone-200 after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600">
   </div>
 
-  <script>
-    document.getElementById('toggle_{{ id }}').addEventListener('change', () => {
-      document.getElementById('{{ id }}').value = document.getElementById('toggle_{{ id }}').checked;
-    });
-  </script>
 {% endmacro toggle_checkbox -%}
 {# End toggle checkbox #}
 
@@ -202,43 +198,12 @@
 
   <script type="module">
     import {
-      handleHtmxResponse
-    } from '/static/js/common/alerts.js';
+      initializeImagesForm
+    } from '/static/js/common/images-form.js';
 
-    const cleanImage = document.getElementById('clean-image');
-    const imagesForm = document.getElementById('images-form');
-    const image = document.getElementById('image');
-    const inputHidden = document.getElementById('{{ name }}');
-    const placeholderImage = document.getElementById('placeholder-image');
-
-    if (imagesForm && image && inputHidden && placeholderImage) {
-      // On image upload, show the image and enable clear button, and hide the placeholder
-      imagesForm.addEventListener('htmx:afterRequest', (e) => {
-        if (handleHtmxResponse({
-            xhr: e.detail.xhr,
-            successMessage: 'Image added successfully.',
-            errorMessage: 'Something went wrong adding the image. Please try again later.<br /><br /><div class="text-sm text-stone-500">Images must be at least 400x400, preferably in square format. Maximum file size: 1MB. Formats supported: SVG, PNG, JPEG, GIF, WEBP and TIFF.</div>',
-            errorWithHtml: true,
-            treatUnprocessableAsGenericError: true
-          })) {
-          const imageId = e.detail.xhr.response;
-          inputHidden.value = imageId;
-          image.setAttribute('src', `/dashboard/images/${imageId}/small`);
-          image.classList.remove('hidden');
-          placeholderImage.classList.add('hidden');
-          cleanImage.removeAttribute('disabled');
-        }
-      });
-
-      // On clean image button click, remove the image and the clear button, and show the placeholder
-      cleanImage.addEventListener('click', () => {
-        inputHidden.value = "";
-        cleanImage.disabled = true;
-        placeholderImage.classList.remove('hidden');
-        image.setAttribute('src', '');
-        image.classList.add('hidden');
-      });
-    }
+    initializeImagesForm({
+      hiddenInputId: '{{ name }}'
+    });
   </script>
 {% endmacro images_form -%}
 {# End form image #}

@@ -125,18 +125,6 @@
             {{ macros::select_option(value = foundation.name.as_str() , label = foundation.name|upper, selected = selected_foundation) -}}
           {% endfor -%}
         </select>
-        <script type="module">
-          const foundationSelect = document.getElementById("{{ device }}-foundation");
-          foundationSelect.addEventListener("change", (event) => {
-            if (event.target.value !== "") {
-              // Clean search projects input field
-              const searchProjects = document.getElementsByTagName("search-projects");
-              for (let i = 0; i < searchProjects.length; i++) {
-                searchProjects[i].cleanSelected();
-              }
-            }
-          });
-        </script>
       </div>
     </div>
     {# End foundation -#}

@@ -95,6 +95,26 @@ export const initializeJobboardExplore = () => {
     item.dataset.boundTriggerForm = "true";
   });
 
+  const foundationSelects = document.querySelectorAll('select[id$="-foundation"]');
+  foundationSelects.forEach((foundationSelect) => {
+    if (foundationSelect.dataset.boundFoundationSelect === "true") {
+      return;
+    }
+
+    foundationSelect.addEventListener("change", (event) => {
+      if (event.target.value === "") {
+        return;
+      }
+
+      const searchProjects = document.getElementsByTagName("search-projects");
+      for (let i = 0; i < searchProjects.length; i++) {
+        searchProjects[i].cleanSelected();
+      }
+    });
+
+    foundationSelect.dataset.boundFoundationSelect = "true";
+  });
+
   const resetDesktopFilters = document.getElementById("reset-desktop-filters");
   if (resetDesktopFilters && resetDesktopFilters.dataset.boundResetDesktop !== "true") {
     resetDesktopFilters.addEventListener("click", () => resetForm("desktop-jobs-form"));

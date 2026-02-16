@@ -70,12 +70,8 @@
 
 <script type="module">
   import {
-    initializeConfirmHtmxButtons
-  } from '/static/js/common/alerts.js';
+    initializeEmployerTeamInvitationsList
+  } from '/static/js/dashboard/employer/team.js';
 
-  initializeConfirmHtmxButtons({
-    selector: '[data-reject-invitation-button]',
-    confirmMessage: 'Are you sure you would like to reject this invitation?',
-    errorMessage: 'Something went wrong rejecting this invitation. Please try again later.'
-  });
+  initializeEmployerTeamInvitationsList();
 </script>

@@ -198,24 +198,8 @@
 
 <script type="module">
   import {
-    initializeButtonDropdown
-  } from '/static/js/common/common.js';
-  import {
-    initializePreviewButtons,
-  } from '/static/js/common/alerts.js';
+    initializeEmployerApplicationsList
+  } from '/static/js/dashboard/employer/applications.js';
 
-  const hideJobsDropdown = initializeButtonDropdown({
-    buttonId: 'jobs-btn',
-    dropdownId: 'dropdown-jobs',
-    guardKey: '__gitjobsApplicationsDropdownBound'
-  });
-
-  const dropdownJobButtons = document.querySelectorAll('#dropdown-jobs button');
-  dropdownJobButtons.forEach((button) => {
-    button.addEventListener('htmx:beforeRequest', hideJobsDropdown);
-  });
-
-  initializePreviewButtons({
-    errorMessage: 'Something went wrong previewing the data. Please try again later.'
-  });
+  initializeEmployerApplicationsList();
 </script>

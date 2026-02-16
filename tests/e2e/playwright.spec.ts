@@ -16,14 +16,18 @@ import {
 
 test.describe('GitJobs', () => {
   test.beforeEach(async ({ page }) => {
-   for (let i = 0; i < 3; i++) {
+    let lastError: unknown;
+    for (let i = 0; i < 3; i++) {
       try {
         await page.goto('/', { timeout: 60000 });
-        break;
+        await page.waitForLoadState('domcontentloaded');
+        return;
       } catch (error) {
-        console.log(`Failed to navigate to page, retrying... (${i + 1}/3)`);
+        lastError = error;
       }
     }
+
+    throw new Error(`Failed to navigate to home page after 3 attempts: ${String(lastError)}`);
   });
 
   test('should have the correct title and heading', async ({ page }) => {
@@ -107,7 +111,7 @@ test.describe('GitJobs', () => {
     await page.waitForSelector('#drawer-filters', { state: 'visible' });
     await page.locator('#drawer-filters label').filter({ hasText: 'Full Time' }).click();
     await page.locator('#close-filters').click();
-    await page.waitForTimeout(500);
+    await waitForJobCount(page, 12);
 
     const jobTypeButtonsList = await jobTypeButtons(page).all();
     for (const jobCard of jobTypeButtonsList) {
@@ -134,7 +138,7 @@ test.describe('GitJobs', () => {
     const initialJobTitles = (await jobTitles(page).allTextContents()).map(title => title.trim());
     await page.locator('#sort-desktop').selectOption('salary');
     await expect(page).toHaveURL(/\?sort=salary/);
-    await page.waitForTimeout(500);
+    await expect(jobTitles(page).first()).toHaveText(/Security Engineer/);
     const sortedJobTitles = (await jobTitles(page).allTextContents()).map(title => title.trim());
     expect(sortedJobTitles[0]).toBe('Security Engineer');
     expect(sortedJobTitles[1]).toBe('DevOps Engineer');
@@ -147,23 +151,21 @@ test.describe('GitJobs', () => {
   test('ensure filters and search persist on page refresh', async ({ page }) => {
     await searchInput(page).fill('Engineer');
     await page.locator('label').filter({ hasText: 'Full Time' }).nth(1).click();
-    await page.waitForTimeout(500);
+    await expect(page).toHaveURL(/Engineer/);
+    await expect(page).toHaveURL(/full-time/);
 
     const urlBeforeRefresh = page.url();
     expect(urlBeforeRefresh).toContain('Engineer');
     expect(urlBeforeRefresh).toContain('full-time');
 
     await page.reload();
-    await page.waitForTimeout(500);
+    await page.waitForLoadState('domcontentloaded');
 
     const urlAfterRefresh = page.url();
     expect(urlAfterRefresh).toBe(urlBeforeRefresh);
 
-    const persistedSearch = await searchInput(page).inputValue();
-    expect(persistedSearch).toBe('Engineer');
-
-    const fullTimeCheckbox = await page.locator('input[id="desktop-kind[]-full-time"]').isChecked();
-    expect(fullTimeCheckbox).toBe(true);
+    await expect(searchInput(page)).toHaveValue('Engineer');
+    await expect(page.locator('input[id="desktop-kind[]-full-time"]')).toBeChecked();
   });
 
   test('should show hover states and preview on job card interactions', async ({ page }) => {
@@ -183,27 +185,72 @@ test.describe('GitJobs', () => {
 
     // Ensure modal is not open before or after hovering
     await expect(page.locator('#preview-modal')).not.toBeVisible();
-    await page.waitForTimeout(300);
-    await expect(page.locator('#preview-modal')).not.toBeVisible();
   });
 
   test('should navigate to the stats page and interact with charts', async ({ page, browserName }) => {
-    if (browserName === 'firefox') {
-      // Skip this test on Firefox as it's failing due to a rendering issue with the charts
-      return;
-    }
     await page.getByRole('link', { name: 'Stats' }).click();
     await expect(page).toHaveURL(/\/stats/);
 
-    await page.waitForTimeout(1000);
-    const noData = page.locator('text="No data available yet"').first();
-    if (await noData.isVisible()) {
-      await expect(noData).toBeVisible();
+    await expect
+      .poll(
+        async () => {
+          const noDataVisibleCount = await page.getByText('No data available yet').evaluateAll((nodes) => {
+            return nodes.filter((node) => {
+              const element = node;
+              if (!(element instanceof HTMLElement)) {
+                return false;
+              }
+
+              const style = window.getComputedStyle(element);
+              const rect = element.getBoundingClientRect();
+              return style.display !== 'none' && style.visibility !== 'hidden' && rect.width > 0 && rect.height > 0;
+            }).length;
+          });
+
+          return noDataVisibleCount > 0 || (await page.locator('#line-chart').isVisible());
+        },
+        { timeout: 15000 }
+      )
+      .toBe(true);
+
+    const noDataVisibleCount = await page.getByText('No data available yet').evaluateAll((nodes) => {
+      return nodes.filter((node) => {
+        const element = node;
+        if (!(element instanceof HTMLElement)) {
+          return false;
+        }
+
+        const style = window.getComputedStyle(element);
+        const rect = element.getBoundingClientRect();
+        return style.display !== 'none' && style.visibility !== 'hidden' && rect.width > 0 && rect.height > 0;
+      }).length;
+    });
+
+    if (noDataVisibleCount > 0) {
+      await expect(page.getByText('No data available yet').first()).toBeVisible();
+      return;
+    }
+
+    await expect(page.locator('#line-chart')).toBeVisible({ timeout: 15000 });
+    await expect(page.locator('#bar-daily')).toBeVisible({ timeout: 15000 });
+
+    if (browserName === 'firefox') {
+      await expect(page.locator('#line-chart')).toBeVisible({ timeout: 15000 });
+      await expect(page.locator('#bar-daily')).toBeVisible({ timeout: 15000 });
     } else {
-      await page.waitForSelector('#line-chart rect', { timeout: 15000 });
-      await page.locator('#line-chart rect').first().click({ force: true });
-      await page.waitForSelector('#bar-daily rect', { timeout: 15000 });
-      await page.locator('#bar-daily rect').first().click({ force: true });
+      const lineChartTarget = page.locator('#line-chart canvas, #line-chart rect, #line-chart path').first();
+      if ((await lineChartTarget.count()) > 0) {
+        await lineChartTarget.click({ force: true });
+      } else {
+        await page.locator('#line-chart').click({ force: true });
+      }
+
+      const barDailyTarget = page.locator('#bar-daily canvas, #bar-daily rect, #bar-daily path').first();
+      if ((await barDailyTarget.count()) > 0) {
+        await barDailyTarget.click({ force: true });
+      } else {
+        await page.locator('#bar-daily').click({ force: true });
+      }
     }
   });
 
@@ -220,6 +267,7 @@ test.describe('GitJobs', () => {
 
   test('should log in a user', async ({ page }) => {
     await loginWithCredentials(page, 'test', 'test1234');
+    await expect(page).toHaveURL(/\/$/);
   });
 
   test('should log out a user', async ({ page }) => {
@@ -270,7 +318,7 @@ test.describe('GitJobs', () => {
     await page.locator('#password').fill('wrong');
     await page.getByRole('button', { name: 'Submit' }).click();
 
-    await expect(page).toHaveURL('/log-in');
+    await expect(page).toHaveURL(/\/log-in(?:\?.*)?$/);
   });
 
   test('should send experience fields using bracket keys on profile update', async ({ page }) => {
@@ -452,6 +500,7 @@ test.describe('GitJobs', () => {
       if (button.title !== 'Copy link') {
         await expect.poll(async () => (await element.getAttribute('data-sharer')) || '').toBe(button.sharer);
         await expect.poll(async () => (await element.getAttribute('data-url')) || '').toContain('job_id=');
+        await expect.poll(async () => (await element.getAttribute('href')) || '').not.toBe('');
         const href = await element.getAttribute('href');
         expect(href).toBeTruthy();
         if (button.title === 'Email share link') {

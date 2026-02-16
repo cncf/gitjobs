@@ -134,7 +134,8 @@ export const isElementInView = (element) => {
 };
 
 /**
- * Sets drawer visibility and backdrop state.
+ * Sets drawer visibility, backdrop state, and body scroll lock.
+ * Uses drawer open-state transitions to avoid lock counter drift.
  * @param {Object} options - Drawer visibility options
  * @param {string} options.drawerId - Drawer element id
  * @param {boolean} options.open - Whether drawer should be open
@@ -142,6 +143,7 @@ export const isElementInView = (element) => {
  */
 export const setDrawerVisibility = ({ drawerId, open, backdropId = "drawer-backdrop" }) => {
   const drawer = document.getElementById(drawerId);
+  const wasOpen = drawer?.dataset.open === "true";
   if (drawer) {
     if (open) {
       drawer.classList.add("transition-transform");
@@ -152,6 +154,16 @@ export const setDrawerVisibility = ({ drawerId, open, backdropId = "drawer-backd
       drawer.classList.remove("transition-transform");
       drawer.dataset.open = "false";
       drawer.scrollTop = 0;
+    }
+
+    drawer.setAttribute("aria-hidden", open ? "false" : "true");
+
+    if (open && !wasOpen) {
+      lockBodyScroll();
+    }
+
+    if (!open && wasOpen) {
+      unlockBodyScroll();
     }
   }
 
@@ -751,9 +763,15 @@ export const initializeGlobalPopstateHandlers = () => {
       toggleModalVisibility("embed-code-modal", "close");
     }
 
-    const dropdownUser = document.getElementById("dropdown-user");
+    const dropdownUser = document.getElementById("dropdown-user") || document.getElementById("user-dropdown");
     if (dropdownUser !== null && !dropdownUser.classList.contains("hidden")) {
       dropdownUser.classList.add("hidden");
+      dropdownUser.setAttribute("aria-hidden", "true");
+    }
+
+    const userDropdownButton = document.getElementById("user-dropdown-button");
+    if (userDropdownButton) {
+      userDropdownButton.setAttribute("aria-expanded", "false");
     }
   });
 

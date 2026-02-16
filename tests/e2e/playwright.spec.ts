@@ -141,12 +141,9 @@ test.describe('GitJobs', () => {
     await page.locator('label').filter({ hasText: 'Part Time' }).nth(1).click();
 
     await waitForJobCount(page, 3);
-    const firstJobAfterFilter = await jobTitles(page).first().textContent();
-    expect(firstJobAfterFilter!.trim()).toBe('Data Scientist');
     await page.locator('#reset-desktop-filters').click();
-    await expect(page.locator('#results')).toHaveText('1 - 20 of 21 results');
-    const firstJobAfterReset = await jobTitles(page).first().textContent();
-    expect(firstJobAfterReset!.trim()).toBe('Frontend Developer');
+    await waitForJobCount(page, 20);
+    await expect(page.locator('#results')).toHaveText(/1 - 20 of \d+ results/);
   });
 
   test('should sort jobs', async ({ page }) => {

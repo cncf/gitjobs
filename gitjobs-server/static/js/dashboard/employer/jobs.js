@@ -47,12 +47,18 @@ export const checkSalaryBeforeSubmit = () => {
         salaryMaxField.setCustomValidity("Maximum salary cannot be less than minimum salary.");
 
         // Clear error when user interacts with fields
-        salaryMaxField.addEventListener("input", () => {
-          salaryMaxField.setCustomValidity(""); // Clear error on input
-        });
-        salaryMinField.addEventListener("input", () => {
-          salaryMaxField.setCustomValidity(""); // Clear error on input
-        });
+        if (salaryMaxField.dataset.salaryMaxValidationBound !== "true") {
+          salaryMaxField.addEventListener("input", () => {
+            salaryMaxField.setCustomValidity(""); // Clear error on input
+          });
+          salaryMaxField.dataset.salaryMaxValidationBound = "true";
+        }
+        if (salaryMinField.dataset.salaryMinValidationBound !== "true") {
+          salaryMinField.addEventListener("input", () => {
+            salaryMaxField.setCustomValidity(""); // Clear error on input
+          });
+          salaryMinField.dataset.salaryMinValidationBound = "true";
+        }
       }
 
       salaryMinField.setAttribute("required", "required");
@@ -125,6 +131,10 @@ export const initializeSalaryKindToggle = () => {
   }
 
   salaryOptions.forEach((option) => {
+    if (option.dataset.salaryKindBound === "true") {
+      return;
+    }
+
     option.addEventListener("change", () => {
       if (option.id === "fixed") {
         salaryOptionFixed.classList.remove("hidden");
@@ -134,6 +144,8 @@ export const initializeSalaryKindToggle = () => {
         salaryOptionRange.classList.remove("hidden");
       }
     });
+
+    option.dataset.salaryKindBound = "true";
   });
 };
 
@@ -151,42 +163,54 @@ export const initializeEmployerJobForm = ({ successMessage, errorMessage, publis
   }
 
   const jobTitleInput = document.getElementById("title");
-  if (jobTitleInput) {
+  if (jobTitleInput && jobTitleInput.dataset.jobTitleValidationBound !== "true") {
     jobTitleInput.addEventListener("input", () => {
       checkJobTitle(jobTitleInput);
     });
+    jobTitleInput.dataset.jobTitleValidationBound = "true";
   }
 
   const openSourceInput = document.querySelector('input[name="open_source"]');
-  if (openSourceInput) {
+  if (openSourceInput && openSourceInput.dataset.openSourceValidationBound !== "true") {
     openSourceInput.addEventListener("input", checkOpenSourceValues);
+    openSourceInput.dataset.openSourceValidationBound = "true";
   }
 
   const upstreamCommitmentInput = document.querySelector('input[name="upstream_commitment"]');
-  if (upstreamCommitmentInput) {
+  if (
+    upstreamCommitmentInput &&
+    upstreamCommitmentInput.dataset.upstreamCommitmentValidationBound !== "true"
+  ) {
     upstreamCommitmentInput.addEventListener("input", checkOpenSourceValues);
+    upstreamCommitmentInput.dataset.upstreamCommitmentValidationBound = "true";
   }
 
-  jobsForm.addEventListener("htmx:trigger", () => {
-    checkSalaryBeforeSubmit();
-  });
-
-  jobsForm.addEventListener("htmx:afterRequest", (event) => {
-    if (event.detail.elt.id !== "jobs-form") {
-      return;
-    }
-
-    jobsForm.setAttribute("hx-indicator", "#dashboard-spinner, #save-spinner");
-    handleHtmxResponse({
-      xhr: event.detail.xhr,
-      successMessage,
-      errorMessage,
+  if (jobsForm.dataset.jobsFormTriggerBound !== "true") {
+    jobsForm.addEventListener("htmx:trigger", () => {
+      checkSalaryBeforeSubmit();
     });
-  });
+    jobsForm.dataset.jobsFormTriggerBound = "true";
+  }
+
+  if (jobsForm.dataset.jobsFormAfterRequestBound !== "true") {
+    jobsForm.addEventListener("htmx:afterRequest", (event) => {
+      if (event.detail.elt.id !== "jobs-form") {
+        return;
+      }
+
+      jobsForm.setAttribute("hx-indicator", "#dashboard-spinner, #save-spinner");
+      handleHtmxResponse({
+        xhr: event.detail.xhr,
+        successMessage,
+        errorMessage,
+      });
+    });
+    jobsForm.dataset.jobsFormAfterRequestBound = "true";
+  }
 
   if (publishButtonId) {
     const publishButton = document.getElementById(publishButtonId);
-    if (publishButton) {
+    if (publishButton && publishButton.dataset.publishJobBound !== "true") {
       publishButton.addEventListener("click", () => {
         jobsForm.setAttribute("hx-indicator", "#dashboard-spinner, #publish-spinner");
         const statusInput = jobsForm.querySelector('input[name="status"]');
@@ -200,11 +224,12 @@ export const initializeEmployerJobForm = ({ successMessage, errorMessage, publis
           triggerActionOnForm("jobs-form", "submit");
         }
       });
+      publishButton.dataset.publishJobBound = "true";
     }
   }
 
   const previewButton = document.getElementById("preview-button");
-  if (previewButton) {
+  if (previewButton && previewButton.dataset.previewJobBound !== "true") {
     previewButton.addEventListener("htmx:afterRequest", (event) => {
       handlePreviewModalResponse({
         xhr: event.detail.xhr,
@@ -212,5 +237,6 @@ export const initializeEmployerJobForm = ({ successMessage, errorMessage, publis
         errorMessage: "Something went wrong previewing the data. Please try again later.",
       });
     });
+    previewButton.dataset.previewJobBound = "true";
   }
 };

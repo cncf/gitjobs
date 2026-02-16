@@ -265,13 +265,16 @@ export const initializeButtonDropdown = ({ buttonId, dropdownId, guardKey }) => 
 
   const button = document.getElementById(buttonId);
   const dropdown = document.getElementById(dropdownId);
-  if (button && dropdown) {
+  const buttonGuardKey = `__gitjobsDropdownTriggerBound:${buttonId}:${dropdownId}`;
+  if (button && dropdown && button[buttonGuardKey] !== true) {
     button.addEventListener("click", (event) => {
       event.stopPropagation();
       const willOpen = dropdown.classList.contains("hidden");
       dropdown.classList.toggle("hidden");
       button.setAttribute("aria-expanded", willOpen ? "true" : "false");
     });
+
+    button[buttonGuardKey] = true;
   }
 
   if (guardKey && !document[guardKey]) {

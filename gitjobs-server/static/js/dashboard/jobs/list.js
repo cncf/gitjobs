@@ -7,6 +7,22 @@ import {
 import { initializeConfirmHtmxButtons, showErrorAlert, showInfoAlert } from "/static/js/common/alerts.js";
 import { initializeDashboardActionButton } from "/static/js/dashboard/employer/dashboard-actions.js";
 
+const JOBS_STATS_CHART_IDS = ["job-chart-views", "job-chart-search-appearances"];
+
+const resizeStatsCharts = () => {
+  JOBS_STATS_CHART_IDS.forEach((chartId) => {
+    const chartDom = document.getElementById(chartId);
+    if (!chartDom) {
+      return;
+    }
+
+    const chartInstance = echarts.getInstanceByDom(chartDom);
+    if (chartInstance) {
+      chartInstance.resize();
+    }
+  });
+};
+
 /**
  * Shows statistics for a specific job in a modal
  * @param {string} id - The ID of the job to display stats for
@@ -89,8 +105,7 @@ export const showStats = async (id) => {
  */
 export const closeStats = () => {
   // Dispose of all chart instances to free up memory
-  const chartIds = ["job-chart-views", "job-chart-search-appearances"];
-  chartIds.forEach((id) => {
+  JOBS_STATS_CHART_IDS.forEach((id) => {
     const chartDom = document.getElementById(id);
     if (chartDom) {
       const chartInstance = echarts.getInstanceByDom(chartDom);
@@ -151,11 +166,6 @@ const renderChart = (data, chartId, chartType) => {
     useDirtyRect: false,
   });
   chart.clear();
-
-  // Add responsive resize handler
-  window.addEventListener("resize", function () {
-    chart.resize();
-  });
 
   // Configure chart options
   const option = {
@@ -300,6 +310,11 @@ export const initializeEmployerJobsStats = () => {
   if (!document.__gitjobsEchartsThemeRegistered) {
     registerEchartsTheme();
     document.__gitjobsEchartsThemeRegistered = true;
+  }
+
+  if (!document.__gitjobsStatsChartsResizeBound) {
+    window.addEventListener("resize", resizeStatsCharts);
+    document.__gitjobsStatsChartsResizeBound = true;
   }
 };
 

@@ -8,10 +8,16 @@ import { initializePendingChangesAlert } from "/static/js/dashboard/jobseeker/pe
 export const initializeJobSeekerProfileUpdate = () => {
   const sectionsBtn = document.querySelectorAll("[data-section]");
   sectionsBtn.forEach((button) => {
+    if (button.dataset.sectionSwitchBound === "true") {
+      return;
+    }
+
     button.addEventListener("click", () => {
       const section = button.getAttribute("data-section");
       displayActiveSection(section);
     });
+
+    button.dataset.sectionSwitchBound = "true";
   });
 
   const pendingChangesAlert = initializePendingChangesAlert({
@@ -20,13 +26,16 @@ export const initializeJobSeekerProfileUpdate = () => {
   });
 
   const updateButton = document.getElementById("update-profile-button");
-  if (updateButton) {
+  if (updateButton && updateButton.dataset.profileUpdateBeforeRequestBound !== "true") {
     updateButton.addEventListener("htmx:beforeRequest", (event) => {
       if (!validateFormData()) {
         event.preventDefault();
       }
     });
+    updateButton.dataset.profileUpdateBeforeRequestBound = "true";
+  }
 
+  if (updateButton && updateButton.dataset.profileUpdateAfterRequestBound !== "true") {
     updateButton.addEventListener("htmx:afterRequest", (event) => {
       if (
         handleHtmxResponse({
@@ -38,6 +47,7 @@ export const initializeJobSeekerProfileUpdate = () => {
         pendingChangesAlert.markCurrentAsClean();
       }
     });
+    updateButton.dataset.profileUpdateAfterRequestBound = "true";
   }
 
   initializePreviewButtons({

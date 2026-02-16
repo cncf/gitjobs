@@ -7,7 +7,7 @@ import { handleHtmxResponse } from "/static/js/common/alerts.js";
  */
 export const initializeEmployerProfileForm = ({ errorMessage }) => {
   const employerForm = document.getElementById("employer-form");
-  if (!employerForm) {
+  if (!employerForm || employerForm.dataset.employerProfileFormBound === "true") {
     return;
   }
 
@@ -22,4 +22,6 @@ export const initializeEmployerProfileForm = ({ errorMessage }) => {
       errorMessage,
     });
   });
+
+  employerForm.dataset.employerProfileFormBound = "true";
 };

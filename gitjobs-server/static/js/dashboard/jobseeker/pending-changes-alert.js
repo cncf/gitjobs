@@ -58,6 +58,9 @@ export const initializePendingChangesAlert = ({
   confirmText = "Leave",
 }) => {
   const pendingChangesAlert = document.getElementById(alertId);
+  if (pendingChangesAlert?.__pendingChangesAlertApi) {
+    return pendingChangesAlert.__pendingChangesAlertApi;
+  }
   const trackedForms = (formIds || []).map((formId) => document.getElementById(formId)).filter(Boolean);
   const cancelButton = cancelButtonId ? document.getElementById(cancelButtonId) : null;
 
@@ -138,19 +141,28 @@ export const initializePendingChangesAlert = ({
   }
 
   if (cancelButton && confirmMessage) {
-    cancelButton.addEventListener("click", (event) => {
-      if (!hasPendingChanges) {
-        return;
-      }
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      showConfirmAlert(confirmMessage, cancelButton.id, confirmText);
-    });
+    if (cancelButton.dataset.pendingChangesCancelBound !== "true") {
+      cancelButton.addEventListener("click", (event) => {
+        if (!hasPendingChanges) {
+          return;
+        }
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        showConfirmAlert(confirmMessage, cancelButton.id, confirmText);
+      });
+      cancelButton.dataset.pendingChangesCancelBound = "true";
+    }
   }
 
-  return {
+  const api = {
     hasPendingChanges: () => hasPendingChanges,
     refresh: refreshPendingChangesState,
     markCurrentAsClean,
   };
+
+  if (pendingChangesAlert) {
+    pendingChangesAlert.__pendingChangesAlertApi = api;
+  }
+
+  return api;
 };

@@ -328,18 +328,13 @@
     {# djlint:off #}
       <script type="module">
         import {
-          closeNavigationDrawer
-        } from '/static/js/dashboard/base.js';
+          initializeCookiePreferencesButton
+        } from '/static/js/common/common.js';
 
-        const cookiesBtn = document.getElementById("{{ id }}");
-        if (cookiesBtn) {
-          cookiesBtn.addEventListener('click', () => {
-            {% if close_drawer -%}
-            closeNavigationDrawer();
-            {% endif -%}
-            Osano.cm.showDrawer('osano-cm-dom-info-dialog-open');
-          });
-        }
+        initializeCookiePreferencesButton({
+          buttonId: "{{ id }}",
+          closeDrawer: {% if close_drawer -%}true{%- else -%}false{%- endif %}
+        });
 </script>
     {# djlint:on #}
   </div>

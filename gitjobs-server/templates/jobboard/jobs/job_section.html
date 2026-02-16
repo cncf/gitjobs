@@ -150,6 +150,9 @@
   <div class="relative">
     <button id="copy-btn-{{ name }}"
             type="button"
+            data-copy-button="true"
+            data-tooltip-id="copy-btn-{{ name }}-tooltip"
+            data-copy-content="{{ content }}"
             title="Copy code"
             class="btn-primary-outline-anchor rounded-full size-[35px] xl:size-[40px] group p-1 flex items-center justify-center">
       <div class="svg-icon size-4 md:size-5 group-hover:bg-white icon-copy"></div>
@@ -163,22 +166,4 @@
       </div>
     </div>
   </div>
-
-  {# djlint:off #}
-  <script type="module">
-    const copyButton = document.getElementById("copy-btn-{{ name }}");
-    if (copyButton) {
-      copyButton.addEventListener("click", () => {
-        navigator.clipboard.writeText('{{ content|safe }}');
-        const tooltip = document.querySelector("#copy-btn-{{ name }}-tooltip");
-        if (tooltip) {
-          tooltip.classList.add("opacity-100", "z-10");
-          setTimeout(() => {
-            tooltip.classList.remove("opacity-100", "z-10");
-          }, 3000);
-        }
-      });
-    }
-</script>
-  {# djlint:on #}
 {% endmacro copy_button -%}

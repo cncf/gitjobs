@@ -329,6 +329,81 @@ export const shouldDisplayJobModal = (onLoad = false) => {
 };
 
 /**
+ * Initializes global popstate handling for modal and dropdown UI state.
+ */
+export const initializeGlobalPopstateHandlers = () => {
+  if (document.__gitjobsPopstateBound) {
+    return;
+  }
+
+  window.addEventListener("popstate", (event) => {
+    const modalPreview = document.getElementById("preview-modal");
+    if (event.state && event.state.modal_preview !== undefined) {
+      if (event.state.modal_preview && modalPreview !== null) {
+        const jobId = getParamFromQueryString("job_id");
+        if (jobId !== modalPreview.dataset.jobId) {
+          shouldDisplayJobModal();
+        } else {
+          toggleModalVisibility("preview-modal", "open");
+        }
+      } else {
+        toggleModalVisibility("preview-modal", "close");
+      }
+    } else if (modalPreview !== null && modalPreview.dataset.open === "true") {
+      toggleModalVisibility("preview-modal", "close");
+    }
+
+    const embedCodeModal = document.getElementById("embed-code-modal");
+    if (embedCodeModal !== null && embedCodeModal.dataset.open === "true") {
+      toggleModalVisibility("embed-code-modal", "close");
+    }
+
+    const dropdownUser = document.getElementById("dropdown-user");
+    if (dropdownUser !== null && !dropdownUser.classList.contains("hidden")) {
+      dropdownUser.classList.add("hidden");
+    }
+  });
+
+  document.__gitjobsPopstateBound = true;
+};
+
+/**
+ * Initializes an Osano cookie preferences button.
+ * @param {Object} options - Button options
+ * @param {string} options.buttonId - Cookie button id
+ * @param {boolean} [options.closeDrawer=false] - Close mobile drawer before opening
+ */
+export const initializeCookiePreferencesButton = ({ buttonId, closeDrawer = false }) => {
+  const cookieButton = document.getElementById(buttonId);
+  if (!cookieButton || cookieButton.dataset.cookieBound === "true") {
+    return;
+  }
+
+  cookieButton.addEventListener("click", () => {
+    if (closeDrawer) {
+      const navigationDrawer = document.getElementById("drawer-menu");
+      if (navigationDrawer) {
+        navigationDrawer.classList.add("-translate-x-full");
+        navigationDrawer.classList.remove("transition-transform");
+        navigationDrawer.dataset.open = "false";
+        navigationDrawer.scrollTop = 0;
+      }
+
+      const backdrop = document.getElementById("drawer-backdrop");
+      if (backdrop) {
+        backdrop.classList.add("hidden");
+      }
+    }
+
+    if (window.Osano?.cm?.showDrawer) {
+      window.Osano.cm.showDrawer("osano-cm-dom-info-dialog-open");
+    }
+  });
+
+  cookieButton.dataset.cookieBound = "true";
+};
+
+/**
  * Tracks a view for a specific job by sending a POST request.
  * Silently handles errors without user notification.
  * @param {string} jobId - The ID of the job to register a view for

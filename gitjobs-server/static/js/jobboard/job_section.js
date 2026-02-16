@@ -1,4 +1,9 @@
-import { handleHtmxResponse, showConfirmAlert, showInfoAlert } from "/static/js/common/alerts.js";
+import {
+  handleHtmxResponse,
+  showConfirmAlert,
+  showInfoAlert,
+  showSuccessAlert,
+} from "/static/js/common/alerts.js";
 import {
   lockBodyScroll,
   removeParamFromQueryString,
@@ -189,4 +194,31 @@ export const initializeJobPreviewModal = () => {
     });
     embedCodeModalBackdrop.dataset.embedCloseBound = "true";
   }
+
+  const copyButtons = document.querySelectorAll("[data-copy-button]");
+  copyButtons.forEach((copyButton) => {
+    if (copyButton.dataset.copyBound === "true") {
+      return;
+    }
+
+    copyButton.addEventListener("click", () => {
+      const content = copyButton.dataset.copyContent || "";
+      navigator.clipboard.writeText(content);
+
+      const tooltipId = copyButton.dataset.tooltipId;
+      if (!tooltipId) {
+        return;
+      }
+
+      const tooltip = document.getElementById(tooltipId);
+      if (tooltip) {
+        tooltip.classList.add("opacity-100", "z-10");
+        setTimeout(() => {
+          tooltip.classList.remove("opacity-100", "z-10");
+        }, 3000);
+      }
+    });
+
+    copyButton.dataset.copyBound = "true";
+  });
 };

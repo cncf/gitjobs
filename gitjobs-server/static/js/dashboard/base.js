@@ -46,3 +46,26 @@ export const initializeOpenMenuButton = (buttonId = "open-menu-button") => {
   openMenuButton.addEventListener("click", openNavigationDrawer);
   openMenuButton.dataset.openMenuBound = "true";
 };
+
+/**
+ * Initializes the mobile menu close controls.
+ * @param {Object} [options] - Optional element id overrides
+ * @param {string} [options.closeButtonId="close-menu"] - Close menu button id
+ * @param {string} [options.backdropId="drawer-backdrop"] - Drawer backdrop id
+ */
+export const initializeCloseMenuControls = ({
+  closeButtonId = "close-menu",
+  backdropId = "drawer-backdrop",
+} = {}) => {
+  const closeMenuButton = document.getElementById(closeButtonId);
+  if (closeMenuButton && closeMenuButton.dataset.closeMenuBound !== "true") {
+    closeMenuButton.addEventListener("click", closeNavigationDrawer);
+    closeMenuButton.dataset.closeMenuBound = "true";
+  }
+
+  const backdropMenu = document.getElementById(backdropId);
+  if (backdropMenu && backdropMenu.dataset.backdropMenuBound !== "true") {
+    backdropMenu.addEventListener("click", closeNavigationDrawer);
+    backdropMenu.dataset.backdropMenuBound = "true";
+  }
+};

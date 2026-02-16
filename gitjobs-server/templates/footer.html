@@ -38,12 +38,13 @@
                alt="Cookie icon" />
         </button>
         <script type="module">
-          const cookieButton = document.getElementById('cookie-preferences-button');
-          if (cookieButton) {
-            cookieButton.addEventListener('click', () => {
-              Osano.cm.showDrawer('osano-cm-dom-info-dialog-open');
-            });
-          }
+          import {
+            initializeCookiePreferencesButton
+          } from '/static/js/common/common.js';
+
+          initializeCookiePreferencesButton({
+            buttonId: 'cookie-preferences-button'
+          });
         </script>
       {%- endif -%}
       {# End Osano -#}

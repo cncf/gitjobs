@@ -1,5 +1,6 @@
 import { getBarStatsOptions, gitjobsChartTheme } from "/static/js/jobboard/stats.js";
 import {
+  initializeButtonDropdown,
   initializeModalCloseHandlers,
   prettifyNumber,
   registerChartResizeHandler,
@@ -244,90 +245,54 @@ export const initializeEmployerJobsListTable = () => {
     errorMessage: "An error occurred deleting this job. Please try again later.",
   });
 
-  const closeActionsDropdowns = () => {
-    const allActionDropdowns = document.querySelectorAll('[id^="dropdown-actions-"]');
-    allActionDropdowns.forEach((dropdown) => {
-      dropdown.classList.add("hidden");
-      dropdown.setAttribute("aria-hidden", "true");
-      const jobId = dropdown.id.replace("dropdown-actions-", "");
-      const actionButton = document.querySelector(`.btn-actions[data-job-id="${jobId}"]`);
-      if (actionButton) {
-        actionButton.setAttribute("aria-expanded", "false");
-      }
-    });
-  };
-
   const actionButtons = document.querySelectorAll(".btn-actions");
   actionButtons.forEach((actionButton) => {
     if (actionButton.dataset.actionDropdownBound === "true") {
       return;
     }
 
-    actionButton.addEventListener("click", (event) => {
-      event.stopPropagation();
-      const jobId = actionButton.dataset.jobId;
-      const dropdownActions = document.getElementById(`dropdown-actions-${jobId}`);
-      if (!dropdownActions) {
+    const jobId = actionButton.dataset.jobId;
+    if (!jobId || !actionButton.id) {
+      return;
+    }
+
+    const dropdownId = `dropdown-actions-${jobId}`;
+    const dropdownActions = document.getElementById(dropdownId);
+    if (!dropdownActions) {
+      return;
+    }
+
+    actionButton.addEventListener("click", () => {
+      const shouldOpen = dropdownActions.classList.contains("hidden");
+      if (!shouldOpen) {
         return;
       }
 
-      const shouldOpen = dropdownActions.classList.contains("hidden");
-      closeActionsDropdowns();
-      if (shouldOpen) {
-        dropdownActions.classList.remove("hidden");
-        dropdownActions.setAttribute("aria-hidden", "false");
-        actionButton.setAttribute("aria-expanded", "true");
-      }
+      const allActionDropdowns = document.querySelectorAll('[id^="dropdown-actions-"]');
+      allActionDropdowns.forEach((dropdown) => {
+        if (dropdown.id === dropdownId) {
+          return;
+        }
+
+        dropdown.classList.add("hidden");
+        dropdown.setAttribute("aria-hidden", "true");
+        const openJobId = dropdown.id.replace("dropdown-actions-", "");
+        const openActionButton = document.querySelector(`.btn-actions[data-job-id="${openJobId}"]`);
+        if (openActionButton) {
+          openActionButton.setAttribute("aria-expanded", "false");
+        }
+      });
+    });
+
+    initializeButtonDropdown({
+      buttonId: actionButton.id,
+      dropdownId,
+      guardKey: `__gitjobsJobActionsDropdownBound:${jobId}`,
+      closeOnItemClickSelector: "button, a",
     });
 
     actionButton.dataset.actionDropdownBound = "true";
   });
-
-  const actionDropdowns = document.querySelectorAll('[id^="dropdown-actions-"]');
-  actionDropdowns.forEach((dropdown) => {
-    if (dropdown.dataset.actionMenuBound === "true") {
-      return;
-    }
-
-    dropdown.addEventListener(
-      "click",
-      (event) => {
-        const actionItem = event.target.closest("button, a");
-        if (!actionItem) {
-          return;
-        }
-
-        closeActionsDropdowns();
-      },
-      true,
-    );
-
-    dropdown.dataset.actionMenuBound = "true";
-  });
-
-  if (!document.__gitjobsJobActionsDropdownBound) {
-    document.addEventListener("click", (event) => {
-      const clickedActionButton = event.target.closest(".btn-actions");
-      const clickedActionDropdown = event.target.closest('[id^="dropdown-actions-"]');
-      if (!clickedActionButton && !clickedActionDropdown) {
-        closeActionsDropdowns();
-      }
-    });
-
-    document.addEventListener("keydown", (event) => {
-      if (event.key === "Escape") {
-        const visibleDropdown = document.querySelector('[id^="dropdown-actions-"]:not(.hidden)');
-        const jobId = visibleDropdown?.id?.replace("dropdown-actions-", "");
-        closeActionsDropdowns();
-        if (jobId) {
-          const actionButton = document.querySelector(`.btn-actions[data-job-id="${jobId}"]`);
-          actionButton?.focus();
-        }
-      }
-    });
-
-    document.__gitjobsJobActionsDropdownBound = true;
-  }
 };
 
 /**

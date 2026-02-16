@@ -286,6 +286,38 @@ test.describe('GitJobs', () => {
     await expect(page).toHaveURL(/\/sign-up(?:\?.*)?$/);
   });
 
+  test('should block sign-up when passwords do not match', async ({ page }) => {
+    await openSignUpPage(page);
+
+    await page.locator('#name').fill('Test User');
+    await page.locator('#email').fill('test-signup@example.com');
+    await page.locator('#username').fill('test-signup');
+    await page.locator('#password').fill('test1234');
+    await page.locator('#password_confirmation').fill('test5678');
+    await page.getByRole('button', { name: 'Submit' }).click();
+
+    await expect(page).toHaveURL(/\/sign-up(?:\?.*)?$/);
+    await expect
+      .poll(async () => page.locator('#password_confirmation').evaluate((element) => element.validationMessage))
+      .toBe('Passwords do not match');
+  });
+
+  test('should block sign-up when required name contains only spaces', async ({ page }) => {
+    await openSignUpPage(page);
+
+    await page.locator('#name').fill('   ');
+    await page.locator('#email').fill('test-spaces@example.com');
+    await page.locator('#username').fill('test-spaces');
+    await page.locator('#password').fill('test1234');
+    await page.locator('#password_confirmation').fill('test1234');
+    await page.getByRole('button', { name: 'Submit' }).click();
+
+    await expect(page).toHaveURL(/\/sign-up(?:\?.*)?$/);
+    await expect
+      .poll(async () => page.locator('#name').evaluate((element) => element.validationMessage))
+      .toBe('Value cannot be empty');
+  });
+
   test('should log in a user', async ({ page }) => {
     await loginWithCredentials(page, 'test', 'test1234');
     await expect(page).toHaveURL(/\/(?:\?.*)?$/);
@@ -330,6 +362,30 @@ test.describe('GitJobs', () => {
     await expect(dropdown).toBeHidden();
     await expect(userButton).toHaveAttribute('aria-expanded', 'false');
     await expect(dropdown).toHaveAttribute('aria-hidden', 'true');
+  });
+
+  test('should keep user menu toggle stable after HTMX navigation', async ({ page }) => {
+    const headerNavigation = page.locator('#header nav').first();
+
+    await headerNavigation.getByRole('link', { name: 'About', exact: true }).click();
+    await expect(page).toHaveURL(/\/about(?:\?.*)?$/);
+    await headerNavigation.getByRole('link', { name: 'Jobs', exact: true }).click();
+    await expect(page).toHaveURL(/\/(?:\?.*)?$/);
+
+    const userButton = page.locator('#user-dropdown-button');
+    const dropdown = page.locator('#dropdown-user');
+
+    await userButton.click();
+    await expect(dropdown).toBeVisible();
+    await expect(userButton).toHaveAttribute('aria-expanded', 'true');
+
+    await userButton.click();
+    await expect(dropdown).toBeHidden();
+    await expect(userButton).toHaveAttribute('aria-expanded', 'false');
+
+    await userButton.click();
+    await expect(dropdown).toBeVisible();
+    await expect(userButton).toHaveAttribute('aria-expanded', 'true');
   });
 
   test('invalid credentials stay on log in page', async ({ page }) => {
@@ -565,6 +621,51 @@ test.describe('GitJobs', () => {
     await expect(previewContent.getByText('Share this job')).toBeVisible();
   });
 
+  test('should lock body scroll while preview modal is open and restore on close', async ({ page }) => {
+    await jobCards(page).first().waitFor();
+    await jobCards(page).first().click();
+    await expect(page.locator('#preview-modal .text-xl')).toBeVisible({ timeout: 10000 });
+
+    await expect.poll(async () => page.evaluate(() => document.body.dataset.modalOpenCount || '0')).toBe('1');
+    await expect.poll(async () => page.evaluate(() => document.body.style.overflow)).toBe('hidden');
+
+    await page.locator('#close-preview-modal').click();
+    await expect(page.locator('#preview-modal')).toBeHidden();
+
+    await expect.poll(async () => page.evaluate(() => document.body.dataset.modalOpenCount || '0')).toBe('0');
+    await expect.poll(async () => page.evaluate(() => document.body.style.overflow)).toBe('');
+  });
+
+  test('should keep body scroll locked when closing embed modal over preview modal', async ({ page }) => {
+    await jobCards(page).first().waitFor();
+    await jobCards(page).first().click();
+    await expect(page.locator('#preview-modal .text-xl')).toBeVisible({ timeout: 10000 });
+
+    const embedButton = page.locator('#embed-code-button');
+    if ((await embedButton.count()) === 0) {
+      console.log('Embed code button not available, skipping test.');
+      return;
+    }
+
+    await embedButton.click();
+    await expect(page.locator('#embed-code-modal')).toBeVisible();
+
+    await expect.poll(async () => page.evaluate(() => document.body.dataset.modalOpenCount || '0')).toBe('2');
+    await expect.poll(async () => page.evaluate(() => document.body.style.overflow)).toBe('hidden');
+
+    await page.locator('#close-embed-code-modal').click();
+    await expect(page.locator('#embed-code-modal')).toBeHidden();
+    await expect(page.locator('#preview-modal .text-xl')).toBeVisible();
+
+    await expect.poll(async () => page.evaluate(() => document.body.dataset.modalOpenCount || '0')).toBe('1');
+    await expect.poll(async () => page.evaluate(() => document.body.style.overflow)).toBe('hidden');
+
+    await page.locator('#close-preview-modal').click();
+    await expect(page.locator('#preview-modal')).toBeHidden();
+    await expect.poll(async () => page.evaluate(() => document.body.dataset.modalOpenCount || '0')).toBe('0');
+    await expect.poll(async () => page.evaluate(() => document.body.style.overflow)).toBe('');
+  });
+
   test('should display share buttons properly', async ({ page }) => {
     await jobCards(page).first().waitFor();
     await jobCards(page).first().click();
@@ -602,6 +703,25 @@ test.describe('GitJobs', () => {
     const nextButton = page.getByRole('link', { name: 'Next' });
     await expect(nextButton).toBeVisible();
     await nextButton.click();
+    await expect(page).toHaveURL(/offset=20/);
+    await expect(page.locator('#results')).toHaveText('21 - 21 of 21 results');
+  });
+
+  test('should show pagination spinner while loading next page', async ({ page }) => {
+    let delayed = false;
+    await page.route('**/section/jobs/results*', async (route) => {
+      if (!delayed) {
+        delayed = true;
+        await new Promise((resolve) => setTimeout(resolve, 500));
+      }
+      await route.continue();
+    });
+
+    const nextButton = page.getByRole('link', { name: 'Next' });
+    await expect(nextButton).toBeVisible();
+    await nextButton.click();
+
+    await expect(page.locator('#pagination-next-spinner')).toBeVisible();
     await expect(page).toHaveURL(/offset=20/);
     await expect(page.locator('#results')).toHaveText('21 - 21 of 21 results');
   });

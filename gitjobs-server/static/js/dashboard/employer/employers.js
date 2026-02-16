@@ -1,4 +1,5 @@
 import { handleHtmxResponse } from "/static/js/common/alerts.js";
+import { bindHtmxAfterRequestOnce } from "/static/js/common/common.js";
 
 /**
  * Initializes HTMX response handling for employer profile add/update forms.
@@ -6,22 +7,19 @@ import { handleHtmxResponse } from "/static/js/common/alerts.js";
  * @param {string} params.errorMessage - Error message for failed requests
  */
 export const initializeEmployerProfileForm = ({ errorMessage }) => {
-  const employerForm = document.getElementById("employer-form");
-  if (!employerForm || employerForm.dataset.employerProfileFormBound === "true") {
-    return;
-  }
+  bindHtmxAfterRequestOnce({
+    selector: "#employer-form",
+    handler: (event) => {
+      // Ignore HTMX requests from nested controls such as location search.
+      if (event.detail.elt.id !== "employer-form") {
+        return;
+      }
 
-  employerForm.addEventListener("htmx:afterRequest", (event) => {
-    // Ignore HTMX requests from nested controls such as location search.
-    if (event.detail.elt.id !== "employer-form") {
-      return;
-    }
-
-    handleHtmxResponse({
-      xhr: event.detail.xhr,
-      errorMessage,
-    });
+      handleHtmxResponse({
+        xhr: event.detail.xhr,
+        errorMessage,
+      });
+    },
+    boundAttribute: "employerProfileFormBound",
   });
-
-  employerForm.dataset.employerProfileFormBound = "true";
 };

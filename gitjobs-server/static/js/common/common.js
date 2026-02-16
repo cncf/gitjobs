@@ -455,6 +455,56 @@ export const registerChartResizeHandler = ({ chartIds, guardKey, delay = 150 }) 
 };
 
 /**
+ * Binds the same HTMX beforeRequest handler to matching elements once.
+ * @param {Object} options - Binding options
+ * @param {string} options.selector - CSS selector for target elements
+ * @param {Function} options.handler - Callback for htmx:beforeRequest
+ * @param {string} [options.boundAttribute="htmxBeforeRequestBound"] - dataset guard attribute
+ */
+export const bindHtmxBeforeRequestOnce = ({
+  selector,
+  handler,
+  boundAttribute = "htmxBeforeRequestBound",
+}) => {
+  if (!selector || typeof handler !== "function") {
+    return;
+  }
+
+  const elements = document.querySelectorAll(selector);
+  elements.forEach((element) => {
+    if (element.dataset[boundAttribute] === "true") {
+      return;
+    }
+
+    element.addEventListener("htmx:beforeRequest", handler);
+    element.dataset[boundAttribute] = "true";
+  });
+};
+
+/**
+ * Binds the same HTMX afterRequest handler to matching elements once.
+ * @param {Object} options - Binding options
+ * @param {string} options.selector - CSS selector for target elements
+ * @param {Function} options.handler - Callback for htmx:afterRequest
+ * @param {string} [options.boundAttribute="htmxAfterRequestBound"] - dataset guard attribute
+ */
+export const bindHtmxAfterRequestOnce = ({ selector, handler, boundAttribute = "htmxAfterRequestBound" }) => {
+  if (!selector || typeof handler !== "function") {
+    return;
+  }
+
+  const elements = document.querySelectorAll(selector);
+  elements.forEach((element) => {
+    if (element.dataset[boundAttribute] === "true") {
+      return;
+    }
+
+    element.addEventListener("htmx:afterRequest", handler);
+    element.dataset[boundAttribute] = "true";
+  });
+};
+
+/**
  * Registers the HTMX extension that strips empty values from requests.
  * Filters blank and "0" values from both GET and non-GET submissions.
  */

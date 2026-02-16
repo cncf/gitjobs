@@ -1,5 +1,5 @@
-import { handleHtmxResponse, handlePreviewModalResponse } from "/static/js/common/alerts.js";
-import { triggerActionOnForm } from "/static/js/common/common.js";
+import { handleHtmxResponse, initializePreviewButtons } from "/static/js/common/alerts.js";
+import { bindHtmxAfterRequestOnce, triggerActionOnForm } from "/static/js/common/common.js";
 
 /**
  * Validates and adjusts salary fields based on selected salary type.
@@ -192,8 +192,9 @@ export const initializeEmployerJobForm = ({ successMessage, errorMessage, publis
     jobsForm.dataset.jobsFormTriggerBound = "true";
   }
 
-  if (jobsForm.dataset.jobsFormAfterRequestBound !== "true") {
-    jobsForm.addEventListener("htmx:afterRequest", (event) => {
+  bindHtmxAfterRequestOnce({
+    selector: "#jobs-form",
+    handler: (event) => {
       if (event.detail.elt.id !== "jobs-form") {
         return;
       }
@@ -204,9 +205,9 @@ export const initializeEmployerJobForm = ({ successMessage, errorMessage, publis
         successMessage,
         errorMessage,
       });
-    });
-    jobsForm.dataset.jobsFormAfterRequestBound = "true";
-  }
+    },
+    boundAttribute: "jobsFormAfterRequestBound",
+  });
 
   if (publishButtonId) {
     const publishButton = document.getElementById(publishButtonId);
@@ -228,15 +229,9 @@ export const initializeEmployerJobForm = ({ successMessage, errorMessage, publis
     }
   }
 
-  const previewButton = document.getElementById("preview-button");
-  if (previewButton && previewButton.dataset.previewJobBound !== "true") {
-    previewButton.addEventListener("htmx:afterRequest", (event) => {
-      handlePreviewModalResponse({
-        xhr: event.detail.xhr,
-        invalidMessage: "You must fill in all required fields to be able to preview the job.",
-        errorMessage: "Something went wrong previewing the data. Please try again later.",
-      });
-    });
-    previewButton.dataset.previewJobBound = "true";
-  }
+  initializePreviewButtons({
+    selector: "#preview-button",
+    invalidMessage: "You must fill in all required fields to be able to preview the job.",
+    errorMessage: "Something went wrong previewing the data. Please try again later.",
+  });
 };

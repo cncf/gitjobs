@@ -1,4 +1,5 @@
 import { handleHtmxResponse } from "/static/js/common/alerts.js";
+import { bindHtmxAfterRequestOnce } from "/static/js/common/common.js";
 
 /**
  * Initializes HTMX response handling for a dashboard action button.
@@ -9,25 +10,18 @@ import { handleHtmxResponse } from "/static/js/common/alerts.js";
  * @param {string} params.pushStateUrl - Browser history URL
  */
 export const initializeDashboardActionButton = ({ buttonId, errorMessage, pushStateTitle, pushStateUrl }) => {
-  const actionButton = document.getElementById(buttonId);
-  if (!actionButton) {
-    return;
-  }
-
-  if (actionButton.dataset.dashboardActionBound === "true") {
-    return;
-  }
-
-  actionButton.addEventListener("htmx:afterRequest", (event) => {
-    if (
-      handleHtmxResponse({
-        xhr: event.detail.xhr,
-        errorMessage,
-      })
-    ) {
-      history.pushState({}, pushStateTitle, pushStateUrl);
-    }
+  bindHtmxAfterRequestOnce({
+    selector: `#${buttonId}`,
+    handler: (event) => {
+      if (
+        handleHtmxResponse({
+          xhr: event.detail.xhr,
+          errorMessage,
+        })
+      ) {
+        history.pushState({}, pushStateTitle, pushStateUrl);
+      }
+    },
+    boundAttribute: "dashboardActionBound",
   });
-
-  actionButton.dataset.dashboardActionBound = "true";
 };

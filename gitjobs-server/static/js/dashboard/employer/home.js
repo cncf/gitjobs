@@ -1,4 +1,4 @@
-import { initializeButtonDropdown } from "/static/js/common/common.js";
+import { bindHtmxBeforeRequestOnce, initializeButtonDropdown } from "/static/js/common/common.js";
 import { initializeDashboardActionButton } from "/static/js/dashboard/employer/dashboard-actions.js";
 
 /**
@@ -11,14 +11,10 @@ export const initializeEmployerHome = () => {
     guardKey: "__gitjobsEmployersDropdownBound",
   });
 
-  const dropdownEmployerButtons = document.querySelectorAll("button.employer-button");
-  dropdownEmployerButtons.forEach((button) => {
-    if (button.dataset.employerDropdownBound === "true") {
-      return;
-    }
-
-    button.addEventListener("htmx:beforeRequest", hideEmployersDropdown);
-    button.dataset.employerDropdownBound = "true";
+  bindHtmxBeforeRequestOnce({
+    selector: "button.employer-button",
+    handler: hideEmployersDropdown,
+    boundAttribute: "employerDropdownBound",
   });
 
   initializeDashboardActionButton({

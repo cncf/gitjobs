@@ -1,24 +1,23 @@
 import { handleHtmxResponse, initializePreviewButtons } from "/static/js/common/alerts.js";
-import { initializeModalCloseHandlers, toggleModalVisibility } from "/static/js/common/common.js";
+import {
+  bindHtmxAfterRequestOnce,
+  initializeModalCloseHandlers,
+  toggleModalVisibility,
+} from "/static/js/common/common.js";
 
 /**
  * Initializes moderation actions for approve and reject job workflows.
  */
 export const initializeModeratorJobs = () => {
-  const approveButtons = document.querySelectorAll("[data-approve-job-button]");
-  approveButtons.forEach((button) => {
-    if (button.dataset.approveBound === "true") {
-      return;
-    }
-
-    button.addEventListener("htmx:afterRequest", (event) => {
+  bindHtmxAfterRequestOnce({
+    selector: "[data-approve-job-button]",
+    handler: (event) => {
       handleHtmxResponse({
         xhr: event.detail.xhr,
         errorMessage: "Something went wrong approving this job. Please try again later.",
       });
-    });
-
-    button.dataset.approveBound = "true";
+    },
+    boundAttribute: "approveBound",
   });
 
   const rejectButtons = document.querySelectorAll(".reject-modal");
@@ -42,22 +41,25 @@ export const initializeModeratorJobs = () => {
     button.dataset.rejectOpenBound = "true";
   });
 
-  const rejectJobForm = document.getElementById("reject-job-form");
-  if (rejectJobForm && rejectJobForm.dataset.rejectSubmitBound !== "true") {
-    rejectJobForm.addEventListener("htmx:afterRequest", (event) => {
+  bindHtmxAfterRequestOnce({
+    selector: "#reject-job-form",
+    handler: (event) => {
       if (
         handleHtmxResponse({
           xhr: event.detail.xhr,
           errorMessage: "Something went wrong rejecting this job. Please try again later.",
         })
       ) {
+        const rejectJobForm = event.currentTarget;
+        if (!(rejectJobForm instanceof HTMLFormElement)) {
+          return;
+        }
         rejectJobForm.reset();
         toggleModalVisibility("reject-modal", "close");
       }
-    });
-
-    rejectJobForm.dataset.rejectSubmitBound = "true";
-  }
+    },
+    boundAttribute: "rejectSubmitBound",
+  });
 
   initializeModalCloseHandlers({
     modalId: "reject-modal",

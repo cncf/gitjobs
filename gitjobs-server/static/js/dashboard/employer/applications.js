@@ -1,5 +1,5 @@
 import { initializePreviewButtons } from "/static/js/common/alerts.js";
-import { initializeButtonDropdown } from "/static/js/common/common.js";
+import { bindHtmxBeforeRequestOnce, initializeButtonDropdown } from "/static/js/common/common.js";
 
 /**
  * Initializes employer applications list interactions.
@@ -11,14 +11,10 @@ export const initializeEmployerApplicationsList = () => {
     guardKey: "__gitjobsApplicationsDropdownBound",
   });
 
-  const dropdownJobButtons = document.querySelectorAll("#dropdown-jobs button");
-  dropdownJobButtons.forEach((button) => {
-    if (button.dataset.dropdownJobBound === "true") {
-      return;
-    }
-
-    button.addEventListener("htmx:beforeRequest", hideJobsDropdown);
-    button.dataset.dropdownJobBound = "true";
+  bindHtmxBeforeRequestOnce({
+    selector: "#dropdown-jobs button",
+    handler: hideJobsDropdown,
+    boundAttribute: "dropdownJobBound",
   });
 
   initializePreviewButtons({

@@ -1,29 +1,29 @@
 import { handleHtmxResponse } from "/static/js/common/alerts.js";
+import { bindHtmxAfterRequestOnce } from "/static/js/common/common.js";
 
 /**
  * Initializes HTMX response handling for account update forms.
  */
 export const initializeAccountUpdateForms = () => {
-  const userDetailsForm = document.getElementById("user-details-form");
-  const passwordForm = document.getElementById("password-form");
-
-  if (userDetailsForm && userDetailsForm.dataset.accountDetailsBound !== "true") {
-    userDetailsForm.addEventListener("htmx:afterRequest", (event) => {
+  bindHtmxAfterRequestOnce({
+    selector: "#user-details-form",
+    handler: (event) => {
       handleHtmxResponse({
         xhr: event.detail.xhr,
         errorMessage: "Something went wrong updating the user details. Please try again later.",
       });
-    });
-    userDetailsForm.dataset.accountDetailsBound = "true";
-  }
+    },
+    boundAttribute: "accountDetailsBound",
+  });
 
-  if (passwordForm && passwordForm.dataset.accountPasswordBound !== "true") {
-    passwordForm.addEventListener("htmx:afterRequest", (event) => {
+  bindHtmxAfterRequestOnce({
+    selector: "#password-form",
+    handler: (event) => {
       handleHtmxResponse({
         xhr: event.detail.xhr,
         errorMessage: "Something went wrong updating the password. Please try again later.",
       });
-    });
-    passwordForm.dataset.accountPasswordBound = "true";
-  }
+    },
+    boundAttribute: "accountPasswordBound",
+  });
 };

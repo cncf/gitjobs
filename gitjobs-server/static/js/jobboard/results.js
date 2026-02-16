@@ -1,5 +1,10 @@
 import { handleHtmxResponse } from "/static/js/common/alerts.js";
-import { addParamToQueryString, trackerJobView, trackSearchAppearances } from "/static/js/common/common.js";
+import {
+  addParamToQueryString,
+  bindHtmxAfterRequestOnce,
+  trackerJobView,
+  trackSearchAppearances,
+} from "/static/js/common/common.js";
 import { resetForm, updateResults } from "/static/js/jobboard/filters.js";
 
 /**
@@ -26,20 +31,25 @@ export const initializeJobboardResults = ({
     resetMobileFilters.dataset.resetBound = "true";
   }
 
-  const previewButtons = document.querySelectorAll("[data-preview-job]");
-  previewButtons.forEach((button) => {
-    if (button.dataset.previewBound === "true") {
-      return;
-    }
-
-    button.addEventListener("htmx:afterRequest", (event) => {
+  bindHtmxAfterRequestOnce({
+    selector: "[data-preview-job]",
+    handler: (event) => {
       if (
         handleHtmxResponse({
           xhr: event.detail.xhr,
           errorMessage: unavailableJobMessage,
         })
       ) {
-        const jobId = button.dataset.jobId;
+        const previewButton = event.currentTarget;
+        if (!(previewButton instanceof HTMLElement)) {
+          return;
+        }
+
+        const jobId = previewButton.dataset.jobId;
+        if (!jobId) {
+          return;
+        }
+
         addParamToQueryString("job_id", jobId, { modal_preview: true });
 
         // Register views only on user-triggered open, not history popstate.
@@ -48,9 +58,8 @@ export const initializeJobboardResults = ({
           trackerJobView(jobId);
         }
       }
-    });
-
-    button.dataset.previewBound = "true";
+    },
+    boundAttribute: "previewBound",
   });
 
   if (hasJobs) {

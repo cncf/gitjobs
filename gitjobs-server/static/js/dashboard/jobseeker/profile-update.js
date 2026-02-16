@@ -1,4 +1,5 @@
 import { handleHtmxResponse, initializePreviewButtons } from "/static/js/common/alerts.js";
+import { bindHtmxAfterRequestOnce, bindHtmxBeforeRequestOnce } from "/static/js/common/common.js";
 import { displayActiveSection, validateFormData } from "/static/js/dashboard/jobseeker/form.js";
 import { initializePendingChangesAlert } from "/static/js/dashboard/jobseeker/pending-changes-alert.js";
 
@@ -25,18 +26,19 @@ export const initializeJobSeekerProfileUpdate = () => {
     formIds: ["profile-form", "experience-form", "education-form", "projects-form"],
   });
 
-  const updateButton = document.getElementById("update-profile-button");
-  if (updateButton && updateButton.dataset.profileUpdateBeforeRequestBound !== "true") {
-    updateButton.addEventListener("htmx:beforeRequest", (event) => {
+  bindHtmxBeforeRequestOnce({
+    selector: "#update-profile-button",
+    handler: (event) => {
       if (!validateFormData()) {
         event.preventDefault();
       }
-    });
-    updateButton.dataset.profileUpdateBeforeRequestBound = "true";
-  }
+    },
+    boundAttribute: "profileUpdateBeforeRequestBound",
+  });
 
-  if (updateButton && updateButton.dataset.profileUpdateAfterRequestBound !== "true") {
-    updateButton.addEventListener("htmx:afterRequest", (event) => {
+  bindHtmxAfterRequestOnce({
+    selector: "#update-profile-button",
+    handler: (event) => {
       if (
         handleHtmxResponse({
           xhr: event.detail.xhr,
@@ -46,9 +48,9 @@ export const initializeJobSeekerProfileUpdate = () => {
       ) {
         pendingChangesAlert.markCurrentAsClean();
       }
-    });
-    updateButton.dataset.profileUpdateAfterRequestBound = "true";
-  }
+    },
+    boundAttribute: "profileUpdateAfterRequestBound",
+  });
 
   initializePreviewButtons({
     selector: "#preview-button",

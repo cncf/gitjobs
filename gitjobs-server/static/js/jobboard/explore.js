@@ -7,6 +7,7 @@ import {
   triggerActionOnForm,
 } from "/static/js/jobboard/filters.js";
 import {
+  bindHtmxAfterRequestOnce,
   initializeModalCloseHandlers,
   shouldDisplayJobModal,
   toggleModalVisibility,
@@ -17,6 +18,16 @@ import { copyEmbedCodeToClipboard, renderEmbedCode } from "/static/js/jobboard/j
  * Initializes jobboard explore page controls and modals.
  */
 export const initializeJobboardExplore = () => {
+  bindHtmxAfterRequestOnce({
+    selector: "#desktop-jobs-form, #mobile-jobs-form",
+    handler: () => {
+      if (typeof window.scrollTo === "function") {
+        window.scrollTo({ top: 0, behavior: "auto" });
+      }
+    },
+    boundAttribute: "jobboardFiltersAfterRequestScrollBound",
+  });
+
   const openFiltersButton = document.getElementById("open-filters");
   if (openFiltersButton && openFiltersButton.dataset.boundOpenFilters !== "true") {
     openFiltersButton.addEventListener("click", openFiltersDrawer);

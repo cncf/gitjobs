@@ -298,6 +298,26 @@ input[type="range"]:focus-visible {
 /* End input styles */
 
 
+/* Generic styles */
+
+button:enabled {
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.5;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 0;
+}
+
+/* End generic styles */
+
+
 /* Icons */
 
 .svg-icon {

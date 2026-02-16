@@ -3,7 +3,9 @@ import {
   jobCards,
   jobTitles,
   jobTypeButtons,
+  clickUserMenuItem,
   loginWithCredentials,
+  openEmployerActionsDropdown,
   openLoginPage,
   openSignUpPage,
   openUserMenu,
@@ -225,8 +227,40 @@ test.describe('GitJobs', () => {
 
     await expect(page).toHaveURL(/\/$/);
     await openUserMenu(page);
-    await page.getByRole('link', { name: 'Log out' }).click();
+    await clickUserMenuItem(page, 'Log out');
     await page.waitForURL('**/log-in');
+  });
+
+  test('should close user menu on Escape and restore focus', async ({ page }) => {
+    const userButton = page.locator('#user-dropdown-button');
+    const dropdown = page.locator('#dropdown-user');
+
+    await openUserMenu(page);
+    await expect(dropdown).toBeVisible();
+    await expect(userButton).toHaveAttribute('aria-expanded', 'true');
+    await expect(dropdown).toHaveAttribute('aria-hidden', 'false');
+
+    await page.keyboard.press('Escape');
+
+    await expect(dropdown).toBeHidden();
+    await expect(userButton).toBeFocused();
+    await expect(userButton).toHaveAttribute('aria-expanded', 'false');
+    await expect(dropdown).toHaveAttribute('aria-hidden', 'true');
+  });
+
+  test('should toggle user menu aria state on click', async ({ page }) => {
+    const userButton = page.locator('#user-dropdown-button');
+    const dropdown = page.locator('#dropdown-user');
+
+    await openUserMenu(page);
+    await expect(dropdown).toBeVisible();
+    await expect(userButton).toHaveAttribute('aria-expanded', 'true');
+    await expect(dropdown).toHaveAttribute('aria-hidden', 'false');
+
+    await userButton.click();
+    await expect(dropdown).toBeHidden();
+    await expect(userButton).toHaveAttribute('aria-expanded', 'false');
+    await expect(dropdown).toHaveAttribute('aria-hidden', 'true');
   });
 
   test('invalid credentials stay on log in page', async ({ page }) => {
@@ -281,6 +315,113 @@ test.describe('GitJobs', () => {
     await page.locator('#description').getByRole('application').getByRole('textbox').fill('description');
     await page.getByRole('button', { name: 'Publish' }).click();
     expect(page.url()).toContain('/dashboard/employer');
+  });
+
+  test('should close employer job actions dropdown on Escape', async ({ page }) => {
+    await loginWithCredentials(page, 'test', 'test1234');
+    await page.goto('/dashboard/employer?tab=jobs');
+
+    const actionsDropdown = await openEmployerActionsDropdown(page);
+    if (!actionsDropdown) {
+      console.log('No job action buttons visible, skipping test.');
+      return;
+    }
+
+    const { actionButton, dropdown } = actionsDropdown;
+    await expect(dropdown).toBeVisible();
+    await expect(actionButton).toHaveAttribute('aria-expanded', 'true');
+    await expect(dropdown).toHaveAttribute('aria-hidden', 'false');
+
+    await page.keyboard.press('Escape');
+
+    await expect(dropdown).toBeHidden();
+    await expect(actionButton).toBeFocused();
+    await expect(actionButton).toHaveAttribute('aria-expanded', 'false');
+    await expect(dropdown).toHaveAttribute('aria-hidden', 'true');
+  });
+
+  test('should close employer job actions dropdown after selecting an action', async ({ page }) => {
+    await loginWithCredentials(page, 'test', 'test1234');
+    await page.goto('/dashboard/employer?tab=jobs');
+
+    const actionsDropdown = await openEmployerActionsDropdown(page);
+    if (!actionsDropdown) {
+      console.log('No job action buttons visible, skipping test.');
+      return;
+    }
+
+    const { actionButton, dropdown } = actionsDropdown;
+    await expect(dropdown).toBeVisible();
+
+    const deleteAction = dropdown.locator('[data-delete-job-button]').first();
+    await deleteAction.click();
+
+    await expect(dropdown).toBeHidden();
+    await expect(actionButton).toHaveAttribute('aria-expanded', 'false');
+    await expect(dropdown).toHaveAttribute('aria-hidden', 'true');
+  });
+
+  test('should close employer selector dropdown after choosing an employer', async ({ page }) => {
+    await loginWithCredentials(page, 'test', 'test1234');
+    await page.goto('/dashboard/employer');
+
+    const employerButton = page.locator('#employer-btn');
+    if ((await employerButton.count()) === 0) {
+      console.log('Employer selector button not visible, skipping test.');
+      return;
+    }
+
+    const dropdown = page.locator('#dropdown-employers');
+    await employerButton.click();
+    await expect(dropdown).toBeVisible();
+    await expect(employerButton).toHaveAttribute('aria-expanded', 'true');
+    await expect(dropdown).toHaveAttribute('aria-hidden', 'false');
+
+    const selectableEmployers = dropdown.locator('button.employer-button:not([disabled])');
+    if ((await selectableEmployers.count()) === 0) {
+      console.log('No alternative employer option visible, skipping test.');
+      return;
+    }
+
+    await selectableEmployers.first().click();
+
+    await expect(dropdown).toBeHidden();
+    await expect(employerButton).toHaveAttribute('aria-expanded', 'false');
+    await expect(dropdown).toHaveAttribute('aria-hidden', 'true');
+  });
+
+  test('should close applications jobs dropdown after selecting a filter', async ({ page }) => {
+    await loginWithCredentials(page, 'test', 'test1234');
+    await page.goto('/dashboard/employer?tab=applications');
+
+    const jobsButton = page.locator('#jobs-btn');
+    if ((await jobsButton.count()) === 0) {
+      console.log('Applications jobs filter button not visible, skipping test.');
+      return;
+    }
+
+    if (await jobsButton.isDisabled()) {
+      console.log('Applications jobs filter button disabled, skipping test.');
+      return;
+    }
+
+    const dropdown = page.locator('#dropdown-jobs');
+    await jobsButton.click();
+    await expect(dropdown).toBeVisible();
+    await expect(jobsButton).toHaveAttribute('aria-expanded', 'true');
+    await expect(dropdown).toHaveAttribute('aria-hidden', 'false');
+
+    const selectableFilters = dropdown.locator('button:not([disabled])');
+    if ((await selectableFilters.count()) === 0) {
+      console.log('No selectable jobs filter option visible, skipping test.');
+      return;
+    }
+
+    await selectableFilters.first().click();
+
+    await expect(dropdown).toBeHidden();
+    await expect(jobsButton).toHaveAttribute('aria-expanded', 'false');
+    await expect(dropdown).toHaveAttribute('aria-hidden', 'true');
   });
 
   test('should display job details correctly', async ({ page }) => {

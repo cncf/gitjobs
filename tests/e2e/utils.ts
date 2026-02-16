@@ -23,19 +23,83 @@ export const jobTypeButtons = (page: Page): Locator =>
 export const searchInput = (page: Page): Locator =>
   page.locator('input[placeholder="Search jobs"]');
 
+const userMenuButton = (page: Page): Locator =>
+  page.locator('#user-dropdown-button:visible').first();
+
+const userMenu = async (page: Page): Promise<Locator> => {
+  const button = userMenuButton(page);
+  await button.waitFor({ state: 'visible' });
+
+  const controlledMenuId = await button.getAttribute('aria-controls');
+  if (controlledMenuId) {
+    return page.locator(`#${controlledMenuId}`).first();
+  }
+
+  return page.locator('#dropdown-user, #user-dropdown').first();
+};
+
 export const openUserMenu = async (page: Page): Promise<void> => {
-  await page.locator('#user-dropdown-button').click();
+  const button = userMenuButton(page);
+  const menu = await userMenu(page);
+  if (await menu.isVisible()) {
+    return;
+  }
+
+  await button.click();
+  await menu.waitFor({ state: 'visible' });
+};
+
+export const clickUserMenuItem = async (page: Page, label: string): Promise<void> => {
+  let menu = await userMenu(page);
+  if (!(await menu.isVisible())) {
+    await openUserMenu(page);
+    menu = await userMenu(page);
+  }
+
+  const menuItem = menu.getByRole('menuitem', { name: label, exact: true });
+  if ((await menuItem.count()) > 0) {
+    await menuItem.first().click();
+    return;
+  }
+
+  const linkItem = menu.getByRole('link', { name: label, exact: true });
+  if ((await linkItem.count()) > 0) {
+    await linkItem.first().click();
+    return;
+  }
+
+  await menu.locator(`a:has-text("${label}")`).first().click();
+};
+
+export const openEmployerActionsDropdown = async (
+  page: Page
+): Promise<{ actionButton: Locator; dropdown: Locator; jobId: string } | null> => {
+  const actionButtons = page.locator('.btn-actions');
+  if ((await actionButtons.count()) === 0) {
+    return null;
+  }
+
+  const actionButton = actionButtons.first();
+  const jobId = await actionButton.getAttribute('data-job-id');
+  if (!jobId) {
+    return null;
+  }
+
+  const dropdown = page.locator(`#dropdown-actions-${jobId}`);
+  await actionButton.click();
+
+  return { actionButton, dropdown, jobId };
 };
 
 export const openLoginPage = async (page: Page): Promise<void> => {
   await openUserMenu(page);
-  await page.getByRole('link', { name: 'Log in' }).click();
+  await clickUserMenuItem(page, 'Log in');
   await page.waitForURL('**/log-in');
 };
 
 export const openSignUpPage = async (page: Page): Promise<void> => {
   await openUserMenu(page);
-  await page.getByRole('link', { name: 'Sign up' }).click();
+  await clickUserMenuItem(page, 'Sign up');
   await page.waitForURL('**/sign-up');
 };
 
@@ -44,8 +108,9 @@ export const loginWithCredentials = async (
   username: string,
   password: string
 ): Promise<void> => {
-  await openLoginPage(page);
+  await page.goto('/log-in');
   await page.locator('#username').fill(username);
   await page.locator('#password').fill(password);
   await page.getByRole('button', { name: 'Submit' }).click();
+  await page.waitForURL((url) => url.pathname !== '/log-in');
 };

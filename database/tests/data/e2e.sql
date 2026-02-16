@@ -4,6 +4,9 @@ VALUES ('f39a95c8-9903-4537-8873-2d81bfb86b35', gen_random_bytes(32), '2025-08-2
 INSERT INTO employer (employer_id, company, created_at, description, public)
 VALUES ('18fff2d7-c794-4130-85e4-76b9d7c60b72', 'Test Inc.', '2025-08-25 09:20:05.88454+02', 'test', false);
 
+INSERT INTO employer (employer_id, company, created_at, description, public)
+VALUES ('8e2fe443-0f7c-4fe3-95dc-c4b39b5c4d10', 'Example Labs', '2025-08-25 09:25:05.88454+02', 'second test employer', false);
+
 INSERT INTO member (member_id, foundation, name, level, logo_url)
 VALUES ('ed9e4417-3fb5-4ded-8bb2-d5f4587cc977', 'cncf', 'Test Member', 'gold', 'https://example.com/member-logo.svg');
 
@@ -12,6 +15,9 @@ VALUES ('18fff2d7-c794-4130-85e4-76b9d7c60b72', 'ed9e4417-3fb5-4ded-8bb2-d5f4587
 
 INSERT INTO employer_team (user_id, employer_id, approved)
 VALUES ('f39a95c8-9903-4537-8873-2d81bfb86b35', '18fff2d7-c794-4130-85e4-76b9d7c60b72', true);
+
+INSERT INTO employer_team (user_id, employer_id, approved)
+VALUES ('f39a95c8-9903-4537-8873-2d81bfb86b35', '8e2fe443-0f7c-4fe3-95dc-c4b39b5c4d10', true);
 
 INSERT INTO job (employer_id, title, description, kind, seniority, workplace, status, salary, salary_max_usd_year, salary_currency, salary_period, skills, published_at) VALUES
 ('18fff2d7-c794-4130-85e4-76b9d7c60b72', 'Frontend Developer', 'React expert', 'full-time', 'senior', 'remote', 'published', 120000, 120000, 'USD', 'year', '{"React", "TypeScript", "JavaScript"}', CURRENT_TIMESTAMP),

@@ -101,6 +101,9 @@
     import {
       initializeButtonDropdown
     } from '/static/js/common/common.js';
+    import {
+      handleHtmxResponse
+    } from '/static/js/common/alerts.js';
 
     const hideEmployersDropdown = initializeButtonDropdown({
       buttonId: 'employer-btn',
@@ -115,8 +118,13 @@
 
     const addEmployerButton = document.getElementById('add-employer-button');
     if (addEmployerButton) {
-      addEmployerButton.addEventListener('htmx:afterRequest', () => {
-        history.pushState({}, "Employer", '/dashboard/employer');
+      addEmployerButton.addEventListener('htmx:afterRequest', (e) => {
+        if (handleHtmxResponse({
+            xhr: e.detail.xhr,
+            errorMessage: 'Something went wrong loading the employer form. Please try again later.'
+          })) {
+          history.pushState({}, "Employer", '/dashboard/employer');
+        }
       });
     }
   </script>

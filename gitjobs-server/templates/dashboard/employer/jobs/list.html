@@ -40,10 +40,19 @@
   {# End add job button -#}
 
   <script type="module">
+    import {
+      handleHtmxResponse
+    } from '/static/js/common/alerts.js';
+
     const addJobButton = document.getElementById('add-job-button');
     if (addJobButton) {
-      addJobButton.addEventListener('htmx:afterRequest', () => {
-        history.pushState({}, "Jobs list", '/dashboard/employer?tab=jobs');
+      addJobButton.addEventListener('htmx:afterRequest', (e) => {
+        if (handleHtmxResponse({
+            xhr: e.detail.xhr,
+            errorMessage: 'Something went wrong loading the add job form. Please try again later.'
+          })) {
+          history.pushState({}, "Jobs list", '/dashboard/employer?tab=jobs');
+        }
       });
     }
 

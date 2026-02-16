@@ -15,7 +15,7 @@
          hx-swap="innerHTML show:body:top"
          hx-indicator="#{{ first_spinner_id }}"
          class="group relative overflow-hidden cursor-pointer inline-flex items-center pr-4 pl-3 py-2 text-sm text-primary-500 bg-transparent border border-primary-500 rounded-s-full hover:bg-primary-500 hover:text-white focus:z-10 focus:ring-2 focus:ring-primary-300 focus:bg-primary-500 focus:text-white">
-        <span class="inline-flex items-center">
+        <span class="inline-flex items-center group-[.htmx-request]:invisible">
           <div class="svg-icon me-2 size-5 bg-primary-500 group-hover:bg-white icon-arrow_left_double"></div>
           First
         </span>
@@ -39,7 +39,7 @@
          hx-swap="innerHTML show:body:top"
          hx-indicator="#{{ prev_spinner_id }}"
          class="group relative overflow-hidden cursor-pointer inline-flex items-center pr-4 pl-[0.6rem] py-2 text-sm text-primary-500 bg-transparent border-t border-b border-e border-primary-500 hover:bg-primary-500 hover:text-white focus:z-10 focus:ring-2 focus:ring-primary-300 focus:bg-primary-500 focus:text-white">
-        <span class="inline-flex items-center">
+        <span class="inline-flex items-center group-[.htmx-request]:invisible">
           <div class="svg-icon me-2 size-5 bg-primary-500 group-hover:bg-white icon-arrow_left"></div>
           Prev
         </span>
@@ -63,7 +63,7 @@
          hx-swap="innerHTML show:body:top"
          hx-indicator="#{{ next_spinner_id }}"
          class="group relative overflow-hidden cursor-pointer inline-flex items-center pl-4 pr-[0.6rem] py-2 text-sm text-primary-500 bg-transparent border-t border-b border-s -ml-[1px] border-primary-500 hover:bg-primary-500 hover:text-white focus:z-10 focus:ring-2 focus:ring-primary-300 focus:bg-primary-500 focus:text-white">
-        <span class="inline-flex items-center">
+        <span class="inline-flex items-center group-[.htmx-request]:invisible">
           Next
           <div class="svg-icon ms-2 size-5 bg-primary-500 group-hover:bg-white icon-arrow_right"></div>
         </span>
@@ -87,7 +87,7 @@
          hx-swap="innerHTML show:body:top"
          hx-indicator="#{{ last_spinner_id }}"
          class="group relative overflow-hidden cursor-pointer inline-flex items-center pl-4 pr-3 py-2 text-sm text-primary-500 bg-transparent border border-primary-500 rounded-e-full hover:bg-primary-500 hover:text-white focus:z-10 focus:ring-2 focus:ring-primary-300 focus:bg-primary-500 focus:text-white">
-        <span class="inline-flex items-center">
+        <span class="inline-flex items-center group-[.htmx-request]:invisible">
           Last
           <div class="svg-icon ms-2 size-5 bg-primary-500 group-hover:bg-white icon-arrow_right_double"></div>
         </span>

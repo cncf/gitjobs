@@ -21,17 +21,6 @@
         </div>
       </div>
     </div>
-    <script type="module">
-      import {
-        resetForm
-      } from '/static/js/jobboard/filters.js';
-
-      const resetDesktopFilters = document.getElementById('reset-link-desktop-filters');
-      resetDesktopFilters.addEventListener('click', () => resetForm('desktop-jobs-form'));
-
-      const resetMobileFilters = document.getElementById('reset-link-mobile-filters');
-      resetMobileFilters.addEventListener('click', () => resetForm('mobile-jobs-form'));
-    </script>
     {# End placeholder cards -#}
   {% else -%}
     {# Cards -#}
@@ -63,48 +52,19 @@
 {# djlint:off #}
 <script type="module">
   import {
-    updateResults
-  } from '/static/js/jobboard/filters.js';
-  import {
-    addParamToQueryString,
-    trackerJobView,
-    trackSearchAppearances
-  } from '/static/js/common/common.js';
-  import {
-    handleHtmxResponse,
-  } from '/static/js/common/alerts.js';
-
-  const previewBtns = document.querySelectorAll('[data-preview-job]');
-
-  previewBtns.forEach((btn) => {
-    btn.addEventListener('htmx:afterRequest', (e) => {
-      if (handleHtmxResponse({
-          xhr: e.detail.xhr,
-          errorMessage: 'This job is no longer available. It may have been removed recently.'
-        })) {
-        const job_id =  btn.dataset.jobId
-        addParamToQueryString('job_id',job_id, { modal_preview: true });
-        // Register views for the job on click and open-modal events
-        // This is to avoid registering the view when the modal is opened
-        // from going back in history
-        if (['open-modal', 'click'].includes(e.detail.requestConfig.triggeringEvent.type)) {
-          trackerJobView(job_id);
-        }
-      }
-    });
-  });
+    initializeJobboardResults
+  } from '/static/js/jobboard/results.js';
 
   {% if jobs.len() > 0 -%}
-    updateResults('{{ jobs_macros::current_page(total, jobs.len(), offset) -}}');
-
-    // Track search appearances for all visible jobs
-    const jobButtons = document.querySelectorAll('[data-job-id]');
-    const jobIds = Array.from(jobButtons).map(btn => btn.dataset.jobId);
-    if (jobIds.length > 0) {
-      trackSearchAppearances(jobIds);
-    }
+    initializeJobboardResults({
+      hasJobs: true,
+      currentPageContent: '{{ jobs_macros::current_page(total, jobs.len(), offset) -}}'
+    });
   {% else -%}
-    updateResults('');
+    initializeJobboardResults({
+      hasJobs: false,
+      currentPageContent: ''
+    });
   {% endif -%}
 </script>
 {# djlint:on #}

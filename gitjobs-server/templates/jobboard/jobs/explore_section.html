@@ -178,25 +178,6 @@
               {{ macros::select_option(value = "salary", label = "Salary", selected = selected_sort) -}}
               {{ macros::select_option(value = "upstream-commitment", label = "Upstream Commitment", selected = selected_sort) -}}
             </select>
-            <script type="module">
-              import {
-                triggerActionOnForm
-              } from '/static/js/jobboard/filters.js';
-
-              const sortSelectDesktop = document.getElementById('sort-desktop');
-              if (sortSelectDesktop) {
-                sortSelectDesktop.addEventListener('change', () => {
-                  triggerActionOnForm("desktop-jobs-form", "submit");
-                });
-              }
-
-              const sortSelectMobile = document.getElementById('sort-mobile');
-              if (sortSelectMobile) {
-                sortSelectMobile.addEventListener('change', () => {
-                  triggerActionOnForm("mobile-jobs-form", "submit");
-                });
-              }
-            </script>
           </div>
           {# End sort by -#}
         </div>
@@ -265,121 +246,8 @@
 
 <script type="module">
   import {
-    openFiltersDrawer,
-    closeFiltersDrawer,
-    searchOnEnter,
-    cleanInputField,
-    resetForm,
-    triggerActionOnForm
-  } from '/static/js/jobboard/filters.js';
-  import {
-    shouldDisplayJobModal,
-    toggleModalVisibility
-  } from '/static/js/common/common.js';
-  import {
-    copyEmbedCodeToClipboard,
-    renderEmbedCode
-  } from '/static/js/jobboard/job_section.js';
+    initializeJobboardExplore
+  } from '/static/js/jobboard/explore.js';
 
-  const openFiltersBtn = document.getElementById('open-filters');
-  if (openFiltersBtn) {
-    openFiltersBtn.addEventListener('click', openFiltersDrawer);
-  }
-
-  const closeFiltersBtn = document.getElementById('close-filters');
-  if (closeFiltersBtn) {
-    closeFiltersBtn.addEventListener('click', closeFiltersDrawer);
-  }
-
-  const backdropFilters = document.getElementById('drawer-backdrop');
-  if (backdropFilters) {
-    backdropFilters.addEventListener('click', closeFiltersDrawer);
-  }
-
-  const searchInput = document.getElementById('searchbar');
-  if (searchInput) {
-    searchInput.addEventListener('keydown', () => searchOnEnter(event, 'desktop-jobs-form'));
-  }
-
-  const cleanSearch = document.getElementById('clean-search-jobs');
-  if (cleanSearch) {
-    cleanSearch.addEventListener('click', () => cleanInputField('searchbar', 'desktop-jobs-form'));
-  }
-
-  const searchJobsBtn = document.getElementById('search-jobs-btn');
-  if (searchJobsBtn) {
-    searchJobsBtn.addEventListener('click', () => triggerActionOnForm('desktop-jobs-form', "submit", true));
-  }
-
-  const searchJobsBtnMobile = document.getElementById('search-jobs-btn-mobile');
-  if (searchJobsBtnMobile) {
-    searchJobsBtnMobile.addEventListener('click', () => triggerActionOnForm('mobile-jobs-form', "submit", true));
-  }
-
-  const formItems = document.querySelectorAll("[data-trigger-form]");
-  formItems.forEach((item) => {
-    item.addEventListener("change", (event) => {
-      // If the item is a select element, blur it to trigger the change event
-      if (item.tagName === "SELECT") {
-        item.blur();
-      }
-      const form = item.getAttribute("form");
-      // Trigger the form submit event
-      if (form) {
-        triggerActionOnForm(form, "submit");
-      }
-    });
-  });
-
-  const resetDesktopFilters = document.getElementById('reset-desktop-filters');
-  if (resetDesktopFilters) {
-    resetDesktopFilters.addEventListener('click', () => resetForm('desktop-jobs-form'));
-  }
-
-  const resetMobileFilters = document.getElementById('reset-mobile-filters');
-  if (resetMobileFilters) {
-    resetMobileFilters.addEventListener('click', () => resetForm('mobile-jobs-form'));
-  }
-
-  // Embed buttons
-  const embedButtons = document.querySelectorAll("[data-embed]");
-  embedButtons.forEach((button) => {
-    button.addEventListener("click", (event) => {
-      // Set the embed code in the textarea
-      renderEmbedCode();
-      toggleModalVisibility('embed-modal', "open");
-
-      const device = button.getAttribute("data-device");
-      if (device === "mobile") {
-        // Close the mobile filters drawer
-        closeFiltersDrawer();
-      }
-    });
-  });
-
-  // Copy embed code
-  const copyEmbedCode = document.getElementById('copy-embed-code');
-  if (copyEmbedCode) {
-    copyEmbedCode.addEventListener('click', () => {
-      copyEmbedCodeToClipboard("embed-code");
-    });
-  }
-
-  // Close embed modal
-  const closeEmbedModal = document.getElementById('close-embed-modal');
-  if (closeEmbedModal) {
-    closeEmbedModal.addEventListener('click', () => {
-      toggleModalVisibility('embed-modal', "close");
-    });
-  }
-
-  const backdropEmbedModal = document.getElementById('backdrop-embed-modal');
-  if (backdropEmbedModal) {
-    backdropEmbedModal.addEventListener('click', () => {
-      toggleModalVisibility('embed-modal', "close");
-    });
-  }
-
-  // Display job modal if the job_id is present in the query string
-  shouldDisplayJobModal(true);
+  initializeJobboardExplore();
 </script>

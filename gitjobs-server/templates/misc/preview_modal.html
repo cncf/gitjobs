@@ -26,27 +26,12 @@
   {# djlint:off #}
   <script type="module">
     import {
-      toggleModalVisibility,
-      removeParamFromQueryString
+      initializePreviewModalCloseHandlers
     } from '/static/js/common/common.js';
 
-    const onCloseModal = () => {
-      // Reset the scroll position
-      document.getElementById('preview-content').scrollTop = 0;
-      // Close the preview modal
-      {% if on_close == "clean_job_id_param" -%}
-        removeParamFromQueryString('job_id', { modal_preview: false});
-      {%- endif %}
-      toggleModalVisibility('preview-modal', "close");
-    };
-
-    // Close the preview modal on backdrop click
-    const backdropPreviewModal = document.querySelector('#backdrop-preview-modal');
-    backdropPreviewModal.addEventListener('click', onCloseModal);
-
-    // Close the preview modal on close button click
-    const closePreviewModal = document.querySelector('#close-preview-modal');
-    closePreviewModal.addEventListener('click', onCloseModal);
+    initializePreviewModalCloseHandlers({
+      cleanJobIdParam: {% if on_close == "clean_job_id_param" -%}true{%- else -%}false{%- endif %}
+    });
 </script>
   {# djlint:on #}
 {% endmacro modal -%}

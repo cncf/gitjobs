@@ -1,4 +1,9 @@
 import { handleHtmxResponse, showConfirmAlert, showInfoAlert } from "/static/js/common/alerts.js";
+import {
+  lockBodyScroll,
+  removeParamFromQueryString,
+  toggleModalVisibility,
+} from "/static/js/common/common.js";
 
 /**
  * Initializes the job application button functionality.
@@ -87,4 +92,101 @@ export const copyEmbedCodeToClipboard = (elementId) => {
   navigator.clipboard.writeText(embedCodeElement.textContent);
 
   showSuccessAlert("Embed code copied to clipboard!");
+};
+
+/**
+ * Initializes preview and embed modal interactions for job details.
+ */
+export const initializeJobPreviewModal = () => {
+  const previewModal = document.getElementById("preview-modal");
+  if (
+    previewModal &&
+    previewModal.dataset.open === "true" &&
+    !previewModal.classList.contains("hidden") &&
+    previewModal.dataset.initialScrollLockApplied !== "true"
+  ) {
+    lockBodyScroll();
+    previewModal.dataset.initialScrollLockApplied = "true";
+  }
+
+  const onCloseModal = () => {
+    const previewContent = document.getElementById("preview-content");
+    if (previewContent) {
+      previewContent.scrollTop = 0;
+    }
+
+    if (previewModal) {
+      previewModal.dataset.initialScrollLockApplied = "false";
+    }
+
+    removeParamFromQueryString("job_id", {
+      modal_preview: false,
+    });
+    toggleModalVisibility("preview-modal", "close");
+  };
+
+  const backdropPreviewModal = document.getElementById("backdrop-preview-modal");
+  if (backdropPreviewModal && backdropPreviewModal.dataset.closeBound !== "true") {
+    backdropPreviewModal.addEventListener("click", onCloseModal);
+    backdropPreviewModal.dataset.closeBound = "true";
+  }
+
+  const closePreviewModal = document.getElementById("close-preview-modal");
+  if (closePreviewModal && closePreviewModal.dataset.closeBound !== "true") {
+    closePreviewModal.addEventListener("click", onCloseModal);
+    closePreviewModal.dataset.closeBound = "true";
+  }
+
+  const tabs = document.querySelectorAll(".tab");
+  tabs.forEach((tab) => {
+    if (tab.dataset.tabBound === "true") {
+      return;
+    }
+
+    tab.addEventListener("click", (event) => {
+      const section = event.currentTarget.getAttribute("data-section");
+      const buttons = document.querySelectorAll("#embed-code-modal [data-section]");
+      buttons.forEach((button) => {
+        button.setAttribute("data-active", "false");
+        button.classList.remove("active");
+      });
+      event.currentTarget.setAttribute("data-active", "true");
+      event.currentTarget.classList.add("active");
+
+      const sections = document.querySelectorAll("#embed-code-modal .sections > div");
+      sections.forEach((content) => {
+        if (content.id !== section) {
+          content.classList.add("hidden");
+        } else {
+          content.classList.remove("hidden");
+        }
+      });
+    });
+
+    tab.dataset.tabBound = "true";
+  });
+
+  const embedCodeButton = document.getElementById("embed-code-button");
+  if (embedCodeButton && embedCodeButton.dataset.embedOpenBound !== "true") {
+    embedCodeButton.addEventListener("click", () => {
+      toggleModalVisibility("embed-code-modal", "open");
+    });
+    embedCodeButton.dataset.embedOpenBound = "true";
+  }
+
+  const closeEmbedCodeModal = document.getElementById("close-embed-code-modal");
+  if (closeEmbedCodeModal && closeEmbedCodeModal.dataset.embedCloseBound !== "true") {
+    closeEmbedCodeModal.addEventListener("click", () => {
+      toggleModalVisibility("embed-code-modal", "close");
+    });
+    closeEmbedCodeModal.dataset.embedCloseBound = "true";
+  }
+
+  const embedCodeModalBackdrop = document.getElementById("backdrop-embed-code-modal");
+  if (embedCodeModalBackdrop && embedCodeModalBackdrop.dataset.embedCloseBound !== "true") {
+    embedCodeModalBackdrop.addEventListener("click", () => {
+      toggleModalVisibility("embed-code-modal", "close");
+    });
+    embedCodeModalBackdrop.dataset.embedCloseBound = "true";
+  }
 };

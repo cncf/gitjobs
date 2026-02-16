@@ -32,3 +32,17 @@ export const closeNavigationDrawer = () => {
     backdrop.classList.add("hidden");
   }
 };
+
+/**
+ * Initializes the mobile menu open button click behavior.
+ * @param {string} [buttonId="open-menu-button"] - Open menu button id
+ */
+export const initializeOpenMenuButton = (buttonId = "open-menu-button") => {
+  const openMenuButton = document.getElementById(buttonId);
+  if (!openMenuButton || openMenuButton.dataset.openMenuBound === "true") {
+    return;
+  }
+
+  openMenuButton.addEventListener("click", openNavigationDrawer);
+  openMenuButton.dataset.openMenuBound = "true";
+};

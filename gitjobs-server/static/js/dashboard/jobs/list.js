@@ -1,6 +1,6 @@
 import { getBarStatsOptions, gitjobsChartTheme } from "/static/js/jobboard/stats.js";
 import { prettifyNumber, toggleModalVisibility } from "/static/js/common/common.js";
-import { showErrorAlert, showInfoAlert } from "/static/js/common/alerts.js";
+import { initializeConfirmHtmxButtons, showErrorAlert, showInfoAlert } from "/static/js/common/alerts.js";
 
 /**
  * Shows statistics for a specific job in a modal
@@ -196,4 +196,110 @@ const renderChart = (data, chartId, chartType) => {
 export const registerEchartsTheme = () => {
   // Register the custom GitJobs theme for consistent chart styling
   echarts.registerTheme("gitjobs", gitjobsChartTheme);
+};
+
+/**
+ * Initializes action handlers for the employer jobs table.
+ */
+export const initializeEmployerJobsListTable = () => {
+  const statsButtons = document.querySelectorAll("[data-job-stats-button]");
+  statsButtons.forEach((button) => {
+    if (button.dataset.statsBound === "true") {
+      return;
+    }
+
+    button.addEventListener("click", () => {
+      const jobId = button.dataset.jobId;
+      if (!jobId) {
+        return;
+      }
+
+      const spinnerStats = document.getElementById(`spinner-stats-${jobId}`);
+      if (spinnerStats) {
+        spinnerStats.classList.remove("hidden");
+      }
+
+      showStats(jobId);
+    });
+
+    button.dataset.statsBound = "true";
+  });
+
+  initializeConfirmHtmxButtons({
+    selector: "[data-delete-job-button]",
+    confirmMessage: "Are you sure you wish to delete this job?",
+    successMessage: "You have successfully deleted the job.",
+    errorMessage: "An error occurred deleting this job. Please try again later.",
+  });
+
+  const closeActionsDropdowns = () => {
+    const allActionDropdowns = document.querySelectorAll('[id^="dropdown-actions-"]');
+    allActionDropdowns.forEach((dropdown) => {
+      dropdown.classList.add("hidden");
+    });
+  };
+
+  const actionButtons = document.querySelectorAll(".btn-actions");
+  actionButtons.forEach((actionButton) => {
+    if (actionButton.dataset.actionDropdownBound === "true") {
+      return;
+    }
+
+    actionButton.addEventListener("click", (event) => {
+      event.stopPropagation();
+      const jobId = actionButton.dataset.jobId;
+      const dropdownActions = document.getElementById(`dropdown-actions-${jobId}`);
+      if (!dropdownActions) {
+        return;
+      }
+
+      const shouldOpen = dropdownActions.classList.contains("hidden");
+      closeActionsDropdowns();
+      if (shouldOpen) {
+        dropdownActions.classList.remove("hidden");
+      }
+    });
+
+    actionButton.dataset.actionDropdownBound = "true";
+  });
+
+  if (!document.__gitjobsJobActionsDropdownBound) {
+    document.addEventListener("click", (event) => {
+      const clickedActionButton = event.target.closest(".btn-actions");
+      const clickedActionDropdown = event.target.closest('[id^="dropdown-actions-"]');
+      if (!clickedActionButton && !clickedActionDropdown) {
+        closeActionsDropdowns();
+      }
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        closeActionsDropdowns();
+      }
+    });
+
+    document.__gitjobsJobActionsDropdownBound = true;
+  }
+};
+
+/**
+ * Initializes stats modal controls and chart theme registration.
+ */
+export const initializeEmployerJobsStats = () => {
+  const closeStatsModalButton = document.getElementById("close-stats-modal");
+  if (closeStatsModalButton && closeStatsModalButton.dataset.closeStatsBound !== "true") {
+    closeStatsModalButton.addEventListener("click", closeStats);
+    closeStatsModalButton.dataset.closeStatsBound = "true";
+  }
+
+  const backdropStatsModal = document.getElementById("backdrop-stats-modal");
+  if (backdropStatsModal && backdropStatsModal.dataset.backdropStatsBound !== "true") {
+    backdropStatsModal.addEventListener("click", closeStats);
+    backdropStatsModal.dataset.backdropStatsBound = "true";
+  }
+
+  if (!document.__gitjobsEchartsThemeRegistered) {
+    registerEchartsTheme();
+    document.__gitjobsEchartsThemeRegistered = true;
+  }
 };

@@ -98,6 +98,39 @@ export const toggleModalVisibility = (modalId, status) => {
 };
 
 /**
+ * Initializes preview modal close handlers for backdrop and close button.
+ * @param {Object} [options] - Close behavior options
+ * @param {boolean} [options.cleanJobIdParam=false] - Remove job_id query param
+ */
+export const initializePreviewModalCloseHandlers = ({ cleanJobIdParam = false } = {}) => {
+  const onCloseModal = () => {
+    const previewContent = document.getElementById("preview-content");
+    if (previewContent) {
+      previewContent.scrollTop = 0;
+    }
+
+    if (cleanJobIdParam) {
+      removeParamFromQueryString("job_id", {
+        modal_preview: false,
+      });
+    }
+    toggleModalVisibility("preview-modal", "close");
+  };
+
+  const backdropPreviewModal = document.getElementById("backdrop-preview-modal");
+  if (backdropPreviewModal && backdropPreviewModal.dataset.previewCloseBound !== "true") {
+    backdropPreviewModal.addEventListener("click", onCloseModal);
+    backdropPreviewModal.dataset.previewCloseBound = "true";
+  }
+
+  const closePreviewModal = document.getElementById("close-preview-modal");
+  if (closePreviewModal && closePreviewModal.dataset.previewCloseBound !== "true") {
+    closePreviewModal.addEventListener("click", onCloseModal);
+    closePreviewModal.dataset.previewCloseBound = "true";
+  }
+};
+
+/**
  * Initializes dropdown lifecycle for a button and menu pair.
  * Supports outside-click close, Escape close, and duplicate-listener guards.
  * @param {Object} options - Dropdown initialization options

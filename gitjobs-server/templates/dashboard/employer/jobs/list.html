@@ -242,79 +242,10 @@
 
     <script type="module">
       import {
-        initializeConfirmHtmxButtons
-      } from '/static/js/common/alerts.js';
-      import {
-        showStats
+        initializeEmployerJobsListTable
       } from '/static/js/dashboard/jobs/list.js';
 
-      const statsButtons = document.querySelectorAll('[data-job-stats-button]');
-      statsButtons.forEach((button) => {
-        button.addEventListener('click', () => {
-          const jobId = button.dataset.jobId;
-          if (!jobId) {
-            return;
-          }
-
-          const spinnerStats = document.getElementById(`spinner-stats-${jobId}`);
-          if (spinnerStats) {
-            spinnerStats.classList.remove('hidden');
-          }
-
-          showStats(jobId);
-        });
-      });
-
-      initializeConfirmHtmxButtons({
-        selector: '[data-delete-job-button]',
-        confirmMessage: 'Are you sure you wish to delete this job?',
-        successMessage: 'You have successfully deleted the job.',
-        errorMessage: 'An error occurred deleting this job. Please try again later.'
-      });
-
-      const btnActions = document.querySelectorAll('.btn-actions');
-      const closeActionsDropdowns = () => {
-        const allActionDropdowns = document.querySelectorAll('[id^="dropdown-actions-"]');
-        allActionDropdowns.forEach((dropdown) => {
-          dropdown.classList.add('hidden');
-        });
-      };
-
-      btnActions.forEach((btnAction) => {
-        btnAction.addEventListener('click', (event) => {
-          event.stopPropagation();
-          const jobId = btnAction.dataset.jobId;
-          const dropdownActions = document.getElementById(`dropdown-actions-${jobId}`);
-          if (!dropdownActions) {
-            return;
-          }
-
-          const shouldOpen = dropdownActions.classList.contains('hidden');
-          closeActionsDropdowns();
-          if (shouldOpen) {
-            dropdownActions.classList.remove('hidden');
-          }
-        });
-      });
-
-      // Bind once to avoid duplicate document listeners across HTMX swaps.
-      if (!document.__gitjobsJobActionsDropdownBound) {
-        document.addEventListener('click', (event) => {
-          const clickedActionButton = event.target.closest('.btn-actions');
-          const clickedActionDropdown = event.target.closest('[id^="dropdown-actions-"]');
-          if (!clickedActionButton && !clickedActionDropdown) {
-            closeActionsDropdowns();
-          }
-        });
-
-        document.addEventListener('keydown', (event) => {
-          if (event.key === 'Escape') {
-            closeActionsDropdowns();
-          }
-        });
-
-        document.__gitjobsJobActionsDropdownBound = true;
-      }
+      initializeEmployerJobsListTable();
     </script>
   </table>
 </div>
@@ -378,32 +309,10 @@
 {# End stats modal -#}
 <script type="module">
   import {
-    closeStats,
+    initializeEmployerJobsStats
   } from '/static/js/dashboard/jobs/list.js';
 
-  const closeStatsModalBtn = document.getElementById('close-stats-modal');
-  const backdropStatsModal = document.getElementById('backdrop-stats-modal');
-
-  if (closeStatsModalBtn) {
-    closeStatsModalBtn.addEventListener('click', () => {
-      closeStats();
-    });
-  }
-
-  if (backdropStatsModal) {
-    backdropStatsModal.addEventListener('click', () => {
-      closeStats();
-    });
-  }
-</script>
-
-<script type="module">
-  import {
-    registerEchartsTheme
-  } from '/static/js/dashboard/jobs/list.js';
-
-  // Register the GitJobs theme for ECharts
-  registerEchartsTheme();
+  initializeEmployerJobsStats();
 </script>
 
 {% macro location_content(job) -%}

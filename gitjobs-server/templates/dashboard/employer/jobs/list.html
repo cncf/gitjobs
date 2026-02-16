@@ -242,8 +242,7 @@
 
     <script type="module">
       import {
-        showConfirmAlert,
-        handleHtmxResponse
+        initializeConfirmHtmxButtons
       } from '/static/js/common/alerts.js';
       import {
         showStats
@@ -266,19 +265,11 @@
         });
       });
 
-      const deleteJobButtons = document.querySelectorAll('[data-delete-job-button]');
-      deleteJobButtons.forEach((button) => {
-        button.addEventListener('click', () => {
-          showConfirmAlert("Are you sure you wish to delete this job?", button.id, "Yes");
-        });
-
-        button.addEventListener('htmx:afterRequest', (e) => {
-          handleHtmxResponse({
-            xhr: e.detail.xhr,
-            successMessage: "You have successfully deleted the job.",
-            errorMessage: "An error occurred deleting this job. Please try again later."
-          });
-        });
+      initializeConfirmHtmxButtons({
+        selector: '[data-delete-job-button]',
+        confirmMessage: 'Are you sure you wish to delete this job?',
+        successMessage: 'You have successfully deleted the job.',
+        errorMessage: 'An error occurred deleting this job. Please try again later.'
       });
 
       const btnActions = document.querySelectorAll('.btn-actions');

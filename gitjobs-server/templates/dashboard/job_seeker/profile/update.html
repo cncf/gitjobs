@@ -379,59 +379,8 @@
 
 <script type="module">
   import {
-    handleHtmxResponse,
-    handlePreviewModalResponse
-  } from '/static/js/common/alerts.js';
-  import {
-    displayActiveSection,
-    validateFormData
-  } from '/static/js/dashboard/jobseeker/form.js';
-  import {
-    initializePendingChangesAlert
-  } from '/static/js/dashboard/jobseeker/pending-changes-alert.js';
+    initializeJobSeekerProfileUpdate
+  } from '/static/js/dashboard/jobseeker/profile-update.js';
 
-  const sectionsBtn = document.querySelectorAll('[data-section]');
-  sectionsBtn.forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const section = btn.getAttribute('data-section');
-      displayActiveSection(section);
-    });
-  });
-
-  const pendingChangesAlert = initializePendingChangesAlert({
-    alertId: 'pending-changes-alert',
-    formIds: ['profile-form', 'experience-form', 'education-form', 'projects-form']
-  });
-
-  // On update button click, validate the form
-  const updateBtn = document.getElementById('update-profile-button');
-  if (updateBtn) {
-    updateBtn.addEventListener('htmx:beforeRequest', (e) => {
-      if (!validateFormData()) {
-        e.preventDefault();
-      }
-    });
-
-    updateBtn.addEventListener('htmx:afterRequest', (e) => {
-      if (handleHtmxResponse({
-          xhr: e.detail.xhr,
-          successMessage: 'Profile updated successfully.',
-          errorMessage: 'Something went wrong updating the profile. Please try again later.'
-        })) {
-        pendingChangesAlert.markCurrentAsClean();
-      }
-    });
-  }
-
-  // On preview button click, show the preview modal
-  const previewButton = document.getElementById('preview-button');
-  if (previewButton) {
-    previewButton.addEventListener('htmx:afterRequest', (e) => {
-      handlePreviewModalResponse({
-        xhr: e.detail.xhr,
-        invalidMessage: 'You must fill in all required fields to be able to preview the profile.',
-        errorMessage: 'Something went wrong previewing the data. Please try again later.'
-      });
-    });
-  }
+  initializeJobSeekerProfileUpdate();
 </script>

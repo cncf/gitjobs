@@ -265,63 +265,10 @@
   </div>
   <script type="module">
     import {
-      handleHtmxResponse
-    } from '/static/js/common/alerts.js';
-    import {
-      toggleModalVisibility
-    } from '/static/js/common/common.js';
+      initializeModeratorJobs
+    } from '/static/js/dashboard/moderator/jobs.js';
 
-    const approveButtons = document.querySelectorAll('[data-approve-job-button]');
-    approveButtons.forEach((button) => {
-      button.addEventListener('htmx:afterRequest', (e) => {
-        handleHtmxResponse({
-          xhr: e.detail.xhr,
-          errorMessage: 'Something went wrong approving this job. Please try again later.'
-        });
-      });
-    });
-
-    // On reject button click, show the reject modal
-    const rejectButtons = document.querySelectorAll('.reject-modal');
-    rejectButtons.forEach((button) => {
-      button.addEventListener('click', (e) => {
-        // Get the job ID from the button's data attribute
-        const jobId = e.currentTarget.dataset.jobId;
-        const form = document.getElementById('reject-job-form');
-        // Set job ID in the form action
-        form.setAttribute('hx-put', `/dashboard/moderator/jobs/${jobId}/reject`);
-        htmx.process(form);
-        toggleModalVisibility('reject-modal', "open");
-      });
-    });
-
-    const rejectJobForm = document.getElementById('reject-job-form');
-    if (rejectJobForm) {
-      rejectJobForm.addEventListener('htmx:afterRequest', (e) => {
-        if (handleHtmxResponse({
-            xhr: e.detail.xhr,
-            errorMessage: 'Something went wrong rejecting this job. Please try again later.'
-          })) {
-          rejectJobForm.reset();
-          toggleModalVisibility('reject-modal', "close");
-        }
-      });
-    }
-
-    // Close reject modal
-    const closeRejectModal = document.getElementById('close-reject-modal');
-    if (closeRejectModal) {
-      closeRejectModal.addEventListener('click', () => {
-        toggleModalVisibility('reject-modal', "close");
-      });
-    }
-
-    const rejectModalBackdrop = document.getElementById('backdrop-reject-modal');
-    if (rejectModalBackdrop) {
-      rejectModalBackdrop.addEventListener('click', () => {
-        toggleModalVisibility('reject-modal', "close");
-      });
-    }
+    initializeModeratorJobs();
   </script>
 {% endmacro reject_modal -%}
 

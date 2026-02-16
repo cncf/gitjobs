@@ -201,6 +201,44 @@ export const initializePreviewButtons = ({
 };
 
 /**
+ * Binds buttons to a confirmation dialog and HTMX response handling.
+ * @param {Object} params - Confirm + HTMX binding params
+ * @param {string} params.selector - Button selector
+ * @param {string} params.confirmMessage - Confirmation text
+ * @param {string} params.errorMessage - Error message for failed responses
+ * @param {string} [params.confirmText="Yes"] - Confirmation button label
+ * @param {string} [params.successMessage=""] - Success message for 2xx responses
+ */
+export const initializeConfirmHtmxButtons = ({
+  selector,
+  confirmMessage,
+  errorMessage,
+  confirmText = "Yes",
+  successMessage = "",
+}) => {
+  const actionButtons = document.querySelectorAll(selector);
+  actionButtons.forEach((button) => {
+    if (button.dataset.confirmHtmxBound === "true") {
+      return;
+    }
+
+    button.addEventListener("click", () => {
+      showConfirmAlert(confirmMessage, button.id, confirmText);
+    });
+
+    button.addEventListener("htmx:afterRequest", (event) => {
+      handleHtmxResponse({
+        xhr: event.detail.xhr,
+        successMessage,
+        errorMessage,
+      });
+    });
+
+    button.dataset.confirmHtmxBound = "true";
+  });
+};
+
+/**
  * Displays an informational alert with plain text message.
  * Auto-dismisses after 10 seconds.
  * @param {string} message - The info message to display

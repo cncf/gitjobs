@@ -1,4 +1,4 @@
-import { handleHtmxResponse, showConfirmAlert } from "/static/js/common/alerts.js";
+import { handleHtmxResponse } from "/static/js/common/alerts.js";
 
 /**
  * Initializes HTMX response handling for a dashboard action button.
@@ -30,42 +30,4 @@ export const initializeDashboardActionButton = ({ buttonId, errorMessage, pushSt
   });
 
   actionButton.dataset.dashboardActionBound = "true";
-};
-
-/**
- * Initializes confirm + HTMX response handling for action buttons.
- * @param {Object} params - Initialization options
- * @param {string} params.selector - Selector for action buttons
- * @param {string} params.confirmMessage - Confirmation alert message
- * @param {string} params.errorMessage - Error message for failed requests
- * @param {string} [params.confirmText="Yes"] - Confirm button text
- * @param {string} [params.successMessage=""] - Success message for requests
- */
-export const initializeConfirmHtmxButtons = ({
-  selector,
-  confirmMessage,
-  errorMessage,
-  confirmText = "Yes",
-  successMessage = "",
-}) => {
-  const actionButtons = document.querySelectorAll(selector);
-  actionButtons.forEach((button) => {
-    if (button.dataset.confirmHtmxBound === "true") {
-      return;
-    }
-
-    button.addEventListener("click", () => {
-      showConfirmAlert(confirmMessage, button.id, confirmText);
-    });
-
-    button.addEventListener("htmx:afterRequest", (event) => {
-      handleHtmxResponse({
-        xhr: event.detail.xhr,
-        successMessage,
-        errorMessage,
-      });
-    });
-
-    button.dataset.confirmHtmxBound = "true";
-  });
 };

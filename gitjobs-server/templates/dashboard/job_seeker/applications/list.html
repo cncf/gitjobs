@@ -96,8 +96,7 @@
 
 <script type="module">
   import {
-    showConfirmAlert,
-    handleHtmxResponse,
+    initializeConfirmHtmxButtons,
     initializePreviewButtons,
   } from '/static/js/common/alerts.js';
 
@@ -105,19 +104,11 @@
     errorMessage: 'Something went wrong previewing the data. Please try again later.'
   });
 
-  const cancelApplicationButtons = document.querySelectorAll('[data-cancel-application-button]');
-  cancelApplicationButtons.forEach((button) => {
-    button.addEventListener('click', () => {
-      showConfirmAlert("Are you sure you wish to cancel this application?", button.id, "Yes");
-    });
-
-    button.addEventListener('htmx:afterRequest', (e) => {
-      handleHtmxResponse({
-        xhr: e.detail.xhr,
-        successMessage: "You have successfully canceled the application.",
-        errorMessage: "An error occurred canceling this application. Please try again later."
-      });
-    });
+  initializeConfirmHtmxButtons({
+    selector: '[data-cancel-application-button]',
+    confirmMessage: 'Are you sure you wish to cancel this application?',
+    successMessage: 'You have successfully canceled the application.',
+    errorMessage: 'An error occurred canceling this application. Please try again later.'
   });
 </script>
 

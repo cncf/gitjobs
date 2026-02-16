@@ -1,6 +1,7 @@
 import {
   handleHtmxResponse,
   showConfirmAlert,
+  showErrorAlert,
   showInfoAlert,
   showSuccessAlert,
 } from "/static/js/common/alerts.js";
@@ -11,6 +12,28 @@ import {
   toggleModalVisibility,
 } from "/static/js/common/common.js";
 import { shareJob } from "/static/js/jobboard/share.js";
+
+/**
+ * Copies text to clipboard using Clipboard API with a textarea fallback.
+ * @param {string} content - Text content to copy
+ * @returns {Promise<void>} Resolves when content is copied
+ */
+const copyToClipboard = async (content) => {
+  if (navigator.clipboard?.writeText) {
+    await navigator.clipboard.writeText(content);
+    return;
+  }
+
+  const temporaryInput = document.createElement("textarea");
+  temporaryInput.value = content;
+  temporaryInput.setAttribute("readonly", "");
+  temporaryInput.style.position = "absolute";
+  temporaryInput.style.left = "-9999px";
+  document.body.appendChild(temporaryInput);
+  temporaryInput.select();
+  document.execCommand("copy");
+  document.body.removeChild(temporaryInput);
+};
 
 /**
  * Initializes the job application button functionality.
@@ -45,7 +68,7 @@ export const initializeApplyButton = (root = document) => {
     if (applyUrl !== "") {
       // Open external link in a new tab
       applyButton.addEventListener("click", () => {
-        window.open(applyUrl, "_blank");
+        window.open(applyUrl, "_blank", "noopener,noreferrer");
       });
     } else {
       if (hasProfile === "false") {
@@ -61,7 +84,7 @@ export const initializeApplyButton = (root = document) => {
         applyButton.setAttribute("hx-trigger", "confirmed");
         htmx.process(applyButton);
         applyButton.addEventListener("click", () => {
-          showConfirmAlert("Are you sure you want to apply to this job?", "apply-button", "Yes");
+          showConfirmAlert("Are you sure you want to apply to this job?", applyButton.id, "Yes");
         });
 
         applyButton.addEventListener("htmx:afterRequest", (e) => {
@@ -100,12 +123,18 @@ export const renderEmbedCode = () => {
  * Copies embed code to clipboard and shows success message.
  * @param {string} elementId - ID of element containing embed code
  */
-export const copyEmbedCodeToClipboard = (elementId) => {
+export const copyEmbedCodeToClipboard = async (elementId) => {
   const embedCodeElement = document.getElementById(elementId);
+  if (!embedCodeElement) {
+    return;
+  }
 
-  navigator.clipboard.writeText(embedCodeElement.textContent);
-
-  showSuccessAlert("Embed code copied to clipboard!");
+  try {
+    await copyToClipboard(embedCodeElement.textContent);
+    showSuccessAlert("Embed code copied to clipboard!");
+  } catch (error) {
+    showErrorAlert("Something went wrong copying the embed code. Please try again later.");
+  }
 };
 
 /**
@@ -192,9 +221,14 @@ export const initializeJobPreviewModal = () => {
       return;
     }
 
-    copyButton.addEventListener("click", () => {
+    copyButton.addEventListener("click", async () => {
       const content = copyButton.dataset.copyContent || "";
-      navigator.clipboard.writeText(content);
+      try {
+        await copyToClipboard(content);
+      } catch (error) {
+        showErrorAlert("Something went wrong copying the code. Please try again later.");
+        return;
+      }
 
       const tooltipId = copyButton.dataset.tooltipId;
       if (!tooltipId) {

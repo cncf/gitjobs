@@ -35,6 +35,7 @@ export const initializeJobboardExplore = () => {
   }
 
   initializeModalCloseHandlers({
+    modalId: "drawer-filters",
     triggerIds: ["close-filters", "drawer-backdrop"],
     closeHandler: closeFiltersDrawer,
   });

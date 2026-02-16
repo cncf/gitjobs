@@ -41,6 +41,7 @@ export const initializeCloseMenuControls = ({
   backdropId = "drawer-backdrop",
 } = {}) => {
   initializeModalCloseHandlers({
+    modalId: "drawer-menu",
     triggerIds: [closeButtonId, backdropId],
     closeHandler: closeNavigationDrawer,
   });

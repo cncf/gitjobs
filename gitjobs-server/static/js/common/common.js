@@ -254,6 +254,18 @@ export const initializeModalCloseHandlers = ({
     return;
   }
 
+  const isModalOpen = (modalElement) => {
+    if (!modalElement) {
+      return false;
+    }
+
+    if (modalElement.dataset.open === "true") {
+      return true;
+    }
+
+    return !modalElement.classList.contains("hidden");
+  };
+
   const closeModal = () => {
     if (typeof onClose === "function") {
       onClose();
@@ -288,7 +300,7 @@ export const initializeModalCloseHandlers = ({
         }
 
         const modal = document.getElementById(modalId);
-        if (!modal || modal.classList.contains("hidden")) {
+        if (!isModalOpen(modal)) {
           return;
         }
 

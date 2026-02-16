@@ -325,9 +325,15 @@ export const initializePreviewModalCloseHandlers = ({ cleanJobIdParam = false, o
  * @param {string} options.buttonId - Trigger button element id
  * @param {string} options.dropdownId - Dropdown menu element id
  * @param {string} options.guardKey - Document key used to bind global listeners once
+ * @param {string} [options.closeOnItemClickSelector] - Optional selector to close on item click
  * @returns {Function} Function that closes the dropdown
  */
-export const initializeButtonDropdown = ({ buttonId, dropdownId, guardKey }) => {
+export const initializeButtonDropdown = ({
+  buttonId,
+  dropdownId,
+  guardKey,
+  closeOnItemClickSelector = "",
+}) => {
   const hideDropdown = () => {
     const currentButton = document.getElementById(buttonId);
     const currentDropdown = document.getElementById(dropdownId);
@@ -336,6 +342,7 @@ export const initializeButtonDropdown = ({ buttonId, dropdownId, guardKey }) => 
     }
 
     currentDropdown.classList.add("hidden");
+    currentDropdown.setAttribute("aria-hidden", "true");
     if (currentButton) {
       currentButton.setAttribute("aria-expanded", "false");
     }
@@ -345,14 +352,55 @@ export const initializeButtonDropdown = ({ buttonId, dropdownId, guardKey }) => 
   const dropdown = document.getElementById(dropdownId);
   const buttonGuardKey = `__gitjobsDropdownTriggerBound:${buttonId}:${dropdownId}`;
   if (button && dropdown && button[buttonGuardKey] !== true) {
+    dropdown.setAttribute("aria-hidden", dropdown.classList.contains("hidden") ? "true" : "false");
+
     button.addEventListener("click", (event) => {
       event.stopPropagation();
-      const willOpen = dropdown.classList.contains("hidden");
-      dropdown.classList.toggle("hidden");
-      button.setAttribute("aria-expanded", willOpen ? "true" : "false");
+      const currentButton = document.getElementById(buttonId);
+      const currentDropdown = document.getElementById(dropdownId);
+      if (!currentButton || !currentDropdown) {
+        return;
+      }
+
+      const willOpen = currentDropdown.classList.contains("hidden");
+      if (willOpen) {
+        currentDropdown.classList.remove("hidden");
+        currentDropdown.setAttribute("aria-hidden", "false");
+      } else {
+        currentDropdown.classList.add("hidden");
+        currentDropdown.setAttribute("aria-hidden", "true");
+      }
+      currentButton.setAttribute("aria-expanded", willOpen ? "true" : "false");
     });
 
     button[buttonGuardKey] = true;
+  }
+
+  const closeOnItemGuardKey = `__gitjobsDropdownCloseOnItemBound:${buttonId}:${dropdownId}`;
+  if (closeOnItemClickSelector && !document[closeOnItemGuardKey]) {
+    document.addEventListener(
+      "click",
+      (event) => {
+        const currentDropdown = document.getElementById(dropdownId);
+        if (!currentDropdown || currentDropdown.classList.contains("hidden")) {
+          return;
+        }
+
+        const actionItem = event.target.closest(closeOnItemClickSelector);
+        if (!actionItem || !currentDropdown.contains(actionItem)) {
+          return;
+        }
+
+        if (actionItem.querySelector(".hx-spinner")) {
+          return;
+        }
+
+        hideDropdown();
+      },
+      true,
+    );
+
+    document[closeOnItemGuardKey] = true;
   }
 
   if (guardKey && !document[guardKey]) {

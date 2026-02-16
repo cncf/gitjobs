@@ -248,6 +248,7 @@ export const initializeEmployerJobsListTable = () => {
     const allActionDropdowns = document.querySelectorAll('[id^="dropdown-actions-"]');
     allActionDropdowns.forEach((dropdown) => {
       dropdown.classList.add("hidden");
+      dropdown.setAttribute("aria-hidden", "true");
       const jobId = dropdown.id.replace("dropdown-actions-", "");
       const actionButton = document.querySelector(`.btn-actions[data-job-id="${jobId}"]`);
       if (actionButton) {
@@ -274,6 +275,7 @@ export const initializeEmployerJobsListTable = () => {
       closeActionsDropdowns();
       if (shouldOpen) {
         dropdownActions.classList.remove("hidden");
+        dropdownActions.setAttribute("aria-hidden", "false");
         actionButton.setAttribute("aria-expanded", "true");
       }
     });
@@ -314,7 +316,13 @@ export const initializeEmployerJobsListTable = () => {
 
     document.addEventListener("keydown", (event) => {
       if (event.key === "Escape") {
+        const visibleDropdown = document.querySelector('[id^="dropdown-actions-"]:not(.hidden)');
+        const jobId = visibleDropdown?.id?.replace("dropdown-actions-", "");
         closeActionsDropdowns();
+        if (jobId) {
+          const actionButton = document.querySelector(`.btn-actions[data-job-id="${jobId}"]`);
+          actionButton?.focus();
+        }
       }
     });
 

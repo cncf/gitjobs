@@ -7,6 +7,7 @@ import {
 } from "/static/js/common/alerts.js";
 import {
   copyToClipboard,
+  ensureElementId,
   initializeModalCloseHandlers,
   initializePreviewModalCloseHandlers,
   lockBodyScroll,
@@ -24,6 +25,12 @@ export const initializeApplyButton = (root = document) => {
   if (!applyButton || applyButton.dataset.applyBound === "true") {
     return;
   }
+
+  ensureElementId({
+    element: applyButton,
+    prefix: "gitjobs-apply-button",
+    counterKey: "__gitjobsApplyButtonCounter",
+  });
 
   const applyUrl = applyButton.dataset.applyUrl;
   const userButton = document.getElementById("user-dropdown-button");

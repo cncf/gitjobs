@@ -1,4 +1,5 @@
 import { showConfirmAlert } from "/static/js/common/alerts.js";
+import { ensureElementId } from "/static/js/common/common.js";
 
 /**
  * Serializes a form field value for deterministic snapshot comparisons.
@@ -141,6 +142,12 @@ export const initializePendingChangesAlert = ({
   }
 
   if (cancelButton && confirmMessage) {
+    ensureElementId({
+      element: cancelButton,
+      prefix: "gitjobs-pending-changes-cancel-button",
+      counterKey: "__gitjobsPendingChangesCancelButtonCounter",
+    });
+
     if (cancelButton.dataset.pendingChangesCancelBound !== "true") {
       cancelButton.addEventListener("click", (event) => {
         if (!hasPendingChanges) {

@@ -92,6 +92,31 @@ export const copyToClipboard = async (content) => {
 };
 
 /**
+ * Ensures a DOM element has an id by generating one when missing.
+ * @param {Object} options - Id generation options
+ * @param {HTMLElement} options.element - Element that needs an id
+ * @param {string} options.prefix - Prefix for generated ids
+ * @param {string} options.counterKey - Document key storing the incrementing counter
+ * @returns {string} Existing or generated element id
+ */
+export const ensureElementId = ({ element, prefix, counterKey }) => {
+  if (!element) {
+    return "";
+  }
+
+  if (element.id) {
+    return element.id;
+  }
+
+  const currentCounter = Number.parseInt(document[counterKey] || "0", 10);
+  const nextCounter = Number.isNaN(currentCounter) ? 1 : currentCounter + 1;
+  document[counterKey] = String(nextCounter);
+  element.id = `${prefix}-${nextCounter}`;
+
+  return element.id;
+};
+
+/**
  * Checks whether an element is fully visible in the viewport.
  * @param {HTMLElement} element - Element to check
  * @returns {boolean} True if element is fully visible

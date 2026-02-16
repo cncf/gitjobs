@@ -1,4 +1,4 @@
-import { scrollToDashboardTop, toggleModalVisibility } from "/static/js/common/common.js";
+import { ensureElementId, scrollToDashboardTop, toggleModalVisibility } from "/static/js/common/common.js";
 
 /**
  * Returns common configuration options for all alert dialogs.
@@ -229,12 +229,11 @@ export const initializeConfirmHtmxButtons = ({
       return;
     }
 
-    if (!button.id) {
-      const currentCounter = Number.parseInt(document.__gitjobsConfirmButtonCounter || "0", 10);
-      const nextCounter = Number.isNaN(currentCounter) ? 1 : currentCounter + 1;
-      document.__gitjobsConfirmButtonCounter = String(nextCounter);
-      button.id = `gitjobs-confirm-button-${nextCounter}`;
-    }
+    ensureElementId({
+      element: button,
+      prefix: "gitjobs-confirm-button",
+      counterKey: "__gitjobsConfirmButtonCounter",
+    });
 
     button.addEventListener("click", () => {
       showConfirmAlert(confirmMessage, button.id, confirmText, cancelText, confirmWithHtml);

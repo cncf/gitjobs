@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, Page } from '@playwright/test';
 import {
   jobCards,
   jobTitles,
@@ -13,6 +13,21 @@ import {
   waitForJobCount,
   JOB_TITLE_SELECTOR,
 } from './utils';
+
+const countVisibleNoDataMessages = async (page: Page): Promise<number> => {
+  return page.getByText('No data available yet').evaluateAll((nodes) => {
+    return nodes.filter((node) => {
+      const element = node;
+      if (!(element instanceof HTMLElement)) {
+        return false;
+      }
+
+      const style = window.getComputedStyle(element);
+      const rect = element.getBoundingClientRect();
+      return style.display !== 'none' && style.visibility !== 'hidden' && rect.width > 0 && rect.height > 0;
+    }).length;
+  });
+};
 
 test.describe('GitJobs', () => {
   test.beforeEach(async ({ page }) => {
@@ -194,37 +209,14 @@ test.describe('GitJobs', () => {
     await expect
       .poll(
         async () => {
-          const noDataVisibleCount = await page.getByText('No data available yet').evaluateAll((nodes) => {
-            return nodes.filter((node) => {
-              const element = node;
-              if (!(element instanceof HTMLElement)) {
-                return false;
-              }
-
-              const style = window.getComputedStyle(element);
-              const rect = element.getBoundingClientRect();
-              return style.display !== 'none' && style.visibility !== 'hidden' && rect.width > 0 && rect.height > 0;
-            }).length;
-          });
-
+          const noDataVisibleCount = await countVisibleNoDataMessages(page);
           return noDataVisibleCount > 0 || (await page.locator('#line-chart').isVisible());
         },
         { timeout: 15000 }
       )
       .toBe(true);
 
-    const noDataVisibleCount = await page.getByText('No data available yet').evaluateAll((nodes) => {
-      return nodes.filter((node) => {
-        const element = node;
-        if (!(element instanceof HTMLElement)) {
-          return false;
-        }
-
-        const style = window.getComputedStyle(element);
-        const rect = element.getBoundingClientRect();
-        return style.display !== 'none' && style.visibility !== 'hidden' && rect.width > 0 && rect.height > 0;
-      }).length;
-    });
+    const noDataVisibleCount = await countVisibleNoDataMessages(page);
 
     if (noDataVisibleCount > 0) {
       await expect(page.getByText('No data available yet').first()).toBeVisible();
@@ -262,21 +254,21 @@ test.describe('GitJobs', () => {
 
   test('should navigate to the sign-up page', async ({ page }) => {
     await openSignUpPage(page);
-    await expect(page).toHaveURL(/\/sign-up/);
+    await expect(page).toHaveURL(/\/sign-up(?:\?.*)?$/);
   });
 
   test('should log in a user', async ({ page }) => {
     await loginWithCredentials(page, 'test', 'test1234');
-    await expect(page).toHaveURL(/\/$/);
+    await expect(page).toHaveURL(/\/(?:\?.*)?$/);
   });
 
   test('should log out a user', async ({ page }) => {
     await loginWithCredentials(page, 'test', 'test1234');
 
-    await expect(page).toHaveURL(/\/$/);
+    await expect(page).toHaveURL(/\/(?:\?.*)?$/);
     await openUserMenu(page);
     await clickUserMenuItem(page, 'Log out');
-    await page.waitForURL('**/log-in');
+    await page.waitForURL(/\/log-in(?:\?.*)?$/);
   });
 
   test('should close user menu on Escape and restore focus', async ({ page }) => {

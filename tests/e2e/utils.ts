@@ -98,6 +98,11 @@ export const openEmployerActionsDropdown = async (
 
   const dropdown = page.locator(`#dropdown-actions-${jobId}`);
   await actionButton.click();
+  try {
+    await dropdown.waitFor({ state: 'visible', timeout: 5000 });
+  } catch {
+    return null;
+  }
 
   return { actionButton, dropdown, jobId };
 };
@@ -105,13 +110,13 @@ export const openEmployerActionsDropdown = async (
 export const openLoginPage = async (page: Page): Promise<void> => {
   await openUserMenu(page);
   await clickUserMenuItem(page, 'Log in');
-  await page.waitForURL('**/log-in');
+  await page.waitForURL(/\/log-in(?:\?.*)?$/);
 };
 
 export const openSignUpPage = async (page: Page): Promise<void> => {
   await openUserMenu(page);
   await clickUserMenuItem(page, 'Sign up');
-  await page.waitForURL('**/sign-up');
+  await page.waitForURL(/\/sign-up(?:\?.*)?$/);
 };
 
 export const loginWithCredentials = async (

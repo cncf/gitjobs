@@ -89,6 +89,32 @@ const ensureDocumentHandlers = () => {
   documentHandlersBound = true;
 };
 
+const shouldResetDashboardScroll = (event) => {
+  if (!event) {
+    return false;
+  }
+
+  const swapTarget = event.detail?.target || event.target;
+  if (!swapTarget) {
+    return false;
+  }
+
+  const path = window.location?.pathname || "";
+  if (!path.startsWith("/dashboard/")) {
+    return false;
+  }
+
+  return swapTarget === document.body || swapTarget.id === "dashboard-content";
+};
+
+const scrollToTopOnDashboardSwap = (event) => {
+  if (!shouldResetDashboardScroll(event) || typeof window.scrollTo !== "function") {
+    return;
+  }
+
+  window.scrollTo({ top: 0, behavior: "auto" });
+};
+
 const bindLifecycleListeners = () => {
   if (lifecycleListenersBound) {
     return;
@@ -96,6 +122,7 @@ const bindLifecycleListeners = () => {
 
   document.addEventListener("htmx:historyRestore", initUserDropdown);
   document.addEventListener("htmx:afterSwap", initUserDropdown);
+  document.addEventListener("htmx:afterSwap", scrollToTopOnDashboardSwap);
   window.addEventListener("pageshow", () => initUserDropdown());
 
   lifecycleListenersBound = true;

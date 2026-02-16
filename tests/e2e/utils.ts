@@ -39,19 +39,30 @@ const userMenu = async (page: Page): Promise<Locator> => {
 };
 
 export const openUserMenu = async (page: Page): Promise<void> => {
-  for (let attempt = 0; attempt < 2; attempt++) {
+  for (let attempt = 0; attempt < 3; attempt++) {
     const button = userMenuButton(page);
     const menu = await userMenu(page);
     if (await menu.isVisible()) {
-      return;
+      const hasVisibleItems = (await menu
+        .locator('[role="menuitem"], a, button:not([disabled])')
+        .filter({ visible: true })
+        .count()) > 0;
+      if (hasVisibleItems) {
+        return;
+      }
     }
 
     await button.click();
     try {
       await menu.waitFor({ state: 'visible', timeout: 3000 });
+      await menu
+        .locator('[role="menuitem"], a, button:not([disabled])')
+        .filter({ visible: true })
+        .first()
+        .waitFor({ state: 'visible', timeout: 3000 });
       return;
     } catch {
-      if (attempt === 1) {
+      if (attempt === 2) {
         throw new Error('Failed to open user menu.');
       }
     }
@@ -65,19 +76,19 @@ export const clickUserMenuItem = async (page: Page, label: string): Promise<void
     menu = await userMenu(page);
   }
 
-  const menuItem = menu.getByRole('menuitem', { name: label, exact: true });
-  if ((await menuItem.count()) > 0) {
-    await menuItem.first().click();
+  const visibleMenuItem = menu.getByRole('menuitem', { name: label, exact: true }).filter({ visible: true });
+  if ((await visibleMenuItem.count()) > 0) {
+    await visibleMenuItem.first().click();
     return;
   }
 
-  const linkItem = menu.getByRole('link', { name: label, exact: true });
-  if ((await linkItem.count()) > 0) {
-    await linkItem.first().click();
+  const visibleLinkItem = menu.getByRole('link', { name: label, exact: true }).filter({ visible: true });
+  if ((await visibleLinkItem.count()) > 0) {
+    await visibleLinkItem.first().click();
     return;
   }
 
-  await menu.locator(`a:has-text("${label}")`).first().click();
+  await menu.locator(`a:has-text("${label}")`).filter({ visible: true }).first().click();
 };
 
 export const openEmployerActionsDropdown = async (

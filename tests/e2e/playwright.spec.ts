@@ -366,10 +366,7 @@ test.describe('GitJobs', () => {
     await page.goto('/dashboard/employer');
 
     const employerButton = page.locator('#employer-btn');
-    if ((await employerButton.count()) === 0) {
-      console.log('Employer selector button not visible, skipping test.');
-      return;
-    }
+    await expect(employerButton).toHaveCount(1);
 
     const dropdown = page.locator('#dropdown-employers');
     await employerButton.click();
@@ -378,10 +375,7 @@ test.describe('GitJobs', () => {
     await expect(dropdown).toHaveAttribute('aria-hidden', 'false');
 
     const selectableEmployers = dropdown.locator('button.employer-button:not([disabled])');
-    if ((await selectableEmployers.count()) === 0) {
-      console.log('No alternative employer option visible, skipping test.');
-      return;
-    }
+    expect(await selectableEmployers.count()).toBeGreaterThan(0);
 
     await selectableEmployers.first().click();
 

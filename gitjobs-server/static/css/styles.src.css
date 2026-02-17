@@ -757,6 +757,21 @@ textarea:focus-visible {
   display: none;
 }
 
+/* Disabled state */
+textarea:disabled + .EasyMDEContainer {
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+textarea:disabled + .EasyMDEContainer .CodeMirror {
+  background-color: var(--color-stone-100);
+  color: var(--color-stone-500);
+}
+
+textarea:disabled + .EasyMDEContainer .editor-toolbar button {
+  color: var(--color-stone-500);
+}
+
 /* End EasyMD Editor */
 
 

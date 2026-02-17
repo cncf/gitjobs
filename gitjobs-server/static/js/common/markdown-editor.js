@@ -88,6 +88,7 @@ export class MarkdownEditor extends LitWrapper {
       <div class="relative text-sm/6 ${this.mini ? "mini" : ""}">
         <textarea
           ${ref(this.textareaRef)}
+          id=${this.id}
           name=${this.name || this.id}
           class="absolute top-0 left-0 opacity-0 p-0"
           ?required=${this.required}

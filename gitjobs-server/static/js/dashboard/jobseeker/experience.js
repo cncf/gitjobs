@@ -293,7 +293,9 @@ class ExperienceRecord extends LitWrapper {
         </div>
 
         <div class="col-span-full">
-          <label for="summary" class="form-label"> Description <span class="asterisk">*</span> </label>
+          <label for="experience[${this.index}][description]" class="form-label">
+            Description <span class="asterisk">*</span>
+          </label>
           <div class="mt-2">
             <markdown-editor
               id="experience[${this.index}][description]"

@@ -18,12 +18,11 @@
         <tr class="bg-white border-b border-stone-200">
           {# No applications -#}
           <td class="px-8 py-20 text-center" colspan="3">
-            <div class="text-xl lg:text-2xl mb-10">
-              <div>You have not applied yet to any jobs within GitJobs.</div>
-            </div>
-            <p class="text-stone-700 mb-10">
-              Please note that jobs that use an external apply url won't be displayed here.
-            </p>
+            {{ ui::empty_state_alert(title = "You have not applied yet to any jobs within GitJobs.",
+                        description = "Please note that jobs that use an external apply url won't be displayed here.",
+                        wrapper_styles = "p-0 border-0 bg-transparent",
+                        title_styles = "text-xl lg:text-2xl mb-10",
+                        description_styles = "text-stone-700 mb-10") -}}
           </td>
         </tr>
       {% else -%}

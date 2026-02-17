@@ -91,10 +91,11 @@
       {% if filters_options.jobs.is_empty() -%}
         <tr class="bg-white border-b border-stone-200">
           <td class="px-8 py-20 text-center" colspan="3">
-            <div class="text-xl lg:text-2xl mb-10">It looks like you have not posted any job yet.</div>
-            <p class="text-lg lg:text-xl text-stone-700 mb-10">
-              Once you do, you will be able to explore the applications received within GitJobs here.
-            </p>
+            {{ ui::empty_state_alert(title = "It looks like you have not posted any job yet.",
+                        description = "Once you do, you will be able to explore the applications received within GitJobs here.",
+                        wrapper_styles = "p-0 border-0 bg-transparent",
+                        title_styles = "text-xl lg:text-2xl mb-10",
+                        description_styles = "text-lg lg:text-xl text-stone-700 mb-10") -}}
             <p class="text-stone-700">
               Please note that applicants for externally tracked job opportunities (e.g. when you use an external apply url in your postings) won't appear here.
             </p>
@@ -105,14 +106,19 @@
           <tr class="bg-white border-b border-stone-200">
             {# No applications -#}
             <td class="px-8 py-20 text-center" colspan="3">
-              <div class="text-xl lg:text-2xl mb-10">
-                {% if filters.job_id.is_none() -%}
-                  <div>It looks like no one has applied yet to any of the jobs you have posted.</div>
-                {% else -%}
-                  <div>It looks like no one has applied yet to this job.</div>
-                {% endif -%}
-              </div>
-              <p class="text-lg lg:text-xl text-stone-700 mb-10">Hold on a bit, they will start applying soon :)</p>
+              {% if filters.job_id.is_none() -%}
+                {{ ui::empty_state_alert(title = "It looks like no one has applied yet to any of the jobs you have posted.",
+                                description = "Hold on a bit, they will start applying soon :)",
+                                wrapper_styles = "p-0 border-0 bg-transparent",
+                                title_styles = "text-xl lg:text-2xl mb-10",
+                                description_styles = "text-lg lg:text-xl text-stone-700 mb-10") -}}
+              {% else -%}
+                {{ ui::empty_state_alert(title = "It looks like no one has applied yet to this job.",
+                                description = "Hold on a bit, they will start applying soon :)",
+                                wrapper_styles = "p-0 border-0 bg-transparent",
+                                title_styles = "text-xl lg:text-2xl mb-10",
+                                description_styles = "text-lg lg:text-xl text-stone-700 mb-10") -}}
+              {% endif -%}
               <p class="text-stone-700">
                 Please note that applicants for externally tracked job opportunities (e.g. when you use an external apply url in your postings) won't appear here.
               </p>

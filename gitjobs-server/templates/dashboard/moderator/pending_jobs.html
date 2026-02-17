@@ -1,3 +1,5 @@
-{% import "macros/moderator.html" as moderator -%}
+{% let title = "Moderation pending jobs" -%}
+{% let empty_title = "There are no moderation pending jobs at the moment." -%}
+{% let is_pending = true -%}
 
-{{ moderator::jobs_page(title = "Moderation pending jobs", jobs = jobs, empty_title = "There are no moderation pending jobs at the moment.", is_pending = true) -}}
+{% include "misc/moderator_jobs_page.html" -%}

@@ -679,6 +679,49 @@ test.describe('GitJobs', () => {
     await expect(dropdown).toHaveAttribute('aria-hidden', 'true');
   });
 
+  test('should close employer selector dropdown on Escape', async ({ page }) => {
+    await loginWithCredentials(page, 'test', 'test1234');
+    await page.goto('/dashboard/employer');
+
+    const employerButton = page.locator('#employer-btn');
+    await expect(employerButton).toHaveCount(1);
+
+    const dropdown = page.locator('#dropdown-employers');
+    await employerButton.click();
+    await expect(dropdown).toBeVisible();
+    await expect(employerButton).toHaveAttribute('aria-expanded', 'true');
+    await expect(dropdown).toHaveAttribute('aria-hidden', 'false');
+
+    await page.keyboard.press('Escape');
+
+    await expect(dropdown).toBeHidden();
+    await expect(employerButton).toBeFocused();
+    await expect(employerButton).toHaveAttribute('aria-expanded', 'false');
+    await expect(dropdown).toHaveAttribute('aria-hidden', 'true');
+  });
+
+  test('should close employer selector dropdown on outside click', async ({ page }) => {
+    await loginWithCredentials(page, 'test', 'test1234');
+    await page.goto('/dashboard/employer');
+
+    const employerButton = page.locator('#employer-btn');
+    await expect(employerButton).toHaveCount(1);
+
+    const dropdown = page.locator('#dropdown-employers');
+    await employerButton.click();
+    await expect(dropdown).toBeVisible();
+    await expect(employerButton).toHaveAttribute('aria-expanded', 'true');
+    await expect(dropdown).toHaveAttribute('aria-hidden', 'false');
+
+    await page.locator('#dashboard-content').first().click({
+      position: { x: 8, y: 8 },
+    });
+
+    await expect(dropdown).toBeHidden();
+    await expect(employerButton).toHaveAttribute('aria-expanded', 'false');
+    await expect(dropdown).toHaveAttribute('aria-hidden', 'true');
+  });
+
   test('should close applications jobs dropdown after selecting a filter', async ({ page }) => {
     await loginWithCredentials(page, 'test', 'test1234');
     await page.goto('/dashboard/employer?tab=applications');
@@ -697,6 +740,51 @@ test.describe('GitJobs', () => {
     expect(await selectableFilters.count()).toBeGreaterThan(0);
 
     await selectableFilters.first().click();
+
+    await expect(dropdown).toBeHidden();
+    await expect(jobsButton).toHaveAttribute('aria-expanded', 'false');
+    await expect(dropdown).toHaveAttribute('aria-hidden', 'true');
+  });
+
+  test('should close applications jobs dropdown on Escape', async ({ page }) => {
+    await loginWithCredentials(page, 'test', 'test1234');
+    await page.goto('/dashboard/employer?tab=applications');
+
+    const jobsButton = page.locator('#jobs-btn');
+    await expect(jobsButton).toHaveCount(1);
+    await expect(jobsButton).toBeEnabled();
+
+    const dropdown = page.locator('#dropdown-jobs');
+    await jobsButton.click();
+    await expect(dropdown).toBeVisible();
+    await expect(jobsButton).toHaveAttribute('aria-expanded', 'true');
+    await expect(dropdown).toHaveAttribute('aria-hidden', 'false');
+
+    await page.keyboard.press('Escape');
+
+    await expect(dropdown).toBeHidden();
+    await expect(jobsButton).toBeFocused();
+    await expect(jobsButton).toHaveAttribute('aria-expanded', 'false');
+    await expect(dropdown).toHaveAttribute('aria-hidden', 'true');
+  });
+
+  test('should close applications jobs dropdown on outside click', async ({ page }) => {
+    await loginWithCredentials(page, 'test', 'test1234');
+    await page.goto('/dashboard/employer?tab=applications');
+
+    const jobsButton = page.locator('#jobs-btn');
+    await expect(jobsButton).toHaveCount(1);
+    await expect(jobsButton).toBeEnabled();
+
+    const dropdown = page.locator('#dropdown-jobs');
+    await jobsButton.click();
+    await expect(dropdown).toBeVisible();
+    await expect(jobsButton).toHaveAttribute('aria-expanded', 'true');
+    await expect(dropdown).toHaveAttribute('aria-hidden', 'false');
+
+    await page.locator('#dashboard-content').first().click({
+      position: { x: 8, y: 8 },
+    });
 
     await expect(dropdown).toBeHidden();
     await expect(jobsButton).toHaveAttribute('aria-expanded', 'false');

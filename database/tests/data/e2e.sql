@@ -40,4 +40,5 @@ INSERT INTO job (employer_id, title, description, kind, seniority, workplace, st
 ('18fff2d7-c794-4130-85e4-76b9d7c60b72', 'Job 18', 'Description for Job 18', 'contractor', 'senior', 'on-site', 'published', 75000, 75000, 'USD', 'year', '{"React Native", "Android"}', CURRENT_TIMESTAMP),
 ('18fff2d7-c794-4130-85e4-76b9d7c60b72', 'Job 19', 'Description for Job 19', 'internship', 'entry', 'hybrid', 'published', 35000, 35000, 'USD', 'year', '{"Ruby on Rails", "React"}', CURRENT_TIMESTAMP),
 ('18fff2d7-c794-4130-85e4-76b9d7c60b72', 'Job 20', 'Description for Job 20', 'full-time', 'lead', 'remote', 'published', 95000, 95000, 'USD', 'year', '{"Cybersecurity", "CISSP"}', CURRENT_TIMESTAMP),
-('18fff2d7-c794-4130-85e4-76b9d7c60b72', 'Job 21', 'Description for Job 21', 'full-time', 'senior', 'on-site', 'published', 100000, 100000, 'USD', 'year', '{"TypeScript", "PostgreSQL"}', CURRENT_TIMESTAMP);
+('18fff2d7-c794-4130-85e4-76b9d7c60b72', 'Job 21', 'Description for Job 21', 'full-time', 'senior', 'on-site', 'published', 100000, 100000, 'USD', 'year', '{"TypeScript", "PostgreSQL"}', CURRENT_TIMESTAMP),
+('8e2fe443-0f7c-4fe3-95dc-c4b39b5c4d10', 'Platform Engineer', 'Second employer seeded job', 'full-time', 'mid', 'remote', 'published', 105000, 105000, 'USD', 'year', '{"Go", "Kubernetes", "PostgreSQL"}', CURRENT_TIMESTAMP);

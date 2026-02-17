@@ -7,8 +7,8 @@
   {% let next_spinner_id = "pagination-next-spinner" -%}
   {% let last_spinner_id = "pagination-last-spinner" -%}
 
-  <div id="pagination" class="pagination flex items-end justify-center py-8">
-    <div hx-boost="true" class="inline-flex" role="group">
+  <div class="pagination flex items-end justify-center py-8">
+    <div class="inline-flex" role="group">
       {# First button -#}
       {% if let Some(first) = links.first -%}
         <a href="{{ first.url }}"
@@ -110,13 +110,15 @@
 
 {# Range display -#}
 {% macro range_display(offset, count, total) -%}
-  {%- if count + 0 > 0 -%}
+  {%- if count > 0 -%}
     {%- if let Some(offset_number) = offset -%}
       {{ offset_number + 1 }} - {{ count + offset_number }}
     {%- else -%}
       1 - {{ count }}
     {%- endif -%}
     {{ "" }} of <span class="font-semibold">{{ total }}</span> results
+  {%- else -%}
+    0 results
   {%- endif -%}
 {%- endmacro range_display -%}
 {# End range display -#}

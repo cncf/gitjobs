@@ -84,21 +84,6 @@
 {% endmacro select_option -%}
 {# End select option #}
 
-{# Badge #}
-{% macro badge(content, content_styles = "", icon = "") -%}
-  <div class="inline-flex bg-stone-100 text-stone-800 text-xs/4 md:text-sm/4 font-medium px-2.5 py-1.5 rounded-full border border-stone-200">
-    <div class="flex items-center">
-      {% if !icon.is_empty() -%}
-        <div class="me-2">
-          <div class="svg-icon size-4 icon-{{ icon }} bg-stone-500"></div>
-        </div>
-      {% endif -%}
-      <div class="capitalize text-nowrap {{ content_styles }}">{{ content }}</div>
-    </div>
-  </div>
-{% endmacro badge -%}
-{# End badge #}
-
 {# Memberships popover #}
 {% macro memberships_popover(members, width_styles = "min-w-[220px] max-w-[320px]") -%}
   <div class="absolute left-0 top-full z-20 w-max {{ width_styles }} opacity-0 pointer-events-none transition-opacity duration-150 group-hover:opacity-100 group-hover:pointer-events-auto">
@@ -294,18 +279,6 @@
     </div>
   </div>
 {% endmacro certification_card -%}
-
-{# Alert box #}
-{% macro alert_box(content, title = "") -%}
-  <div class="p-10 md:p-14">
-    <div class="border border-primary-300 p-10 text-sm text-stone-800 rounded-lg bg-primary-50/20 text-center"
-         role="alert">
-      <div class="text-xl mb-6">{{ title }}</div>
-      {{ content }}
-    </div>
-  </div>
-{% endmacro alert_box -%}
-{# End alert box #}
 
 {# Osano cookie btn #}
 {% macro cookie_button(id = "btn-cookies", close_drawer = false, extra_styles = "") -%}

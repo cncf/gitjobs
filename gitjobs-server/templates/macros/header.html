@@ -7,12 +7,6 @@
               border-primary-500{%- else -%}border-transparent hover:border-primary-300{%- endif -%}">{{ text }}</a>
 {% endmacro header_link -%}
 
-{% macro disabled_header_link(text) -%}
-  <button class="mx-3 pb-1 border-0 border-primary-500 text-base font-semibold tracking-widest text-primary-500 uppercase border-b-2 border-transparent hover:border-primary-300"
-          disabled
-          title="Coming soon!">{{ text }}</button>
-{% endmacro disabled_header_link -%}
-
 {# Header user menu -#}
 {% macro user_menu(user, auth_provider) -%}
   {% if user.logged_in -%}

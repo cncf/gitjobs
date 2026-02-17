@@ -1,4 +1,5 @@
 {% import "macros/ui.html" as ui -%}
+{% import "macros/employer.html" as employer -%}
 
 {{ ui::form_title(title = "Jobs") -}}
 
@@ -83,13 +84,13 @@
               <div class="max-w-full truncate">{{ job.title }}</div>
               {# End title job -#}
               {# Location -#}
-              <div class="block xl:hidden text-xs text-stone-500 max-w-full truncate">{{ location_content(job) -}}</div>
+              <div class="block xl:hidden text-xs text-stone-500 max-w-full truncate">{{ employer::location(job) -}}</div>
               {# End Location -#}
             </th>
 
             {# Location -#}
             <td class="hidden xl:table-cell px-3 xl:px-5 py-4 whitespace-nowrap min-w-[100px] max-w-[100px] xl:max-w-[200px]">
-              <div class="max-w-full truncate">{{ location_content(job) -}}</div>
+              <div class="max-w-full truncate">{{ employer::location(job) -}}</div>
             </td>
             {# End location -#}
 
@@ -313,17 +314,3 @@
 
   initializeEmployerJobsStats();
 </script>
-
-{% macro location_content(job) -%}
-  {% if let Some(city) = job.city -%}
-    {% let location_text = &self::format_location(job.city.as_deref(), None, job.country.as_deref())|display_some -%}
-    {{ location_text }}
-    {% if job.workplace != Workplace::OnSite -%}
-      ({{ job.workplace }})
-    {% endif -%}
-  {% else if job.workplace == Workplace::Remote -%}
-    Remote
-  {% else -%}
-    Not location provided
-  {% endif -%}
-{% endmacro location_content -%}

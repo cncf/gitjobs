@@ -1,4 +1,5 @@
 {% import "macros/job_preview.html" as job_preview -%}
+{% import "macros/jobboard.html" as jobboard -%}
 
 {% let job_id = job.job_id.to_string() -%}
 <div id="preview-modal"
@@ -94,7 +95,7 @@
             {% let markdown_code = format!("[![GitJobs]({}/embed/job/{}/card.svg)]({}/?job_id={})", self.base_url, job_id, self.base_url, job_id) -%}
             <div class="flex items-center justify-between gap-x-4 mb-4">
               <pre class="block overflow-auto p-4 bg-stone-100"><code class="text-sm">{{ markdown_code }}</code></pre>
-              <div>{{ copy_button(name = "markdown", content = markdown_code) -}}</div>
+              <div>{{ jobboard::copy_button(name = "markdown", content = markdown_code) -}}</div>
             </div>
           </div>
           {# End markdown #}
@@ -104,7 +105,7 @@
             {% let asciidoc_code = format!("{}/?job_id={}[image:{}/embed/job/{}/card.svg[GitJobs]]", self.base_url, job_id, self.base_url, job_id) -%}
             <div class="flex items-center justify-between gap-x-4 mb-4">
               <pre class="block overflow-auto p-4 bg-stone-100"><code class="text-sm">{{ asciidoc_code }}</code></pre>
-              <div>{{ copy_button(name = "asciidoc", content = asciidoc_code) -}}</div>
+              <div>{{ jobboard::copy_button(name = "asciidoc", content = asciidoc_code) -}}</div>
             </div>
           </div>
           {# End AsciiDoc #}
@@ -116,7 +117,7 @@
             {# djlint:on #}
             <div class="flex items-center justify-between gap-x-4 mb-4">
               <pre class="block overflow-auto p-4 bg-stone-100"><code class="text-sm">{{ html_code }}</code></pre>
-              <div>{{ copy_button(name = "html", content = html_code) -}}</div>
+              <div>{{ jobboard::copy_button(name = "html", content = html_code) -}}</div>
             </div>
           </div>
           {# End HTML #}
@@ -145,25 +146,3 @@
 
   initializeJobPreviewModal();
 </script>
-
-{% macro copy_button(name, content = "") -%}
-  <div class="relative">
-    <button id="copy-btn-{{ name }}"
-            type="button"
-            data-copy-button="true"
-            data-tooltip-id="copy-btn-{{ name }}-tooltip"
-            data-copy-content="{{ content }}"
-            title="Copy code"
-            class="btn-primary-outline-anchor rounded-full size-[35px] xl:size-[40px] group p-1 flex items-center justify-center">
-      <div class="svg-icon size-4 md:size-5 group-hover:bg-white icon-copy"></div>
-    </button>
-    {# End Copy link -#}
-    <div id="copy-btn-{{ name }}-tooltip"
-         role="tooltip"
-         class="absolute w-[200px] top-12 end-0.5 opacity-0 inline-block px-3 py-2 text-xs xl:text-sm font-medium text-white transition-opacity duration-300 bg-stone-900/80 rounded-lg shadow-xs tooltip">
-      Code copied to clipboard!
-      <div class="h-0 w-0 border-x-[6px] border-x-transparent border-b-[6px] border-stone-900/80 absolute -top-1.5 end-3">
-      </div>
-    </div>
-  </div>
-{% endmacro copy_button -%}

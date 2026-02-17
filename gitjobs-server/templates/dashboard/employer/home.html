@@ -1,6 +1,7 @@
 {% extends "dashboard/dashboard_base.html" -%}
 {% import "macros/ui.html" as ui -%}
 {% import "macros/dashboard.html" as dashboard -%}
+{% import "macros/employer.html" as employer -%}
 
 {% block menu -%}
   <div class="flex justify-between items-center mt-3 mb-6 px-3 lg:px-5">
@@ -39,7 +40,7 @@
                   aria-label="Select employer"
                   class="cursor-pointer select select-primary">
             <div class="flex items-center relative">
-              {{ employer_content_list(company = selected_employer.company, logo_id = selected_employer.logo_id) -}}
+              {{ employer::company_item(company = selected_employer.company, logo_id = selected_employer.logo_id) -}}
             </div>
           </button>
           {# End employer button to open dropdown -#}
@@ -63,7 +64,7 @@
                           class="employer-button cursor-pointer w-full flex items-center px-4 py-2 text-sm/6 hover:bg-stone-100
                                  {% if is_selected -%}bg-stone-100{%- endif %}"
                           {% if is_selected %}disabled{% endif %}>
-                    {{ employer_content_list(company = employer.company, logo_id = employer.logo_id) -}}
+                    {{ employer::company_item(company = employer.company, logo_id = employer.logo_id) -}}
                   </button>
                 </li>
               {% endfor -%}
@@ -120,21 +121,3 @@
   {% endif -%}
   {# End messages -#}
 {% endblock dashboard_main -%}
-
-{% macro employer_content_list(company, logo_id) -%}
-  {% if let Some(logo_id) = logo_id -%}
-    {% let logo = &self::build_dashboard_image_url(logo_id, "small") -%}
-    <div class="flex items-center justify-center size-6 me-3">
-      <img class="size-6 object-contain"
-           height="auto"
-           width="auto"
-           src="{{ logo }}"
-           alt="{{ company }} image">
-    </div>
-  {% else -%}
-    <div class="rounded-full size-6 me-3 bg-stone-200 p-1">
-      <div class="svg-icon size-4 icon-company bg-stone-600"></div>
-    </div>
-  {% endif -%}
-  <div class="truncate">{{ company }}</div>
-{% endmacro employer_content_list -%}

@@ -1,0 +1,31 @@
+{% macro company_item(company, logo_id) -%}
+  {% if let Some(logo_id) = logo_id -%}
+    {% let logo = &self::build_dashboard_image_url(logo_id, "small") -%}
+    <div class="flex items-center justify-center size-6 me-3">
+      <img class="size-6 object-contain"
+           height="auto"
+           width="auto"
+           src="{{ logo }}"
+           alt="{{ company }} image">
+    </div>
+  {% else -%}
+    <div class="rounded-full size-6 me-3 bg-stone-200 p-1">
+      <div class="svg-icon size-4 icon-company bg-stone-600"></div>
+    </div>
+  {% endif -%}
+  <div class="truncate">{{ company }}</div>
+{% endmacro company_item -%}
+
+{% macro location(job) -%}
+  {% if let Some(city) = job.city -%}
+    {% let location_text = &self::format_location(job.city.as_deref(), None, job.country.as_deref())|display_some -%}
+    {{ location_text }}
+    {% if job.workplace != Workplace::OnSite -%}
+      ({{ job.workplace }})
+    {% endif -%}
+  {% else if job.workplace == Workplace::Remote -%}
+    Remote
+  {% else -%}
+    Not location provided
+  {% endif -%}
+{% endmacro location -%}

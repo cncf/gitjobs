@@ -1,0 +1,58 @@
+{% macro location(workplace, job_location) -%}
+  <div class="text-xs/4 text-stone-500 max-w-full truncate">
+    {% if let Some(job_location) = job_location -%}
+      {{ job_location.city }}, {{ job_location.country }}
+      {% if workplace != &Workplace::OnSite -%}
+        ({{ workplace }})
+      {% endif -%}
+    {% else if workplace == &Workplace::Remote -%}
+      Remote
+    {% else -%}
+      No location provided
+    {% endif -%}
+  </div>
+{% endmacro location -%}
+
+{% macro main_badge(content, icon) -%}
+  <div class="border border-stone-200 rounded-full px-4 flex items-center text-stone-600 text-xs/6 xl:text-sm/6 space-x-2">
+    <div class="svg-icon size-4 icon-{{ icon }} bg-stone-500"></div>
+    <div>{{ content }}</div>
+  </div>
+{% endmacro main_badge -%}
+
+{% macro title(content) -%}
+  <div class="uppercase text-stone-800 tracking-[0.25rem] font-semibold mb-4">{{ content }}</div>
+{% endmacro title -%}
+
+{% macro social_link(url, icon, is_email = false) -%}
+  <a href="{%- if is_email -%}mailto:{%- endif -%}{{ url }}"
+     class="btn-tertiary-anchor border border-stone-200 btn-mini flex items-center space-x-2"
+     target="_blank"
+     rel="noopener noreferrer">
+    <div class="svg-icon size-3 bg-stone-300 icon-{{ icon }}"></div>
+    <div class="truncate">{{ url }}</div>
+  </a>
+{% endmacro social_link -%}
+
+{% macro timeline_item(title, entity, description, start_date, end_date) -%}
+  <li class="mb-10 ms-4">
+    <div class="absolute size-3 bg-stone-300 rounded-full mt-1 -start-1.5 border border-white"></div>
+    <div class="mb-2 text-sm text-stone-500/75">{{ start_date }} - {{ end_date }}</div>
+    <div class="text-lg font-semibold text-stone-900">{{ title }}</div>
+    <div class="text-sm/6 text-stone-500 italic mb-3">{{ entity }}</div>
+    <div class="text-sm/6 text-stone-600 markdown">{{ description|md_to_html|safe }}</div>
+  </li>
+{% endmacro timeline_item -%}
+
+{% macro toggle_option(title, status = false) -%}
+  <div class="flex space-x-2 items-center">
+    <div class="w-4">
+      {% if status -%}
+        <div class="svg-icon size-3 icon-check bg-stone-700 mx-auto"></div>
+      {% else -%}
+        <div class="svg-icon size-4 icon-close bg-stone-700 mx-auto"></div>
+      {% endif -%}
+    </div>
+    <div class="text-xs/6">{{ title }}</div>
+  </div>
+{% endmacro toggle_option -%}

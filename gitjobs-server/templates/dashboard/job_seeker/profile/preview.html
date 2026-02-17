@@ -1,3 +1,5 @@
+{% import "macros/job_seeker.html" as job_seeker -%}
+
 <div class="flex space-x-5 items-center mb-10 pb-10 border-b border-stone-200">
   <div class="flex justify-center items-center size-24 shrink-0 p-1 bg-white border border-stone-200">
     {# Photo -#}
@@ -50,13 +52,13 @@
 
       {# Phone -#}
       {% if let Some(phone) = profile.phone -%}
-        {{ main_badge(content = phone, icon = "phone") -}}
+        {{ job_seeker::main_badge(content = phone, icon = "phone") -}}
       {% endif -%}
       {# End phone -#}
 
       {# Location -#}
       {% if let Some(location) = profile.location -%}
-        {{ main_badge(content = location, icon = "location") -}}
+        {{ job_seeker::main_badge(content = location, icon = "location") -}}
       {% endif -%}
       {# End location -#}
     </div>
@@ -70,42 +72,42 @@
     {# Social -#}
     <div class="flex flex-col space-y-3">
       {# Email -#}
-      {{ social_link(url = profile.email, icon = "email", is_email = true) -}}
+      {{ job_seeker::social_link(url = profile.email, icon = "email", is_email = true) -}}
       {# End email -#}
 
       {# Website URL -#}
       {% if let Some(website_url) = profile.website_url -%}
-        {{ social_link(url = website_url, icon = "link") -}}
+        {{ job_seeker::social_link(url = website_url, icon = "link") -}}
       {% endif -%}
       {# End website url -#}
 
       {# GitHub url -#}
       {% if let Some(github_url) = profile.github_url -%}
-        {{ social_link(url = github_url, icon = "github") -}}
+        {{ job_seeker::social_link(url = github_url, icon = "github") -}}
       {% endif -%}
       {# End GitHub url -#}
 
       {# LinkedIn url -#}
       {% if let Some(linkedin_url) = profile.linkedin_url -%}
-        {{ social_link(url = linkedin_url, icon = "linkedin") -}}
+        {{ job_seeker::social_link(url = linkedin_url, icon = "linkedin") -}}
       {% endif -%}
       {# End LinkedIn url -#}
 
       {# Twitter url -#}
       {% if let Some(twitter_url) = profile.twitter_url -%}
-        {{ social_link(url = twitter_url, icon = "twitter") -}}
+        {{ job_seeker::social_link(url = twitter_url, icon = "twitter") -}}
       {% endif -%}
       {# End Twitter url -#}
 
       {# Facebook url -#}
       {% if let Some(facebook_url) = profile.facebook_url -%}
-        {{ social_link(url = facebook_url, icon = "facebook") -}}
+        {{ job_seeker::social_link(url = facebook_url, icon = "facebook") -}}
       {% endif -%}
       {# End Facebook url -#}
 
       {# BlueSky url -#}
       {% if let Some(bluesky_url) = profile.bluesky_url -%}
-        {{ social_link(url = bluesky_url, icon = "bluesky") -}}
+        {{ job_seeker::social_link(url = bluesky_url, icon = "bluesky") -}}
       {% endif -%}
       {# End BlueSky url -#}
     </div>
@@ -115,13 +117,13 @@
     <div class="flex flex-col space-y-4">
       {# Remote -#}
       {% if let Some(open_to_remote) = profile.open_to_remote -%}
-        {{ toggle_option(title = "Open to work remotely", status = open_to_remote) -}}
+        {{ job_seeker::toggle_option(title = "Open to work remotely", status = open_to_remote) -}}
       {% endif -%}
       {# End remote -#}
 
       {# Relocation -#}
       {% if let Some(open_to_relocation) = profile.open_to_relocation -%}
-        {{ toggle_option(title = "Open to relocate", status = open_to_relocation) -}}
+        {{ job_seeker::toggle_option(title = "Open to relocate", status = open_to_relocation) -}}
       {% endif -%}
       {# End remote -#}
     </div>
@@ -131,7 +133,7 @@
       <hr class="my-10 border-t border-stone-200">
 
       <div>
-        {{ title(content = "Skills") -}}
+        {{ job_seeker::title(content = "Skills") -}}
         <div class="text-stone-600 text-xs/6 flex flex-wrap pt-2">
           {% for skill in skills -%}
             <div class="bg-stone-100 px-4 rounded-full inline-block uppercase mb-2 me-2">{{ skill|unnormalize }}</div>
@@ -147,19 +149,19 @@
   {# Right column -#}
   <div class="w-3/5 lg:w-3/4">
     {# Summary -#}
-    {{ title(content = "Profile") -}}
+    {{ job_seeker::title(content = "Profile") -}}
     <div class="text-sm/6 text-stone-600 markdown">{{ profile.summary|md_to_html|safe }}</div>
     {# End summary -#}
 
     {# Experience -#}
     {% if let Some(experience) = profile.experience -%}
       <hr class="my-10 border-t border-stone-200">
-      {{ title(content = "Experience") -}}
+      {{ job_seeker::title(content = "Experience") -}}
       <div class="pt-2">
         <ol class="relative border-s border-stone-200">
           {% for exp in experience -%}
             {% let end_date = exp.end_date|display_some_date_or(DATE_FORMAT_2, "Present") -%}
-            {{ timeline_item(title = exp.title, entity = exp.company, description = exp.description, start_date = exp.start_date.format(DATE_FORMAT_2) , end_date = end_date) -}}
+            {{ job_seeker::timeline_item(title = exp.title, entity = exp.company, description = exp.description, start_date = exp.start_date.format(DATE_FORMAT_2) , end_date = end_date) -}}
           {% endfor -%}
         </ol>
       </div>
@@ -169,11 +171,11 @@
     {# Education -#}
     {% if let Some(education) = profile.education -%}
       <hr class="my-10 border-t border-stone-200">
-      {{ title(content = "Education") -}}
+      {{ job_seeker::title(content = "Education") -}}
       <div class="pt-2">
         <ol class="relative border-s border-stone-200">
           {% for ed in education -%}
-            {{ timeline_item(title = ed.title, entity = ed.educational_institution, description = ed.description, start_date = ed.start_date.format(DATE_FORMAT_2) , end_date = ed.end_date.format(DATE_FORMAT_2)) -}}
+            {{ job_seeker::timeline_item(title = ed.title, entity = ed.educational_institution, description = ed.description, start_date = ed.start_date.format(DATE_FORMAT_2) , end_date = ed.end_date.format(DATE_FORMAT_2)) -}}
           {% endfor -%}
         </ol>
       </div>
@@ -183,11 +185,11 @@
     {# Certifications -#}
     {% if let Some(certifications) = profile.certifications -%}
       <hr class="my-10 border-t border-stone-200">
-      {{ title(content = "Certifications") -}}
+      {{ job_seeker::title(content = "Certifications") -}}
       <div class="pt-2">
         <ol class="relative border-s border-stone-200">
           {% for c in certifications -%}
-            {{ timeline_item(title = c.title, entity = c.provider, description = c.description, start_date = c.start_date.format(DATE_FORMAT_2) , end_date = c.end_date.format(DATE_FORMAT_2)) -}}
+            {{ job_seeker::timeline_item(title = c.title, entity = c.provider, description = c.description, start_date = c.start_date.format(DATE_FORMAT_2) , end_date = c.end_date.format(DATE_FORMAT_2)) -}}
           {% endfor -%}
         </ol>
       </div>
@@ -197,7 +199,7 @@
     {# Projects -#}
     {% if let Some(projects) = profile.projects -%}
       <hr class="my-10 border-t border-stone-200">
-      {{ title(content = "Projects") }}
+      {{ job_seeker::title(content = "Projects") }}
       <div class="pt-2">
         <ol class="relative border-s border-stone-200">
           {% for p in projects -%}
@@ -230,47 +232,3 @@
   </div>
   {# End right column -#}
 </div>
-
-{% macro main_badge(content, icon) -%}
-  <div class="border border-stone-200 rounded-full px-4 flex items-center text-stone-600 text-xs/6 xl:text-sm/6 space-x-2">
-    <div class="svg-icon size-4 icon-{{ icon }} bg-stone-500"></div>
-    <div>{{ content }}</div>
-  </div>
-{% endmacro main_badge -%}
-
-{% macro title(content) -%}
-  <div class="uppercase text-stone-800 tracking-[0.25rem] font-semibold mb-4">{{ content }}</div>
-{% endmacro title -%}
-
-{% macro social_link(url, icon, is_email = false) -%}
-  <a href="{%- if is_email -%}mailto:{%- endif -%}{{ url }}"
-     class="btn-tertiary-anchor border border-stone-200 btn-mini flex items-center space-x-2"
-     target="_blank"
-     rel="noopener noreferrer">
-    <div class="svg-icon size-3 bg-stone-300 icon-{{ icon }}"></div>
-    <div class="truncate">{{ url }}</div>
-  </a>
-{% endmacro social_link -%}
-
-{% macro timeline_item(title, entity, description, start_date, end_date) -%}
-  <li class="mb-10 ms-4">
-    <div class="absolute size-3 bg-stone-300 rounded-full mt-1 -start-1.5 border border-white"></div>
-    <div class="mb-2 text-sm text-stone-500/75">{{ start_date }} - {{ end_date }}</div>
-    <div class="text-lg font-semibold text-stone-900">{{ title }}</div>
-    <div class="text-sm/6 text-stone-500 italic mb-3">{{ entity }}</div>
-    <div class="text-sm/6 text-stone-600 markdown">{{ description|md_to_html|safe }}</div>
-  </li>
-{% endmacro timeline_item -%}
-
-{% macro toggle_option(title, status = false) -%}
-  <div class="flex space-x-2 items-center">
-    <div class="w-4">
-      {% if status -%}
-        <div class="svg-icon size-3 icon-check bg-stone-700 mx-auto"></div>
-      {% else -%}
-        <div class="svg-icon size-4 icon-close bg-stone-700 mx-auto"></div>
-      {% endif -%}
-    </div>
-    <div class="text-xs/6">{{ title }}</div>
-  </div>
-{% endmacro toggle_option -%}

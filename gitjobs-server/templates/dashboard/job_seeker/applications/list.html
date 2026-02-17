@@ -1,5 +1,6 @@
 {% import "macros/ui.html" as ui -%}
 {% import "macros/preview_modal.html" as preview_modal -%}
+{% import "macros/job_seeker.html" as job_seeker -%}
 
 {{ ui::form_title(title = "My applications") -}}
 
@@ -40,7 +41,7 @@
                     <div class="max-w-full text-black truncate">{{ application.job_title }}</div>
                   </div>
                   {# Location -#}
-                  {{ location_content(workplace = application.job_workplace, job_location = application.job_location) }}
+                  {{ job_seeker::location(workplace = application.job_workplace, job_location = application.job_location) }}
                   {# End location -#}
                 </button>
               {% else -%}
@@ -57,7 +58,7 @@
 
                   </div>
                   {# Location -#}
-                  {{ location_content(workplace = application.job_workplace, job_location = application.job_location) }}
+                  {{ job_seeker::location(workplace = application.job_workplace, job_location = application.job_location) }}
                   {# End location -#}
                 </div>
               {% endif -%}
@@ -101,18 +102,3 @@
 
   initializeJobSeekerApplicationsList();
 </script>
-
-{% macro location_content(workplace, job_location) -%}
-  <div class="text-xs/4 text-stone-500 max-w-full truncate">
-    {% if let Some(job_location) = job_location -%}
-      {{ job_location.city }}, {{ job_location.country }}
-      {% if workplace != &Workplace::OnSite -%}
-        ({{ workplace }})
-      {% endif -%}
-    {% else if workplace == &Workplace::Remote -%}
-      Remote
-    {% else -%}
-      No location provided
-    {% endif -%}
-  </div>
-{% endmacro location_content -%}

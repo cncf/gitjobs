@@ -1,4 +1,4 @@
-{% import "macros/jobs.html" as jobs -%}
+{% import "macros/jobboard.html" as jobboard -%}
 {% import "macros/ui.html" as ui -%}
 
 {# Mobile filters -#}
@@ -41,7 +41,7 @@
     </div>
   </div>
   {# End header filters -#}
-  {{ jobs::filters(form = "mobile-jobs-form", device = "mobile") -}}
+  {{ jobboard::filters(form = "mobile-jobs-form", device = "mobile") -}}
   {# End filters content -#}
 
   <div class="text-end p-5">
@@ -87,7 +87,7 @@
       </div>
       {# End header -#}
 
-      {{ jobs::filters(form = "desktop-jobs-form") -}}
+      {{ jobboard::filters(form = "desktop-jobs-form") -}}
     </div>
     {# End filters -#}
 
@@ -149,7 +149,7 @@
           <div id="results"
                class="flex flex-row items-center justify-between text-xs md:text-sm font-semibold">
             {% if results_section.jobs.len() > 0 -%}
-              {{ jobs::current_page(total = results_section.total, items_number = results_section.jobs.len() , offset_value = results_section.offset) -}}
+              {{ jobboard::current_page(total = results_section.total, items_number = results_section.jobs.len() , offset_value = results_section.offset) -}}
             {% endif -%}
           </div>
           {# End results -#}

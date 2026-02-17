@@ -476,19 +476,6 @@
 {% endmacro filters_subtitle -%}
 {# End filters subtitle -#}
 
-{# Current page -#}
-{% macro current_page(total, items_number, offset_value) -%}
-  {%- if items_number + 0 > 0 -%}
-    {%- if let Some(offset) = offset_value -%}
-      {{ offset + 1 }} - {{ items_number + offset }}
-    {%- else -%}
-      1 - {{ items_number }}
-    {%- endif -%}
-    {{ "" }} of {{ total }} results
-  {%- endif -%}
-{%- endmacro current_page -%}
-{# End current page -#}
-
 {# Checkbox -#}
 {% macro checkbox(form, name, value, label, icon, active_filters, device) -%}
   <div class="group">

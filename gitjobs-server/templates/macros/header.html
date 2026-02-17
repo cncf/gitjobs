@@ -1,11 +1,12 @@
-{% macro header_link(text, href, active) -%}
+{% macro link(text, href, active) -%}
   <a href="{{ href }}"
      hx-boost="true"
+     hx-target="body"
      {% if active %}aria-current="page"{% endif %}
-     class="mx-3 pb-1 border-0 border-primary-500 text-base font-semibold tracking-widest text-primary-500 uppercase border-b-2
+     class="mx-3 pb-1 border-0 border-primary-500 text-base font-semibold tracking-widest text-primary-500 uppercase border-b-2 transition-colors
             {% if active -%}
               border-primary-500{%- else -%}border-transparent hover:border-primary-300{%- endif -%}">{{ text }}</a>
-{% endmacro header_link -%}
+{% endmacro link -%}
 
 {# Header user menu -#}
 {% macro user_menu(user, auth_provider) -%}

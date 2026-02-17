@@ -1,5 +1,6 @@
 {% import "macros/jobboard.html" as jobboard -%}
 {% import "macros/ui.html" as ui -%}
+{% import "macros/pagination.html" as pagination -%}
 
 {# Mobile filters -#}
 <div id="drawer-filters"
@@ -149,7 +150,10 @@
           <div id="results"
                class="flex flex-row items-center justify-between text-xs md:text-sm font-semibold">
             {% if results_section.jobs.len() > 0 -%}
-              {{ jobboard::current_page(total = results_section.total, items_number = results_section.jobs.len() , offset_value = results_section.offset) -}}
+              {{ pagination::range_display(offset = results_section.offset,
+                            count = results_section.jobs.len() ,
+              total = results_section.total
+              ) -}}
             {% endif -%}
           </div>
           {# End results -#}

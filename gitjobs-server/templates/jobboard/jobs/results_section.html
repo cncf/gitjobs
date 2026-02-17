@@ -1,4 +1,5 @@
 {% import "macros/jobboard.html" as jobboard -%}
+{% import "macros/pagination.html" as pagination -%}
 
 <div class="flex flex-col mt-5 md:mt-7 space-y-4">
   {% if jobs.len() == 0 -%}
@@ -55,7 +56,11 @@
 
   initializeJobboardResults({
     hasJobs: {% if jobs.len() > 0 -%}true{%- else -%}false{%- endif %},
-    currentPageContent: '{% if jobs.len() > 0 -%}{{ jobboard::current_page(total, jobs.len(), offset) -}}{%- endif %}'
+    currentPageContent: '{% if jobs.len() > 0 -%}{{ pagination::range_display(
+      offset = offset,
+      count = jobs.len(),
+      total = total
+    ) -}}{%- endif %}'
   });
 </script>
 {# djlint:on #}

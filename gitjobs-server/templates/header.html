@@ -5,7 +5,7 @@
 <div class="flex items-center gap-x-6">
   {# Logo -#}
   <div class="me-3">
-    <a hx-boost="true" href="/" aria-label="Go to homepage">
+    <a hx-boost="true" hx-target="body" href="/" aria-label="Go to homepage">
       <div class="flex items-top gap-x-2">
         <div class="h-[28px] w-[138px] md:h-[33px] md:w-[162px] ms-[2px]">
           <img src="/static/images/gitjobs.png"
@@ -26,9 +26,9 @@
 
   {# Desktop links -#}
   <div class="hidden xl:flex xl:gap-x-6 -mb-2">
-    {{ header::header_link(text = "Jobs", href = "/", active = page_id == PageId::JobBoard) -}}
-    {{ header::header_link(text = "Stats", href = "/stats", active = page_id == PageId::Stats) -}}
-    {{ header::header_link(text = "About", href = "/about", active = page_id == PageId::About) -}}
+    {{ header::link(text = "Jobs", href = "/", active = page_id == PageId::JobBoard) -}}
+    {{ header::link(text = "Stats", href = "/stats", active = page_id == PageId::Stats) -}}
+    {{ header::link(text = "About", href = "/about", active = page_id == PageId::About) -}}
   </div>
   {# End desktop links -#}
 </div>

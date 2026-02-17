@@ -1,3 +1,3 @@
 {% import "macros/pagination.html" as pagination -%}
 
-{{ pagination::navigation_links(self, "#items-list", "innerHTML show:body:top") }}
+{{ pagination::navigation_links(links = self, hx_target = "#items-list", hx_swap = "innerHTML show:body:top") }}

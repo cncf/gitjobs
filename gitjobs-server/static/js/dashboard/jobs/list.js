@@ -10,6 +10,7 @@ import { initializeConfirmHtmxButtons, showErrorAlert, showInfoAlert } from "/st
 import { initializeDashboardActionButton } from "/static/js/dashboard/employer/dashboard-actions.js";
 
 const JOBS_STATS_CHART_IDS = ["job-chart-views", "job-chart-search-appearances"];
+const STATS_FETCH_ERROR_MESSAGE = "Something went wrong fetching the stats. Please try again later.";
 
 /**
  * Shows statistics for a specific job in a modal
@@ -28,7 +29,7 @@ const showStats = async (id) => {
       if (spinnerStats) {
         spinnerStats.classList.add("hidden");
       }
-      showErrorAlert("Something went wrong fetching the stats, please try again later.");
+      showErrorAlert(STATS_FETCH_ERROR_MESSAGE);
       return;
     }
 
@@ -92,7 +93,7 @@ const showStats = async (id) => {
     if (spinnerStats) {
       spinnerStats.classList.add("hidden");
     }
-    showErrorAlert("Something went wrong fetching the stats, please try again later.");
+    showErrorAlert(STATS_FETCH_ERROR_MESSAGE);
   }
 };
 

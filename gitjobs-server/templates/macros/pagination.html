@@ -7,7 +7,7 @@
   {% let next_spinner_id = "pagination-next-spinner" -%}
   {% let last_spinner_id = "pagination-last-spinner" -%}
 
-  <div id="pagination" class="flex items-end justify-center pt-12 pb-8">
+  <div id="pagination" class="pagination flex items-end justify-center py-8">
     <div hx-boost="true" class="inline-flex" role="group">
       {# First button -#}
       {% if let Some(first) = links.first -%}
@@ -16,7 +16,7 @@
            hx-target="{{ hx_target }}"
            hx-swap="{{ hx_swap }}"
            hx-indicator="#{{ first_spinner_id }}"
-           class="group relative overflow-hidden cursor-pointer inline-flex items-center pr-4 pl-3 py-2 text-sm text-primary-500 bg-transparent border border-primary-500 rounded-s-full hover:bg-primary-500 hover:text-white focus:z-10 focus:ring-2 focus:ring-primary-300 focus:bg-primary-500 focus:text-white">
+           class="group relative overflow-hidden cursor-pointer inline-flex items-center pr-4 pl-3 py-2 text-sm font-medium text-primary-500 bg-transparent border border-primary-500 rounded-s-full hover:bg-primary-500 hover:text-white transition-colors focus:z-10 focus:ring-2 focus:ring-primary-300 focus:bg-primary-500 focus:text-white">
           <span class="inline-flex items-center group-[.htmx-request]:invisible">
             <div class="svg-icon me-2 size-5 bg-primary-500 group-hover:bg-white icon-arrow_left_double"></div>
             First
@@ -26,7 +26,7 @@
       {% else -%}
         <button type="button"
                 disabled
-                class="inline-flex items-center pr-4 pl-3 py-2 text-sm text-stone-300 bg-stone-50 border border-stone-300 rounded-s-full">
+                class="inline-flex items-center pr-4 pl-3 py-2 text-sm font-medium text-stone-400 bg-stone-100 border border-stone-200 rounded-s-full">
           <div class="svg-icon me-2 size-5 bg-stone-300 icon-arrow_left_double"></div>
           First
         </button>
@@ -40,7 +40,7 @@
            hx-target="{{ hx_target }}"
            hx-swap="{{ hx_swap }}"
            hx-indicator="#{{ prev_spinner_id }}"
-           class="group relative overflow-hidden cursor-pointer inline-flex items-center pr-4 pl-[0.6rem] py-2 text-sm text-primary-500 bg-transparent border-t border-b border-e border-primary-500 hover:bg-primary-500 hover:text-white focus:z-10 focus:ring-2 focus:ring-primary-300 focus:bg-primary-500 focus:text-white">
+           class="group relative overflow-hidden cursor-pointer inline-flex items-center pr-4 pl-[0.6rem] py-2 text-sm font-medium text-primary-500 bg-transparent border-t border-b border-e border-primary-500 hover:bg-primary-500 hover:text-white transition-colors focus:z-10 focus:ring-2 focus:ring-primary-300 focus:bg-primary-500 focus:text-white">
           <span class="inline-flex items-center group-[.htmx-request]:invisible">
             <div class="svg-icon me-2 size-5 bg-primary-500 group-hover:bg-white icon-arrow_left"></div>
             Prev
@@ -50,7 +50,7 @@
       {% else -%}
         <button type="button"
                 disabled
-                class="inline-flex items-center pr-4 pl-[0.6rem] py-2 text-sm text-stone-300 bg-stone-50 border-t border-b border-e border-stone-300">
+                class="inline-flex items-center pr-4 pl-[0.6rem] py-2 text-sm font-medium text-stone-400 bg-stone-100 border-t border-b border-e border-stone-200">
           <div class="svg-icon me-2 size-5 bg-stone-300 icon-arrow_left"></div>
           Prev
         </button>
@@ -64,7 +64,7 @@
            hx-target="{{ hx_target }}"
            hx-swap="{{ hx_swap }}"
            hx-indicator="#{{ next_spinner_id }}"
-           class="group relative overflow-hidden cursor-pointer inline-flex items-center pl-4 pr-[0.6rem] py-2 text-sm text-primary-500 bg-transparent border-t border-b border-s -ml-[1px] border-primary-500 hover:bg-primary-500 hover:text-white focus:z-10 focus:ring-2 focus:ring-primary-300 focus:bg-primary-500 focus:text-white">
+           class="group relative overflow-hidden cursor-pointer inline-flex items-center pl-4 pr-[0.6rem] py-2 text-sm font-medium text-primary-500 bg-transparent border-t border-b border-s -ml-[1px] border-primary-500 hover:bg-primary-500 hover:text-white transition-colors focus:z-10 focus:ring-2 focus:ring-primary-300 focus:bg-primary-500 focus:text-white">
           <span class="inline-flex items-center group-[.htmx-request]:invisible">
             Next
             <div class="svg-icon ms-2 size-5 bg-primary-500 group-hover:bg-white icon-arrow_right"></div>
@@ -74,7 +74,7 @@
       {% else -%}
         <button type="button"
                 disabled
-                class="inline-flex items-center pl-4 pr-[0.6rem] py-2 text-sm text-stone-300 bg-stone-50 border-t border-b border-stone-300">
+                class="inline-flex items-center pl-4 pr-[0.6rem] py-2 text-sm font-medium text-stone-400 bg-stone-100 border-t border-b border-stone-200">
           Next
           <div class="svg-icon ms-2 size-5 bg-stone-300 icon-arrow_right"></div>
         </button>
@@ -88,7 +88,7 @@
            hx-target="{{ hx_target }}"
            hx-swap="{{ hx_swap }}"
            hx-indicator="#{{ last_spinner_id }}"
-           class="group relative overflow-hidden cursor-pointer inline-flex items-center pl-4 pr-3 py-2 text-sm text-primary-500 bg-transparent border border-primary-500 rounded-e-full hover:bg-primary-500 hover:text-white focus:z-10 focus:ring-2 focus:ring-primary-300 focus:bg-primary-500 focus:text-white">
+           class="group relative overflow-hidden cursor-pointer inline-flex items-center pl-4 pr-3 py-2 text-sm font-medium text-primary-500 bg-transparent border border-primary-500 rounded-e-full hover:bg-primary-500 hover:text-white transition-colors focus:z-10 focus:ring-2 focus:ring-primary-300 focus:bg-primary-500 focus:text-white">
           <span class="inline-flex items-center group-[.htmx-request]:invisible">
             Last
             <div class="svg-icon ms-2 size-5 bg-primary-500 group-hover:bg-white icon-arrow_right_double"></div>
@@ -98,7 +98,7 @@
       {% else -%}
         <button type="button"
                 disabled
-                class="inline-flex items-center pl-4 pr-3 py-2 text-sm text-stone-300 bg-stone-50 border border-stone-300 rounded-e-full">
+                class="inline-flex items-center pl-4 pr-3 py-2 text-sm font-medium text-stone-400 bg-stone-100 border border-stone-200 rounded-e-full">
           Last
           <div class="svg-icon ms-2 size-5 bg-stone-300 icon-arrow_right_double"></div>
         </button>
@@ -107,3 +107,16 @@
     </div>
   </div>
 {%- endmacro navigation_links %}
+
+{# Range display -#}
+{% macro range_display(offset, count, total) -%}
+  {%- if count + 0 > 0 -%}
+    {%- if let Some(offset_number) = offset -%}
+      {{ offset_number + 1 }} - {{ count + offset_number }}
+    {%- else -%}
+      1 - {{ count }}
+    {%- endif -%}
+    {{ "" }} of <span class="font-semibold">{{ total }}</span> results
+  {%- endif -%}
+{%- endmacro range_display -%}
+{# End range display -#}

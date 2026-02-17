@@ -1,4 +1,4 @@
-{% macro header_link(text, href, active = false) -%}
+{% macro header_link(text, href, active) -%}
   <a href="{{ href }}"
      hx-boost="true"
      {% if active %}aria-current="page"{% endif %}

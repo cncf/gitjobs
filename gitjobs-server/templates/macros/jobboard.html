@@ -102,8 +102,6 @@
     {# Tags -#}
     <div class="flex flex-col md:flex-row gap-x-8 gap-y-6 xl:gap-10 w-full text-[0.8rem] text-stone-700">
       {% let kind = job.kind.to_string() -%}
-      {% let workplace = job.workplace.to_string() -%}
-
       <div class="flex items-center gap-x-8 xl:gap-x-10 min-w-0">
         {# Job type -#}
         <div class="flex flex-col space-y-1 min-w-[70px] md:min-w-auto">
@@ -230,7 +228,7 @@
   <div class="text-stone-400 text-[0.65rem] uppercase text-nowrap">{{ content }}</div>
 {% endmacro mini_title -%}
 
-{% macro copy_button(name, content = "") -%}
+{% macro copy_button(name, content) -%}
   <div class="relative">
     <button id="copy-btn-{{ name }}"
             type="button"
@@ -261,19 +259,19 @@
       {{ filters_subtitle(text = "Job type") -}}
       <div class="grid grid-cols-2 w-full gap-2 mt-3">
         {# Full time -#}
-        {{ checkbox(form = form, name = "kind[]", value = JobKind::FullTime, label = "Full Time", icon = "signature", active_filters = filters.kind, required = false, device = device) -}}
+        {{ checkbox(form = form, name = "kind[]", value = JobKind::FullTime, label = "Full Time", icon = "signature", active_filters = filters.kind, device = device) -}}
         {# End Full time -#}
 
         {# Part time -#}
-        {{ checkbox(form = form, name = "kind[]", value = JobKind::PartTime, label = "Part Time", icon = "hour_glass", active_filters = filters.kind, required = false, device = device) -}}
+        {{ checkbox(form = form, name = "kind[]", value = JobKind::PartTime, label = "Part Time", icon = "hour_glass", active_filters = filters.kind, device = device) -}}
         {# End Part time -#}
 
         {# Contractor -#}
-        {{ checkbox(form = form, name = "kind[]", value = JobKind::Contractor, label = "Contractor", icon = "clipboard", active_filters = filters.kind, required = false, device = device) -}}
+        {{ checkbox(form = form, name = "kind[]", value = JobKind::Contractor, label = "Contractor", icon = "clipboard", active_filters = filters.kind, device = device) -}}
         {# End Contractor -#}
 
         {# Internship -#}
-        {{ checkbox(form = form, name = "kind[]", value = JobKind::Internship, label = "Internship", icon = "graduation_cap", active_filters = filters.kind, required = false, device = device) -}}
+        {{ checkbox(form = form, name = "kind[]", value = JobKind::Internship, label = "Internship", icon = "graduation_cap", active_filters = filters.kind, device = device) -}}
         {# End Internship -#}
       </div>
     </div>
@@ -284,15 +282,15 @@
       {{ filters_subtitle(text = "Workplace") -}}
       <div class="grid grid-cols-2 w-full gap-2 mt-3">
         {# On site -#}
-        {{ checkbox(form = form, name = "workplace[]", value = Workplace::OnSite, label = "On Site", icon = "office_chair", active_filters = filters.workplace, required = false, device = device) -}}
+        {{ checkbox(form = form, name = "workplace[]", value = Workplace::OnSite, label = "On Site", icon = "office_chair", active_filters = filters.workplace, device = device) -}}
         {# End On site -#}
 
         {# Remote -#}
-        {{ checkbox(form = form, name = "workplace[]", value = Workplace::Remote, label = "Remote", icon = "remote", active_filters = filters.workplace, required = false, device = device) -}}
+        {{ checkbox(form = form, name = "workplace[]", value = Workplace::Remote, label = "Remote", icon = "remote", active_filters = filters.workplace, device = device) -}}
         {# End Remote -#}
 
         {# Hybrid -#}
-        {{ checkbox(form = form, name = "workplace[]", value = Workplace::Hybrid, label = "Hybrid", icon = "buildings", active_filters = filters.workplace, required = false, device = device) -}}
+        {{ checkbox(form = form, name = "workplace[]", value = Workplace::Hybrid, label = "Hybrid", icon = "buildings", active_filters = filters.workplace, device = device) -}}
         {# End Hybrid -#}
       </div>
     </div>
@@ -492,7 +490,7 @@
 {# End current page -#}
 
 {# Checkbox -#}
-{% macro checkbox(form, name, value, label, icon, active_filters, required = false, device = "") -%}
+{% macro checkbox(form, name, value, label, icon, active_filters, device) -%}
   <div class="group">
     <input id="{%- if !device.is_empty() -%}{{ device }}-{%- endif -%}{{ name }}-{{ value }}"
            form="{{ form }}"
@@ -501,8 +499,11 @@
            value="{{ value }}"
            data-trigger-form="true"
            class="hidden peer"
-           {%- if let Some(active_filters) = active_filters -%} {%- if active_filters.contains(value) -%}checked{%- endif -%} {%- endif %}
-           {% if required %}required{% endif %}>
+           {%- if let Some(active_filters) = active_filters -%}
+           {%- if active_filters.contains(value) -%}
+           checked
+           {%- endif -%}
+           {%- endif %}>
     <label for="{%- if !device.is_empty() -%}{{ device }}-{%- endif -%}{{ name }}-{{ value }}"
            class="inline-flex items-center justify-center w-full px-2 py-1 space-x-2 bg-white border border-stone-200 text-stone-700 rounded-md cursor-pointer select-none peer-checked:border-primary-500 peer-checked:text-primary-500 hover:bg-stone-50">
       <div class="svg-icon size-3 icon-{{ icon }} bg-stone-500 cursor-pointer group-has-[input:checked]:bg-primary-500">

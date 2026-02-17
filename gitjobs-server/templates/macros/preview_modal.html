@@ -1,4 +1,4 @@
-{% macro modal(on_close = "") -%}
+{% macro modal() -%}
   {# Preview modal -#}
   <div id="preview-modal"
        tabindex="-1"
@@ -29,9 +29,7 @@
       initializePreviewModalCloseHandlers
     } from '/static/js/common/common.js';
 
-    initializePreviewModalCloseHandlers({
-      cleanJobIdParam: {% if on_close == "clean_job_id_param" -%}true{%- else -%}false{%- endif %}
-    });
+    initializePreviewModalCloseHandlers();
 </script>
   {# djlint:on #}
 {% endmacro modal -%}

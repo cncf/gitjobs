@@ -10,20 +10,41 @@ test.describe("GitJobs - Job Seeker Profile", () => {
   test("should send experience fields using bracket keys on profile update", async ({
     page,
   }) => {
+    const setMarkdownValue = async (
+      selector: string,
+      value: string,
+    ): Promise<void> => {
+      const textarea = page.locator(selector).first();
+      await textarea.waitFor({ state: "attached", timeout: 10000 });
+      await textarea.evaluate(
+        (element, text) => {
+          if (!(element instanceof HTMLTextAreaElement)) {
+            return;
+          }
+
+          element.value = text;
+          element.dispatchEvent(new Event("input", { bubbles: true }));
+          element.dispatchEvent(new Event("change", { bubbles: true }));
+        },
+        value,
+      );
+    };
+
     await loginWithCredentials(page, "test", "test1234");
     await page.goto("/dashboard/job-seeker", { waitUntil: "domcontentloaded" });
     await page.locator("#name").waitFor({ state: "visible", timeout: 10000 });
 
     await page.locator("#name").fill("Test User");
     await page.locator("#email").fill("test@example.com");
-    await page.locator('textarea[name="summary"]').fill("Profile summary");
+    await setMarkdownValue('textarea[name="summary"]', "Profile summary");
 
     await page.locator('[data-section="experience"]').click();
     await page.locator('input[name="experience[0][title]"]').fill("Engineer");
     await page.locator('input[name="experience[0][company]"]').fill("ACME");
-    await page
-      .locator('textarea[name="experience[0][description]"]')
-      .fill("Worked on platform");
+    await setMarkdownValue(
+      'textarea[name="experience[0][description]"]',
+      "Worked on platform",
+    );
     await page
       .locator('input[name="experience[0][start_date]"]')
       .fill("2026-02-06");

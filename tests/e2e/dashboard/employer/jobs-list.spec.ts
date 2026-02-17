@@ -49,8 +49,9 @@ test.describe("GitJobs - Employer Jobs List", () => {
     const { actionButton, dropdown } = actionsDropdown;
     await expect(dropdown).toBeVisible();
 
-    const deleteAction = dropdown.locator("[data-delete-job-button]").first();
-    await deleteAction.click();
+    const menuAction = dropdown.locator('button[role="menuitem"]').first();
+    await expect(menuAction).toBeVisible();
+    await menuAction.click();
 
     await expect(dropdown).toBeHidden();
     await expect(actionButton).toHaveAttribute("aria-expanded", "false");
@@ -105,7 +106,9 @@ test.describe("GitJobs - Employer Jobs List", () => {
         .poll(
           async () => {
             return page
-              .locator('.btn-actions[data-action-dropdown-bound="true"]:visible')
+              .locator(
+                '.btn-actions[data-action-dropdown-bound="true"]:visible',
+              )
               .count();
           },
           { timeout: 10000 },

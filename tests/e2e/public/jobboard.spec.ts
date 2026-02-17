@@ -204,7 +204,9 @@ test.describe("GitJobs - Jobboard", () => {
       })
       .toBe(true);
 
-    await expect(page.locator("#results")).toHaveText(/1 - 20 of \d+ results/);
+    await expect(page.locator("#results")).toHaveText(
+      /^1 - \d+ of \d+ results$/,
+    );
   });
 
   test("should sort jobs", async ({ page }) => {

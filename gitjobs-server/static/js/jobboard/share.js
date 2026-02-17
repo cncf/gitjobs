@@ -79,29 +79,33 @@ export const shareJob = (root = document) => {
 
     // Copy link to clipboard
     const copyLink = socialLinks.querySelector("#copy-link");
-    if (copyLink && copyLink.dataset.copyInitialized !== "true") {
+    if (copyLink) {
       copyLink.setAttribute("href", shareUrl);
       copyLink.setAttribute("target", "_blank");
       copyLink.setAttribute("rel", "noopener noreferrer");
+      copyLink.dataset.shareUrl = shareUrl;
 
-      copyLink.addEventListener("click", async (event) => {
-        event.preventDefault();
-        try {
-          await copyToClipboard(shareUrl);
-        } catch (error) {
-          showErrorAlert("Something went wrong copying the link. Please try again later.");
-          return;
-        }
+      if (copyLink.dataset.copyInitialized !== "true") {
+        copyLink.addEventListener("click", async (event) => {
+          event.preventDefault();
+          const currentShareUrl = copyLink.dataset.shareUrl || shareUrl;
+          try {
+            await copyToClipboard(currentShareUrl);
+          } catch (error) {
+            showErrorAlert("Something went wrong copying the link. Please try again later.");
+            return;
+          }
 
-        const tooltip = socialLinks.querySelector("#copy-link-tooltip");
-        if (tooltip) {
-          tooltip.classList.add("opacity-100", "z-10");
-          setTimeout(() => {
-            tooltip.classList.remove("opacity-100", "z-10");
-          }, 3000);
-        }
-      });
-      copyLink.dataset.copyInitialized = "true";
+          const tooltip = socialLinks.querySelector("#copy-link-tooltip");
+          if (tooltip) {
+            tooltip.classList.add("opacity-100", "z-10");
+            setTimeout(() => {
+              tooltip.classList.remove("opacity-100", "z-10");
+            }, 3000);
+          }
+        });
+        copyLink.dataset.copyInitialized = "true";
+      }
     }
   });
 };

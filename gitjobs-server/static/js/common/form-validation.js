@@ -364,8 +364,9 @@ const handleConfigRequest = (event) => {
 const init = () => {
   document.querySelectorAll("form").forEach(wireForm);
 
-  if (window.htmx && typeof htmx.onLoad === "function") {
-    htmx.onLoad((element) => {
+  const htmxInstance = window.htmx;
+  if (typeof htmxInstance?.onLoad === "function") {
+    htmxInstance.onLoad((element) => {
       if (!element) {
         return;
       }

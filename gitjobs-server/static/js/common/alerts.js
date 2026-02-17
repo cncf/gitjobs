@@ -303,8 +303,9 @@ export const showConfirmAlert = (message, buttonId, confirmText, cancelText = "N
   Swal.fire(alertOptions).then((result) => {
     if (result.isConfirmed) {
       const confirmButton = document.getElementById(buttonId);
-      if (confirmButton && typeof htmx?.trigger === "function") {
-        htmx.trigger(confirmButton, "confirmed");
+      const htmxInstance = window.htmx;
+      if (confirmButton && typeof htmxInstance?.trigger === "function") {
+        htmxInstance.trigger(confirmButton, "confirmed");
       }
     }
   });

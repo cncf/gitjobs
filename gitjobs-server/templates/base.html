@@ -95,6 +95,11 @@
           }
 
           (() => {
+            if (window.__gitjobsAnalyticsVirtualPvInitialized) {
+              return;
+            }
+            window.__gitjobsAnalyticsVirtualPvInitialized = true;
+
             let lastVirtualHref = null;
 
             // Function to build virtual path for job pages

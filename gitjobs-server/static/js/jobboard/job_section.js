@@ -69,7 +69,10 @@ const initializeApplyButton = (root = document) => {
         const jobId = applyButton.dataset.jobId;
         applyButton.setAttribute("hx-post", `/jobs/${jobId}/apply`);
         applyButton.setAttribute("hx-trigger", "confirmed");
-        htmx.process(applyButton);
+        const htmxInstance = window.htmx;
+        if (typeof htmxInstance?.process === "function") {
+          htmxInstance.process(applyButton);
+        }
         applyButton.addEventListener("click", () => {
           showConfirmAlert("Are you sure you want to apply to this job?", applyButton.id, "Yes");
         });

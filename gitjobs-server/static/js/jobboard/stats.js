@@ -463,7 +463,12 @@ const renderLineChart = (data) => {
       axisLabel: {
         hideOverlap: true,
         formatter: (value) => {
-          const date = echarts.time.format(Number.parseInt(value, 10), "{dd} {MMM}");
+          const timestamp = Number.parseInt(value, 10);
+          if (Number.isNaN(timestamp)) {
+            return "";
+          }
+
+          const date = echarts.time.format(timestamp, "{dd} {MMM}");
           return date;
         },
       },
@@ -481,7 +486,6 @@ const renderLineChart = (data) => {
       type: "line",
       name: "Published jobs",
       encode: { x: "timestamp", y: "jobs" },
-      areaStyle: {},
       datasetIndex: 1,
       areaStyle: {
         color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
@@ -510,7 +514,7 @@ const renderLineChart = (data) => {
     ],
   };
 
-  option && myChart.setOption(option);
+  myChart.setOption(option);
 };
 
 /**
@@ -632,7 +636,7 @@ const renderBarDailyChart = (data, max, min) => {
       max: getMaxDateValue(data, max),
     },
   };
-  option && myChart.setOption(option);
+  myChart.setOption(option);
 };
 
 /**
@@ -682,7 +686,7 @@ const renderBarMonthlyChart = (data, max, min) => {
       max: getMaxDateValue(data, max),
     },
   };
-  option && myChart.setOption(option);
+  myChart.setOption(option);
 };
 
 /**
@@ -696,8 +700,14 @@ export const renderStats = () => {
   const data = container.dataset.stats;
   if (!data) return;
 
-  const stats = JSON.parse(data);
-  if (!stats) return;
+  let stats;
+  try {
+    stats = JSON.parse(data);
+  } catch (_) {
+    return;
+  }
+
+  if (!stats?.jobs) return;
 
   // Register the GitJobs theme for ECharts
   if (!document.__gitjobsStatsThemeRegistered) {

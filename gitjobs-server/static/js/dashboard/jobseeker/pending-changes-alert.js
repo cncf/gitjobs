@@ -86,13 +86,21 @@ export const initializePendingChangesAlert = ({
   };
 
   const schedulePendingChangesRefresh = () => {
-    if (pendingChangesAnimationFrame) {
+    if (pendingChangesAnimationFrame !== null) {
       return;
     }
-    pendingChangesAnimationFrame = requestAnimationFrame(() => {
+
+    const runRefresh = () => {
       pendingChangesAnimationFrame = null;
       refreshPendingChangesState();
-    });
+    };
+
+    if (typeof requestAnimationFrame === "function") {
+      pendingChangesAnimationFrame = requestAnimationFrame(runRefresh);
+      return;
+    }
+
+    pendingChangesAnimationFrame = setTimeout(runRefresh, 0);
   };
 
   const markCurrentAsClean = () => {
@@ -134,11 +142,17 @@ export const initializePendingChangesAlert = ({
       });
     });
 
-    requestAnimationFrame(() => {
+    const initializeTracking = () => {
       initialFormSnapshot = buildFormsSnapshot(trackedForms);
       pendingChangesReady = true;
       refreshPendingChangesState();
-    });
+    };
+
+    if (typeof requestAnimationFrame === "function") {
+      requestAnimationFrame(initializeTracking);
+    } else {
+      setTimeout(initializeTracking, 0);
+    }
   }
 
   if (cancelButton && confirmMessage) {

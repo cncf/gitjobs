@@ -83,9 +83,14 @@ export const copyToClipboard = async (content) => {
   temporaryInput.style.position = "absolute";
   temporaryInput.style.left = "-9999px";
   document.body.appendChild(temporaryInput);
-  temporaryInput.select();
-  const copied = document.execCommand("copy");
-  document.body.removeChild(temporaryInput);
+  let copied = false;
+  try {
+    temporaryInput.select();
+    copied = document.execCommand("copy");
+  } finally {
+    document.body.removeChild(temporaryInput);
+  }
+
   if (!copied) {
     throw new Error("Failed to copy text.");
   }
@@ -658,8 +663,9 @@ export const initializeNoEmptyValuesExtension = () => {
  */
 export const triggerActionOnForm = (formId, action) => {
   const form = document.getElementById(formId);
-  if (form && typeof htmx?.trigger === "function") {
-    htmx.trigger(form, action);
+  const htmxInstance = window.htmx;
+  if (form && typeof htmxInstance?.trigger === "function") {
+    htmxInstance.trigger(form, action);
   }
 };
 
@@ -739,18 +745,19 @@ const modifyCurrentUrl = (params, state) => {
  * @param {boolean} [onLoad=false] - True if called on page load (registers view)
  */
 export const shouldDisplayJobModal = (onLoad = false) => {
+  const htmxInstance = window.htmx;
   const jobId = getParamFromQueryString("job_id");
-  if (jobId) {
+  if (jobId && typeof htmxInstance?.process === "function" && typeof htmxInstance?.trigger === "function") {
     const elementId = `job-preview-${jobId}`;
     const jobPreviewButton = document.getElementById(elementId);
     if (jobPreviewButton) {
-      htmx.process(jobPreviewButton);
+      htmxInstance.process(jobPreviewButton);
       if (onLoad) {
         // Page load: trigger with open-modal event (registers view)
-        htmx.trigger(jobPreviewButton, "open-modal");
+        htmxInstance.trigger(jobPreviewButton, "open-modal");
       } else {
         // Browser navigation: trigger without registering view
-        htmx.trigger(jobPreviewButton, "open-modal-on-popstate");
+        htmxInstance.trigger(jobPreviewButton, "open-modal-on-popstate");
       }
     }
   }

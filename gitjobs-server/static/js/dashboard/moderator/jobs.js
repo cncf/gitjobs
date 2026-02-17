@@ -34,7 +34,10 @@ export const initializeModeratorJobs = () => {
       }
 
       rejectJobForm.setAttribute("hx-put", `/dashboard/moderator/jobs/${jobId}/reject`);
-      htmx.process(rejectJobForm);
+      const htmxInstance = window.htmx;
+      if (typeof htmxInstance?.process === "function") {
+        htmxInstance.process(rejectJobForm);
+      }
       toggleModalVisibility("reject-modal", "open");
     });
 

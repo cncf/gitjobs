@@ -57,11 +57,14 @@ export const initializeImagesForm = ({
     boundAttribute: "imagesFormBound",
   });
 
-  cleanImage.addEventListener("click", () => {
-    inputHidden.value = "";
-    cleanImage.disabled = true;
-    placeholderImage.classList.remove("hidden");
-    image.setAttribute("src", "");
-    image.classList.add("hidden");
-  });
+  if (cleanImage.dataset.cleanImageBound !== "true") {
+    cleanImage.addEventListener("click", () => {
+      inputHidden.value = "";
+      cleanImage.disabled = true;
+      placeholderImage.classList.remove("hidden");
+      image.setAttribute("src", "");
+      image.classList.add("hidden");
+    });
+    cleanImage.dataset.cleanImageBound = "true";
+  }
 };

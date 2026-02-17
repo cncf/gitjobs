@@ -10,6 +10,7 @@ import {
   openSignUpPage,
   openUserMenu,
   searchInput,
+  switchEmployerIfAvailable,
   JOB_TITLE_SELECTOR,
 } from './utils';
 
@@ -613,6 +614,46 @@ test.describe('GitJobs', () => {
     await expect(dropdown).toBeHidden();
     await expect(actionButton).toHaveAttribute('aria-expanded', 'false');
     await expect(dropdown).toHaveAttribute('aria-hidden', 'true');
+  });
+
+  test('should close previously opened employer job actions dropdown when opening another one', async ({ page }) => {
+    await loginWithCredentials(page, 'test', 'test1234');
+    await page.goto('/dashboard/employer?tab=jobs');
+
+    let actionButtons = page.locator('.btn-actions:visible');
+    if ((await actionButtons.count()) < 2) {
+      await switchEmployerIfAvailable(page);
+      actionButtons = page.locator('.btn-actions:visible');
+    }
+
+    const visibleButtonsCount = await actionButtons.count();
+    if (visibleButtonsCount < 2) {
+      throw new Error('Expected at least two employer job action buttons.');
+    }
+
+    const firstButton = actionButtons.nth(0);
+    const secondButton = actionButtons.nth(1);
+
+    const firstJobId = await firstButton.getAttribute('data-job-id');
+    const secondJobId = await secondButton.getAttribute('data-job-id');
+    expect(firstJobId).toBeTruthy();
+    expect(secondJobId).toBeTruthy();
+    expect(firstJobId).not.toBe(secondJobId);
+
+    const firstDropdown = page.locator(`#dropdown-actions-${firstJobId}`);
+    const secondDropdown = page.locator(`#dropdown-actions-${secondJobId}`);
+
+    await firstButton.click();
+    await expect(firstDropdown).toBeVisible();
+    await expect(firstButton).toHaveAttribute('aria-expanded', 'true');
+
+    await secondButton.click();
+    await expect(secondDropdown).toBeVisible();
+    await expect(secondButton).toHaveAttribute('aria-expanded', 'true');
+
+    await expect(firstDropdown).toBeHidden();
+    await expect(firstButton).toHaveAttribute('aria-expanded', 'false');
+    await expect(firstDropdown).toHaveAttribute('aria-hidden', 'true');
   });
 
   test('should close employer selector dropdown after choosing an employer', async ({ page }) => {

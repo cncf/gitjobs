@@ -144,7 +144,7 @@ export const handleHtmxResponse = ({
  * @param {string} [params.invalidMessage] - Optional message for 422 invalid input
  * @returns {boolean} True when preview can be shown
  */
-export const handlePreviewResponse = ({ xhr, errorMessage, invalidMessage = "" }) => {
+const handlePreviewResponse = ({ xhr, errorMessage, invalidMessage = "" }) => {
   if (xhr?.status === 422 && invalidMessage) {
     showErrorAlert(invalidMessage);
     return false;
@@ -162,7 +162,7 @@ export const handlePreviewResponse = ({ xhr, errorMessage, invalidMessage = "" }
  * @param {string} [params.modalId="preview-modal"] - Preview modal id
  * @returns {boolean} True when preview modal is opened
  */
-export const handlePreviewModalResponse = ({
+const handlePreviewModalResponse = ({
   xhr,
   errorMessage,
   invalidMessage = "",

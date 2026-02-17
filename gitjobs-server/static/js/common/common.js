@@ -350,6 +350,7 @@ export const initializePreviewModalCloseHandlers = ({ cleanJobIdParam = false, o
  * @param {string} options.dropdownId - Dropdown menu element id
  * @param {string} options.guardKey - Document key used to bind global listeners once
  * @param {string} [options.closeOnItemClickSelector] - Optional selector to close on item click
+ * @param {Function|null} [options.beforeOpen] - Optional callback fired before opening dropdown
  * @returns {Function} Function that closes the dropdown
  */
 export const initializeButtonDropdown = ({
@@ -357,6 +358,7 @@ export const initializeButtonDropdown = ({
   dropdownId,
   guardKey,
   closeOnItemClickSelector = "",
+  beforeOpen = null,
 }) => {
   const hideDropdown = () => {
     const currentButton = document.getElementById(buttonId);
@@ -388,6 +390,15 @@ export const initializeButtonDropdown = ({
 
       const willOpen = currentDropdown.classList.contains("hidden");
       if (willOpen) {
+        if (typeof beforeOpen === "function") {
+          beforeOpen({
+            button: currentButton,
+            dropdown: currentDropdown,
+            buttonId,
+            dropdownId,
+          });
+        }
+
         currentDropdown.classList.remove("hidden");
         currentDropdown.setAttribute("aria-hidden", "false");
       } else {

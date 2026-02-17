@@ -262,33 +262,28 @@ export const initializeEmployerJobsListTable = () => {
       return;
     }
 
-    actionButton.addEventListener("click", () => {
-      const shouldOpen = dropdownActions.classList.contains("hidden");
-      if (!shouldOpen) {
-        return;
-      }
-
-      const allActionDropdowns = document.querySelectorAll('[id^="dropdown-actions-"]');
-      allActionDropdowns.forEach((dropdown) => {
-        if (dropdown.id === dropdownId) {
-          return;
-        }
-
-        dropdown.classList.add("hidden");
-        dropdown.setAttribute("aria-hidden", "true");
-        const openJobId = dropdown.id.replace("dropdown-actions-", "");
-        const openActionButton = document.querySelector(`.btn-actions[data-job-id="${openJobId}"]`);
-        if (openActionButton) {
-          openActionButton.setAttribute("aria-expanded", "false");
-        }
-      });
-    });
-
     initializeButtonDropdown({
       buttonId: actionButton.id,
       dropdownId,
       guardKey: `__gitjobsJobActionsDropdownBound:${jobId}`,
       closeOnItemClickSelector: "button, a",
+      beforeOpen: () => {
+        const allActionDropdowns = document.querySelectorAll('[id^="dropdown-actions-"]');
+        allActionDropdowns.forEach((dropdown) => {
+          if (dropdown.id === dropdownId) {
+            return;
+          }
+
+          dropdown.classList.add("hidden");
+          dropdown.setAttribute("aria-hidden", "true");
+
+          const openJobId = dropdown.id.replace("dropdown-actions-", "");
+          const openActionButton = document.querySelector(`.btn-actions[data-job-id="${openJobId}"]`);
+          if (openActionButton) {
+            openActionButton.setAttribute("aria-expanded", "false");
+          }
+        });
+      },
     });
 
     actionButton.dataset.actionDropdownBound = "true";

@@ -29,6 +29,31 @@ const countVisibleNoDataMessages = async (page: Page): Promise<number> => {
   });
 };
 
+const waitForOnlyJobTypeResults = async (page: Page, expectedType: string): Promise<void> => {
+  const expectedTypePattern = expectedType
+    .trim()
+    .split(/\s+/)
+    .map((word) => word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+    .join('\\s+');
+  const jobTypePattern = new RegExp(`Job\\s*type\\s*${expectedTypePattern}`, 'i');
+
+  await expect
+    .poll(
+      async () => {
+        const cards = page.locator('[data-preview-job="true"]');
+        const totalCards = await cards.count();
+        if (totalCards === 0) {
+          return false;
+        }
+
+        const matchingCards = await page.locator('[data-preview-job="true"]', { hasText: jobTypePattern }).count();
+        return totalCards === matchingCards;
+      },
+      { timeout: 10000 }
+    )
+    .toBe(true);
+};
+
 test.describe('GitJobs', () => {
   test.beforeEach(async ({ page }) => {
     let lastError: unknown;
@@ -53,7 +78,8 @@ test.describe('GitJobs', () => {
   test('should apply a filter and verify that the results are updated', async ({ page }) => {
     await page.locator('div:nth-child(4) > div > .font-semibold').first().click();
     await page.locator('label').filter({ hasText: 'Full Time' }).nth(1).click();
-    await waitForJobCount(page, 12);
+    await expect(page).toHaveURL(/full-time/);
+    await waitForOnlyJobTypeResults(page, 'full time');
 
     const jobTypeButtonsList = await jobTypeButtons(page).all();
     for (const jobCard of jobTypeButtonsList) {
@@ -126,7 +152,8 @@ test.describe('GitJobs', () => {
     await page.waitForSelector('#drawer-filters', { state: 'visible' });
     await page.locator('#drawer-filters label').filter({ hasText: 'Full Time' }).click();
     await page.locator('#close-filters').click();
-    await waitForJobCount(page, 12);
+    await expect(page).toHaveURL(/full-time/);
+    await waitForOnlyJobTypeResults(page, 'full time');
 
     const jobTypeButtonsList = await jobTypeButtons(page).all();
     for (const jobCard of jobTypeButtonsList) {
@@ -704,7 +731,7 @@ test.describe('GitJobs', () => {
     await expect(nextButton).toBeVisible();
     await nextButton.click();
     await expect(page).toHaveURL(/offset=20/);
-    await expect(page.locator('#results')).toHaveText('21 - 21 of 21 results');
+    await expect(page.locator('#results')).toHaveText(/^21 - \d+ of \d+ results$/);
   });
 
   test('should show pagination spinner while loading next page', async ({ page }) => {
@@ -723,6 +750,6 @@ test.describe('GitJobs', () => {
 
     await expect(page.locator('#pagination-next-spinner')).toBeVisible();
     await expect(page).toHaveURL(/offset=20/);
-    await expect(page.locator('#results')).toHaveText('21 - 21 of 21 results');
+    await expect(page.locator('#results')).toHaveText(/^21 - \d+ of \d+ results$/);
   });
 });

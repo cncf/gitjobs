@@ -1,6 +1,6 @@
 {% import "macros/ui.html" as ui -%}
 
-{% macro jobs_table(jobs, kind = "live") -%}
+{% macro jobs_table(jobs, is_pending = false) -%}
   <div class="hidden md:block relative overflow-visible mt-10">
     <table class="table-fixed w-full text-xs lg:text-sm text-left rtl:text-right text-stone-500">
       <thead class="text-xs text-stone-700 uppercase bg-stone-100 border-b border-stone-200">
@@ -20,9 +20,9 @@
           <tr class="bg-white border-b border-stone-200">
             {# No jobs -#}
             <td class="px-8 py-20 text-center table-cell lg:hidden xl:table-cell"
-                colspan="5">{{ placeholder_jobs() -}}</td>
+                colspan="5">{{ placeholder_jobs(is_pending = is_pending) -}}</td>
             <td class="px-8 py-20 text-center hidden lg:table-cell xl:hidden"
-                colspan="4">{{ placeholder_jobs() -}}</td>
+                colspan="4">{{ placeholder_jobs(is_pending = is_pending) -}}</td>
             {# End no jobs -#}
           </tr>
         {% else -%}
@@ -61,7 +61,7 @@
               {# Actions -#}
               <td class="px-3 xl:px-5">
                 <div class="flex items-center justify-center space-x-2">
-                  {% if kind == "pending" -%}
+                  {% if is_pending -%}
                     <div>
                       <button hx-put="/dashboard/moderator/jobs/{{ job.job_id }}/approve"
                               data-approve-job-button="true"
@@ -91,7 +91,7 @@
   </div>
 {% endmacro jobs_table -%}
 
-{% macro mobile_job_card(job, kind = "live") -%}
+{% macro mobile_job_card(job, is_pending = false) -%}
   <div class="border border-stone-200 bg-white rounded-lg p-5">
     <div class="flex justify-between items-center">
       {# Comapny -#}
@@ -124,7 +124,7 @@
 
     {# Actions -#}
     <div class="flex items-center justify-center space-x-2 mt-4">
-      {% if kind == "pending" -%}
+      {% if is_pending -%}
         <div>
           <button hx-put="/dashboard/moderator/jobs/{{ job.job_id }}/approve"
                   data-approve-job-button="true"
@@ -148,6 +148,43 @@
     {# End actions -#}
   </div>
 {% endmacro mobile_job_card -%}
+
+{% macro mobile_jobs_cards(jobs, empty_title, is_pending = false) -%}
+  <div class="flex flex-col space-y-4 md:hidden mt-6">
+    {% if jobs.is_empty() -%}
+      {{ ui::empty_state_alert(title = empty_title) -}}
+    {% else -%}
+      {% for job in jobs -%}
+        {{ mobile_job_card(job = job, is_pending = is_pending) -}}
+      {% endfor -%}
+    {% endif -%}
+  </div>
+{% endmacro mobile_jobs_cards -%}
+
+{% macro jobs_page(title, jobs, empty_title, is_pending = false) -%}
+  <div class="flex items-center">
+    {# Mobile filters button -#}
+    <div class="flex shrink-0 me-3 md:me-6 lg:hidden">
+      <button id="open-menu-button"
+              class="btn-primary-outline group size-[40px] p-0 items-center flex justify-center">
+        <div class="svg-icon size-4 icon-menu group-hover:bg-white shrink-0"></div>
+      </button>
+    </div>
+    {# End mobile filters button -#}
+    {{ ui::form_title(title = title) -}}
+  </div>
+
+  {{ jobs_table(jobs = jobs, is_pending = is_pending) -}}
+  {{ mobile_jobs_cards(jobs = jobs, empty_title = empty_title, is_pending = is_pending) -}}
+
+  {# Preview modal -#}
+  {% include "misc/moderator_preview_modal.html" -%}
+  {# End preview modal -#}
+
+  {# Reject modal -#}
+  {% include "misc/moderator_reject_modal.html" -%}
+  {# End reject modal -#}
+{% endmacro jobs_page -%}
 
 {% macro employer_member_badge(employer, with_legend = true, with_popover = false) -%}
   <div>
@@ -213,9 +250,9 @@
   </div>
 {% endmacro employer_member_badge -%}
 
-{% macro placeholder_jobs() -%}
+{% macro placeholder_jobs(is_pending = false) -%}
   <div class="text-xl lg:text-2xl mb-10">
-    {% if kind == "pending" -%}
+    {% if is_pending -%}
       <div>There are no moderation pending jobs at the moment.</div>
     {% else -%}
       <div>There are no live jobs at the moment.</div>

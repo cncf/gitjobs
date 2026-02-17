@@ -123,6 +123,18 @@
 {% endmacro form_title -%}
 {# End form title #}
 
+{# Empty state alert #}
+{% macro empty_state_alert(title, description = "Thanks for checking, please come back later :)", wrapper_styles = "mt-10 p-5", title_styles = "text-lg mb-6", description_styles = "text-stone-700") -%}
+  <div class="border border-primary-500 rounded-lg bg-primary-50/20 {{ wrapper_styles }}"
+       role="alert">
+    <div class="{{ title_styles }}">
+      <div>{{ title }}</div>
+    </div>
+    <p class="{{ description_styles }}">{{ description }}</p>
+  </div>
+{% endmacro empty_state_alert -%}
+{# End empty state alert #}
+
 {# Radio box #}
 {% macro radio_box(name, value, label, icon, checked = "", required = false) -%}
   <div class="flex items-center px-3 py-2 border border-stone-200 rounded-md">

@@ -10,7 +10,6 @@ import {
   openSignUpPage,
   openUserMenu,
   searchInput,
-  waitForJobCount,
   JOB_TITLE_SELECTOR,
 } from './utils';
 
@@ -48,6 +47,37 @@ const waitForOnlyJobTypeResults = async (page: Page, expectedType: string): Prom
 
         const matchingCards = await page.locator('[data-preview-job="true"]', { hasText: jobTypePattern }).count();
         return totalCards === matchingCards;
+      },
+      { timeout: 10000 }
+    )
+    .toBe(true);
+};
+
+const waitForOnlyJobTypeSetResults = async (page: Page, expectedTypes: string[]): Promise<void> => {
+  const typePatterns = expectedTypes.map((expectedType) => {
+    const normalizedExpectedType = expectedType
+      .trim()
+      .split(/\s+/)
+      .map((word) => word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+      .join('\\s+');
+
+    return new RegExp(`Job\\s*type\\s*${normalizedExpectedType}`, 'i');
+  });
+
+  await expect
+    .poll(
+      async () => {
+        const cards = page.locator('[data-preview-job="true"]');
+        const totalCards = await cards.count();
+        if (totalCards === 0) {
+          return false;
+        }
+
+        const matchesByType = await Promise.all(
+          typePatterns.map((pattern) => page.locator('[data-preview-job="true"]', { hasText: pattern }).count())
+        );
+        const totalMatches = matchesByType.reduce((sum, value) => sum + value, 0);
+        return totalMatches === totalCards;
       },
       { timeout: 10000 }
     )
@@ -94,8 +124,9 @@ test.describe('GitJobs', () => {
     await page.locator('div:nth-child(4) > div > .font-semibold').first().click();
     await page.locator('label').filter({ hasText: 'Part Time' }).nth(1).click();
     await page.locator('label').filter({ hasText: 'Internship' }).nth(1).click();
-
-    await waitForJobCount(page, 6);
+    await expect(page).toHaveURL(/part-time/);
+    await expect(page).toHaveURL(/internship/);
+    await waitForOnlyJobTypeSetResults(page, ['part time', 'internship']);
 
     const jobTypeButtonsList = await jobTypeButtons(page).all();
     for (const jobCard of jobTypeButtonsList) {
@@ -203,10 +234,28 @@ test.describe('GitJobs', () => {
 
   test('should reset filters', async ({ page }) => {
     await page.locator('label').filter({ hasText: 'Part Time' }).nth(1).click();
-
-    await waitForJobCount(page, 3);
+    await expect(page).toHaveURL(/part-time/);
+    await waitForOnlyJobTypeResults(page, 'part time');
     await page.locator('#reset-desktop-filters').click();
-    await waitForJobCount(page, 20);
+
+    await expect(page).not.toHaveURL(/part-time/);
+    await expect(page.locator('[data-preview-job="true"]').first()).toBeVisible();
+    await expect
+      .poll(async () => {
+        const cards = page.locator('[data-preview-job="true"]');
+        const totalCards = await cards.count();
+        if (totalCards === 0) {
+          return false;
+        }
+
+        const partTimeCards = await page
+          .locator('[data-preview-job="true"]', { hasText: /Job\s*type\s*part\s*time/i })
+          .count();
+
+        return partTimeCards < totalCards;
+      })
+      .toBe(true);
+
     await expect(page.locator('#results')).toHaveText(/1 - 20 of \d+ results/);
   });
 

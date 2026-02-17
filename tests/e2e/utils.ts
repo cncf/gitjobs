@@ -9,14 +9,6 @@ export const jobCards = (page: Page): Locator => page.locator(JOB_CARD_SELECTOR)
 
 export const jobTitles = (page: Page): Locator => page.locator(JOB_TITLE_SELECTOR);
 
-export const waitForJobCount = async (page: Page, expected: number): Promise<void> => {
-  await page.waitForFunction(
-    ({ selector, count }: { selector: string; count: number }) =>
-      document.querySelectorAll(selector).length === count,
-    { selector: JOB_CARD_SELECTOR, count: expected }
-  );
-};
-
 export const jobTypeButtons = (page: Page): Locator =>
   page.getByRole('button', { name: /Job type/ });
 

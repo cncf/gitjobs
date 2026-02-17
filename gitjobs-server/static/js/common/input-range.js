@@ -141,7 +141,7 @@ export class InputRange extends LitWrapper {
    */
   _prettyNumber(value) {
     if (value > 1000) {
-      return parseInt(value / 1000);
+      return Number.parseInt(value / 1000, 10);
     }
     return value;
   }

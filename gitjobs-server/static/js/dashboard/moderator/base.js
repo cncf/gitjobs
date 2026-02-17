@@ -3,7 +3,7 @@ import { initializeCloseMenuControls, initializeOpenMenuButton } from "/static/j
 /**
  * Initializes moderator dashboard drawer controls.
  */
-export const initializeModeratorBase = () => {
+const initializeModeratorBase = () => {
   initializeOpenMenuButton();
   initializeCloseMenuControls();
 };

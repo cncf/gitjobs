@@ -463,7 +463,7 @@ const renderLineChart = (data) => {
       axisLabel: {
         hideOverlap: true,
         formatter: (value) => {
-          const date = echarts.time.format(parseInt(value), "{dd} {MMM}");
+          const date = echarts.time.format(Number.parseInt(value, 10), "{dd} {MMM}");
           return date;
         },
       },

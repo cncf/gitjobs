@@ -5,7 +5,7 @@ import { bindHtmxAfterRequestOnce, triggerActionOnForm } from "/static/js/common
  * Validates and adjusts salary fields based on selected salary type.
  * Ensures proper required attributes for range vs exact salary.
  */
-export const checkSalaryBeforeSubmit = () => {
+const checkSalaryBeforeSubmit = () => {
   const salaryPeriodField = document.querySelector('select[name="salary_period"]');
   const salaryCurrencyField = document.querySelector('select[name="salary_currency"]');
   const salaryField = document.querySelector('input[name="salary"]');
@@ -42,7 +42,7 @@ export const checkSalaryBeforeSubmit = () => {
       if (
         salaryMaxField.value &&
         salaryMinField.value &&
-        parseInt(salaryMaxField.value) < parseInt(salaryMinField.value)
+        Number.parseInt(salaryMaxField.value, 10) < Number.parseInt(salaryMinField.value, 10)
       ) {
         salaryMaxField.setCustomValidity("Maximum salary cannot be less than minimum salary.");
 
@@ -79,14 +79,14 @@ export const checkSalaryBeforeSubmit = () => {
   }
 
   const jobsForm = document.getElementById("jobs-form");
-  jobsForm.reportValidity(); // Trigger validation on the form
+  jobsForm?.reportValidity(); // Trigger validation on the form
 };
 
 /**
  * Validates open source and upstream commitment values.
  * Ensures that upstream commitment is not greater than open source value.
  */
-export const checkOpenSourceValues = () => {
+const checkOpenSourceValues = () => {
   const openSource = document.querySelector('input[name="open_source"]');
   const upstreamCommitment = document.querySelector('input[name="upstream_commitment"]');
 
@@ -100,7 +100,7 @@ export const checkOpenSourceValues = () => {
 
   if (openSource.value && upstreamCommitment.value) {
     // If both fields are filled, validate that upstream commitment is not greater than open source
-    if (parseInt(upstreamCommitment.value) > parseInt(openSource.value)) {
+    if (Number.parseInt(upstreamCommitment.value, 10) > Number.parseInt(openSource.value, 10)) {
       upstreamCommitment.setCustomValidity("Upstream commitment cannot be greater than open source value.");
     }
   }
@@ -110,7 +110,7 @@ export const checkOpenSourceValues = () => {
  * Validates job title to prevent "remote" in title.
  * @param {HTMLInputElement} input - The job title input element
  */
-export const checkJobTitle = (input) => {
+const checkJobTitle = (input) => {
   input.setCustomValidity("");
   const jobTitle = input.value.trim();
   if (jobTitle.toLowerCase().includes("remote")) {

@@ -4,7 +4,7 @@ import { initializeModalCloseHandlers, setDrawerVisibility } from "/static/js/co
  * Opens the mobile navigation drawer menu.
  * Adds transition effects and manages backdrop visibility.
  */
-export const openNavigationDrawer = () => {
+const openNavigationDrawer = () => {
   setDrawerVisibility({ drawerId: "drawer-menu", open: true });
 };
 
@@ -12,7 +12,7 @@ export const openNavigationDrawer = () => {
  * Closes the mobile navigation drawer menu.
  * Removes transition effects and resets scroll position.
  */
-export const closeNavigationDrawer = () => {
+const closeNavigationDrawer = () => {
   setDrawerVisibility({ drawerId: "drawer-menu", open: false });
 };
 

@@ -28,7 +28,7 @@ export const lockBodyScroll = () => {
  * Unlocks body scroll by restoring overflow. Uses a counter to handle multiple
  * modals. Only unlocks scroll when all modals are closed.
  */
-export const unlockBodyScroll = () => {
+const unlockBodyScroll = () => {
   const body = document.body;
   const current = Number.parseInt(body.dataset.modalOpenCount || "0", 10);
   const next = Number.isNaN(current) ? 0 : Math.max(0, current - 1);
@@ -705,7 +705,7 @@ export const addParamToQueryString = (param, value, state) => {
  * @param {string} param - The parameter name to remove
  * @param {Object} [state] - Optional history state object
  */
-export const removeParamFromQueryString = (param, state) => {
+const removeParamFromQueryString = (param, state) => {
   const searchParams = new URLSearchParams(window.location.search);
   if (searchParams.has(param)) {
     searchParams.delete(param);
@@ -718,7 +718,7 @@ export const removeParamFromQueryString = (param, state) => {
  * @param {string} param - The parameter name
  * @returns {string|null} The parameter value or null if not found
  */
-export const getParamFromQueryString = (param) => {
+const getParamFromQueryString = (param) => {
   const searchParams = new URLSearchParams(window.location.search);
   return searchParams.get(param);
 };
@@ -728,7 +728,7 @@ export const getParamFromQueryString = (param) => {
  * @param {string} params - The query string parameters
  * @param {Object} [state] - Optional history state object
  */
-export const modifyCurrentUrl = (params, state) => {
+const modifyCurrentUrl = (params, state) => {
   const newUrl = `${window.location.pathname}${params ? `?${params}` : ""}`;
   history.pushState(state || {}, "new_url", newUrl);
 };

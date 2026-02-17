@@ -21,7 +21,7 @@ import { shareJob } from "/static/js/jobboard/share.js";
  * Handles different states: logged out, external URL, no profile.
  * @param {Document|HTMLElement} [root=document] - Root element containing the apply button
  */
-export const initializeApplyButton = (root = document) => {
+const initializeApplyButton = (root = document) => {
   const applyButton = root.querySelector("#apply-button");
   if (!applyButton || applyButton.dataset.applyBound === "true") {
     return;

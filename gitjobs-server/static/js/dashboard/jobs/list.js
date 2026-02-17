@@ -15,7 +15,7 @@ const JOBS_STATS_CHART_IDS = ["job-chart-views", "job-chart-search-appearances"]
  * Shows statistics for a specific job in a modal
  * @param {string} id - The ID of the job to display stats for
  */
-export const showStats = async (id) => {
+const showStats = async (id) => {
   // Get loading spinner reference
   const spinnerStats = document.getElementById(`spinner-stats-${id}`);
 
@@ -99,7 +99,7 @@ export const showStats = async (id) => {
 /**
  * Closes the statistics modal and cleans up resources
  */
-export const closeStats = () => {
+const closeStats = () => {
   // Dispose of all chart instances to free up memory
   JOBS_STATS_CHART_IDS.forEach((id) => {
     const chartDom = document.getElementById(id);
@@ -149,7 +149,7 @@ const renderChart = (data, chartId, chartType) => {
   const month = min.getMonth();
   min.setMonth(min.getMonth() - 1);
   // Handle edge case when today is the first day of the month
-  if (min.getMonth() == month) min.setDate(0);
+  if (min.getMonth() === month) min.setDate(0);
   min.setHours(0, 0, 0, 0);
 
   // Get the chart container element
@@ -200,13 +200,13 @@ const renderChart = (data, chartId, chartType) => {
   };
 
   // Render the chart with the configured options
-  option && chart.setOption(option);
+  chart.setOption(option);
 };
 
 /**
  * Registers the GitJobs theme for ECharts
  */
-export const registerEchartsTheme = () => {
+const registerEchartsTheme = () => {
   // Register the custom GitJobs theme for consistent chart styling
   echarts.registerTheme("gitjobs", gitjobsChartTheme);
 };

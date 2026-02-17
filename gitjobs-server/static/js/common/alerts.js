@@ -72,7 +72,7 @@ export const showErrorAlert = (message, withHtml = false, persist = false) => {
  * @param {string} baseMessage - Fallback human message
  * @param {string} serverError - Raw server response text (optional)
  */
-export const showServerErrorAlert = (baseMessage, serverError) => {
+const showServerErrorAlert = (baseMessage, serverError) => {
   const warningBox = serverError
     ? `<div class="mt-4 mb-2 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 text-left">${serverError}</div>`
     : "";

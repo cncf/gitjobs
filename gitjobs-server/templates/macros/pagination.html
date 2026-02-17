@@ -1,0 +1,113 @@
+{% import "macros/ui.html" as ui -%}
+
+{# Pagination -#}
+{% macro navigation_links(links, hx_target, hx_swap = "", hx_indicator = "", spinner_id_prefix = "pagination") -%}
+  {% let first_spinner_id = spinner_id_prefix.to_string() + "-first-spinner" -%}
+  {% let prev_spinner_id = spinner_id_prefix.to_string() + "-prev-spinner" -%}
+  {% let next_spinner_id = spinner_id_prefix.to_string() + "-next-spinner" -%}
+  {% let last_spinner_id = spinner_id_prefix.to_string() + "-last-spinner" -%}
+
+  <div id="pagination" class="flex items-end justify-center pt-12 pb-8">
+    <div hx-boost="true" class="inline-flex" role="group">
+      {# First button -#}
+      {% if let Some(first) = links.first -%}
+        <a href="{{ first.url }}"
+           hx-get="{{ first.hx_url }}"
+           hx-target="{{ hx_target }}"
+           {% if hx_swap != "" %}hx-swap="{{ hx_swap }}"{% endif %}
+           hx-indicator="#{{ first_spinner_id }}
+                         {% if hx_indicator != "" %}, {{ hx_indicator }}{% endif %}"
+           class="group relative overflow-hidden cursor-pointer inline-flex items-center pr-4 pl-3 py-2 text-sm text-primary-500 bg-transparent border border-primary-500 rounded-s-full hover:bg-primary-500 hover:text-white focus:z-10 focus:ring-2 focus:ring-primary-300 focus:bg-primary-500 focus:text-white">
+          <span class="inline-flex items-center group-[.htmx-request]:invisible">
+            <div class="svg-icon me-2 size-5 bg-primary-500 group-hover:bg-white icon-arrow_left_double"></div>
+            First
+          </span>
+          {{ ui::btn_spinner(id = first_spinner_id, size = "size-4") -}}
+        </a>
+      {% else -%}
+        <button type="button"
+                disabled
+                class="inline-flex items-center pr-4 pl-3 py-2 text-sm text-stone-300 bg-stone-50 border border-stone-300 rounded-s-full">
+          <div class="svg-icon me-2 size-5 bg-stone-300 icon-arrow_left_double"></div>
+          First
+        </button>
+      {% endif -%}
+      {# End first button -#}
+
+      {# Prev button -#}
+      {% if let Some(prev) = links.prev -%}
+        <a href="{{ prev.url }}"
+           hx-get="{{ prev.hx_url }}"
+           hx-target="{{ hx_target }}"
+           {% if hx_swap != "" %}hx-swap="{{ hx_swap }}"{% endif %}
+           hx-indicator="#{{ prev_spinner_id }}
+                         {% if hx_indicator != "" %}, {{ hx_indicator }}{% endif %}"
+           class="group relative overflow-hidden cursor-pointer inline-flex items-center pr-4 pl-[0.6rem] py-2 text-sm text-primary-500 bg-transparent border-t border-b border-e border-primary-500 hover:bg-primary-500 hover:text-white focus:z-10 focus:ring-2 focus:ring-primary-300 focus:bg-primary-500 focus:text-white">
+          <span class="inline-flex items-center group-[.htmx-request]:invisible">
+            <div class="svg-icon me-2 size-5 bg-primary-500 group-hover:bg-white icon-arrow_left"></div>
+            Prev
+          </span>
+          {{ ui::btn_spinner(id = prev_spinner_id, size = "size-4") -}}
+        </a>
+      {% else -%}
+        <button type="button"
+                disabled
+                class="inline-flex items-center pr-4 pl-[0.6rem] py-2 text-sm text-stone-300 bg-stone-50 border-t border-b border-e border-stone-300">
+          <div class="svg-icon me-2 size-5 bg-stone-300 icon-arrow_left"></div>
+          Prev
+        </button>
+      {% endif -%}
+      {# End prev button -#}
+
+      {# Next button -#}
+      {% if let Some(next) = links.next -%}
+        <a href="{{ next.url }}"
+           hx-get="{{ next.hx_url }}"
+           hx-target="{{ hx_target }}"
+           {% if hx_swap != "" %}hx-swap="{{ hx_swap }}"{% endif %}
+           hx-indicator="#{{ next_spinner_id }}
+                         {% if hx_indicator != "" %}, {{ hx_indicator }}{% endif %}"
+           class="group relative overflow-hidden cursor-pointer inline-flex items-center pl-4 pr-[0.6rem] py-2 text-sm text-primary-500 bg-transparent border-t border-b border-s -ml-[1px] border-primary-500 hover:bg-primary-500 hover:text-white focus:z-10 focus:ring-2 focus:ring-primary-300 focus:bg-primary-500 focus:text-white">
+          <span class="inline-flex items-center group-[.htmx-request]:invisible">
+            Next
+            <div class="svg-icon ms-2 size-5 bg-primary-500 group-hover:bg-white icon-arrow_right"></div>
+          </span>
+          {{ ui::btn_spinner(id = next_spinner_id, size = "size-4") -}}
+        </a>
+      {% else -%}
+        <button type="button"
+                disabled
+                class="inline-flex items-center pl-4 pr-[0.6rem] py-2 text-sm text-stone-300 bg-stone-50 border-t border-b border-stone-300">
+          Next
+          <div class="svg-icon ms-2 size-5 bg-stone-300 icon-arrow_right"></div>
+        </button>
+      {% endif -%}
+      {# End next button -#}
+
+      {# Last button -#}
+      {% if let Some(last) = links.last -%}
+        <a href="{{ last.url }}"
+           hx-get="{{ last.hx_url }}"
+           hx-target="{{ hx_target }}"
+           {% if hx_swap != "" %}hx-swap="{{ hx_swap }}"{% endif %}
+           hx-indicator="#{{ last_spinner_id }}
+                         {% if hx_indicator != "" %}, {{ hx_indicator }}{% endif %}"
+           class="group relative overflow-hidden cursor-pointer inline-flex items-center pl-4 pr-3 py-2 text-sm text-primary-500 bg-transparent border border-primary-500 rounded-e-full hover:bg-primary-500 hover:text-white focus:z-10 focus:ring-2 focus:ring-primary-300 focus:bg-primary-500 focus:text-white">
+          <span class="inline-flex items-center group-[.htmx-request]:invisible">
+            Last
+            <div class="svg-icon ms-2 size-5 bg-primary-500 group-hover:bg-white icon-arrow_right_double"></div>
+          </span>
+          {{ ui::btn_spinner(id = last_spinner_id, size = "size-4") -}}
+        </a>
+      {% else -%}
+        <button type="button"
+                disabled
+                class="inline-flex items-center pl-4 pr-3 py-2 text-sm text-stone-300 bg-stone-50 border border-stone-300 rounded-e-full">
+          Last
+          <div class="svg-icon ms-2 size-5 bg-stone-300 icon-arrow_right_double"></div>
+        </button>
+      {% endif -%}
+      {# End last button -#}
+    </div>
+  </div>
+{%- endmacro navigation_links %}

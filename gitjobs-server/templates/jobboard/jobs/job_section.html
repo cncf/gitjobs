@@ -1,4 +1,4 @@
-{% import "misc/job_preview.html" as job_preview_macros -%}
+{% import "macros/job_preview.html" as job_preview -%}
 
 {% let job_id = job.job_id.to_string() -%}
 <div id="preview-modal"
@@ -23,9 +23,9 @@
       {% let employer_description = job.employer.description|display_some -%}
       {% if let Some(logo_id) = job.employer.logo_id -%}
         {% let logo = &self::build_jobboard_image_url(logo_id, "small") -%}
-        {{ job_preview_macros::job_preview(job = job, employer = job.employer, logo = logo, employer_description = employer_description, job_id = job_id, base_url = base_url, with_links = true) -}}
+        {{ job_preview::job_preview(job = job, employer = job.employer, logo = logo, employer_description = employer_description, job_id = job_id, base_url = base_url, with_links = true) -}}
       {% else -%}
-        {{ job_preview_macros::job_preview(job = job, employer = job.employer, employer_description = employer_description, job_id = job_id, base_url = base_url, with_links = true) -}}
+        {{ job_preview::job_preview(job = job, employer = job.employer, employer_description = employer_description, job_id = job_id, base_url = base_url, with_links = true) -}}
       {% endif -%}
     </div>
     {# End modal content -#}

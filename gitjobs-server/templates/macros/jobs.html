@@ -1,4 +1,4 @@
-{% import "macros.html" as macros -%}
+{% import "macros/ui.html" as ui -%}
 
 {# Filters -#}
 {% macro filters(form, device = "desktop") -%}
@@ -57,12 +57,12 @@
                   data-trigger-form="true"
                   name="seniority"
                   class="select-primary py-0.5 text-[0.775rem]/6 text-stone-700">
-            {{ macros::select_option(value = "", label = "Any", selected = selected_seniority) -}}
-            {{ macros::select_option(value = "entry", label = "Entry", selected = selected_seniority) -}}
-            {{ macros::select_option(value = "junior", label = "Junior", selected = selected_seniority) -}}
-            {{ macros::select_option(value = "mid", label = "Mid", selected = selected_seniority) -}}
-            {{ macros::select_option(value = "senior", label = "Senior", selected = selected_seniority) -}}
-            {{ macros::select_option(value = "lead", label = "Lead", selected = selected_seniority) -}}
+            {{ ui::select_option(value = "", label = "Any", selected = selected_seniority) -}}
+            {{ ui::select_option(value = "entry", label = "Entry", selected = selected_seniority) -}}
+            {{ ui::select_option(value = "junior", label = "Junior", selected = selected_seniority) -}}
+            {{ ui::select_option(value = "mid", label = "Mid", selected = selected_seniority) -}}
+            {{ ui::select_option(value = "senior", label = "Senior", selected = selected_seniority) -}}
+            {{ ui::select_option(value = "lead", label = "Lead", selected = selected_seniority) -}}
           </select>
         </div>
       </div>
@@ -77,10 +77,10 @@
                   name="date_range"
                   data-trigger-form="true"
                   class="select-primary py-0.5 text-[0.775rem]/6 text-stone-700">
-            {{ macros::select_option(value = "last-day", label = "Last day", selected = selected_date_range) -}}
-            {{ macros::select_option(value = "last3-days", label = "Last 3 days", selected = selected_date_range) -}}
-            {{ macros::select_option(value = "last7-days", label = "Last week", selected = selected_date_range) -}}
-            {{ macros::select_option(value = "last30-days", label = "Last month", selected = selected_date_range) -}}
+            {{ ui::select_option(value = "last-day", label = "Last day", selected = selected_date_range) -}}
+            {{ ui::select_option(value = "last3-days", label = "Last 3 days", selected = selected_date_range) -}}
+            {{ ui::select_option(value = "last7-days", label = "Last week", selected = selected_date_range) -}}
+            {{ ui::select_option(value = "last30-days", label = "Last month", selected = selected_date_range) -}}
           </select>
         </div>
       </div>
@@ -120,9 +120,9 @@
                 data-trigger-form="true"
                 name="foundation"
                 class="select-primary py-0.5 text-[0.775rem]/6 text-stone-700">
-          {{ macros::select_option(value = "", label = "Any foundation", selected = selected_foundation) -}}
+          {{ ui::select_option(value = "", label = "Any foundation", selected = selected_foundation) -}}
           {% for foundation in filters_options.foundations -%}
-            {{ macros::select_option(value = foundation.name.as_str() , label = foundation.name|upper, selected = selected_foundation) -}}
+            {{ ui::select_option(value = foundation.name.as_str() , label = foundation.name|upper, selected = selected_foundation) -}}
           {% endfor -%}
         </select>
       </div>
@@ -194,9 +194,9 @@
               data-trigger-form="true"
               name="membership"
               class="select-primary py-0.5 text-[0.775rem]/6 text-stone-700">
-        {{ macros::select_option(value = "", label = "Any foundation", selected = selected_membership) -}}
+        {{ ui::select_option(value = "", label = "Any foundation", selected = selected_membership) -}}
         {% for foundation in filters_options.foundations -%}
-          {{ macros::select_option(value = foundation.name.as_str() , label = foundation.name|upper, selected = selected_membership) -}}
+          {{ ui::select_option(value = foundation.name.as_str() , label = foundation.name|upper, selected = selected_membership) -}}
         {% endfor -%}
       </select>
     </div>
@@ -229,12 +229,14 @@
 
 {# Current page -#}
 {% macro current_page(total, items_number, offset_value) -%}
-  {%- if let Some(offset) = offset_value -%}
-    {{ offset + 1 }} - {{ items_number + offset }}
-  {%- else -%}
-    1 - {{ items_number }}
+  {%- if items_number + 0 > 0 -%}
+    {%- if let Some(offset) = offset_value -%}
+      {{ offset + 1 }} - {{ items_number + offset }}
+    {%- else -%}
+      1 - {{ items_number }}
+    {%- endif -%}
+    {{ "" }} of {{ total }} results
   {%- endif -%}
-  {{ "" }} of {{ total }} results
 {%- endmacro current_page -%}
 {# End current page -#}
 

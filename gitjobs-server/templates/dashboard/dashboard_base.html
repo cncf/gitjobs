@@ -1,5 +1,5 @@
 {% extends "base.html" -%}
-{% import "macros.html" as macros -%}
+{% import "macros/ui.html" as ui -%}
 
 {% block content -%}
   <script src="/static/vendor/js/echarts.v6.0.0.min.js"></script>
@@ -51,7 +51,7 @@
             {# Osano -#}
             {%- if let Some(osano_script_url) = analytics.osano_script_url -%}
               {# Cookie preferences -#}
-              {{ macros::cookie_button(extra_styles = "mt-4 mb-8") -}}
+              {{ ui::cookie_button(extra_styles = "mt-4 mb-8") -}}
               {# End cookie preferences -#}
             {%- endif -%}
           {% endif -%}

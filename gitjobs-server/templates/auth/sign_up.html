@@ -1,10 +1,10 @@
 {% extends "common_base.html" -%}
-{% import "macros.html" as macros -%}
+{% import "macros/ui.html" as ui -%}
 
 {% block main -%}
   <div class="container max-w-md m-auto px-4 py-8 md:px-2 md:py-12">
     <div class="bg-white p-10 border border-stone-200 rounded-lg">
-      <div class="mb-8">{{ macros::form_title(title = "Sign Up") -}}</div>
+      <div class="mb-8">{{ ui::form_title(title = "Sign Up") -}}</div>
 
       <div class="flex flex-col items-center space-y-5 mb-2">
         {# Linux Foundation SSO login -#}
@@ -157,7 +157,7 @@
 
       {# Messages -#}
       {% if !messages.is_empty() -%}
-        {{ macros::alerts(messages) -}}
+        {{ ui::alerts(messages) -}}
       {% endif -%}
       {# End messages -#}
     </div>
@@ -167,7 +167,7 @@
       {# Osano -#}
       {%- if let Some(osano_script_url) = analytics.osano_script_url -%}
         {# Cookie preferences -#}
-        {{ macros::cookie_button(extra_styles = "mt-8") -}}
+        {{ ui::cookie_button(extra_styles = "mt-8") -}}
         {# End cookie preferences -#}
       {%- endif -%}
     {% endif -%}

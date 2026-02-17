@@ -1,6 +1,12 @@
 {# Spinner -#}
-{% macro spinner(size = "size-4", spinner_type = "1", extra_styles = "") -%}
-  <div role="status" class="flex {{ size }} {{ extra_styles }}">
+{% macro spinner(size = "size-4", spinner_type = "1", extra_styles = "", htmx = true) -%}
+  <div role="status"
+       class="{% if htmx -%}
+                flex
+              {% else -%}
+                hidden group-[.is-loading]:flex
+              {% endif -%}
+              {{ size }} {{ extra_styles }}">
     <img src="/static/images/spinner/spinner_{{ spinner_type }}.svg"
          height="auto"
          width="auto"
@@ -14,7 +20,7 @@
 {# Button spinner #}
 {% macro btn_spinner(id, size = "size-5", spinner_type = "1", htmx = true) -%}
   <div id="{{ id }}"
-       class="top-0 start-0 bottom-0 end-0 bg-inherit absolute {%- if htmx %} hx-spinner{%- endif -%}">
+       class="absolute inset-0 bg-inherit {%- if htmx %} hx-spinner{%- endif -%}">
     <div class="flex items-center justify-center h-full w-full">
       {{ spinner(size = size, spinner_type = spinner_type) -}}
     </div>
@@ -115,11 +121,20 @@
 {# End memberships popover #}
 
 {# Form title #}
-{% macro form_title(title, description = "") -%}
-  <div class="text-xl lg:text-2xl font-medium text-stone-900 h-[38px]">{{ title }}</div>
-  {% if !description.is_empty() -%}
-    <p class="mt-1 text-sm/6 text-stone-500">{{ description }}</p>
-  {% endif -%}
+{% macro form_title(title, description = "", button = "") -%}
+  <div>
+    <div class="text-xl lg:text-2xl font-medium text-stone-900 h-[38px]">{{ title }}</div>
+    {% if !description.is_empty() -%}
+      <div class="mt-1 flex flex-wrap items-center gap-3">
+        <p class="text-sm/6 text-stone-500 m-0">{{ description }}</p>
+        {% if !button.is_empty() -%}
+          {{ button | safe }}
+        {% endif -%}
+      </div>
+    {% elif !button.is_empty() -%}
+      <div class="mt-1">{{ button | safe }}</div>
+    {% endif -%}
+  </div>
 {% endmacro form_title -%}
 {# End form title #}
 

@@ -12,7 +12,8 @@
          hx-target="body"
          hx-indicator="#dashboard-spinner"
          hx-push-url="true"
-         class="flex items-center justify-between cursor-pointer">
+         class="flex items-center justify-between cursor-pointer"
+         aria-current="page">
         <div class="flex items-center">
           <div class="svg-icon {{ icon_size }} icon-{{ icon }} bg-primary-600 text-white"></div>
           <div class="text-sm/8 ms-3">{{ name }}</div>
@@ -27,16 +28,18 @@
     </div>
   {% else -%}
     {% if disabled -%}
-      <button class="rounded-md px-3 border border-transparent cursor-not-allowed {{ extra_styles }}"
+      <button class="rounded-md px-3 py-2 border border-transparent cursor-not-allowed {{ extra_styles }}"
               disabled
+              aria-disabled="true"
+              aria-label="{{ name }} - Coming soon"
               title="Coming soon!">
-        <div class="flex items-center">
+        <div class="flex items-center opacity-50">
           <div class="svg-icon {{ icon_size }} icon-{{ icon }} bg-primary-600 text-white"></div>
           <div class="text-sm/8 ms-3">{{ name }}</div>
         </div>
       </button>
     {% else -%}
-      <div class="rounded-md px-3 border border-transparent hover:bg-white hover:border-stone-200 {{ extra_styles }}">
+      <div class="rounded-md px-3 border border-transparent hover:bg-white hover:border-stone-200 transition-colors {{ extra_styles }}">
         <a hx-get="{{ href }}"
            hx-target="body"
            hx-indicator="#dashboard-spinner"

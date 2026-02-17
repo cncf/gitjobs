@@ -1,5 +1,5 @@
 {% extends "dashboard/dashboard_base_moderator.html" -%}
-{% import "macros.html" as macros -%}
+{% import "macros/ui.html" as ui -%}
 
 {% block dashboard_main -%}
   <div id="dashboard-content"
@@ -12,7 +12,7 @@
   </div>
   {# Messages -#}
   {% if !messages.is_empty() -%}
-    {{ macros::alerts(messages) -}}
+    {{ ui::alerts(messages) -}}
   {% endif -%}
   {# End messages -#}
 {% endblock dashboard_main -%}

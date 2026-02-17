@@ -1,4 +1,5 @@
-{% import "macros.html" as macros -%}
+{% import "macros/ui.html" as ui -%}
+{% import "macros/header.html" as header -%}
 
 {# Navbar -#}
 <div class="flex items-center gap-x-6">
@@ -25,9 +26,9 @@
 
   {# Desktop links -#}
   <div class="hidden xl:flex xl:gap-x-6 -mb-2">
-    {{ header_link(text = "Jobs", href = "/", active = page_id == PageId::JobBoard) -}}
-    {{ header_link(text = "Stats", href = "/stats", active = page_id == PageId::Stats) -}}
-    {{ header_link(text = "About", href = "/about", active = page_id == PageId::About) -}}
+    {{ header::header_link(text = "Jobs", href = "/", active = page_id == PageId::JobBoard) -}}
+    {{ header::header_link(text = "Stats", href = "/stats", active = page_id == PageId::Stats) -}}
+    {{ header::header_link(text = "About", href = "/about", active = page_id == PageId::About) -}}
   </div>
   {# End desktop links -#}
 </div>
@@ -55,255 +56,16 @@
              class="ms-10">
           <button class="relative group rounded-full cursor-pointer bg-white border text-xl border-primary-500 text-primary-600 size-[38px] p-0.5 overflow-hidden"
                   disabled>
-            {{ macros::btn_spinner(id = "user-spinner", size = "size-[2.35rem]", spinner_type = "5", htmx = false) -}}
+            {{ ui::btn_spinner(id = "user-spinner", size = "size-[2.35rem]", spinner_type = "5", htmx = false) -}}
             <div class="svg-icon size-4 mx-auto bg-primary-500 icon-user"></div>
           </button>
         </div>
       </div>
     </div>
   {% else -%}
-    {{ user_menu(user, auth_provider) -}}
+    {% block user_menu -%}
+      {{ header::user_menu(user = user, auth_provider = auth_provider) -}}
+    {% endblock user_menu -%}
   {% endif -%}
 </div>
 {# End Navbar -#}
-
-{% macro header_link(text, href, active = false) -%}
-  <a href="{{ href }}"
-     hx-boost="true"
-     {%- if active %} aria-current="page"
-     {% endif -%}
-     class="mx-3 pb-1 border-0 border-primary-500 text-base font-semibold tracking-widest text-primary-500 uppercase border-b-2
-            {% if active -%}
-              border-primary-500{%- else -%}border-transparent hover:border-primary-300{%- endif -%}">{{ text }}</a>
-{% endmacro header_link -%}
-
-{% macro disabled_header_link(text) -%}
-  <button class="mx-3 pb-1 border-0 border-primary-500 text-base font-semibold tracking-widest text-primary-500 uppercase border-b-2 border-transparent hover:border-primary-300"
-          disabled
-          title="Coming soon!">{{ text }}</button>
-{% endmacro disabled_header_link -%}
-
-{# Header user menu -#}
-{% macro user_menu(user, auth_provider) -%}
-  {% if user.logged_in -%}
-    <button id="user-dropdown-button"
-            type="button"
-            data-logged-in="true"
-            data-has-profile="{%- if user.has_profile -%}true{%- else -%}false{%- endif -%}"
-            aria-haspopup="menu"
-            aria-expanded="false"
-            aria-controls="dropdown-user"
-            aria-label="Open user menu"
-            class="cursor-pointer group rounded-full bg-white border text-xl border-primary-500 text-primary-600 hover:text-primary-800 hover:border-primary-800 size-[38px] p-0.5 overflow-hidden">
-      {% let name = user.name|display_some -%}
-      {% let initial = name.chars().nth(0).unwrap_or('-') -%}
-      <div class="font-semibold uppercase mt-px">{{ initial }}</div>
-    </button>
-
-    {# Dropdown user -#}
-    <div id="dropdown-user"
-         class="dropdown absolute hidden z-10 end-0 top-10 w-[250px] bg-white divide-y divide-stone-100 rounded-lg shadow border border-stone-200"
-         role="menu"
-         aria-labelledby="user-dropdown-button"
-         aria-hidden="true">
-      <ul class="text-stone-700 my-2" role="none">
-        <li role="none">
-          <div class="flex flex-col px-4 py-2">
-            <div class="font-medium text-sm/6 truncate text-stone-700 mb-3">{{ user.username|display_some }}</div>
-            <div class="text-xs/4 truncate">{{ name }}</div>
-            {% if let Some(auth_provider) = auth_provider -%}
-              {% if auth_provider == "linuxfoundation" -%}
-                <a class="text-xs/6 text-stone-500 flex items-center mt-3"
-                   href="https://openprofile.dev"
-                   target="_blank"
-                   rel="noopener noreferrer">
-                  <div class="underline">openprofile.dev account</div>
-                  <div class="svg-icon size-2.5 icon-external_link bg-stone-500 ms-2"></div>
-                </a>
-              {% endif -%}
-            {% endif -%}
-          </div>
-        </li>
-
-        {# Stats page for mobile -#}
-        <li class="border-t border-stone-200 mt-2 pt-2 block md:hidden"
-            role="none">
-          <a hx-boost="true"
-             href="/stats"
-             hx-target="body"
-             class="inline-block w-full text-start px-4 py-2 hover:bg-stone-100"
-             role="menuitem">
-            <div class="flex items-center">
-              <div class="svg-icon size-4 icon-stats bg-stone-600"></div>
-              <div class="ms-2 text-xs/6">Stats</div>
-            </div>
-          </a>
-        </li>
-        {# End stats page for mobile -#}
-
-        {# About page for mobile -#}
-        <li class="block md:hidden" role="none">
-          <a hx-boost="true"
-             href="/about"
-             hx-target="body"
-             class="inline-block w-full text-start px-4 py-2 hover:bg-stone-100"
-             role="menuitem">
-            <div class="flex items-center">
-              <div class="svg-icon size-4 icon-info bg-stone-600"></div>
-              <div class="ms-2 text-xs/6">About</div>
-            </div>
-          </a>
-        </li>
-        {# End about page for mobile -#}
-
-        <li class="border-t border-stone-200 mt-2 pt-2 hidden md:block"
-            role="none">
-          <a hx-boost="true"
-             href="/dashboard/employer"
-             hx-target="body"
-             class="inline-block w-full text-start px-4 py-2 hover:bg-stone-100"
-             role="menuitem">
-            <div class="flex items-center">
-              <div class="svg-icon size-4 icon-company bg-stone-600 relative -mt-px"></div>
-              <div class="ms-2 text-xs/6">Employer dashboard</div>
-            </div>
-          </a>
-        </li>
-        <li class="hidden md:block" role="none">
-          <a hx-boost="true"
-             href="/dashboard/job-seeker"
-             hx-target="body"
-             class="inline-block w-full text-start px-4 py-2 hover:bg-stone-100"
-             role="menuitem">
-            <div class="flex items-center">
-              <div class="svg-icon size-4 icon-search bg-stone-600"></div>
-              <div class="ms-2 text-xs/6">Job seeker dashboard</div>
-            </div>
-          </a>
-        </li>
-
-        {# Moderator -#}
-        {% if user.moderator -%}
-          <li class="border-t border-stone-200 mt-2 pt-2 md:border-0 md:mt-0 md:pt-0"
-              role="none">
-            <a hx-boost="true"
-               href="/dashboard/moderator"
-               hx-target="body"
-               class="inline-block w-full text-start px-4 py-2 hover:bg-stone-100"
-               role="menuitem">
-              <div class="flex items-center">
-                <div class="svg-icon size-4 icon-microphone bg-stone-600"></div>
-                <div class="ms-2 text-xs/6">Moderator dashboard</div>
-              </div>
-            </a>
-          </li>
-        {% endif -%}
-        {# End moderator -#}
-
-        <li class="border-t border-stone-200 mt-2 pt-2" role="none">
-          <a href="/log-out"
-             hx-boost="false"
-             target="_self"
-             class="inline-block w-full text-start px-4 py-2 hover:bg-stone-100"
-             role="menuitem">
-            <div class="flex items-center">
-              <div class="svg-icon size-4 icon-logout bg-stone-600"></div>
-              <div class="ms-2 text-xs/6">Log out</div>
-            </div>
-          </a>
-        </li>
-      </ul>
-    </div>
-    {# End dropdown user -#}
-  {% else -%}
-    <button id="user-dropdown-button"
-            type="button"
-            data-logged-in="false"
-            data-has-profile="false"
-            aria-haspopup="menu"
-            aria-expanded="false"
-            aria-controls="dropdown-user"
-            aria-label="Open user menu"
-            class="cursor-pointer group rounded-full bg-white border text-xl border-primary-500 text-primary-600 hover:text-primary-800 hover:border-primary-800 size-[38px] p-0.5 overflow-hidden">
-      <div class="svg-icon size-4 mx-auto bg-primary-500 group-hover:bg-primary-800 icon-user"></div>
-    </button>
-    {# Dropdown user -#}
-    <div id="dropdown-user"
-         class="dropdown absolute hidden z-10 end-0 top-10 w-[250px] bg-white divide-y divide-stone-100 rounded-lg shadow border border-stone-200"
-         role="menu"
-         aria-labelledby="user-dropdown-button"
-         aria-hidden="true">
-      <ul class="text-stone-700 my-2" role="none">
-        {# Stats page for mobile -#}
-        <li class="block xl:hidden" role="none">
-          <a hx-boost="true"
-             href="/stats"
-             hx-target="body"
-             class="inline-block w-full text-start px-4 py-2 hover:bg-stone-100"
-             role="menuitem">
-            <div class="flex items-center">
-              <div class="svg-icon size-4 icon-stats bg-stone-600"></div>
-              <div class="ms-2 text-xs/6">Stats</div>
-            </div>
-          </a>
-        </li>
-        {# End stats page for mobile -#}
-
-        {# About page for mobile -#}
-        <li class="border-b border-stone-200 mb-2 pb-2 block xl:hidden"
-            role="none">
-          <a hx-boost="true"
-             href="/about"
-             hx-target="body"
-             class="inline-block w-full text-start px-4 py-2 hover:bg-stone-100"
-             role="menuitem">
-            <div class="flex items-center">
-              <div class="svg-icon size-4 icon-info bg-stone-600"></div>
-              <div class="ms-2 text-xs/6">About</div>
-            </div>
-          </a>
-        </li>
-        {# End about page for mobile -#}
-
-        {# Sign up -#}
-        <li role="none">
-          <a hx-boost="true"
-             href="/sign-up"
-             hx-target="body"
-             class="inline-block w-full text-start px-4 py-2 hover:bg-stone-100"
-             role="menuitem">
-            <div class="flex items-center">
-              <div class="svg-icon size-4 icon-user_plus bg-stone-600"></div>
-              <div class="ms-2 text-xs/6">Sign up</div>
-            </div>
-          </a>
-        </li>
-        {# End sign up -#}
-
-        {# Login -#}
-        <li role="none">
-          <a hx-boost="true"
-             href="/log-in"
-             hx-target="body"
-             class="inline-block w-full text-start px-4 py-2 hover:bg-stone-100"
-             role="menuitem">
-            <div class="flex items-center">
-              <div class="svg-icon size-4 icon-login bg-stone-600"></div>
-              <div class="ms-2 text-xs/6">Log in</div>
-            </div>
-          </a>
-        </li>
-        {# End login -#}
-      </ul>
-    </div>
-    {# End dropdown user -#}
-  {% endif -%}
-  {# Dropdown script -#}
-  <script type="module">
-    import {
-      initUserDropdown
-    } from '/static/js/common/header.js';
-    initUserDropdown();
-  </script>
-  {# End dropdown script -#}
-{% endmacro user_menu -%}

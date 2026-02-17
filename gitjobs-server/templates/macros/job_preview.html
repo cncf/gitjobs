@@ -1,4 +1,4 @@
-{% import "macros.html" as macros -%}
+{% import "macros/ui.html" as ui -%}
 
 {# Job preview -#}
 {% macro job_preview(job, employer, logo = "", employer_description = "", job_id = "", base_url = "", with_links = false) -%}
@@ -86,7 +86,7 @@
                 <div class="truncate text-start text-stone-700 font-medium mt-0.5">Multiple foundations</div>
               </div>
             </button>
-            {{ macros::memberships_popover(members = members, width_styles = "min-w-full max-w-[340px]") -}}
+            {{ ui::memberships_popover(members = members, width_styles = "min-w-full max-w-[340px]") -}}
           </div>
         </div>
       {% else -%}
@@ -216,7 +216,7 @@
                 {% for p in projects -%}
                   <div class="border border-stone-200 rounded-lg p-2 text-sm/5 bg-white w-full">
                     {% let label = &format!("{} {}", p.foundation, p.maturity) -%}
-                    {{ macros::dropdown_card(name = p.name, label = label, logo_url = p.logo_url, font_size = "text-[0.75rem]/5 text-xs/5") -}}
+                    {{ ui::dropdown_card(name = p.name, label = label, logo_url = p.logo_url, font_size = "text-[0.75rem]/5 text-xs/5") -}}
                   </div>
                 {% endfor -%}
               </div>
@@ -230,7 +230,7 @@
               {{ job_details_subheading(content = "Desired certifications") -}}
               <div class="flex flex-col gap-3 mt-2">
                 {% for cert in certifications -%}
-                  {{ macros::certification_card(certification = cert) -}}
+                  {{ ui::certification_card(certification = cert) -}}
                 {% endfor -%}
               </div>
             </div>

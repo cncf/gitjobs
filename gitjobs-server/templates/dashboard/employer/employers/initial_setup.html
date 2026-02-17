@@ -1,4 +1,4 @@
-{% import "macros.html" as macros -%}
+{% import "macros/ui.html" as ui -%}
 
 <div class="w-full m-auto content-center">
   <div class="text-3xl mb-10 text-stone-500">Set up your first employer</div>
@@ -17,7 +17,7 @@
             hx-target="#dashboard-content, #initial-spinner"
             hx-disabled-elt="this"
             class="btn-primary">
-      {{ macros::btn_spinner(id = "initial-spinner", spinner_type = "2") -}}
+      {{ ui::btn_spinner(id = "initial-spinner", spinner_type = "2") -}}
       Set up employer
     </button>
   </div>

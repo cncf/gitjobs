@@ -1,5 +1,5 @@
-{% import "macros.html" as macros -%}
-{% import "dashboard/moderator/moderator_macros.html" as moderator_macros -%}
+{% import "macros/ui.html" as ui -%}
+{% import "macros/moderator.html" as moderator -%}
 
 <div class="flex items-center">
   {# Mobile filters button -#}
@@ -10,11 +10,11 @@
     </button>
   </div>
   {# End mobile filters button -#}
-  {{ macros::form_title(title = "Live jobs") -}}
+  {{ ui::form_title(title = "Live jobs") -}}
 </div>
 
 {# Live jobs Table -#}
-{{ moderator_macros::jobs_table(jobs = jobs) -}}
+{{ moderator::jobs_table(jobs = jobs) -}}
 {# End live jobs Table -#}
 
 {# Mobile live jobs cards -#}
@@ -29,16 +29,16 @@
     </div>
   {% else -%}
     {% for job in jobs -%}
-      {{ moderator_macros::mobile_job_card(job = job) -}}
+      {{ moderator::mobile_job_card(job = job) -}}
     {% endfor -%}
   {% endif -%}
 </div>
 {# End mobile live jobs cards -#}
 
 {# Preview modal -#}
-{{ moderator_macros::preview_modal() -}}
+{{ moderator::preview_modal() -}}
 {# End preview modal -#}
 
 {# Reject modal -#}
-{{ moderator_macros::reject_modal() -}}
+{{ moderator::reject_modal() -}}
 {# End reject modal -#}

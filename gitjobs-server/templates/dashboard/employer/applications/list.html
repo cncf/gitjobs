@@ -1,7 +1,7 @@
-{% import "macros.html" as macros -%}
-{% import "misc/preview_modal.html" as preview -%}
+{% import "macros/ui.html" as ui -%}
+{% import "macros/preview_modal.html" as preview_modal -%}
 
-{{ macros::form_title(title = "Applications") -}}
+{{ ui::form_title(title = "Applications") -}}
 
 <div class="my-10">
   <div class="relative w-1/2">
@@ -203,7 +203,7 @@
 {# End pagination -#}
 
 {# Preview modal -#}
-{{ preview::modal() -}}
+{{ preview_modal::modal() -}}
 {# End preview modal -#}
 
 <script type="module">

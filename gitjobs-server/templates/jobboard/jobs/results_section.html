@@ -1,6 +1,6 @@
-{% import "macros.html" as macros -%}
-{% import "jobboard/jobs/jobs_macros.html" as jobs_macros -%}
-{% import "misc/job_preview.html" as macros_preview -%}
+{% import "macros/ui.html" as ui -%}
+{% import "macros/jobs.html" as jobs -%}
+{% import "macros/job_preview.html" as job_preview -%}
 
 <div class="flex flex-col mt-5 md:mt-7 space-y-4">
   {% if jobs.len() == 0 -%}
@@ -57,7 +57,7 @@
 
   initializeJobboardResults({
     hasJobs: {% if jobs.len() > 0 -%}true{%- else -%}false{%- endif %},
-    currentPageContent: '{% if jobs.len() > 0 -%}{{ jobs_macros::current_page(total, jobs.len(), offset) -}}{%- endif %}'
+    currentPageContent: '{% if jobs.len() > 0 -%}{{ jobs::current_page(total, jobs.len(), offset) -}}{%- endif %}'
   });
 </script>
 {# djlint:on #}
@@ -115,7 +115,7 @@
                       Multiple memberships
                     </div>
                   </div>
-                  {{ macros::memberships_popover(members = members) -}}
+                  {{ ui::memberships_popover(members = members) -}}
                 </div>
               {% else -%}
                 {% if let Some(member) = members.first() -%}
@@ -247,7 +247,7 @@
       <div class="block">
         {{ mini_title(content = "Time working on open source") -}}
         <div class="mt-2 min-w-[220px]">
-          {{ macros_preview::badge_percentage_bar(percentage = open_source, bar_margin = "my-0") -}}
+          {{ job_preview::badge_percentage_bar(percentage = open_source, bar_margin = "my-0") -}}
         </div>
       </div>
       {# End open source -#}
@@ -256,7 +256,7 @@
       <div class="block">
         {{ mini_title(content = "Time working on upstream projects") -}}
         <div class="mt-2 min-w-[220px]">
-          {{ macros_preview::badge_percentage_bar(percentage = upstream_commitment, type = "upstream_commitment", bar_margin = "my-0") -}}
+          {{ job_preview::badge_percentage_bar(percentage = upstream_commitment, type = "upstream_commitment", bar_margin = "my-0") -}}
         </div>
       </div>
       {# End Upstream commitment -#}

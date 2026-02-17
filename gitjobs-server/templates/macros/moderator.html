@@ -1,5 +1,5 @@
-{% import "misc/preview_modal.html" as preview -%}
-{% import "macros.html" as macros -%}
+{% import "macros/preview_modal.html" as preview_modal -%}
+{% import "macros/ui.html" as ui -%}
 
 {% macro jobs_table(jobs, kind = "live") -%}
   <div class="hidden md:block relative overflow-visible mt-10">
@@ -171,7 +171,7 @@
                 <span class="inline xl:hidden">Multiple</span>
               </div>
             </div>
-            {{ macros::memberships_popover(members = members) -}}
+            {{ ui::memberships_popover(members = members) -}}
           </div>
         {% else -%}
           <div class="flex items-center space-x-1 rounded-md uppercase min-w-0">
@@ -273,7 +273,7 @@
 {% endmacro reject_modal -%}
 
 {% macro preview_modal() -%}
-  {{ preview::modal() -}}
+  {{ preview_modal::modal() -}}
 
   <script type="module">
     import {

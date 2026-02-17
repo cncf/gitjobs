@@ -1,29 +1,12 @@
-import { initializeButtonDropdown } from "/static/js/common/common.js";
+import { initializeButtonDropdown, isDashboardPath } from "/static/js/common/common.js";
 
 let lifecycleListenersBound = false;
+const DROPDOWN_BUTTON_ID = "user-dropdown-button";
+const DROPDOWN_MENU_ID = "dropdown-user";
 
-const getDropdownButton = () => document.getElementById("user-dropdown-button");
+const getDropdownButton = () => document.getElementById(DROPDOWN_BUTTON_ID);
 
-const getDropdownMenuId = () => {
-  if (document.getElementById("dropdown-user")) {
-    return "dropdown-user";
-  }
-
-  if (document.getElementById("user-dropdown")) {
-    return "user-dropdown";
-  }
-
-  return "";
-};
-
-const getDropdownMenu = () => {
-  const dropdownMenuId = getDropdownMenuId();
-  if (!dropdownMenuId) {
-    return null;
-  }
-
-  return document.getElementById(dropdownMenuId);
-};
+const getDropdownMenu = () => document.getElementById(DROPDOWN_MENU_ID);
 
 const shouldResetDashboardScroll = (event) => {
   if (!event) {
@@ -35,8 +18,7 @@ const shouldResetDashboardScroll = (event) => {
     return false;
   }
 
-  const path = window.location?.pathname || "";
-  if (!path.startsWith("/dashboard/")) {
+  if (!isDashboardPath()) {
     return false;
   }
 
@@ -68,16 +50,15 @@ export const initUserDropdown = () => {
   bindLifecycleListeners();
 
   const button = getDropdownButton();
-  const dropdownMenuId = getDropdownMenuId();
   const dropdown = getDropdownMenu();
-  if (!button || !dropdown || !dropdownMenuId) {
+  if (!button || !dropdown) {
     return;
   }
 
   initializeButtonDropdown({
-    buttonId: "user-dropdown-button",
-    dropdownId: dropdownMenuId,
-    guardKey: `__gitjobsUserDropdownBound:${dropdownMenuId}`,
+    buttonId: DROPDOWN_BUTTON_ID,
+    dropdownId: DROPDOWN_MENU_ID,
+    guardKey: `__gitjobsUserDropdownBound:${DROPDOWN_MENU_ID}`,
     closeOnItemClickSelector: "a",
   });
 

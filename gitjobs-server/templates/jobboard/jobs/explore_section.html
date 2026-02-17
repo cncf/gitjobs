@@ -149,12 +149,10 @@
           {# Results -#}
           <div id="results"
                class="flex flex-row items-center justify-between text-xs md:text-sm font-semibold">
-            {% if results_section.jobs.len() > 0 -%}
-              {{ pagination::range_display(offset = results_section.offset,
-                            count = results_section.jobs.len() ,
-              total = results_section.total
-              ) -}}
-            {% endif -%}
+            {{ pagination::range_display(offset = results_section.offset,
+                        count = results_section.jobs.len() ,
+            total = results_section.total
+            ) -}}
           </div>
           {# End results -#}
 

@@ -56,11 +56,11 @@
 
   initializeJobboardResults({
     hasJobs: {% if jobs.len() > 0 -%}true{%- else -%}false{%- endif %},
-    currentPageContent: '{% if jobs.len() > 0 -%}{{ pagination::range_display(
+    currentPageContent: '{{ pagination::range_display(
       offset = offset,
       count = jobs.len(),
       total = total
-    ) -}}{%- endif %}'
+    ) -}}'
   });
 </script>
 {# djlint:on #}

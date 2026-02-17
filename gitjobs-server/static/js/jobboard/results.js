@@ -11,7 +11,7 @@ import { resetForm, updateResults } from "/static/js/jobboard/filters.js";
  * Initializes no-results reset links and result-card interactions.
  * @param {Object} options - Initialization options
  * @param {boolean} options.hasJobs - Whether current result set has jobs
- * @param {string} options.currentPageContent - Current results summary content
+ * @param {string} options.currentPageContent - Results summary content
  * @param {string} [options.unavailableJobMessage] - Preview unavailable message
  */
 export const initializeJobboardResults = ({
@@ -62,9 +62,9 @@ export const initializeJobboardResults = ({
     boundAttribute: "previewBound",
   });
 
-  if (hasJobs) {
-    updateResults(currentPageContent);
+  updateResults(currentPageContent);
 
+  if (hasJobs) {
     const jobButtons = document.querySelectorAll("[data-job-id]");
     const jobIds = Array.from(jobButtons)
       .map((button) => button.dataset.jobId)
@@ -72,8 +72,5 @@ export const initializeJobboardResults = ({
     if (jobIds.length > 0) {
       trackSearchAppearances(jobIds);
     }
-    return;
   }
-
-  updateResults("");
 };

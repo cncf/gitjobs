@@ -16,18 +16,15 @@ test.describe("GitJobs - Job Seeker Profile", () => {
     ): Promise<void> => {
       const textarea = page.locator(selector).first();
       await textarea.waitFor({ state: "attached", timeout: 10000 });
-      await textarea.evaluate(
-        (element, text) => {
-          if (!(element instanceof HTMLTextAreaElement)) {
-            return;
-          }
+      await textarea.evaluate((element, text) => {
+        if (!(element instanceof HTMLTextAreaElement)) {
+          return;
+        }
 
-          element.value = text;
-          element.dispatchEvent(new Event("input", { bubbles: true }));
-          element.dispatchEvent(new Event("change", { bubbles: true }));
-        },
-        value,
-      );
+        element.value = text;
+        element.dispatchEvent(new Event("input", { bubbles: true }));
+        element.dispatchEvent(new Event("change", { bubbles: true }));
+      }, value);
     };
 
     await loginWithCredentials(page, "test", "test1234");

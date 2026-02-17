@@ -77,7 +77,7 @@
           Description <span class="asterisk">*</span>
         </label>
         <div class="mt-2">
-          <markdown-editor id="description" required></markdown-editor>
+          <markdown-editor id="description" maxlength="{{ crate::validation::MAX_LEN_DESCRIPTION }}" required></markdown-editor>
         </div>
         <p class="form-legend">
           A short introduction of your company. You can use markdown to format the text. Max {{ crate::validation::MAX_LEN_DESCRIPTION }} characters.

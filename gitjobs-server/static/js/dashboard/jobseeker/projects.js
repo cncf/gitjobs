@@ -310,7 +310,7 @@ class ProjectEntry extends LitWrapper {
         <div class="mt-2">
           <markdown-editor
             id="projects[${this.index}][description]"
-            name="description"
+            name="projects[${this.index}][description]"
             content="${this.data.description}"
             .onChange="${(value) => this._onTextareaChange(value)}"
             mini

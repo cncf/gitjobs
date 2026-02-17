@@ -15,6 +15,8 @@ export class MarkdownEditor extends LitWrapper {
    * @property {boolean} required - Whether input is required
    * @property {Function} onChange - Callback for content changes
    * @property {boolean} mini - Use compact editor layout
+   * @property {boolean} disabled - Whether input is disabled
+   * @property {number} maxlength - Maximum character length
    */
   static properties = {
     id: { type: String },
@@ -23,6 +25,8 @@ export class MarkdownEditor extends LitWrapper {
     required: { type: Boolean },
     onChange: { type: Function },
     mini: { type: Boolean },
+    disabled: { type: Boolean },
+    maxlength: { type: Number },
   };
 
   /** @type {import('lit').Ref<HTMLTextAreaElement>} Reference to textarea */
@@ -36,6 +40,8 @@ export class MarkdownEditor extends LitWrapper {
     this.required = false;
     this.onChange = undefined;
     this.mini = false;
+    this.disabled = false;
+    this.maxlength = undefined;
   }
 
   firstUpdated() {
@@ -82,9 +88,11 @@ export class MarkdownEditor extends LitWrapper {
       <div class="relative text-sm/6 ${this.mini ? "mini" : ""}">
         <textarea
           ${ref(this.textareaRef)}
-          name="${this.id}"
+          name=${this.name || this.id}
           class="absolute top-0 left-0 opacity-0 p-0"
           ?required=${this.required}
+          ?disabled=${this.disabled}
+          maxlength=${this.maxlength}
         ></textarea>
       </div>
     `;

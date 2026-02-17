@@ -1,5 +1,4 @@
 {% import "macros/ui.html" as ui -%}
-{% import "macros/preview_modal.html" as preview_modal -%}
 {% import "macros/job_seeker.html" as job_seeker -%}
 
 {{ ui::form_title(title = "My applications") -}}
@@ -92,7 +91,7 @@
 {# End applicants Table -#}
 
 {# Preview modal -#}
-{{ preview_modal::modal() -}}
+{% include "misc/preview_modal.html" -%}
 {# End preview modal -#}
 
 <script type="module">

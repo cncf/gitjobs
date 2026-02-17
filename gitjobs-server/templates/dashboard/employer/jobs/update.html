@@ -1,5 +1,4 @@
 {% import "macros/ui.html" as ui -%}
-{% import "macros/preview_modal.html" as preview_modal -%}
 
 {% let job_id = job.job_id|display_some -%}
 
@@ -478,7 +477,7 @@
   </form>
 
   {# Preview modal -#}
-  {{ preview_modal::modal() -}}
+  {% include "misc/preview_modal.html" -%}
   {# End preview modal -#}
 
   <script type="module">

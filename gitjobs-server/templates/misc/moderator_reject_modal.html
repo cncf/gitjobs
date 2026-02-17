@@ -1,0 +1,55 @@
+<div id="reject-modal"
+     tabindex="-1"
+     aria-hidden="true"
+     class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-full max-h-full flex">
+  <div id="backdrop-reject-modal"
+       class="modal-overlay absolute w-full h-full bg-stone-950 opacity-[.35]"></div>
+  <div class="relative p-4 w-full max-w-2xl max-h-full">
+    <div class="relative bg-white rounded-lg shadow">
+      {# Modal header -#}
+      <div class="flex items-center justify-between p-4 md:p-5 border-b border-stone-200 rounded-t">
+        {# Title -#}
+        <h3 class="text-xl font-semibold text-stone-900">Reject job</h3>
+        {# End title -#}
+
+        {# Close button -#}
+        <button id="close-reject-modal"
+                type="button"
+                class="group bg-transparent hover:bg-stone-200 rounded-full text-sm size-8 ms-auto inline-flex justify-center items-center cursor-pointer">
+          <div class="svg-icon size-5 bg-stone-400 group-hover:bg-stone-700 icon-close"></div>
+          <span class="sr-only">Close modal</span>
+        </button>
+        {# End close button -#}
+      </div>
+      {# End modal header -#}
+
+      {# Modal content -#}
+      <div class="p-4 md:p-8">
+        <form id="reject-job-form" hx-put="" hx-trigger="submit">
+          <div class="mb-6">
+            <label for="reject-reason"
+                   class="block mb-4 text-sm font-medium text-stone-900">Review notes</label>
+            <textarea id="review_notes"
+                      name="review_notes"
+                      rows="4"
+                      maxlength="{{ crate::validation::MAX_LEN_DESCRIPTION_SHORT }}"
+                      class="block p-2.5 w-full text-sm text-stone-900 bg-white border border-stone-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                      placeholder="Please indicate the publisher the reason the job was rejected."></textarea>
+            <p class="form-legend mt-3">Max {{ crate::validation::MAX_LEN_DESCRIPTION_SHORT }} characters.</p>
+          </div>
+          <div class="flex justify-end">
+            <button type="submit" class="btn-primary mb-2">Reject</button>
+          </div>
+        </form>
+      </div>
+      {# End modal content -#}
+    </div>
+  </div>
+</div>
+<script type="module">
+  import {
+    initializeModeratorJobs
+  } from '/static/js/dashboard/moderator/jobs.js';
+
+  initializeModeratorJobs();
+</script>

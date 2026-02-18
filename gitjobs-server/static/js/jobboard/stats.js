@@ -714,9 +714,9 @@ export const renderStats = () => {
   if (!stats?.jobs) return;
 
   // Register the GitJobs theme for ECharts
-  if (!document.__gitjobsStatsThemeRegistered) {
+  if (!document.__gitjobsEchartsThemeRegistered) {
     echarts.registerTheme("gitjobs", gitjobsChartTheme);
-    document.__gitjobsStatsThemeRegistered = true;
+    document.__gitjobsEchartsThemeRegistered = true;
   }
 
   registerChartResizeHandler({

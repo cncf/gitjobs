@@ -318,9 +318,9 @@ export const initializeEmployerJobsStats = () => {
     closeHandler: closeStats,
   });
 
-  if (!document.__gitjobsEchartsThemeRegistered) {
+  if (!window.echarts?.__gitjobsEchartsThemeRegistered) {
     registerEchartsTheme();
-    document.__gitjobsEchartsThemeRegistered = true;
+    window.echarts.__gitjobsEchartsThemeRegistered = true;
   }
 
   registerChartResizeHandler({

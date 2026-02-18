@@ -8,7 +8,7 @@ import { copyToClipboard } from "/static/js/common/common.js";
  * @returns {{message: string, subject: string, shareUrl: string, fallbackLinks: Object}}
  */
 const getShareMetadata = (jobId) => {
-  const shareUrl = `${window.location.origin}?job_id=${jobId}`;
+  const shareUrl = `${window.location.origin}?job_id=${encodeURIComponent(jobId)}`;
   const encodedShareUrl = encodeURIComponent(shareUrl);
   const subject = "Check out this job I found on GitJobs!";
   const message = "Check out this job I found on GitJobs!";

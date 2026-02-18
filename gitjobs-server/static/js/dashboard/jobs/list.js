@@ -50,6 +50,15 @@ const showStats = async (id) => {
 
     // Process and display the statistics data
     if (data) {
+      const viewsChartWrapper = document.querySelector('[data-chart="views"]');
+      if (viewsChartWrapper) {
+        viewsChartWrapper.classList.remove("hidden");
+      }
+      const searchAppearancesChartWrapper = document.querySelector('[data-chart="search-appearances"]');
+      if (searchAppearancesChartWrapper) {
+        searchAppearancesChartWrapper.classList.remove("hidden");
+      }
+
       const hasViewsData = data.views_daily && data.views_daily.length > 0;
       const hasSearchAppearancesData =
         data.search_appearances_daily && data.search_appearances_daily.length > 0;
@@ -69,7 +78,6 @@ const showStats = async (id) => {
           }
         } else {
           // Hide views chart if no data is available
-          const viewsChartWrapper = document.querySelector('[data-chart="views"]');
           if (viewsChartWrapper) {
             viewsChartWrapper.classList.add("hidden");
           }
@@ -86,7 +94,6 @@ const showStats = async (id) => {
           }
         } else {
           // Hide search appearances chart if no data is available
-          const searchAppearancesChartWrapper = document.querySelector('[data-chart="search-appearances"]');
           if (searchAppearancesChartWrapper) {
             searchAppearancesChartWrapper.classList.add("hidden");
           }

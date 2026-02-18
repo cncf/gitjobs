@@ -494,10 +494,11 @@ export const initializeButtonDropdown = ({
  */
 export const debounce = (func, timeout = 300) => {
   let timer;
-  const debounced = (...args) => {
+  const debounced = function (...args) {
+    const context = this;
     clearTimeout(timer);
     timer = setTimeout(() => {
-      func.apply(this, args);
+      func.apply(context, args);
     }, timeout);
   };
   debounced.cancel = () => {

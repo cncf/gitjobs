@@ -14,12 +14,32 @@ import {
 } from "/static/js/common/common.js";
 import { copyEmbedCodeToClipboard, renderEmbedCode } from "/static/js/jobboard/job_section.js";
 
+const DESKTOP_JOBS_FORM_ID = "desktop-jobs-form";
+const MOBILE_JOBS_FORM_ID = "mobile-jobs-form";
+const SEARCHBAR_ID = "searchbar";
+const EMBED_MODAL_ID = "embed-modal";
+const DRAWER_FILTERS_ID = "drawer-filters";
+const OPEN_FILTERS_BUTTON_ID = "open-filters";
+const CLOSE_FILTERS_BUTTON_ID = "close-filters";
+const DRAWER_BACKDROP_ID = "drawer-backdrop";
+const SORT_DESKTOP_ID = "sort-desktop";
+const SORT_MOBILE_ID = "sort-mobile";
+const CLEAN_SEARCH_JOBS_BUTTON_ID = "clean-search-jobs";
+const SEARCH_JOBS_BUTTON_ID = "search-jobs-btn";
+const SEARCH_JOBS_MOBILE_BUTTON_ID = "search-jobs-btn-mobile";
+const RESET_DESKTOP_FILTERS_ID = "reset-desktop-filters";
+const RESET_MOBILE_FILTERS_ID = "reset-mobile-filters";
+const COPY_EMBED_CODE_BUTTON_ID = "copy-embed-code";
+const EMBED_CODE_ID = "embed-code";
+const CLOSE_EMBED_MODAL_BUTTON_ID = "close-embed-modal";
+const BACKDROP_EMBED_MODAL_ID = "backdrop-embed-modal";
+
 /**
  * Initializes jobboard explore page controls and modals.
  */
 export const initializeJobboardExplore = () => {
   bindHtmxAfterRequestOnce({
-    selector: "#desktop-jobs-form, #mobile-jobs-form",
+    selector: `#${DESKTOP_JOBS_FORM_ID}, #${MOBILE_JOBS_FORM_ID}`,
     handler: () => {
       if (typeof window.scrollTo === "function") {
         window.scrollTo({ top: 0, behavior: "auto" });
@@ -28,58 +48,58 @@ export const initializeJobboardExplore = () => {
     boundAttribute: "jobboardFiltersAfterRequestScrollBound",
   });
 
-  const openFiltersButton = document.getElementById("open-filters");
+  const openFiltersButton = document.getElementById(OPEN_FILTERS_BUTTON_ID);
   if (openFiltersButton && openFiltersButton.dataset.boundOpenFilters !== "true") {
     openFiltersButton.addEventListener("click", openFiltersDrawer);
     openFiltersButton.dataset.boundOpenFilters = "true";
   }
 
   initializeModalCloseHandlers({
-    modalId: "drawer-filters",
-    triggerIds: ["close-filters", "drawer-backdrop"],
+    modalId: DRAWER_FILTERS_ID,
+    triggerIds: [CLOSE_FILTERS_BUTTON_ID, DRAWER_BACKDROP_ID],
     closeHandler: closeFiltersDrawer,
   });
 
-  const sortSelectDesktop = document.getElementById("sort-desktop");
+  const sortSelectDesktop = document.getElementById(SORT_DESKTOP_ID);
   if (sortSelectDesktop && sortSelectDesktop.dataset.boundSortDesktop !== "true") {
     sortSelectDesktop.addEventListener("change", () => {
-      triggerActionOnForm("desktop-jobs-form", "submit");
+      triggerActionOnForm(DESKTOP_JOBS_FORM_ID, "submit");
     });
     sortSelectDesktop.dataset.boundSortDesktop = "true";
   }
 
-  const sortSelectMobile = document.getElementById("sort-mobile");
+  const sortSelectMobile = document.getElementById(SORT_MOBILE_ID);
   if (sortSelectMobile && sortSelectMobile.dataset.boundSortMobile !== "true") {
     sortSelectMobile.addEventListener("change", () => {
-      triggerActionOnForm("mobile-jobs-form", "submit");
+      triggerActionOnForm(MOBILE_JOBS_FORM_ID, "submit");
     });
     sortSelectMobile.dataset.boundSortMobile = "true";
   }
 
-  const searchInput = document.getElementById("searchbar");
+  const searchInput = document.getElementById(SEARCHBAR_ID);
   if (searchInput && searchInput.dataset.boundSearchEnter !== "true") {
-    searchInput.addEventListener("keydown", (event) => searchOnEnter(event, "desktop-jobs-form"));
+    searchInput.addEventListener("keydown", (event) => searchOnEnter(event, DESKTOP_JOBS_FORM_ID));
     searchInput.dataset.boundSearchEnter = "true";
   }
 
-  const cleanSearchButton = document.getElementById("clean-search-jobs");
+  const cleanSearchButton = document.getElementById(CLEAN_SEARCH_JOBS_BUTTON_ID);
   if (cleanSearchButton && cleanSearchButton.dataset.boundCleanSearch !== "true") {
-    cleanSearchButton.addEventListener("click", () => cleanInputField("searchbar", "desktop-jobs-form"));
+    cleanSearchButton.addEventListener("click", () => cleanInputField(SEARCHBAR_ID, DESKTOP_JOBS_FORM_ID));
     cleanSearchButton.dataset.boundCleanSearch = "true";
   }
 
-  const searchJobsButton = document.getElementById("search-jobs-btn");
+  const searchJobsButton = document.getElementById(SEARCH_JOBS_BUTTON_ID);
   if (searchJobsButton && searchJobsButton.dataset.boundSearchDesktop !== "true") {
     searchJobsButton.addEventListener("click", () =>
-      triggerActionOnForm("desktop-jobs-form", "submit", true),
+      triggerActionOnForm(DESKTOP_JOBS_FORM_ID, "submit", true),
     );
     searchJobsButton.dataset.boundSearchDesktop = "true";
   }
 
-  const searchJobsMobileButton = document.getElementById("search-jobs-btn-mobile");
+  const searchJobsMobileButton = document.getElementById(SEARCH_JOBS_MOBILE_BUTTON_ID);
   if (searchJobsMobileButton && searchJobsMobileButton.dataset.boundSearchMobile !== "true") {
     searchJobsMobileButton.addEventListener("click", () =>
-      triggerActionOnForm("mobile-jobs-form", "submit", true),
+      triggerActionOnForm(MOBILE_JOBS_FORM_ID, "submit", true),
     );
     searchJobsMobileButton.dataset.boundSearchMobile = "true";
   }
@@ -124,15 +144,15 @@ export const initializeJobboardExplore = () => {
     foundationSelect.dataset.boundFoundationSelect = "true";
   });
 
-  const resetDesktopFilters = document.getElementById("reset-desktop-filters");
+  const resetDesktopFilters = document.getElementById(RESET_DESKTOP_FILTERS_ID);
   if (resetDesktopFilters && resetDesktopFilters.dataset.boundResetDesktop !== "true") {
-    resetDesktopFilters.addEventListener("click", () => resetForm("desktop-jobs-form"));
+    resetDesktopFilters.addEventListener("click", () => resetForm(DESKTOP_JOBS_FORM_ID));
     resetDesktopFilters.dataset.boundResetDesktop = "true";
   }
 
-  const resetMobileFilters = document.getElementById("reset-mobile-filters");
+  const resetMobileFilters = document.getElementById(RESET_MOBILE_FILTERS_ID);
   if (resetMobileFilters && resetMobileFilters.dataset.boundResetMobile !== "true") {
-    resetMobileFilters.addEventListener("click", () => resetForm("mobile-jobs-form"));
+    resetMobileFilters.addEventListener("click", () => resetForm(MOBILE_JOBS_FORM_ID));
     resetMobileFilters.dataset.boundResetMobile = "true";
   }
 
@@ -144,7 +164,7 @@ export const initializeJobboardExplore = () => {
 
     button.addEventListener("click", () => {
       renderEmbedCode();
-      toggleModalVisibility("embed-modal", "open");
+      toggleModalVisibility(EMBED_MODAL_ID, "open");
 
       const device = button.getAttribute("data-device");
       if (device === "mobile") {
@@ -155,17 +175,17 @@ export const initializeJobboardExplore = () => {
     button.dataset.boundEmbedOpen = "true";
   });
 
-  const copyEmbedCodeButton = document.getElementById("copy-embed-code");
+  const copyEmbedCodeButton = document.getElementById(COPY_EMBED_CODE_BUTTON_ID);
   if (copyEmbedCodeButton && copyEmbedCodeButton.dataset.boundCopyEmbed !== "true") {
     copyEmbedCodeButton.addEventListener("click", () => {
-      copyEmbedCodeToClipboard("embed-code");
+      copyEmbedCodeToClipboard(EMBED_CODE_ID);
     });
     copyEmbedCodeButton.dataset.boundCopyEmbed = "true";
   }
 
   initializeModalCloseHandlers({
-    modalId: "embed-modal",
-    triggerIds: ["close-embed-modal", "backdrop-embed-modal"],
+    modalId: EMBED_MODAL_ID,
+    triggerIds: [CLOSE_EMBED_MODAL_BUTTON_ID, BACKDROP_EMBED_MODAL_ID],
   });
 
   shouldDisplayJobModal(true);

@@ -3,6 +3,14 @@ import { bindHtmxAfterRequestOnce, bindHtmxBeforeRequestOnce } from "/static/js/
 import { displayActiveSection, validateFormData } from "/static/js/dashboard/jobseeker/form.js";
 import { initializePendingChangesAlert } from "/static/js/dashboard/jobseeker/pending-changes-alert.js";
 
+const UPDATE_PROFILE_BUTTON_SELECTOR = "#update-profile-button";
+const PREVIEW_BUTTON_SELECTOR = "#preview-button";
+const PENDING_CHANGES_ALERT_ID = "pending-changes-alert";
+const PROFILE_FORM_ID = "profile-form";
+const EXPERIENCE_FORM_ID = "experience-form";
+const EDUCATION_FORM_ID = "education-form";
+const PROJECTS_FORM_ID = "projects-form";
+
 /**
  * Initializes the job seeker profile update page behaviors.
  */
@@ -22,12 +30,12 @@ export const initializeJobSeekerProfileUpdate = () => {
   });
 
   const pendingChangesAlert = initializePendingChangesAlert({
-    alertId: "pending-changes-alert",
-    formIds: ["profile-form", "experience-form", "education-form", "projects-form"],
+    alertId: PENDING_CHANGES_ALERT_ID,
+    formIds: [PROFILE_FORM_ID, EXPERIENCE_FORM_ID, EDUCATION_FORM_ID, PROJECTS_FORM_ID],
   });
 
   bindHtmxBeforeRequestOnce({
-    selector: "#update-profile-button",
+    selector: UPDATE_PROFILE_BUTTON_SELECTOR,
     handler: (event) => {
       if (!validateFormData()) {
         event.preventDefault();
@@ -37,7 +45,7 @@ export const initializeJobSeekerProfileUpdate = () => {
   });
 
   bindHtmxAfterRequestOnce({
-    selector: "#update-profile-button",
+    selector: UPDATE_PROFILE_BUTTON_SELECTOR,
     handler: (event) => {
       if (
         handleHtmxResponse({
@@ -53,7 +61,7 @@ export const initializeJobSeekerProfileUpdate = () => {
   });
 
   initializePreviewButtons({
-    selector: "#preview-button",
+    selector: PREVIEW_BUTTON_SELECTOR,
     invalidMessage: "You must fill in all required fields to be able to preview the profile.",
     errorMessage: "Something went wrong previewing the data. Please try again later.",
   });

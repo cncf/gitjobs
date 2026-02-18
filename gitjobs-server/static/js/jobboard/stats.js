@@ -365,7 +365,11 @@ export const gitjobsChartTheme = {
 };
 
 const MESSAGE_EMPTY_STATS = "No data available yet";
-const JOBBOARD_STATS_CHART_IDS = ["line-chart", "bar-daily", "bar-monthly"];
+const STATS_CONTAINER_ID = "stats";
+const LINE_CHART_ID = "line-chart";
+const BAR_DAILY_CHART_ID = "bar-daily";
+const BAR_MONTHLY_CHART_ID = "bar-monthly";
+const JOBBOARD_STATS_CHART_IDS = [LINE_CHART_ID, BAR_DAILY_CHART_ID, BAR_MONTHLY_CHART_ID];
 
 /**
  * Finds the smallest value in an array of numbers.
@@ -425,7 +429,7 @@ const getMaxDateValue = (data, max) => {
  * @private
  */
 const renderLineChart = (data) => {
-  const chartDom = document.getElementById("line-chart");
+  const chartDom = document.getElementById(LINE_CHART_ID);
   if (!chartDom) return;
 
   const myChart =
@@ -594,7 +598,7 @@ export const getBarStatsOptions = () => {
  * @private
  */
 const renderBarDailyChart = (data, max, min) => {
-  const chartDom = document.getElementById("bar-daily");
+  const chartDom = document.getElementById(BAR_DAILY_CHART_ID);
   if (!chartDom) return;
 
   const myChart =
@@ -647,7 +651,7 @@ const renderBarDailyChart = (data, max, min) => {
  * @private
  */
 const renderBarMonthlyChart = (data, max, min) => {
-  const chartDom = document.getElementById("bar-monthly");
+  const chartDom = document.getElementById(BAR_MONTHLY_CHART_ID);
   if (!chartDom) return;
 
   const myChart =
@@ -694,7 +698,7 @@ const renderBarMonthlyChart = (data, max, min) => {
  * Reads data from DOM element and creates visualizations.
  */
 export const renderStats = () => {
-  const container = document.getElementById("stats");
+  const container = document.getElementById(STATS_CONTAINER_ID);
   if (!container) return;
 
   const data = container.dataset.stats;
@@ -721,7 +725,7 @@ export const renderStats = () => {
   });
 
   if (!stats.jobs.published_running_total) {
-    const chartDom = document.getElementById("line-chart");
+    const chartDom = document.getElementById(LINE_CHART_ID);
     if (chartDom) {
       chartDom.innerHTML = `<div>${MESSAGE_EMPTY_STATS}</div>`;
     }
@@ -730,7 +734,7 @@ export const renderStats = () => {
   }
 
   if (!stats.jobs.views_daily) {
-    const chartDom = document.getElementById("bar-daily");
+    const chartDom = document.getElementById(BAR_DAILY_CHART_ID);
     if (chartDom) {
       chartDom.innerHTML = `<div>${MESSAGE_EMPTY_STATS}</div>`;
     }
@@ -739,7 +743,7 @@ export const renderStats = () => {
   }
 
   if (!stats.jobs.views_monthly) {
-    const chartDom = document.getElementById("bar-monthly");
+    const chartDom = document.getElementById(BAR_MONTHLY_CHART_ID);
     if (chartDom) {
       chartDom.innerHTML = `<div>${MESSAGE_EMPTY_STATS}</div>`;
     }

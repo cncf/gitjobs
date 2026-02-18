@@ -5,6 +5,8 @@ import {
   toggleModalVisibility,
 } from "/static/js/common/common.js";
 
+const PREVIEW_MODAL_ID = "preview-modal";
+
 /**
  * Returns common configuration options for all alert dialogs.
  * Includes positioning, styling, and custom CSS classes.
@@ -166,7 +168,7 @@ const handlePreviewModalResponse = ({
   xhr,
   errorMessage,
   invalidMessage = "",
-  modalId = "preview-modal",
+  modalId = PREVIEW_MODAL_ID,
 }) => {
   if (!handlePreviewResponse({ xhr, errorMessage, invalidMessage })) {
     return false;
@@ -188,7 +190,7 @@ export const initializePreviewButtons = ({
   selector = ".preview-button",
   errorMessage,
   invalidMessage = "",
-  modalId = "preview-modal",
+  modalId = PREVIEW_MODAL_ID,
 }) => {
   bindHtmxAfterRequestOnce({
     selector,

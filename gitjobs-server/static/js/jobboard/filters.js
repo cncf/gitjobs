@@ -1,11 +1,15 @@
 import { setDrawerVisibility, triggerActionOnForm as triggerFormAction } from "/static/js/common/common.js";
 
+const DRAWER_FILTERS_ID = "drawer-filters";
+const SEARCHBAR_ID = "searchbar";
+const RESULTS_CONTAINER_ID = "results";
+
 /**
  * Opens the mobile filters drawer.
  * Adds transition effects and manages backdrop visibility.
  */
 export const openFiltersDrawer = () => {
-  setDrawerVisibility({ drawerId: "drawer-filters", open: true });
+  setDrawerVisibility({ drawerId: DRAWER_FILTERS_ID, open: true });
 };
 
 /**
@@ -13,7 +17,7 @@ export const openFiltersDrawer = () => {
  * Removes transition effects and resets scroll position.
  */
 export const closeFiltersDrawer = () => {
-  setDrawerVisibility({ drawerId: "drawer-filters", open: false });
+  setDrawerVisibility({ drawerId: DRAWER_FILTERS_ID, open: false });
 };
 
 /**
@@ -25,7 +29,7 @@ export const closeFiltersDrawer = () => {
 export const triggerActionOnForm = (formId, action, fromSearch) => {
   // Prevent empty search submissions
   if (fromSearch) {
-    const searchInput = document.getElementById("searchbar");
+    const searchInput = document.getElementById(SEARCHBAR_ID);
     if (!searchInput || searchInput.value.trim() === "") {
       return;
     }
@@ -78,7 +82,7 @@ export const cleanInputField = (inputId, formId) => {
  * @param {string} content - HTML content to display
  */
 export const updateResults = (content) => {
-  const resultsContainer = document.getElementById("results");
+  const resultsContainer = document.getElementById(RESULTS_CONTAINER_ID);
   if (!resultsContainer) {
     return;
   }
@@ -144,7 +148,7 @@ export const resetForm = async (formId) => {
     }
 
     // Clear main search input
-    const searchBar = document.getElementById("searchbar");
+    const searchBar = document.getElementById(SEARCHBAR_ID);
     if (searchBar) {
       searchBar.value = "";
     }

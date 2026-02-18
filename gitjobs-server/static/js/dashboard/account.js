@@ -1,12 +1,15 @@
 import { handleHtmxResponse } from "/static/js/common/alerts.js";
 import { bindHtmxAfterRequestOnce } from "/static/js/common/common.js";
 
+const USER_DETAILS_FORM_SELECTOR = "#user-details-form";
+const PASSWORD_FORM_SELECTOR = "#password-form";
+
 /**
  * Initializes HTMX response handling for account update forms.
  */
 export const initializeAccountUpdateForms = () => {
   bindHtmxAfterRequestOnce({
-    selector: "#user-details-form",
+    selector: USER_DETAILS_FORM_SELECTOR,
     handler: (event) => {
       handleHtmxResponse({
         xhr: event.detail.xhr,
@@ -17,7 +20,7 @@ export const initializeAccountUpdateForms = () => {
   });
 
   bindHtmxAfterRequestOnce({
-    selector: "#password-form",
+    selector: PASSWORD_FORM_SELECTOR,
     handler: (event) => {
       handleHtmxResponse({
         xhr: event.detail.xhr,

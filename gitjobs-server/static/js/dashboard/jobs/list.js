@@ -9,7 +9,17 @@ import {
 import { initializeConfirmHtmxButtons, showErrorAlert, showInfoAlert } from "/static/js/common/alerts.js";
 import { initializeDashboardActionButton } from "/static/js/dashboard/employer/dashboard-actions.js";
 
-const JOBS_STATS_CHART_IDS = ["job-chart-views", "job-chart-search-appearances"];
+const STATS_MODAL_ID = "stats-modal";
+const JOB_CHART_VIEWS_ID = "job-chart-views";
+const JOB_CHART_SEARCH_APPEARANCES_ID = "job-chart-search-appearances";
+const TOTAL_VIEWS_ID = "total-views";
+const TOTAL_SEARCH_APPEARANCES_ID = "total-search-appearances";
+const CLOSE_STATS_MODAL_BUTTON_ID = "close-stats-modal";
+const BACKDROP_STATS_MODAL_ID = "backdrop-stats-modal";
+const ADD_JOB_BUTTON_ID = "add-job-button";
+const CLEAN_SEARCH_JOBS_BUTTON_ID = "clean-search-jobs";
+const SEARCH_JOBS_INPUT_ID = "search_jobs";
+const JOBS_STATS_CHART_IDS = [JOB_CHART_VIEWS_ID, JOB_CHART_SEARCH_APPEARANCES_ID];
 const STATS_FETCH_ERROR_MESSAGE = "Something went wrong fetching the stats. Please try again later.";
 
 /**
@@ -46,13 +56,13 @@ const showStats = async (id) => {
 
       if (hasViewsData || hasSearchAppearancesData) {
         // Open the statistics modal if we have data for at least one chart
-        toggleModalVisibility(`stats-modal`, "open");
+        toggleModalVisibility(STATS_MODAL_ID, "open");
 
         // Render views chart if data exists
         if (hasViewsData) {
-          renderChart(data.views_daily, "job-chart-views", "views");
+          renderChart(data.views_daily, JOB_CHART_VIEWS_ID, "views");
           if (data.views_total_last_month !== undefined) {
-            const totalViewsElement = document.getElementById("total-views");
+            const totalViewsElement = document.getElementById(TOTAL_VIEWS_ID);
             if (totalViewsElement) {
               totalViewsElement.textContent = prettifyNumber(data.views_total_last_month);
             }
@@ -67,9 +77,9 @@ const showStats = async (id) => {
 
         // Render search appearances chart if data exists
         if (hasSearchAppearancesData) {
-          renderChart(data.search_appearances_daily, "job-chart-search-appearances", "search_appearances");
+          renderChart(data.search_appearances_daily, JOB_CHART_SEARCH_APPEARANCES_ID, "search_appearances");
           if (data.search_appearances_total_last_month !== undefined) {
-            const totalSearchElement = document.getElementById("total-search-appearances");
+            const totalSearchElement = document.getElementById(TOTAL_SEARCH_APPEARANCES_ID);
             if (totalSearchElement) {
               totalSearchElement.textContent = prettifyNumber(data.search_appearances_total_last_month);
             }
@@ -113,14 +123,14 @@ const closeStats = () => {
   });
 
   // Close the modal
-  toggleModalVisibility(`stats-modal`, "close");
+  toggleModalVisibility(STATS_MODAL_ID, "close");
 
   // Clear the statistics counters
-  const totalViewsElement = document.getElementById(`total-views`);
+  const totalViewsElement = document.getElementById(TOTAL_VIEWS_ID);
   if (totalViewsElement) {
     totalViewsElement.textContent = "";
   }
-  const totalSearchElement = document.getElementById(`total-search-appearances`);
+  const totalSearchElement = document.getElementById(TOTAL_SEARCH_APPEARANCES_ID);
   if (totalSearchElement) {
     totalSearchElement.textContent = "";
   }
@@ -296,8 +306,8 @@ export const initializeEmployerJobsListTable = () => {
  */
 export const initializeEmployerJobsStats = () => {
   initializeModalCloseHandlers({
-    modalId: "stats-modal",
-    triggerIds: ["close-stats-modal", "backdrop-stats-modal"],
+    modalId: STATS_MODAL_ID,
+    triggerIds: [CLOSE_STATS_MODAL_BUTTON_ID, BACKDROP_STATS_MODAL_ID],
     closeHandler: closeStats,
   });
 
@@ -317,16 +327,16 @@ export const initializeEmployerJobsStats = () => {
  */
 export const initializeEmployerJobsListHeader = () => {
   initializeDashboardActionButton({
-    buttonId: "add-job-button",
+    buttonId: ADD_JOB_BUTTON_ID,
     errorMessage: "Something went wrong loading the add job form. Please try again later.",
     pushStateTitle: "Jobs list",
     pushStateUrl: "/dashboard/employer?tab=jobs",
   });
 
-  const cleanSearchJobs = document.getElementById("clean-search-jobs");
+  const cleanSearchJobs = document.getElementById(CLEAN_SEARCH_JOBS_BUTTON_ID);
   if (cleanSearchJobs && cleanSearchJobs.dataset.cleanSearchBound !== "true") {
     cleanSearchJobs.addEventListener("click", () => {
-      const searchJobsInput = document.getElementById("search_jobs");
+      const searchJobsInput = document.getElementById(SEARCH_JOBS_INPUT_ID);
       if (searchJobsInput) {
         searchJobsInput.value = "";
       }

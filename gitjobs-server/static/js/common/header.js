@@ -1,12 +1,8 @@
 import { initializeButtonDropdown, isDashboardPath } from "/static/js/common/common.js";
 
 let lifecycleListenersBound = false;
-const DROPDOWN_BUTTON_ID = "user-dropdown-button";
-const DROPDOWN_MENU_ID = "dropdown-user";
-
-const getDropdownButton = () => document.getElementById(DROPDOWN_BUTTON_ID);
-
-const getDropdownMenu = () => document.getElementById(DROPDOWN_MENU_ID);
+const USER_DROPDOWN_BUTTON_ID = "user-dropdown-button";
+const USER_DROPDOWN_MENU_ID = "dropdown-user";
 
 const shouldResetDashboardScroll = (event) => {
   if (!event) {
@@ -49,16 +45,16 @@ const bindLifecycleListeners = () => {
 export const initUserDropdown = () => {
   bindLifecycleListeners();
 
-  const button = getDropdownButton();
-  const dropdown = getDropdownMenu();
+  const button = document.getElementById(USER_DROPDOWN_BUTTON_ID);
+  const dropdown = document.getElementById(USER_DROPDOWN_MENU_ID);
   if (!button || !dropdown) {
     return;
   }
 
   initializeButtonDropdown({
-    buttonId: DROPDOWN_BUTTON_ID,
-    dropdownId: DROPDOWN_MENU_ID,
-    guardKey: `__gitjobsUserDropdownBound:${DROPDOWN_MENU_ID}`,
+    buttonId: USER_DROPDOWN_BUTTON_ID,
+    dropdownId: USER_DROPDOWN_MENU_ID,
+    guardKey: "__gitjobsUserDropdownBound:dropdown-user",
     closeOnItemClickSelector: "a",
   });
 

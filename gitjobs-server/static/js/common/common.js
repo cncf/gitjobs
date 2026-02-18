@@ -46,6 +46,14 @@ const unlockBodyScroll = () => {
   delete body.dataset.modalPaddingRight;
 };
 
+const PREVIEW_MODAL_ID = "preview-modal";
+const PREVIEW_MODAL_BACKDROP_ID = "backdrop-preview-modal";
+const PREVIEW_MODAL_CLOSE_ID = "close-preview-modal";
+const PREVIEW_CONTENT_ID = "preview-content";
+const EMBED_CODE_MODAL_ID = "embed-code-modal";
+const USER_DROPDOWN_MENU_ID = "dropdown-user";
+const USER_DROPDOWN_BUTTON_ID = "user-dropdown-button";
+
 /**
  * Checks if the current path is a dashboard route.
  * @returns {boolean} True when on a dashboard page
@@ -326,10 +334,10 @@ export const initializeModalCloseHandlers = ({
  */
 export const initializePreviewModalCloseHandlers = ({ cleanJobIdParam = false, onClose } = {}) => {
   initializeModalCloseHandlers({
-    modalId: "preview-modal",
-    triggerIds: ["backdrop-preview-modal", "close-preview-modal"],
+    modalId: PREVIEW_MODAL_ID,
+    triggerIds: [PREVIEW_MODAL_BACKDROP_ID, PREVIEW_MODAL_CLOSE_ID],
     onClose: () => {
-      const previewContent = document.getElementById("preview-content");
+      const previewContent = document.getElementById(PREVIEW_CONTENT_ID);
       if (previewContent) {
         previewContent.scrollTop = 0;
       }
@@ -772,34 +780,34 @@ export const initializeGlobalPopstateHandlers = () => {
   }
 
   window.addEventListener("popstate", (event) => {
-    const modalPreview = document.getElementById("preview-modal");
+    const modalPreview = document.getElementById(PREVIEW_MODAL_ID);
     if (event.state && event.state.modal_preview !== undefined) {
       if (event.state.modal_preview && modalPreview !== null) {
         const jobId = getParamFromQueryString("job_id");
         if (jobId !== modalPreview.dataset.jobId) {
           shouldDisplayJobModal();
         } else {
-          toggleModalVisibility("preview-modal", "open");
+          toggleModalVisibility(PREVIEW_MODAL_ID, "open");
         }
       } else {
-        toggleModalVisibility("preview-modal", "close");
+        toggleModalVisibility(PREVIEW_MODAL_ID, "close");
       }
     } else if (modalPreview !== null && modalPreview.dataset.open === "true") {
-      toggleModalVisibility("preview-modal", "close");
+      toggleModalVisibility(PREVIEW_MODAL_ID, "close");
     }
 
-    const embedCodeModal = document.getElementById("embed-code-modal");
+    const embedCodeModal = document.getElementById(EMBED_CODE_MODAL_ID);
     if (embedCodeModal !== null && embedCodeModal.dataset.open === "true") {
-      toggleModalVisibility("embed-code-modal", "close");
+      toggleModalVisibility(EMBED_CODE_MODAL_ID, "close");
     }
 
-    const dropdownUser = document.getElementById("dropdown-user") || document.getElementById("user-dropdown");
+    const dropdownUser = document.getElementById(USER_DROPDOWN_MENU_ID);
     if (dropdownUser !== null && !dropdownUser.classList.contains("hidden")) {
       dropdownUser.classList.add("hidden");
       dropdownUser.setAttribute("aria-hidden", "true");
     }
 
-    const userDropdownButton = document.getElementById("user-dropdown-button");
+    const userDropdownButton = document.getElementById(USER_DROPDOWN_BUTTON_ID);
     if (userDropdownButton) {
       userDropdownButton.setAttribute("aria-expanded", "false");
     }

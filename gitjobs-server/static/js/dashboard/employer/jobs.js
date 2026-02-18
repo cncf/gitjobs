@@ -1,6 +1,14 @@
 import { handleHtmxResponse, initializePreviewButtons } from "/static/js/common/alerts.js";
 import { bindHtmxAfterRequestOnce, triggerActionOnForm } from "/static/js/common/common.js";
 
+const JOBS_FORM_ID = "jobs-form";
+const JOB_TITLE_INPUT_ID = "title";
+const SALARY_KIND_FIXED_ID = "salary_kind_fixed";
+const SALARY_KIND_RANGE_ID = "salary_kind_range";
+const PREVIEW_BUTTON_ID = "preview-button";
+const SAVE_INDICATOR_SELECTOR = "#dashboard-spinner, #save-spinner";
+const PUBLISH_INDICATOR_SELECTOR = "#dashboard-spinner, #publish-spinner";
+
 /**
  * Validates and adjusts salary fields based on selected salary type.
  * Ensures proper required attributes for range vs exact salary.
@@ -78,7 +86,7 @@ const checkSalaryBeforeSubmit = () => {
     }
   }
 
-  const jobsForm = document.getElementById("jobs-form");
+  const jobsForm = document.getElementById(JOBS_FORM_ID);
   jobsForm?.reportValidity(); // Trigger validation on the form
 };
 
@@ -123,8 +131,8 @@ const checkJobTitle = (input) => {
  */
 export const initializeSalaryKindToggle = () => {
   const salaryOptions = document.querySelectorAll('input[name="salary_kind"]');
-  const salaryOptionFixed = document.getElementById("salary_kind_fixed");
-  const salaryOptionRange = document.getElementById("salary_kind_range");
+  const salaryOptionFixed = document.getElementById(SALARY_KIND_FIXED_ID);
+  const salaryOptionRange = document.getElementById(SALARY_KIND_RANGE_ID);
 
   if (!salaryOptions.length || !salaryOptionFixed || !salaryOptionRange) {
     return;
@@ -157,12 +165,12 @@ export const initializeSalaryKindToggle = () => {
  * @param {string} [options.publishButtonId] - Optional publish button id
  */
 export const initializeEmployerJobForm = ({ successMessage, errorMessage, publishButtonId = "" }) => {
-  const jobsForm = document.getElementById("jobs-form");
+  const jobsForm = document.getElementById(JOBS_FORM_ID);
   if (!jobsForm) {
     return;
   }
 
-  const jobTitleInput = document.getElementById("title");
+  const jobTitleInput = document.getElementById(JOB_TITLE_INPUT_ID);
   if (jobTitleInput && jobTitleInput.dataset.jobTitleValidationBound !== "true") {
     jobTitleInput.addEventListener("input", () => {
       checkJobTitle(jobTitleInput);
@@ -193,13 +201,13 @@ export const initializeEmployerJobForm = ({ successMessage, errorMessage, publis
   }
 
   bindHtmxAfterRequestOnce({
-    selector: "#jobs-form",
+    selector: `#${JOBS_FORM_ID}`,
     handler: (event) => {
-      if (event.detail.elt.id !== "jobs-form") {
+      if (event.detail.elt.id !== JOBS_FORM_ID) {
         return;
       }
 
-      jobsForm.setAttribute("hx-indicator", "#dashboard-spinner, #save-spinner");
+      jobsForm.setAttribute("hx-indicator", SAVE_INDICATOR_SELECTOR);
       handleHtmxResponse({
         xhr: event.detail.xhr,
         successMessage,
@@ -213,7 +221,7 @@ export const initializeEmployerJobForm = ({ successMessage, errorMessage, publis
     const publishButton = document.getElementById(publishButtonId);
     if (publishButton && publishButton.dataset.publishJobBound !== "true") {
       publishButton.addEventListener("click", () => {
-        jobsForm.setAttribute("hx-indicator", "#dashboard-spinner, #publish-spinner");
+        jobsForm.setAttribute("hx-indicator", PUBLISH_INDICATOR_SELECTOR);
         const statusInput = jobsForm.querySelector('input[name="status"]');
         if (statusInput) {
           statusInput.value = "pending-approval";
@@ -222,7 +230,7 @@ export const initializeEmployerJobForm = ({ successMessage, errorMessage, publis
         if (!jobsForm.checkValidity()) {
           jobsForm.reportValidity();
         } else {
-          triggerActionOnForm("jobs-form", "submit");
+          triggerActionOnForm(JOBS_FORM_ID, "submit");
         }
       });
       publishButton.dataset.publishJobBound = "true";
@@ -230,7 +238,7 @@ export const initializeEmployerJobForm = ({ successMessage, errorMessage, publis
   }
 
   initializePreviewButtons({
-    selector: "#preview-button",
+    selector: `#${PREVIEW_BUTTON_ID}`,
     invalidMessage: "You must fill in all required fields to be able to preview the job.",
     errorMessage: "Something went wrong previewing the data. Please try again later.",
   });

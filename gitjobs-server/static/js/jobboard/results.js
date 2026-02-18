@@ -7,6 +7,11 @@ import {
 } from "/static/js/common/common.js";
 import { resetForm, updateResults } from "/static/js/jobboard/filters.js";
 
+const RESET_DESKTOP_FILTERS_LINK_ID = "reset-link-desktop-filters";
+const RESET_MOBILE_FILTERS_LINK_ID = "reset-link-mobile-filters";
+const DESKTOP_JOBS_FORM_ID = "desktop-jobs-form";
+const MOBILE_JOBS_FORM_ID = "mobile-jobs-form";
+
 /**
  * Initializes no-results reset links and result-card interactions.
  * @param {Object} options - Initialization options
@@ -19,15 +24,15 @@ export const initializeJobboardResults = ({
   currentPageContent,
   unavailableJobMessage = "This job is no longer available. It may have been removed recently.",
 }) => {
-  const resetDesktopFilters = document.getElementById("reset-link-desktop-filters");
+  const resetDesktopFilters = document.getElementById(RESET_DESKTOP_FILTERS_LINK_ID);
   if (resetDesktopFilters && resetDesktopFilters.dataset.resetBound !== "true") {
-    resetDesktopFilters.addEventListener("click", () => resetForm("desktop-jobs-form"));
+    resetDesktopFilters.addEventListener("click", () => resetForm(DESKTOP_JOBS_FORM_ID));
     resetDesktopFilters.dataset.resetBound = "true";
   }
 
-  const resetMobileFilters = document.getElementById("reset-link-mobile-filters");
+  const resetMobileFilters = document.getElementById(RESET_MOBILE_FILTERS_LINK_ID);
   if (resetMobileFilters && resetMobileFilters.dataset.resetBound !== "true") {
-    resetMobileFilters.addEventListener("click", () => resetForm("mobile-jobs-form"));
+    resetMobileFilters.addEventListener("click", () => resetForm(MOBILE_JOBS_FORM_ID));
     resetMobileFilters.dataset.resetBound = "true";
   }
 

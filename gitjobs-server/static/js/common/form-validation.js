@@ -9,6 +9,8 @@ import { isDashboardPath, isElementInView } from "/static/js/common/common.js";
 
 const FIELD_SELECTOR =
   'input:not([type="hidden"]):not([type="file"]):not([type="checkbox"]):not([type="radio"]), textarea';
+const PASSWORD_FIELD_SELECTOR = "[data-password]";
+const PASSWORD_CONFIRMATION_FIELD_SELECTOR = "[data-password-confirmation]";
 
 /**
  * Checks if a field is a password input.
@@ -187,8 +189,8 @@ const validateRequiredField = (field) => {
  * @returns {boolean} True if valid
  */
 const validatePasswordConfirmation = (form) => {
-  const passwordInput = form.querySelector("[data-password]");
-  const confirmationInput = form.querySelector("[data-password-confirmation]");
+  const passwordInput = form.querySelector(PASSWORD_FIELD_SELECTOR);
+  const confirmationInput = form.querySelector(PASSWORD_CONFIRMATION_FIELD_SELECTOR);
 
   if (!passwordInput || !confirmationInput) {
     return true;
@@ -236,8 +238,8 @@ const validateForm = (form) => {
  * @param {HTMLFormElement} form - Form element
  */
 const wirePasswordInputs = (form) => {
-  const passwordInput = form.querySelector("[data-password]");
-  const confirmationInput = form.querySelector("[data-password-confirmation]");
+  const passwordInput = form.querySelector(PASSWORD_FIELD_SELECTOR);
+  const confirmationInput = form.querySelector(PASSWORD_CONFIRMATION_FIELD_SELECTOR);
   if (!passwordInput || !confirmationInput) {
     return;
   }

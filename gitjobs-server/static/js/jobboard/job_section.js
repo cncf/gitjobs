@@ -16,13 +16,26 @@ import {
 } from "/static/js/common/common.js";
 import { shareJob } from "/static/js/jobboard/share.js";
 
+const APPLY_BUTTON_ID = "apply-button";
+const APPLY_BUTTON_SELECTOR = `#${APPLY_BUTTON_ID}`;
+const USER_DROPDOWN_BUTTON_ID = "user-dropdown-button";
+const EMBED_CODE_ID = "embed-code";
+const EMBED_IFRAME_ID = "gitjobs";
+const PREVIEW_MODAL_ID = "preview-modal";
+const PREVIEW_CONTENT_ID = "preview-content";
+const EMBED_CODE_MODAL_ID = "embed-code-modal";
+const EMBED_CODE_MODAL_SELECTOR = `#${EMBED_CODE_MODAL_ID}`;
+const EMBED_CODE_BUTTON_ID = "embed-code-button";
+const CLOSE_EMBED_CODE_MODAL_BUTTON_ID = "close-embed-code-modal";
+const BACKDROP_EMBED_CODE_MODAL_ID = "backdrop-embed-code-modal";
+
 /**
  * Initializes the job application button functionality.
  * Handles different states: logged out, external URL, no profile.
  * @param {Document|HTMLElement} [root=document] - Root element containing the apply button
  */
 const initializeApplyButton = (root = document) => {
-  const applyButton = root.querySelector("#apply-button");
+  const applyButton = root.querySelector(APPLY_BUTTON_SELECTOR);
   if (!applyButton || applyButton.dataset.applyBound === "true") {
     return;
   }
@@ -34,7 +47,7 @@ const initializeApplyButton = (root = document) => {
   });
 
   const applyUrl = applyButton.dataset.applyUrl;
-  const userButton = document.getElementById("user-dropdown-button");
+  const userButton = document.getElementById(USER_DROPDOWN_BUTTON_ID);
   if (!userButton) {
     return;
   }
@@ -100,7 +113,7 @@ const initializeApplyButton = (root = document) => {
  * Creates an iframe with current search parameters.
  */
 export const renderEmbedCode = () => {
-  const embedCode = document.getElementById("embed-code");
+  const embedCode = document.getElementById(EMBED_CODE_ID);
   if (!embedCode) {
     return;
   }
@@ -108,12 +121,12 @@ export const renderEmbedCode = () => {
   const params = new URLSearchParams(window.location.search);
   params.append("limit", "10");
   embedCode.textContent = `
-<iframe id="gitjobs" src="${window.location.origin}/embed?${params.toString()}" style="width:100%;max-width:870px;height:100%;display:block;border:none;"></iframe>
+<iframe id="${EMBED_IFRAME_ID}" src="${window.location.origin}/embed?${params.toString()}" style="width:100%;max-width:870px;height:100%;display:block;border:none;"></iframe>
 
 <!-- Uncomment the following lines for resizing iframes dynamically using open-iframe-resizer
 <script type="module">
   import { initialize } from "https://cdn.jsdelivr.net/npm/@open-iframe-resizer/core@latest/dist/index.js";
-  initialize({}, "#gitjobs");
+  initialize({}, "#${EMBED_IFRAME_ID}");
 </script> -->`;
 };
 
@@ -139,7 +152,7 @@ export const copyEmbedCodeToClipboard = async (elementId) => {
  * Initializes preview and embed modal interactions for job details.
  */
 export const initializeJobPreviewModal = () => {
-  const previewModal = document.getElementById("preview-modal");
+  const previewModal = document.getElementById(PREVIEW_MODAL_ID);
   if (
     previewModal &&
     previewModal.dataset.open === "true" &&
@@ -164,7 +177,7 @@ export const initializeJobPreviewModal = () => {
     shareJob(root);
   };
 
-  const previewContent = document.getElementById("preview-content");
+  const previewContent = document.getElementById(PREVIEW_CONTENT_ID);
   if (previewContent) {
     initializePreviewContentActions(previewContent);
   } else {
@@ -179,7 +192,7 @@ export const initializeJobPreviewModal = () => {
 
     tab.addEventListener("click", (event) => {
       const section = event.currentTarget.getAttribute("data-section");
-      const buttons = document.querySelectorAll("#embed-code-modal [data-section]");
+      const buttons = document.querySelectorAll(`${EMBED_CODE_MODAL_SELECTOR} [data-section]`);
       buttons.forEach((button) => {
         button.setAttribute("data-active", "false");
         button.classList.remove("active");
@@ -187,7 +200,7 @@ export const initializeJobPreviewModal = () => {
       event.currentTarget.setAttribute("data-active", "true");
       event.currentTarget.classList.add("active");
 
-      const sections = document.querySelectorAll("#embed-code-modal .sections > div");
+      const sections = document.querySelectorAll(`${EMBED_CODE_MODAL_SELECTOR} .sections > div`);
       sections.forEach((content) => {
         if (content.id !== section) {
           content.classList.add("hidden");
@@ -200,17 +213,17 @@ export const initializeJobPreviewModal = () => {
     tab.dataset.tabBound = "true";
   });
 
-  const embedCodeButton = document.getElementById("embed-code-button");
+  const embedCodeButton = document.getElementById(EMBED_CODE_BUTTON_ID);
   if (embedCodeButton && embedCodeButton.dataset.embedOpenBound !== "true") {
     embedCodeButton.addEventListener("click", () => {
-      toggleModalVisibility("embed-code-modal", "open");
+      toggleModalVisibility(EMBED_CODE_MODAL_ID, "open");
     });
     embedCodeButton.dataset.embedOpenBound = "true";
   }
 
   initializeModalCloseHandlers({
-    modalId: "embed-code-modal",
-    triggerIds: ["close-embed-code-modal", "backdrop-embed-code-modal"],
+    modalId: EMBED_CODE_MODAL_ID,
+    triggerIds: [CLOSE_EMBED_CODE_MODAL_BUTTON_ID, BACKDROP_EMBED_CODE_MODAL_ID],
   });
 
   const copyButtons = document.querySelectorAll("[data-copy-button]");

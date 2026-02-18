@@ -5,6 +5,12 @@ import {
   toggleModalVisibility,
 } from "/static/js/common/common.js";
 
+const REJECT_MODAL_ID = "reject-modal";
+const REJECT_JOB_FORM_ID = "reject-job-form";
+const REJECT_JOB_FORM_SELECTOR = `#${REJECT_JOB_FORM_ID}`;
+const CLOSE_REJECT_MODAL_BUTTON_ID = "close-reject-modal";
+const BACKDROP_REJECT_MODAL_ID = "backdrop-reject-modal";
+
 /**
  * Initializes moderation actions for approve and reject job workflows.
  */
@@ -28,7 +34,7 @@ export const initializeModeratorJobs = () => {
 
     button.addEventListener("click", (event) => {
       const jobId = event.currentTarget.dataset.jobId;
-      const rejectJobForm = document.getElementById("reject-job-form");
+      const rejectJobForm = document.getElementById(REJECT_JOB_FORM_ID);
       if (!rejectJobForm || !jobId) {
         return;
       }
@@ -38,14 +44,14 @@ export const initializeModeratorJobs = () => {
       if (typeof htmxInstance?.process === "function") {
         htmxInstance.process(rejectJobForm);
       }
-      toggleModalVisibility("reject-modal", "open");
+      toggleModalVisibility(REJECT_MODAL_ID, "open");
     });
 
     button.dataset.rejectOpenBound = "true";
   });
 
   bindHtmxAfterRequestOnce({
-    selector: "#reject-job-form",
+    selector: REJECT_JOB_FORM_SELECTOR,
     handler: (event) => {
       if (
         handleHtmxResponse({
@@ -58,15 +64,15 @@ export const initializeModeratorJobs = () => {
           return;
         }
         rejectJobForm.reset();
-        toggleModalVisibility("reject-modal", "close");
+        toggleModalVisibility(REJECT_MODAL_ID, "close");
       }
     },
     boundAttribute: "rejectSubmitBound",
   });
 
   initializeModalCloseHandlers({
-    modalId: "reject-modal",
-    triggerIds: ["close-reject-modal", "backdrop-reject-modal"],
+    modalId: REJECT_MODAL_ID,
+    triggerIds: [CLOSE_REJECT_MODAL_BUTTON_ID, BACKDROP_REJECT_MODAL_ID],
   });
 };
 

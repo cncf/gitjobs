@@ -1,5 +1,5 @@
 {% extends "notifications/base.html" -%}
-{% import "macros/email.html" as email %}
+{% import "macros/email.html" as email -%}
 
 {% block subject -%}
   Verify your email address
@@ -11,7 +11,7 @@
 
 {% block content -%}
   <p class="default mb-30">
-    Welcome to <strong>GitJobs!</strong>!
+    Welcome to <strong>GitJobs</strong>!
     <br />
     <br />
     Please note that the verification code <strong>is only valid for 24 hours</strong>. If you haven't verified your account by then you'll need to sign up again.
@@ -28,7 +28,7 @@
 {% endblock content -%}
 
 {% block footer -%}
-  Didn't create an account? I's likely someone just typed in your email address by accident.
+  Didn't create an account? It's likely someone just typed in your email address by accident.
   <br>
   Feel free to ignore this email.
 {% endblock footer -%}

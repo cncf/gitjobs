@@ -13,6 +13,14 @@ import {
 } from "../shared/helpers";
 
 test.describe("GitJobs - Jobboard", () => {
+  const desktopKindFilter = (page: Page, kind: string) =>
+    page.locator(`label[for="desktop-kind[]-${kind}"]`);
+
+  const mobileKindFilter = (page: Page, kind: string) =>
+    page.locator(`label[for="mobile-kind[]-${kind}"]`);
+
+  const previewTitle = (page: Page) => page.getByTestId("preview-job-title");
+
   const openFirstPageWithPagination = async (page: Page): Promise<void> => {
     await page.goto("/?limit=1");
     await expect(page.locator("#results")).toHaveText(
@@ -44,11 +52,7 @@ test.describe("GitJobs - Jobboard", () => {
   test("should apply a filter and verify that the results are updated", async ({
     page,
   }) => {
-    await page
-      .locator("div:nth-child(4) > div > .font-semibold")
-      .first()
-      .click();
-    await page.locator("label").filter({ hasText: "Full Time" }).nth(1).click();
+    await desktopKindFilter(page, "full-time").click();
     await expect(page).toHaveURL(/full-time/);
     await waitForOnlyJobTypeResults(page, "full time");
 
@@ -64,16 +68,8 @@ test.describe("GitJobs - Jobboard", () => {
   test("should apply multiple filters and verify that the results are updated", async ({
     page,
   }) => {
-    await page
-      .locator("div:nth-child(4) > div > .font-semibold")
-      .first()
-      .click();
-    await page.locator("label").filter({ hasText: "Part Time" }).nth(1).click();
-    await page
-      .locator("label")
-      .filter({ hasText: "Internship" })
-      .nth(1)
-      .click();
+    await desktopKindFilter(page, "part-time").click();
+    await desktopKindFilter(page, "internship").click();
     await expect(page).toHaveURL(/part-time/);
     await expect(page).toHaveURL(/internship/);
     await waitForOnlyJobTypeSetResults(page, ["part time", "internship"]);
@@ -98,7 +94,7 @@ test.describe("GitJobs - Jobboard", () => {
       );
     });
 
-    await page.locator("label").filter({ hasText: "Full Time" }).nth(1).click();
+    await desktopKindFilter(page, "full-time").click();
 
     const requestUrl = (await requestPromise).url();
     const query = new URL(requestUrl).search;
@@ -142,10 +138,7 @@ test.describe("GitJobs - Jobboard", () => {
     await page.setViewportSize({ width: 375, height: 667 });
     await page.locator("#open-filters").click();
     await page.waitForSelector("#drawer-filters", { state: "visible" });
-    await page
-      .locator("#drawer-filters label")
-      .filter({ hasText: "Full Time" })
-      .click();
+    await mobileKindFilter(page, "full-time").click();
     await page.locator("#close-filters").click();
     await expect(page).toHaveURL(/full-time/);
     await waitForOnlyJobTypeResults(page, "full time");
@@ -177,7 +170,7 @@ test.describe("GitJobs - Jobboard", () => {
   });
 
   test("should reset filters", async ({ page }) => {
-    await page.locator("label").filter({ hasText: "Part Time" }).nth(1).click();
+    await desktopKindFilter(page, "part-time").click();
     await expect(page).toHaveURL(/part-time/);
     await waitForOnlyJobTypeResults(page, "part time");
     await page.locator("#reset-desktop-filters").click();
@@ -210,26 +203,45 @@ test.describe("GitJobs - Jobboard", () => {
   });
 
   test("should sort jobs", async ({ page }) => {
-    const initialJobTitles = (await jobTitles(page).allTextContents()).map(
-      (title) => title.trim(),
+    const initialJobIds = await jobCards(page).evaluateAll((cards) =>
+      cards.map((card) => card.getAttribute("data-job-id") || ""),
     );
+
     await page.locator("#sort-desktop").selectOption("salary");
     await expect(page).toHaveURL(/\?sort=salary/);
-    const sortedJobTitles = (await jobTitles(page).allTextContents()).map(
-      (title) => title.trim(),
+
+    const sortedJobIds = await jobCards(page).evaluateAll((cards) =>
+      cards.map((card) => card.getAttribute("data-job-id") || ""),
     );
-    expect(sortedJobTitles.length).toBe(initialJobTitles.length);
-    expect(sortedJobTitles[0]).toBeTruthy();
+
+    expect(sortedJobIds.length).toBe(initialJobIds.length);
     expect(
-      sortedJobTitles.some((title, index) => title !== initialJobTitles[index]),
+      sortedJobIds.some((jobId, index) => jobId !== initialJobIds[index]),
     ).toBe(true);
+
+    const salaryValues = (
+      await page
+        .locator('[data-preview-job="true"] [data-testid="job-card-salary"]')
+        .allTextContents()
+    ).map((text) => text.trim());
+    expect(salaryValues.length).toBe(sortedJobIds.length);
+
+    let foundMissingSalary = false;
+    for (const salaryValue of salaryValues) {
+      const isMissing = /not provided/i.test(salaryValue);
+      if (isMissing) {
+        foundMissingSalary = true;
+        continue;
+      }
+      expect(foundMissingSalary).toBe(false);
+    }
   });
 
   test("ensure filters and search persist on page refresh", async ({
     page,
   }) => {
     await searchInput(page).fill("Engineer");
-    await page.locator("label").filter({ hasText: "Full Time" }).nth(1).click();
+    await desktopKindFilter(page, "full-time").click();
     await expect(page).toHaveURL(/Engineer/);
     await expect(page).toHaveURL(/full-time/);
 
@@ -280,22 +292,18 @@ test.describe("GitJobs - Jobboard", () => {
     expect(expectedCompany).toBeTruthy();
 
     await selectedJobCard.click();
-    await expect(page.locator("#preview-modal .text-xl")).toBeVisible({
+    await expect(previewTitle(page)).toBeVisible({
       timeout: 10000,
     });
 
-    await expect(
-      page.locator(
-        ".text-xl.lg\\:leading-tight.font-stretch-condensed.font-medium.text-stone-900.lg\\:truncate.my-1\\.5.md\\:my-0",
-      ),
-    ).toHaveText(expectedTitle as string);
+    await expect(previewTitle(page)).toHaveText(expectedTitle as string);
     await expect(page.locator("#preview-content")).toContainText(
       expectedCompany as string,
     );
 
     const previewContent = page.locator("#preview-content");
-    const descriptionLocator = previewContent.locator(
-      'div.text-lg.font-semibold.text-stone-800:has-text("Job description") + div.text-sm\\/6.text-stone-600.markdown',
+    const descriptionLocator = previewContent.getByTestId(
+      "preview-job-description",
     );
     await expect(descriptionLocator).toBeVisible();
     await expect(descriptionLocator).not.toHaveText("");
@@ -314,7 +322,7 @@ test.describe("GitJobs - Jobboard", () => {
   }) => {
     await jobCards(page).first().waitFor();
     await jobCards(page).first().click();
-    await expect(page.locator("#preview-modal .text-xl")).toBeVisible({
+    await expect(previewTitle(page)).toBeVisible({
       timeout: 10000,
     });
 
@@ -345,15 +353,15 @@ test.describe("GitJobs - Jobboard", () => {
   }) => {
     await jobCards(page).first().waitFor();
     await jobCards(page).first().click();
-    await expect(page.locator("#preview-modal .text-xl")).toBeVisible({
+    await expect(previewTitle(page)).toBeVisible({
       timeout: 10000,
     });
 
     const embedButton = page.locator("#embed-code-button");
-    if ((await embedButton.count()) === 0) {
-      console.log("Embed code button not available, skipping test.");
-      return;
-    }
+    test.skip(
+      (await embedButton.count()) === 0,
+      "Embed code button not available for the selected job.",
+    );
 
     await embedButton.click();
     await expect(page.locator("#embed-code-modal")).toBeVisible();
@@ -369,7 +377,7 @@ test.describe("GitJobs - Jobboard", () => {
 
     await page.locator("#close-embed-code-modal").click();
     await expect(page.locator("#embed-code-modal")).toBeHidden();
-    await expect(page.locator("#preview-modal .text-xl")).toBeVisible();
+    await expect(previewTitle(page)).toBeVisible();
 
     await expect
       .poll(async () =>
@@ -395,7 +403,7 @@ test.describe("GitJobs - Jobboard", () => {
   test("should display share buttons properly", async ({ page }) => {
     await jobCards(page).first().waitFor();
     await jobCards(page).first().click();
-    await expect(page.locator("#preview-modal .text-xl")).toBeVisible({
+    await expect(previewTitle(page)).toBeVisible({
       timeout: 10000,
     });
 

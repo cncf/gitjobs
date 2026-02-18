@@ -11,6 +11,9 @@ test.describe("GitJobs - About", () => {
   }) => {
     await page.getByRole("link", { name: "About" }).click();
     await expect(page).toHaveURL(/\/about/);
-    await expect(page.locator("body")).toBeVisible();
+    const aboutContent = page.locator(".about");
+    await expect(aboutContent).toBeVisible();
+    await expect(aboutContent.getByRole("heading", { name: "ABOUT" })).toBeVisible();
+    await expect(aboutContent.getByRole("heading", { name: "FAQs" })).toBeVisible();
   });
 });

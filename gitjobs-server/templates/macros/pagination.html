@@ -116,10 +116,9 @@
 {% macro range_display(offset, count, total) -%}
   {%- if count > 0 -%}
     {%- if let Some(offset_number) = offset -%}
-      {{ offset_number + 1 }} - {{ count + offset_number }}{{ " " }}of
-      <span class="font-semibold">{{ total }}</span> results
+      {{ offset_number + 1 }} - {{ count + offset_number }} of {{ total }} results
     {%- else -%}
-      1 - {{ count }}{{ " " }}of <span class="font-semibold">{{ total }}</span> results
+      1 - {{ count }} of {{ total }} results
     {%- endif -%}
   {%- else -%}
     0 results

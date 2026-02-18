@@ -2,8 +2,7 @@ import { Page, Locator } from "@playwright/test";
 
 export const HOME_PATH = "/";
 export const JOB_CARD_SELECTOR = '[data-preview-job="true"]';
-export const JOB_TITLE_SELECTOR =
-  ".text-base.font-stretch-condensed.font-medium.text-stone-900.line-clamp-2.md\\:line-clamp-1";
+export const JOB_TITLE_SELECTOR = '[data-testid="job-card-title"]';
 
 export const jobCards = (page: Page): Locator =>
   page.locator(JOB_CARD_SELECTOR);

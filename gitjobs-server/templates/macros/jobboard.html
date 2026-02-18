@@ -87,7 +87,8 @@
       <div class="flex space-x-3 items-center mt-2 sm:mt-1 md:mt-auto">
         <div class="flex items-center space-x-4 min-w-0 md:h-[22px]">
           {# Title -#}
-          <div class="text-base font-stretch-condensed font-medium text-stone-900 line-clamp-2 md:line-clamp-1">
+          <div data-testid="job-card-title"
+               class="text-base font-stretch-condensed font-medium text-stone-900 line-clamp-2 md:line-clamp-1">
             {# Truncate job title to 50 characters -#}
             {{ job.title|truncate(50) }}
           </div>
@@ -146,7 +147,7 @@
         {# Salary -#}
         <div class="flex flex-col space-y-1">
           {{ mini_title("Salary") -}}
-          <div class="capitalize text-nowrap">
+          <div data-testid="job-card-salary" class="capitalize text-nowrap">
             {% if let Some(salary) = job.salary -%}
               {% if let Some(salary_currency) = job.salary_currency -%}
                 {{ salary_currency }}

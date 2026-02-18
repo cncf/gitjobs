@@ -25,7 +25,8 @@
           {# End company -#}
 
           {# Title -#}
-          <div class="text-xl lg:leading-tight font-stretch-condensed font-medium text-stone-900 lg:truncate my-1.5 md:my-0">
+          <div data-testid="preview-job-title"
+               class="text-xl lg:leading-tight font-stretch-condensed font-medium text-stone-900 lg:truncate my-1.5 md:my-0">
             {{ job.title }}
           </div>
           {# End title -#}
@@ -339,7 +340,8 @@
         {# Job description -#}
         <div>
           {{ content_heading(content = "Job description", margin = 0) -}}
-          <div class="text-sm/6 text-stone-600 markdown">{{ job.description|md_to_html|safe }}</div>
+          <div data-testid="preview-job-description"
+               class="text-sm/6 text-stone-600 markdown">{{ job.description|md_to_html|safe }}</div>
         </div>
         {# End job description -#}
 

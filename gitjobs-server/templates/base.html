@@ -38,8 +38,7 @@
     <link rel="apple-touch-icon"
           href="https://gitjobs.dev/static/images/index/apple-touch-icon.png">
     <meta charset="UTF-8" />
-    <meta name="viewport"
-          content="width=device-width, initial-scale = 1, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#f9fafb" />
     <meta name="htmx-config" content='{"includeIndicatorStyles": false}'>
 
@@ -49,100 +48,16 @@
     <script type="text/javascript" src="/static/vendor/js/htmx.v2.0.7.min.js"></script>
     <script src="/static/vendor/js/easymde.v2.20.0.min.js"></script>
     <script src="/static/vendor/js/sweetalert2.v11.23.0.min.js"></script>
+    <script type="module" src="/static/js/common/form-validation.js"></script>
 
-    <script type="text/javascript">
-      // Trim string values and filter out empty or "0" entries before HTMX serializes them.
-      const removeEmptyValues = (source) => {
-        const filteredEntries = [];
-
-        for (const [key, rawValue] of source.entries()) {
-          const value = typeof rawValue === "string" ? rawValue.trim() : String(rawValue);
-          if (value === "" || value === "0") {
-            continue;
-          }
-
-          filteredEntries.push([key, typeof rawValue === "string" ? value : rawValue]);
-        }
-
-        return filteredEntries;
-      };
-
-      // htmx extension to remove empty values from the parameters.
-      htmx.defineExtension("no-empty-vals", {
-        onEvent: (name, event) => {
-          if (name !== "htmx:configRequest") {
-            return true;
-          }
-
-          const request = event.detail;
-          // For GET requests, filter formData directly because HTMX builds URL params from it.
-          if (request.verb !== "get" || !request.useUrlParams) {
-            return true;
-          }
-
-          const filteredParameters = new FormData();
-          for (const [key, value] of removeEmptyValues(request.formData)) {
-            filteredParameters.append(key, value);
-          }
-
-          request.formData = filteredParameters;
-          request.parameters = filteredParameters;
-
-          return true;
-        },
-        encodeParameters: (xhr, parameters, elt) => {
-          // For non-GET requests, mutate parameters in place and let HTMX encode normally.
-          const filteredEntries = removeEmptyValues(parameters);
-
-          for (const key of [...parameters.keys()]) {
-            parameters.delete(key);
-          }
-
-          for (const [key, value] of filteredEntries) {
-            parameters.append(key, value);
-          }
-
-          return null;
-        }
-      });
-    </script>
     <script type="module">
       import {
-        getParamFromQueryString,
-        shouldDisplayJobModal,
-        toggleModalVisibility
+        initializeNoEmptyValuesExtension,
+        initializeGlobalPopstateHandlers
       } from '/static/js/common/common.js';
 
-      window.addEventListener("popstate", (event) => {
-        const job_id_param = getParamFromQueryString('job_id');
-        const modal_preview = document.getElementById('preview-modal');
-        if (event.state && event.state.modal_preview !== undefined) {
-          if (event.state.modal_preview && modal_preview !== null) {
-            const job_id = getParamFromQueryString('job_id');
-            if (modal_preview !== null) {
-              if (job_id !== modal_preview.dataset.jobId) {
-                shouldDisplayJobModal();
-              } else {
-                toggleModalVisibility('preview-modal', "open");
-              }
-            }
-          } else {
-            toggleModalVisibility('preview-modal', "close");
-          }
-        } else {
-          if (modal_preview !== null && modal_preview.dataset.open === "true") {
-            toggleModalVisibility('preview-modal', "close");
-          }
-        }
-        const embedCode = document.getElementById('embed-code-modal');
-        if (embedCode !== null && embedCode.dataset.open === "true") {
-          toggleModalVisibility('embed-code-modal', "close");
-        }
-        const dropwodnUser = document.getElementById('dropdown-user');
-        if (dropwodnUser !== null && !dropwodnUser.classList.contains('hidden')) {
-          document.getElementById('dropdown-user').classList.add('hidden');
-        }
-      });
+      initializeNoEmptyValuesExtension();
+      initializeGlobalPopstateHandlers();
     </script>
 
     {# Analytics -#}
@@ -179,6 +94,11 @@
           }
 
           (() => {
+            if (window.__gitjobsAnalyticsVirtualPvInitialized) {
+              return;
+            }
+            window.__gitjobsAnalyticsVirtualPvInitialized = true;
+
             let lastVirtualHref = null;
 
             // Function to build virtual path for job pages
@@ -304,6 +224,10 @@
   <body class="flex flex-col min-h-dvh font-inter bg-stone-100 relative"
         hx-get
         hx-trigger="refresh-body">
+    <a href="#main-content"
+       class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary-600 focus:text-white focus:rounded-md focus:shadow-lg">
+      Skip to main content
+    </a>
     {% block content -%}
     {% endblock content -%}
 

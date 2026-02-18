@@ -1,13 +1,15 @@
-{% import "macros.html" as macros -%}
+{% import "macros/ui.html" as ui -%}
 
 <div class="space-y-12">
   <div>
-    {{ macros::form_title(title = "Employer profile", description = "This information will be displayed in your jobs postings. You can update it at anytime.") -}}
+    {{ ui::form_title(title = "Employer profile", description = "This information will be displayed in your jobs postings. You can update it at anytime.") -}}
   </div>
 
   <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 max-w-5xl">
     {# Form image -#}
-    <div class="col-span-full">{{ macros::images_form(label = "Company logo", name = "logo_id") -}}</div>
+    <div class="col-span-full">
+      {{ ui::images_form(label = "Company logo", name = "logo_id", target = "logo") -}}
+    </div>
     {# End form image -#}
   </div>
 
@@ -31,6 +33,7 @@
           <input type="text"
                  name="company"
                  id="company"
+                 maxlength="{{ crate::validation::MAX_LEN_ENTITY_NAME }}"
                  class="input-primary"
                  autocomplete="off"
                  autocorrect="off"
@@ -38,7 +41,9 @@
                  spellcheck="false"
                  required>
         </div>
-        <p class="form-legend">Your company's trade name.</p>
+        <p class="form-legend">
+          Your company's trade name. Max {{ crate::validation::MAX_LEN_ENTITY_NAME }} characters.
+        </p>
       </div>
       {# End Company name -#}
 
@@ -72,9 +77,11 @@
           Description <span class="asterisk">*</span>
         </label>
         <div class="mt-2">
-          <markdown-editor id="description" required></markdown-editor>
+          <markdown-editor id="description" maxlength="{{ crate::validation::MAX_LEN_DESCRIPTION }}" required></markdown-editor>
         </div>
-        <p class="form-legend">A short introduction of your company. You can use markdown to format the text.</p>
+        <p class="form-legend">
+          A short introduction of your company. You can use markdown to format the text. Max {{ crate::validation::MAX_LEN_DESCRIPTION }} characters.
+        </p>
       </div>
       {# End Description -#}
 
@@ -82,7 +89,7 @@
       <div class="col-span-full">
         <div class="form-label">Public</div>
         <label class="mt-2 inline-flex items-center cursor-pointer">
-          {{ macros::toggle_checkbox(id = "public", checked = true) -}}
+          {{ ui::toggle_checkbox(id = "public", checked = true) -}}
           <span class="ms-3 text-sm font-medium text-stone-900">Display in employers listing</span>
         </label>
         <p class="form-legend">
@@ -106,7 +113,7 @@
       <div class="relative">
         {# Submit employer form button -#}
         <button type="submit" class="btn-primary">
-          {{ macros::btn_spinner(id = "save-spinner", spinner_type = "2") -}}
+          {{ ui::btn_spinner(id = "save-spinner", spinner_type = "2") -}}
           Save
         </button>
         {# End submit employer form button -#}
@@ -117,21 +124,10 @@
 </div>
 <script type="module">
   import {
-    showErrorAlert,
-  } from '/static/js/common/alerts.js';
-  import {
-    isSuccessfulXHRStatus,
-  } from '/static/js/common/common.js';
+    initializeEmployerProfileForm
+  } from '/static/js/dashboard/employer/employers.js';
 
-  const employerForm = document.getElementById('employer-form');
-  if (employerForm) {
-    employerForm.addEventListener('htmx:afterRequest', (e) => {
-      // Check if the form is the employer form and not the input ts_query requesting locations
-      if (e.detail.elt.id === 'employer-form') {
-        if (!isSuccessfulXHRStatus(e.detail.xhr.status)) {
-          showErrorAlert('Something went wrong adding the profile, please try again later.');
-        }
-      }
-    });
-  }
+  initializeEmployerProfileForm({
+    errorMessage: 'Something went wrong adding the profile. Please try again later.'
+  });
 </script>

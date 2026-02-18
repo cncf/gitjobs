@@ -1,6 +1,7 @@
-{% import "macros.html" as macros -%}
+{% import "macros/ui.html" as ui -%}
+{% import "macros/employer.html" as employer -%}
 
-{{ macros::form_title(title = "Jobs") -}}
+{{ ui::form_title(title = "Jobs") -}}
 
 <div class="flex justify-between my-10">
   <div class="flex items-center gap-x-6">
@@ -40,19 +41,11 @@
   {# End add job button -#}
 
   <script type="module">
-    const addJobButton = document.getElementById('add-job-button');
-    if (addJobButton) {
-      addJobButton.addEventListener('htmx:afterRequest', () => {
-        history.pushState({}, "Jobs list", '/dashboard/employer?tab=jobs');
-      });
-    }
+    import {
+      initializeEmployerJobsListHeader
+    } from '/static/js/dashboard/jobs/list.js';
 
-    const cleanSearchJobs = document.getElementById('clean-search-jobs');
-    if (cleanSearchJobs) {
-      cleanSearchJobs.addEventListener('click', () => {
-        document.getElementById('search_jobs').value = '';
-      });
-    }
+    initializeEmployerJobsListHeader();
   </script>
 </div>
 
@@ -91,13 +84,13 @@
               <div class="max-w-full truncate">{{ job.title }}</div>
               {# End title job -#}
               {# Location -#}
-              <div class="block xl:hidden text-xs text-stone-500 max-w-full truncate">{{ location_content(job) -}}</div>
+              <div class="block xl:hidden text-xs text-stone-500 max-w-full truncate">{{ employer::location(job) -}}</div>
               {# End Location -#}
             </th>
 
             {# Location -#}
             <td class="hidden xl:table-cell px-3 xl:px-5 py-4 whitespace-nowrap min-w-[100px] max-w-[100px] xl:max-w-[200px]">
-              <div class="max-w-full truncate">{{ location_content(job) -}}</div>
+              <div class="max-w-full truncate">{{ employer::location(job) -}}</div>
             </td>
             {# End location -#}
 
@@ -106,7 +99,7 @@
               {% let review_notes = job.review_notes|display_some %}
               {% if job.status == JobStatus::Rejected && !review_notes.is_empty() -%}
                 <div class="relative">
-                  <div class="cursor-pointer peer">{{ macros::job_status_badge(status = job.status) -}}</div>
+                  <div class="cursor-pointer peer">{{ ui::job_status_badge(status = job.status) -}}</div>
                   <div role="tooltip"
                        class="absolute top-7 z-10 end-4 opacity-0 peer-hover:opacity-100 px-3 py-2 text-xs xl:text-sm font-medium text-white transition-opacity duration-300 bg-stone-900/80 rounded-lg shadow-xs tooltip min-w-[250px] max-w-[400px]">
                     <div class="text-wrap">{{ review_notes }}</div>
@@ -115,7 +108,7 @@
                   </div>
                 </div>
               {% else -%}
-                {{ macros::job_status_badge(status = job.status) -}}
+                {{ ui::job_status_badge(status = job.status) -}}
               {% endif -%}
             </td>
             {# End status -#}
@@ -143,29 +136,16 @@
               <div class="flex items-center gap-x-1 xl:gap-x-3">
                 {# Views job button -#}
                 <div>
-                  <button id="btn-stats-{{ job.job_id }}" class="btn-tertiary p-2 relative">
+                  <button id="btn-stats-{{ job.job_id }}"
+                          data-job-stats-button="true"
+                          data-job-id="{{ job.job_id }}"
+                          class="btn-tertiary p-2 relative">
                     <div class="svg-icon size-4 icon-stats"></div>
                     <div class="hidden" id="spinner-stats-{{ job.job_id }}">
                       {# Spinner for loading stats -#}
-                      {{ macros::btn_spinner(id = format!("spinner-{}", job.job_id) , size = "size-6.5", htmx = false) -}}
+                      {{ ui::btn_spinner(id = format!("spinner-{}", job.job_id) , size = "size-6.5", htmx = false) -}}
                     </div>
                   </button>
-                  <script type="module">
-                    import {
-                      showStats
-                    } from '/static/js/dashboard/jobs/list.js';
-
-                    const btnStats = document.getElementById('btn-stats-{{ job.job_id }}');
-                    if (btnStats) {
-                      btnStats.addEventListener('click', () => {
-                        const spinnerStats = document.getElementById(`spinner-stats-{{ job.job_id }}`);
-                        if (spinnerStats) {
-                          spinnerStats.classList.remove('hidden');
-                        }
-                        showStats("{{job.job_id}}");
-                      });
-                    }
-                  </script>
                 </div>
                 {# End views job button -#}
 
@@ -182,22 +162,31 @@
                 {# End update job button -#}
 
                 <div class="group relative">
-                  <button data-job-id="{{ job.job_id }}"
+                  <button id="actions-btn-{{ job.job_id }}"
+                          type="button"
+                          data-job-id="{{ job.job_id }}"
+                          aria-haspopup="menu"
+                          aria-expanded="false"
+                          aria-controls="dropdown-actions-{{ job.job_id }}"
+                          aria-label="Open job actions menu"
                           class="btn-actions btn-tertiary p-2 group-has-[.dropdown:not(.hidden)]:bg-stone-50">
                     <div class="svg-icon size-4 icon-vertical_dots"></div>
                   </button>
 
                   {# Dropdown actions -#}
                   <div id="dropdown-actions-{{ job.job_id }}"
-                       class="dropdown absolute hidden z-10 end-0 top-8 w-[200px] bg-white divide-y divide-stone-100 rounded-lg shadow border border-stone-200">
-                    <ul class="py-2 text-sm text-stone-700"
-                        aria-labelledby="dropdownDefaultButton">
+                       class="dropdown absolute hidden z-10 end-0 top-8 w-[200px] bg-white divide-y divide-stone-100 rounded-lg shadow border border-stone-200"
+                       role="menu"
+                       aria-labelledby="actions-btn-{{ job.job_id }}"
+                       aria-hidden="true">
+                    <ul class="py-2 text-sm text-stone-700" role="none">
                       {# Publish button -#}
                       {% if job.status != JobStatus::Published && job.status != JobStatus::PendingApproval -%}
-                        <li>
+                        <li role="none">
                           <button hx-put="/dashboard/employer/jobs/{{ job.job_id }}/publish"
                                   hx-target="#dashboard-content"
                                   hx-indicator="#dashboard-spinner"
+                                  role="menuitem"
                                   class="cursor-pointer w-full text-start px-4 py-2 hover:bg-stone-100">
                             <div class="flex items-center">
                               <div class="svg-icon size-4 icon-send bg-stone-600"></div>
@@ -208,49 +197,28 @@
                       {% endif -%}
                       {# End publish button -#}
                       {# Delete button -#}
-                      <li>
+                      <li role="none">
                         <button id="delete-job-{{ job.job_id }}"
+                                data-delete-job-button="true"
                                 hx-delete="/dashboard/employer/jobs/{{ job.job_id }}/delete"
                                 hx-target="#dashboard-content"
                                 hx-indicator="#dashboard-spinner"
                                 hx-trigger="confirmed"
+                                role="menuitem"
                                 class="cursor-pointer w-full text-start px-4 py-2 hover:bg-stone-100">
                           <div class="flex items-center">
                             <div class="svg-icon size-4 icon-trash bg-stone-600"></div>
                             <div class="ms-2">Delete</div>
                           </div>
                         </button>
-                        <script type="module">
-                          import {
-                            showConfirmAlert,
-                            showErrorAlert,
-                            showSuccessAlert,
-                          } from '/static/js/common/alerts.js';
-                          import {
-                            isSuccessfulXHRStatus
-                          } from '/static/js/common/common.js';
-                          const deleteJobButton = document.getElementById('delete-job-{{ job.job_id }}');
-                          if (deleteJobButton) {
-                            deleteJobButton.addEventListener('click', (event) => {
-                              showConfirmAlert("Are you sure you wish to delete this job?", "delete-job-{{ job.job_id }}", "Yes");
-                            });
-
-                            deleteJobButton.addEventListener("htmx:afterRequest", (e) => {
-                              if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
-                                showSuccessAlert("You have successfully deleted the job.");
-                              } else {
-                                showErrorAlert("An error occurred deleting this job, please try again later.");
-                              }
-                            });
-                          }
-                        </script>
                       </li>
                       {# Archive button -#}
                       {% if job.status == JobStatus::Published -%}
-                        <li>
+                        <li role="none">
                           <button hx-put="/dashboard/employer/jobs/{{ job.job_id }}/archive"
                                   hx-target="#dashboard-content"
                                   hx-indicator="#dashboard-spinner"
+                                  role="menuitem"
                                   class="cursor-pointer w-full text-start px-4 py-2 hover:bg-stone-100">
                             <div class="flex items-center">
                               <div class="svg-icon size-4 icon-archive bg-stone-600"></div>
@@ -271,33 +239,15 @@
         {% endfor -%}
       {% endif -%}
     </tbody>
-
-    <script type="module">
-      const btnActions = document.querySelectorAll('.btn-actions');
-      btnActions.forEach((btnAction) => {
-        btnAction.addEventListener('click', () => {
-          const jobId = btnAction.dataset.jobId;
-
-          const dropdownActions = document.getElementById(`dropdown-actions-${jobId}`);
-          if (dropdownActions) {
-            const isOpen = dropdownActions.classList.contains('hidden');
-            dropdownActions.classList.toggle('hidden');
-            if (isOpen) {
-              // Close dropdown actions when clicking outside
-              document.addEventListener('click', (event) => {
-                if (!dropdownActions.contains(event.target) && !btnAction.contains(event.target)) {
-                  dropdownActions.classList.add('hidden');
-                }
-              });
-            } else {
-              // Remove event listener when dropdown is closed
-              document.removeEventListener('click', () => {});
-            }
-          }
-        });
-      });
-    </script>
   </table>
+
+  <script type="module">
+    import {
+      initializeEmployerJobsListTable
+    } from '/static/js/dashboard/jobs/list.js';
+
+    initializeEmployerJobsListTable();
+  </script>
 </div>
 {# End Jobs Table -#}
 
@@ -359,44 +309,8 @@
 {# End stats modal -#}
 <script type="module">
   import {
-    closeStats,
+    initializeEmployerJobsStats
   } from '/static/js/dashboard/jobs/list.js';
 
-  const closeStatsModalBtn = document.getElementById('close-stats-modal');
-  const backdropStatsModal = document.getElementById('backdrop-stats-modal');
-
-  if (closeStatsModalBtn) {
-    closeStatsModalBtn.addEventListener('click', () => {
-      closeStats();
-    });
-  }
-
-  if (backdropStatsModal) {
-    backdropStatsModal.addEventListener('click', () => {
-      closeStats();
-    });
-  }
+  initializeEmployerJobsStats();
 </script>
-
-<script type="module">
-  import {
-    registerEchartsTheme
-  } from '/static/js/dashboard/jobs/list.js';
-
-  // Register the GitJobs theme for ECharts
-  registerEchartsTheme();
-</script>
-
-{% macro location_content(job) -%}
-  {% if let Some(city) = job.city -%}
-    {% let location_text = &self::format_location(job.city.as_deref(), None, job.country.as_deref())|display_some -%}
-    {{ location_text }}
-    {% if job.workplace != Workplace::OnSite -%}
-      ({{ job.workplace }})
-    {% endif -%}
-  {% else if job.workplace == Workplace::Remote -%}
-    Remote
-  {% else -%}
-    Not location provided
-  {% endif -%}
-{% endmacro location_content -%}

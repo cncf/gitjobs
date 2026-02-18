@@ -1,4 +1,4 @@
-import { prettifyNumber } from "/static/js/common/common.js";
+import { prettifyNumber, registerChartResizeHandler } from "/static/js/common/common.js";
 
 /**
  * ECharts theme configuration for GitJobs charts.
@@ -365,6 +365,11 @@ export const gitjobsChartTheme = {
 };
 
 const MESSAGE_EMPTY_STATS = "No data available yet";
+const STATS_CONTAINER_ID = "stats";
+const LINE_CHART_ID = "line-chart";
+const BAR_DAILY_CHART_ID = "bar-daily";
+const BAR_MONTHLY_CHART_ID = "bar-monthly";
+const JOBBOARD_STATS_CHART_IDS = [LINE_CHART_ID, BAR_DAILY_CHART_ID, BAR_MONTHLY_CHART_ID];
 
 /**
  * Finds the smallest value in an array of numbers.
@@ -424,17 +429,16 @@ const getMaxDateValue = (data, max) => {
  * @private
  */
 const renderLineChart = (data) => {
-  const chartDom = document.getElementById("line-chart");
+  const chartDom = document.getElementById(LINE_CHART_ID);
   if (!chartDom) return;
 
-  const myChart = echarts.init(chartDom, "gitjobs", {
-    renderer: "svg",
-    useDirtyRect: false,
-  });
-
-  window.addEventListener("resize", function () {
-    myChart.resize();
-  });
+  const myChart =
+    echarts.getInstanceByDom(chartDom) ||
+    echarts.init(chartDom, "gitjobs", {
+      renderer: "svg",
+      useDirtyRect: false,
+    });
+  myChart.clear();
 
   const option = {
     dataset: [
@@ -463,7 +467,12 @@ const renderLineChart = (data) => {
       axisLabel: {
         hideOverlap: true,
         formatter: (value) => {
-          const date = echarts.time.format(parseInt(value), "{dd} {MMM}");
+          const timestamp = Number.parseInt(value, 10);
+          if (Number.isNaN(timestamp)) {
+            return "";
+          }
+
+          const date = echarts.time.format(timestamp, "{dd} {MMM}");
           return date;
         },
       },
@@ -481,7 +490,6 @@ const renderLineChart = (data) => {
       type: "line",
       name: "Published jobs",
       encode: { x: "timestamp", y: "jobs" },
-      areaStyle: {},
       datasetIndex: 1,
       areaStyle: {
         color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
@@ -510,7 +518,7 @@ const renderLineChart = (data) => {
     ],
   };
 
-  option && myChart.setOption(option);
+  myChart.setOption(option);
 };
 
 /**
@@ -590,17 +598,16 @@ export const getBarStatsOptions = () => {
  * @private
  */
 const renderBarDailyChart = (data, max, min) => {
-  const chartDom = document.getElementById("bar-daily");
+  const chartDom = document.getElementById(BAR_DAILY_CHART_ID);
   if (!chartDom) return;
 
-  const myChart = echarts.init(chartDom, "gitjobs", {
-    renderer: "svg",
-    useDirtyRect: false,
-  });
-
-  window.addEventListener("resize", function () {
-    myChart.resize();
-  });
+  const myChart =
+    echarts.getInstanceByDom(chartDom) ||
+    echarts.init(chartDom, "gitjobs", {
+      renderer: "svg",
+      useDirtyRect: false,
+    });
+  myChart.clear();
 
   const option = {
     ...getBarStatsOptions(),
@@ -633,7 +640,7 @@ const renderBarDailyChart = (data, max, min) => {
       max: getMaxDateValue(data, max),
     },
   };
-  option && myChart.setOption(option);
+  myChart.setOption(option);
 };
 
 /**
@@ -644,17 +651,16 @@ const renderBarDailyChart = (data, max, min) => {
  * @private
  */
 const renderBarMonthlyChart = (data, max, min) => {
-  const chartDom = document.getElementById("bar-monthly");
+  const chartDom = document.getElementById(BAR_MONTHLY_CHART_ID);
   if (!chartDom) return;
 
-  const myChart = echarts.init(chartDom, "gitjobs", {
-    renderer: "svg",
-    useDirtyRect: false,
-  });
-
-  window.addEventListener("resize", function () {
-    myChart.resize();
-  });
+  const myChart =
+    echarts.getInstanceByDom(chartDom) ||
+    echarts.init(chartDom, "gitjobs", {
+      renderer: "svg",
+      useDirtyRect: false,
+    });
+  myChart.clear();
 
   const option = {
     ...getBarStatsOptions(),
@@ -684,7 +690,7 @@ const renderBarMonthlyChart = (data, max, min) => {
       max: getMaxDateValue(data, max),
     },
   };
-  option && myChart.setOption(option);
+  myChart.setOption(option);
 };
 
 /**
@@ -692,20 +698,34 @@ const renderBarMonthlyChart = (data, max, min) => {
  * Reads data from DOM element and creates visualizations.
  */
 export const renderStats = () => {
-  const container = document.getElementById("stats");
+  const container = document.getElementById(STATS_CONTAINER_ID);
   if (!container) return;
 
   const data = container.dataset.stats;
   if (!data) return;
 
-  const stats = JSON.parse(data);
-  if (!stats) return;
+  let stats;
+  try {
+    stats = JSON.parse(data);
+  } catch (_) {
+    return;
+  }
+
+  if (!stats?.jobs) return;
 
   // Register the GitJobs theme for ECharts
-  echarts.registerTheme("gitjobs", gitjobsChartTheme);
+  if (!window.echarts?.__gitjobsEchartsThemeRegistered) {
+    echarts.registerTheme("gitjobs", gitjobsChartTheme);
+    window.echarts.__gitjobsEchartsThemeRegistered = true;
+  }
+
+  registerChartResizeHandler({
+    chartIds: JOBBOARD_STATS_CHART_IDS,
+    guardKey: "__gitjobsJobboardStatsResizeBound",
+  });
 
   if (!stats.jobs.published_running_total) {
-    const chartDom = document.getElementById("line-chart");
+    const chartDom = document.getElementById(LINE_CHART_ID);
     if (chartDom) {
       chartDom.innerHTML = `<div>${MESSAGE_EMPTY_STATS}</div>`;
     }
@@ -714,7 +734,7 @@ export const renderStats = () => {
   }
 
   if (!stats.jobs.views_daily) {
-    const chartDom = document.getElementById("bar-daily");
+    const chartDom = document.getElementById(BAR_DAILY_CHART_ID);
     if (chartDom) {
       chartDom.innerHTML = `<div>${MESSAGE_EMPTY_STATS}</div>`;
     }
@@ -723,7 +743,7 @@ export const renderStats = () => {
   }
 
   if (!stats.jobs.views_monthly) {
-    const chartDom = document.getElementById("bar-monthly");
+    const chartDom = document.getElementById(BAR_MONTHLY_CHART_ID);
     if (chartDom) {
       chartDom.innerHTML = `<div>${MESSAGE_EMPTY_STATS}</div>`;
     }

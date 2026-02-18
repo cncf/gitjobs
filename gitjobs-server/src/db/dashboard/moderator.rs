@@ -21,7 +21,7 @@ pub(crate) trait DBDashBoardModerator {
     async fn list_jobs_for_moderation(&self, status: JobStatus) -> Result<Vec<JobSummary>>;
 
     /// Rejects a job, optionally adding review notes and updating review metadata.
-    async fn reject_job(&self, job_id: &Uuid, reviewer: &Uuid, review_notes: Option<&String>) -> Result<()>;
+    async fn reject_job(&self, job_id: &Uuid, reviewer: &Uuid, review_notes: Option<String>) -> Result<()>;
 }
 
 #[async_trait]
@@ -32,25 +32,9 @@ impl DBDashBoardModerator for PgDB {
 
         let db = self.pool.get().await?;
         let first_published_at = db
-            .query_opt(
-                "
-                with old as (
-                    select first_published_at from job where job_id = $1
-                )
-                update job
-                set
-                    status = 'published',
-                    first_published_at = coalesce(first_published_at, current_timestamp),
-                    published_at = current_timestamp,
-                    reviewed_at = current_timestamp,
-                    reviewed_by = $2
-                where job_id = $1
-                returning (select first_published_at from old);
-                ",
-                &[job_id, reviewer],
-            )
+            .query_one("select approve_job($1::uuid, $2::uuid)", &[job_id, reviewer])
             .await?
-            .and_then(|row| row.get::<_, Option<DateTime<Utc>>>("first_published_at"));
+            .get(0);
 
         Ok(first_published_at)
     }
@@ -60,71 +44,24 @@ impl DBDashBoardModerator for PgDB {
         trace!("db: list jobs for moderation");
 
         let db = self.pool.get().await?;
-        let jobs = db
-            .query(
-                "
-                select
-                    j.created_at,
-                    j.job_id,
-                    j.title,
-                    (
-                        select jsonb_strip_nulls(jsonb_build_object(
-                            'company', e.company,
-                            'employer_id', e.employer_id,
-                            'logo_id', e.logo_id,
-                            'members', members.members,
-                            'website_url', e.website_url
-                        ))
-                    ) as employer
-                from job j
-                join employer e on j.employer_id = e.employer_id
-                left join lateral (
-                    select
-                        jsonb_agg(jsonb_build_object(
-                            'member_id', m.member_id,
-                            'foundation', m.foundation,
-                            'level', m.level,
-                            'logo_url', m.logo_url,
-                            'name', m.name
-                        ) order by m.foundation asc, m.name asc) as members
-                    from employer_member em
-                    join member m on em.member_id = m.member_id
-                    where em.employer_id = e.employer_id
-                ) members on true
-                where j.status = $1
-                order by j.created_at desc;
-                ",
+        let row = db
+            .query_one(
+                "select list_jobs_for_moderation($1::text)::text",
                 &[&status.to_string()],
             )
-            .await?
-            .into_iter()
-            .map(|row| JobSummary {
-                created_at: row.get("created_at"),
-                job_id: row.get("job_id"),
-                title: row.get("title"),
-                employer: serde_json::from_value(row.get::<_, serde_json::Value>("employer"))
-                    .expect("employer should be valid"),
-            })
-            .collect();
+            .await?;
+        let jobs = serde_json::from_str(&row.get::<_, String>(0))?;
 
         Ok(jobs)
     }
 
     #[instrument(skip(self), err)]
-    async fn reject_job(&self, job_id: &Uuid, reviewer: &Uuid, review_notes: Option<&String>) -> Result<()> {
+    async fn reject_job(&self, job_id: &Uuid, reviewer: &Uuid, review_notes: Option<String>) -> Result<()> {
         trace!("db: reject job");
 
         let db = self.pool.get().await?;
         db.execute(
-            "
-            update job
-            set
-                status = 'rejected',
-                review_notes = $3,
-                reviewed_at = current_timestamp,
-                reviewed_by = $2
-            where job_id = $1;
-            ",
+            "select reject_job($1::uuid, $2::uuid, $3::text);",
             &[job_id, reviewer, &review_notes],
         )
         .await?;

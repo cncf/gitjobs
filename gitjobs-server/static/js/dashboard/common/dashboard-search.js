@@ -50,6 +50,7 @@ export class DashboardSearch extends LitWrapper {
     this.activeIndex = null;
     this.selectedFoundation = this.defaultFoundation;
     this.isLoading = false;
+    this._debouncedGetItems = debounce(() => this._getItems(), 300);
   }
 
   connectedCallback() {
@@ -59,7 +60,8 @@ export class DashboardSearch extends LitWrapper {
 
   disconnectedCallback() {
     super.disconnectedCallback();
-    window.addEventListener("mousedown", this._handleClickOutside);
+    this._debouncedGetItems.cancel?.();
+    window.removeEventListener("mousedown", this._handleClickOutside);
   }
 
   /**
@@ -67,6 +69,10 @@ export class DashboardSearch extends LitWrapper {
    * @private
    */
   async _getItems() {
+    const requestValue = this.enteredValue;
+    const requestFoundation = this.selectedFoundation;
+    const requestType = this.type;
+
     if (this.type === "certifications") {
       // Filter certifications locally from provided data
       this.visibleOptions = this.certifications.filter(
@@ -83,7 +89,7 @@ export class DashboardSearch extends LitWrapper {
     // Fetch projects or members from server
     const url = `${
       this.type === "members" ? "/dashboard/members/search?member=" : "/projects/search?project="
-    }${encodeURIComponent(this.enteredValue)}&foundation=${this.selectedFoundation}`;
+    }${encodeURIComponent(requestValue)}&foundation=${requestFoundation}`;
     try {
       const response = await fetch(url);
       if (!response.ok) {
@@ -91,10 +97,31 @@ export class DashboardSearch extends LitWrapper {
       }
 
       const json = await response.json();
+      if (
+        this.enteredValue !== requestValue ||
+        this.selectedFoundation !== requestFoundation ||
+        this.type !== requestType
+      ) {
+        return;
+      }
       this.visibleOptions = json;
     } catch (error) {
-      // TODO: Implement error handling
+      if (
+        this.enteredValue !== requestValue ||
+        this.selectedFoundation !== requestFoundation ||
+        this.type !== requestType
+      ) {
+        return;
+      }
+      this.visibleOptions = [];
     } finally {
+      if (
+        this.enteredValue !== requestValue ||
+        this.selectedFoundation !== requestFoundation ||
+        this.type !== requestType
+      ) {
+        return;
+      }
       this.visibleDropdown = true;
       this.isLoading = false;
     }
@@ -106,6 +133,8 @@ export class DashboardSearch extends LitWrapper {
    * @private
    */
   _handleFoundationChange(event) {
+    this._debouncedGetItems.cancel?.();
+    this.isLoading = false;
     const selectedFoundation = event.target.value;
     if (selectedFoundation === "") {
       this.selectedFoundation = this.defaultFoundation;
@@ -126,8 +155,10 @@ export class DashboardSearch extends LitWrapper {
     const minLength = this.type === "certifications" ? 0 : 2;
     if (this.enteredValue.length >= minLength) {
       this.isLoading = true;
-      debounce(this._getItems(this.enteredValue), 300);
+      this._debouncedGetItems();
     } else {
+      this._debouncedGetItems.cancel?.();
+      this.isLoading = false;
       this.visibleOptions = [];
       this.visibleDropdown = false;
       this.activeIndex = null;
@@ -150,6 +181,8 @@ export class DashboardSearch extends LitWrapper {
    */
   _onInputFocus() {
     if (this.type === "certifications") {
+      this._debouncedGetItems.cancel?.();
+      this.isLoading = false;
       // Show all certifications immediately on focus
       this.visibleOptions = this.certifications;
       this.visibleDropdown = true;
@@ -162,6 +195,8 @@ export class DashboardSearch extends LitWrapper {
    * @private
    */
   _cleanEnteredValue() {
+    this._debouncedGetItems.cancel?.();
+    this.isLoading = false;
     this.enteredValue = "";
     this.visibleDropdown = false;
     this.visibleOptions = [];
@@ -238,6 +273,8 @@ export class DashboardSearch extends LitWrapper {
    * @private
    */
   _onSelect(item) {
+    this._debouncedGetItems.cancel?.();
+    this.isLoading = false;
     if (this.type === "projects" || this.type === "certifications" || this.type === "members") {
       this.selected.push(item);
     } else {

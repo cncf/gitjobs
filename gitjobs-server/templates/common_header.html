@@ -1,6 +1,6 @@
 {% extends "header.html" -%}
-{% import "macros.html" as macros -%}
+{% import "macros/header.html" as header -%}
 
 {% block user_menu -%}
-  {{ macros::user_menu(user.name, user.username) -}}
+  {{ header::user_menu(user = user.name, auth_provider = user.username) -}}
 {% endblock user_menu -%}

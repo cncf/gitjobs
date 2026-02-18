@@ -52,6 +52,9 @@ pub(crate) struct EmailConfig {
     pub from_name: String,
     /// SMTP server configuration.
     pub smtp: SmtpConfig,
+
+    /// Optional whitelist of allowed recipient email addresses.
+    pub rcpts_whitelist: Option<Vec<String>>,
 }
 
 /// SMTP server configuration.
@@ -91,6 +94,9 @@ pub(crate) struct HttpServerConfig {
     pub addr: String,
     /// Base URL for the server.
     pub base_url: String,
+    /// Disable referer header validation for image uploads.
+    #[serde(default)]
+    pub disable_referer_checks: bool,
     /// Login options configuration.
     pub login: LoginOptions,
     /// `OAuth2` providers configuration.

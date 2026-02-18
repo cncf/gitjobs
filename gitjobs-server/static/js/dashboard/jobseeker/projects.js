@@ -306,13 +306,15 @@ class ProjectEntry extends LitWrapper {
       </div>
 
       <div class="col-span-full">
-        <label for="summary" class="form-label"> Description <span class="asterisk">*</span> </label>
+        <label for="projects[${this.index}][description]" class="form-label">
+          Description <span class="asterisk">*</span>
+        </label>
         <div class="mt-2">
           <markdown-editor
             id="projects[${this.index}][description]"
-            name="description"
-            content="${this.data.description}"
-            .onChange="${(value) => this._onTextareaChange(value)}"
+            name="projects[${this.index}][description]"
+            .content=${this.data.description}
+            .onChange=${(value) => this._onTextareaChange(value)}
             mini
             ?required=${!this.isObjectEmpty}
           ></markdown-editor>

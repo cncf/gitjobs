@@ -1,7 +1,7 @@
-{% import "macros.html" as macros -%}
-{% import "misc/preview_modal.html" as preview -%}
+{% import "macros/ui.html" as ui -%}
+{% import "macros/job_seeker.html" as job_seeker -%}
 
-{{ macros::form_title(title = "My applications") -}}
+{{ ui::form_title(title = "My applications") -}}
 
 {# Applicants Table -#}
 <div class="relative overflow-visible mt-10">
@@ -18,12 +18,11 @@
         <tr class="bg-white border-b border-stone-200">
           {# No applications -#}
           <td class="px-8 py-20 text-center" colspan="3">
-            <div class="text-xl lg:text-2xl mb-10">
-              <div>You have not applied yet to any jobs within GitJobs.</div>
-            </div>
-            <p class="text-stone-700 mb-10">
-              Please note that jobs that use an external apply url won't be displayed here.
-            </p>
+            {{ ui::empty_state_alert(title = "You have not applied yet to any jobs within GitJobs.",
+                        description = "Please note that jobs that use an external apply url won't be displayed here.",
+                        wrapper_styles = "p-0 border-0 bg-transparent",
+                        title_styles = "text-xl lg:text-2xl mb-10",
+                        description_styles = "text-stone-700 mb-10") -}}
           </td>
         </tr>
       {% else -%}
@@ -40,7 +39,7 @@
                     <div class="max-w-full text-black truncate">{{ application.job_title }}</div>
                   </div>
                   {# Location -#}
-                  {{ location_content(workplace = application.job_workplace, job_location = application.job_location) }}
+                  {{ job_seeker::location(workplace = application.job_workplace, job_location = application.job_location) }}
                   {# End location -#}
                 </button>
               {% else -%}
@@ -57,12 +56,12 @@
 
                   </div>
                   {# Location -#}
-                  {{ location_content(workplace = application.job_workplace, job_location = application.job_location) }}
+                  {{ job_seeker::location(workplace = application.job_workplace, job_location = application.job_location) }}
                   {# End location -#}
                 </div>
               {% endif -%}
             </td>
-            {# End postion -#}
+            {# End position -#}
 
             {# Applied date -#}
             <td class="px-3 xl:px-5 py-4 whitespace-nowrap">{{ application.applied_at.format(DATE_FORMAT) }}</td>
@@ -72,36 +71,13 @@
             <td>
               <div>
                 <button id="cancel-application-{{ application.application_id }}"
+                        data-cancel-application-button="true"
                         hx-put="/dashboard/job-seeker/applications/{{ application.application_id }}/cancel"
                         hx-disabled-elt="this"
                         hx-trigger="confirmed"
                         class="btn-tertiary p-2">
                   <div class="svg-icon size-4 icon-trash"></div>
                 </button>
-                <script type="module">
-                  import {
-                    showConfirmAlert,
-                    showErrorAlert,
-                    showSuccessAlert,
-                  } from '/static/js/common/alerts.js';
-                  import {
-                    isSuccessfulXHRStatus
-                  } from '/static/js/common/common.js';
-                  const cancelApplicationButton = document.getElementById('cancel-application-{{ application.application_id }}');
-                  if (cancelApplicationButton) {
-                    cancelApplicationButton.addEventListener('click', (event) => {
-                      showConfirmAlert("Are you sure you wish to cancel this application?", "cancel-application-{{ application.application_id }}", "Yes");
-                    });
-
-                    cancelApplicationButton.addEventListener("htmx:afterRequest", (e) => {
-                      if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
-                        showSuccessAlert("You have successfully canceled the application.");
-                      } else {
-                        showErrorAlert("An error occurred canceling this application, please try again later.");
-                      }
-                    });
-                  }
-                </script>
               </div>
             </td>
             {# End actions -#}
@@ -114,43 +90,13 @@
 {# End applicants Table -#}
 
 {# Preview modal -#}
-{{ preview::modal() -}}
+{% include "misc/preview_modal.html" -%}
 {# End preview modal -#}
 
 <script type="module">
   import {
-    toggleModalVisibility,
-    isSuccessfulXHRStatus
-  } from '/static/js/common/common.js';
-  import {
-    showErrorAlert,
-  } from '/static/js/common/alerts.js';
+    initializeJobSeekerApplicationsList
+  } from '/static/js/dashboard/jobseeker/applications.js';
 
-  // On preview button click, show the preview modal
-  const previewButtons = document.querySelectorAll('.preview-button');
-  previewButtons.forEach((button) => {
-    button.addEventListener('htmx:afterRequest', (e) => {
-      if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
-        toggleModalVisibility('preview-modal', "open");
-      } else {
-        // When the preview is not available, show an error message
-        showErrorAlert('Something went wrong previewing the data, please try again later.');
-      }
-    });
-  });
+  initializeJobSeekerApplicationsList();
 </script>
-
-{% macro location_content(workplace, job_location) -%}
-  <div class="text-xs/4 text-stone-500 max-w-full truncate">
-    {% if let Some(job_location) = job_location -%}
-      {{ job_location.city }}, {{ job_location.country }}
-      {% if workplace != &Workplace::OnSite -%}
-        ({{ workplace }})
-      {% endif -%}
-    {% else if workplace == &Workplace::Remote -%}
-      Remote
-    {% else -%}
-      No location provided
-    {% endif -%}
-  </div>
-{% endmacro location_content -%}

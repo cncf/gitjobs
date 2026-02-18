@@ -16,6 +16,7 @@ use axum::{
 use axum_extra::headers::{Authorization, Header, authorization::Basic};
 use axum_login::login_required;
 use axum_messages::MessagesManagerLayer;
+use reqwest::Client;
 use rust_embed::Embed;
 use serde_qs::axum::{QsQueryConfig, QsQueryRejection};
 use tower::ServiceBuilder;
@@ -45,6 +46,9 @@ use crate::{
 #[folder = "dist/static"]
 struct StaticFile;
 
+/// Cache-Control header value instructing clients not to cache responses.
+const CACHE_CONTROL_NO_CACHE: &str = "max-age=0";
+
 /// Holds shared state for the router, including config and service handles.
 #[derive(Clone, FromRef)]
 pub(crate) struct State {
@@ -60,6 +64,8 @@ pub(crate) struct State {
     pub notifications_manager: DynNotificationsManager,
     /// Event tracker handle.
     pub event_tracker: DynEventTracker,
+    /// Shared HTTP client for outbound requests.
+    pub http_client: Client,
 }
 
 /// Sets up the main application router and all sub-routers.
@@ -76,24 +82,26 @@ pub(crate) async fn setup(
     let state = State {
         cfg: cfg.clone(),
         db: db.clone(),
-        image_store,
-        serde_qs_de,
-        notifications_manager,
         event_tracker,
+        http_client: Client::new(),
+        image_store,
+        notifications_manager,
+        serde_qs_de,
     };
 
     // Setup authentication / authorization layer
     let auth_layer = crate::auth::setup_layer(&cfg, db).await?;
 
     // Setup sub-routers
-    let employer_dashboard_router = setup_employer_dashboard_router(&state);
+    let employer_dashboard_router = setup_employer_dashboard_router(state.clone());
     let job_seeker_dashboard_router = setup_job_seeker_dashboard_router();
-    let moderator_dashboard_router = setup_moderator_dashboard_router(&state);
-    let dashboard_images_router = setup_dashboard_images_router(&state);
-    let jobboard_images_router = setup_jobboard_images_router(&state);
+    let moderator_dashboard_router = setup_moderator_dashboard_router(state.clone());
+    let dashboard_images_router = setup_dashboard_images_router(state.clone());
+    let jobboard_images_router = setup_jobboard_images_router(state.clone());
 
     // Setup main router
     let mut router = Router::new()
+        // Protected routes
         .route(
             "/dashboard/account/update/details",
             put(auth::update_user_details),
@@ -113,6 +121,7 @@ pub(crate) async fn setup(
             login_url = LOG_IN_URL,
             redirect_field = "next_url"
         ))
+        // Public routes
         .route("/", get(jobboard::jobs::jobs_page))
         .route("/about", get(jobboard::about::page))
         .route("/embed", get(jobboard::embed::jobs_page))
@@ -164,7 +173,7 @@ pub(crate) async fn setup(
         .fallback(not_found)
         .layer(SetResponseHeaderLayer::if_not_present(
             CACHE_CONTROL,
-            HeaderValue::from_static("max-age=0"),
+            HeaderValue::from_static(CACHE_CONTROL_NO_CACHE),
         ));
 
     // Setup basic auth
@@ -181,16 +190,19 @@ pub(crate) async fn setup(
 }
 
 /// Sets up the employer dashboard router and its routes.
-fn setup_employer_dashboard_router(state: &State) -> Router<State> {
+fn setup_employer_dashboard_router(state: State) -> Router<State> {
     // Setup middleware
     let check_user_has_profile_access =
         middleware::from_fn_with_state(state.clone(), auth::user_has_profile_access);
-    let check_user_owns_employer = middleware::from_fn_with_state(state.clone(), auth::user_owns_employer);
     let check_user_owns_job = middleware::from_fn_with_state(state.clone(), auth::user_owns_job);
+    let check_user_owns_path_employer =
+        middleware::from_fn_with_state(state.clone(), auth::user_owns_path_employer);
+    let check_user_owns_selected_employer =
+        middleware::from_fn_with_state(state, auth::user_owns_selected_employer);
 
     // Setup router
     Router::new()
-        .route("/", get(dashboard::employer::home::page))
+        // Routes that require selected employer context
         .route(
             "/applications/list",
             get(dashboard::employer::applications::list_page),
@@ -201,26 +213,14 @@ fn setup_employer_dashboard_router(state: &State) -> Router<State> {
                 .layer(check_user_has_profile_access.clone()),
         )
         .route(
-            "/employers/add",
-            get(dashboard::employer::employers::add_page).post(dashboard::employer::employers::add),
-        )
-        .route(
             "/employers/update",
             get(dashboard::employer::employers::update_page).put(dashboard::employer::employers::update),
         )
         .route(
-            "/employers/{employer_id}/select",
-            put(dashboard::employer::employers::select).layer(check_user_owns_employer.clone()),
-        )
-        .route(
-            "/invitations",
-            get(dashboard::employer::team::user_invitations_list_page),
-        )
-        .route("/jobs/list", get(dashboard::employer::jobs::list_page))
-        .route(
             "/jobs/add",
             get(dashboard::employer::jobs::add_page).post(dashboard::employer::jobs::add),
         )
+        .route("/jobs/list", get(dashboard::employer::jobs::list_page))
         .route(
             "/jobs/preview",
             post(dashboard::employer::jobs::preview_page_w_job),
@@ -252,14 +252,6 @@ fn setup_employer_dashboard_router(state: &State) -> Router<State> {
                 .put(dashboard::employer::jobs::update)
                 .layer(check_user_owns_job.clone()),
         )
-        .route(
-            "/team/invitations/{employer_id}/accept",
-            put(dashboard::employer::team::accept_invitation),
-        )
-        .route(
-            "/team/invitations/{employer_id}/reject",
-            put(dashboard::employer::team::reject_invitation),
-        )
         .route("/team/members/add", post(dashboard::employer::team::add_member))
         .route(
             "/team/members/list",
@@ -268,6 +260,29 @@ fn setup_employer_dashboard_router(state: &State) -> Router<State> {
         .route(
             "/team/members/{user_id}/delete",
             delete(dashboard::employer::team::delete_member),
+        )
+        .route_layer(check_user_owns_selected_employer)
+        // Routes that do not require selected employer context
+        .route("/", get(dashboard::employer::home::page))
+        .route(
+            "/employers/add",
+            get(dashboard::employer::employers::add_page).post(dashboard::employer::employers::add),
+        )
+        .route(
+            "/employers/{employer_id}/select",
+            put(dashboard::employer::employers::select).layer(check_user_owns_path_employer.clone()),
+        )
+        .route(
+            "/invitations",
+            get(dashboard::employer::team::user_invitations_list_page),
+        )
+        .route(
+            "/team/invitations/{employer_id}/accept",
+            put(dashboard::employer::team::accept_invitation),
+        )
+        .route(
+            "/team/invitations/{employer_id}/reject",
+            put(dashboard::employer::team::reject_invitation),
         )
 }
 
@@ -294,9 +309,9 @@ fn setup_job_seeker_dashboard_router() -> Router<State> {
 }
 
 /// Sets up the moderator dashboard router and its routes.
-fn setup_moderator_dashboard_router(state: &State) -> Router<State> {
+fn setup_moderator_dashboard_router(state: State) -> Router<State> {
     // Setup middleware
-    let user_is_moderator = middleware::from_fn_with_state(state.clone(), auth::user_is_moderator);
+    let user_is_moderator = middleware::from_fn_with_state(state, auth::user_is_moderator);
 
     // Setup router
     Router::new()
@@ -313,10 +328,9 @@ fn setup_moderator_dashboard_router(state: &State) -> Router<State> {
 }
 
 /// Sets up the dashboard images router for authenticated image access.
-fn setup_dashboard_images_router(state: &State) -> Router<State> {
+fn setup_dashboard_images_router(state: State) -> Router<State> {
     // Setup middleware
-    let check_user_has_image_access =
-        middleware::from_fn_with_state(state.clone(), auth::user_has_image_access);
+    let check_user_has_image_access = middleware::from_fn_with_state(state, auth::user_has_image_access);
 
     // Setup router
     Router::new().route("/", post(img::upload)).route(
@@ -326,9 +340,9 @@ fn setup_dashboard_images_router(state: &State) -> Router<State> {
 }
 
 /// Sets up the job board images router for public image access.
-fn setup_jobboard_images_router(state: &State) -> Router<State> {
+fn setup_jobboard_images_router(state: State) -> Router<State> {
     // Setup middleware
-    let check_image_is_public = middleware::from_fn_with_state(state.clone(), auth::image_is_public);
+    let check_image_is_public = middleware::from_fn_with_state(state, auth::image_is_public);
 
     // Setup router
     Router::new().route(
@@ -338,11 +352,13 @@ fn setup_jobboard_images_router(state: &State) -> Router<State> {
 }
 
 /// Responds to health check requests with HTTP 200 OK.
+#[instrument(skip_all)]
 async fn health_check() -> impl IntoResponse {
     StatusCode::OK
 }
 
 /// Serves static files embedded in the binary, with cache headers.
+#[instrument]
 async fn static_handler(uri: Uri) -> impl IntoResponse {
     // Extract file path from URI
     let path = uri.path().trim_start_matches("/static/");
@@ -421,5 +437,56 @@ impl<B> ValidateRequest<B> for BasicAuth {
         } else {
             Err(Self::unauthorized_response())
         }
+    }
+}
+
+// Tests.
+
+#[cfg(test)]
+mod tests {
+    use axum::{
+        body::to_bytes,
+        http::{HeaderValue, StatusCode, Uri},
+        response::IntoResponse,
+    };
+
+    use super::*;
+
+    #[tokio::test]
+    async fn test_health_check_returns_ok() {
+        let response = health_check().await.into_response();
+        let (parts, body) = response.into_parts();
+
+        assert_eq!(parts.status, StatusCode::OK);
+        assert!(to_bytes(body, usize::MAX).await.unwrap().is_empty());
+    }
+
+    #[tokio::test]
+    async fn test_static_handler_missing_asset_returns_not_found() {
+        let uri = Uri::from_static("/static/does/not/exist.txt");
+        let response = static_handler(uri).await.into_response();
+        let (parts, body) = response.into_parts();
+
+        assert_eq!(parts.status, StatusCode::NOT_FOUND);
+        assert!(to_bytes(body, usize::MAX).await.unwrap().is_empty());
+    }
+
+    #[tokio::test]
+    async fn test_static_handler_serves_existing_asset() {
+        let uri = Uri::from_static("/static/images/icons/project.svg");
+        let response = static_handler(uri).await.into_response();
+        let (parts, body) = response.into_parts();
+        let bytes = to_bytes(body, usize::MAX).await.unwrap();
+
+        assert_eq!(parts.status, StatusCode::OK);
+        assert_eq!(
+            parts.headers.get(CONTENT_TYPE).unwrap(),
+            &HeaderValue::from_static("image/svg+xml")
+        );
+        assert_eq!(
+            parts.headers.get(CACHE_CONTROL).unwrap(),
+            &HeaderValue::from_static(CACHE_CONTROL_NO_CACHE)
+        );
+        assert!(!bytes.is_empty());
     }
 }

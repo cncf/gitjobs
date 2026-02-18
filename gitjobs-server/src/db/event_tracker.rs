@@ -5,8 +5,6 @@ use std::sync::Arc;
 
 use anyhow::Result;
 use async_trait::async_trait;
-#[cfg(test)]
-use mockall::automock;
 use tokio_postgres::types::Json;
 use tracing::{instrument, trace};
 
@@ -23,7 +21,6 @@ const LOCK_KEY_UPDATE_SEARCH_APPEARANCES: i64 = 2;
 
 /// Trait that defines database operations used in the event tracker.
 #[async_trait]
-#[cfg_attr(test, automock)]
 pub(crate) trait DBEventTracker {
     /// Updates the number of views for the provided jobs and days.
     async fn update_jobs_views(&self, data: Vec<(JobId, Day, Total)>) -> Result<()>;

@@ -1,8 +1,6 @@
 import { html } from "/static/vendor/js/lit-all.v3.3.1.min.js";
-import { unnormalize } from "/static/js/common/common.js";
-import { triggerActionOnForm } from "/static/js/jobboard/filters.js";
+import { debounce, triggerActionOnForm, unnormalize } from "/static/js/common/common.js";
 import { LitWrapper } from "/static/js/common/lit-wrapper.js";
-import { debounce } from "/static/js/common/common.js";
 
 /**
  * Project search component with foundation filtering.
@@ -48,6 +46,7 @@ export class SearchProjects extends LitWrapper {
     this.alignment = "bottom";
     this.activeIndex = null;
     this.selectedFoundation = null;
+    this._debouncedGetProjects = debounce(() => this._getProjects(), 300);
   }
 
   connectedCallback() {
@@ -57,7 +56,8 @@ export class SearchProjects extends LitWrapper {
 
   disconnectedCallback() {
     super.disconnectedCallback();
-    window.addEventListener("mousedown", this._handleClickOutside);
+    this._debouncedGetProjects.cancel?.();
+    window.removeEventListener("mousedown", this._handleClickOutside);
   }
 
   /**
@@ -76,7 +76,9 @@ export class SearchProjects extends LitWrapper {
    * @private
    */
   async _getProjects() {
-    const url = `/projects/search?project=${encodeURIComponent(this.enteredValue)}&foundation=${this.selectedFoundation}`;
+    const requestValue = this.enteredValue;
+    const requestFoundation = this.selectedFoundation;
+    const url = `/projects/search?project=${encodeURIComponent(requestValue)}&foundation=${requestFoundation}`;
     try {
       const response = await fetch(url);
       if (!response.ok) {
@@ -84,10 +86,19 @@ export class SearchProjects extends LitWrapper {
       }
 
       const json = await response.json();
+      if (this.enteredValue !== requestValue || this.selectedFoundation !== requestFoundation) {
+        return;
+      }
       this.visibleOptions = json;
     } catch (error) {
-      // TODO: Implement error handling
+      if (this.enteredValue !== requestValue || this.selectedFoundation !== requestFoundation) {
+        return;
+      }
+      this.visibleOptions = [];
     } finally {
+      if (this.enteredValue !== requestValue || this.selectedFoundation !== requestFoundation) {
+        return;
+      }
       this.visibleDropdown = true;
     }
   }
@@ -98,6 +109,7 @@ export class SearchProjects extends LitWrapper {
    * @private
    */
   _handleFoundationChange(event) {
+    this._debouncedGetProjects.cancel?.();
     const selectedFoundation = event.target.value;
     if (selectedFoundation === "") {
       this.selectedFoundation = null;
@@ -115,8 +127,9 @@ export class SearchProjects extends LitWrapper {
    */
   _filterOptions() {
     if (this.enteredValue.length > 2) {
-      debounce(this._getProjects(this.enteredValue), 300);
+      this._debouncedGetProjects();
     } else {
+      this._debouncedGetProjects.cancel?.();
       this.visibleOptions = null;
       this.visibleDropdown = false;
       this.activeIndex = null;
@@ -138,6 +151,7 @@ export class SearchProjects extends LitWrapper {
    * @private
    */
   _cleanEnteredValue() {
+    this._debouncedGetProjects.cancel?.();
     this.enteredValue = "";
     this.visibleDropdown = false;
     this.visibleOptions = null;
@@ -176,7 +190,6 @@ export class SearchProjects extends LitWrapper {
         if (this.activeIndex !== null && this.visibleOptions !== null && this.visibleOptions.length > 0) {
           const activeItem = this.visibleOptions[this.activeIndex];
           if (activeItem) {
-            const activeItem = this.visibleOptions[this.activeIndex];
             this._onSelect(activeItem);
           }
         }
@@ -214,6 +227,7 @@ export class SearchProjects extends LitWrapper {
    * @private
    */
   async _onSelect(value) {
+    this._debouncedGetProjects.cancel?.();
     this.selected.push(value);
     this.enteredValue = "";
     this.visibleDropdown = false;

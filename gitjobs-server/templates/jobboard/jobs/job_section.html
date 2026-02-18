@@ -1,4 +1,5 @@
-{% import "misc/job_preview.html" as job_preview_macros -%}
+{% import "macros/job_preview.html" as job_preview -%}
+{% import "macros/jobboard.html" as jobboard -%}
 
 {% let job_id = job.job_id.to_string() -%}
 <div id="preview-modal"
@@ -15,6 +16,7 @@
     <button id="close-preview-modal"
             class="cursor-pointer absolute top-6 md:top-0 right-6 md:-right-12 lg:-right-18 xl:-right-20 cursor-pointer p-0.5 md:p-1 lg:p-1.5 xl:p-2 rounded-full bg-stone-600/50 hover:bg-stone-600/75">
       <div class="svg-icon size-5 md:size-6 lg:size-8 bg-stone-100 icon-close"></div>
+      <span class="sr-only">Close modal</span>
     </button>
     {# End close button -#}
     {# Modal content -#}
@@ -23,9 +25,9 @@
       {% let employer_description = job.employer.description|display_some -%}
       {% if let Some(logo_id) = job.employer.logo_id -%}
         {% let logo = &self::build_jobboard_image_url(logo_id, "small") -%}
-        {{ job_preview_macros::job_preview(job = job, employer = job.employer, logo = logo, employer_description = employer_description, job_id = job_id, base_url = base_url, with_links = true) -}}
+        {{ job_preview::job_preview(job = job, employer = job.employer, logo = logo, employer_description = employer_description, job_id = job_id, base_url = base_url, with_links = true) -}}
       {% else -%}
-        {{ job_preview_macros::job_preview(job = job, employer = job.employer, employer_description = employer_description, job_id = job_id, base_url = base_url, with_links = true) -}}
+        {{ job_preview::job_preview(job = job, employer = job.employer, employer_description = employer_description, job_id = job_id, base_url = base_url, with_links = true) -}}
       {% endif -%}
     </div>
     {# End modal content -#}
@@ -94,7 +96,7 @@
             {% let markdown_code = format!("[![GitJobs]({}/embed/job/{}/card.svg)]({}/?job_id={})", self.base_url, job_id, self.base_url, job_id) -%}
             <div class="flex items-center justify-between gap-x-4 mb-4">
               <pre class="block overflow-auto p-4 bg-stone-100"><code class="text-sm">{{ markdown_code }}</code></pre>
-              <div>{{ copy_button(name = "markdown", content = markdown_code) -}}</div>
+              <div>{{ jobboard::copy_button(name = "markdown", content = markdown_code) -}}</div>
             </div>
           </div>
           {# End markdown #}
@@ -104,7 +106,7 @@
             {% let asciidoc_code = format!("{}/?job_id={}[image:{}/embed/job/{}/card.svg[GitJobs]]", self.base_url, job_id, self.base_url, job_id) -%}
             <div class="flex items-center justify-between gap-x-4 mb-4">
               <pre class="block overflow-auto p-4 bg-stone-100"><code class="text-sm">{{ asciidoc_code }}</code></pre>
-              <div>{{ copy_button(name = "asciidoc", content = asciidoc_code) -}}</div>
+              <div>{{ jobboard::copy_button(name = "asciidoc", content = asciidoc_code) -}}</div>
             </div>
           </div>
           {# End AsciiDoc #}
@@ -116,7 +118,7 @@
             {# djlint:on #}
             <div class="flex items-center justify-between gap-x-4 mb-4">
               <pre class="block overflow-auto p-4 bg-stone-100"><code class="text-sm">{{ html_code }}</code></pre>
-              <div>{{ copy_button(name = "html", content = html_code) -}}</div>
+              <div>{{ jobboard::copy_button(name = "html", content = html_code) -}}</div>
             </div>
           </div>
           {# End HTML #}
@@ -140,112 +142,8 @@
 
 <script type="module">
   import {
-    toggleModalVisibility,
-    removeParamFromQueryString
-  } from '/static/js/common/common.js';
+    initializeJobPreviewModal
+  } from '/static/js/jobboard/job_section.js';
 
-  const onCloseModal = () => {
-    // Reset the scroll position
-    document.getElementById('preview-content').scrollTop = 0;
-    // Close the preview modal
-    removeParamFromQueryString('job_id', {
-      modal_preview: false
-    });
-    toggleModalVisibility('preview-modal', "close");
-  };
-
-  // Close the preview modal on backdrop click
-  const backdropPreviewModal = document.querySelector('#backdrop-preview-modal');
-  if (backdropPreviewModal) {
-    backdropPreviewModal.addEventListener('click', onCloseModal);
-  }
-
-  // Close the preview modal on close button click
-  const closePreviewModal = document.querySelector('#close-preview-modal');
-  if (closePreviewModal) {
-    closePreviewModal.addEventListener('click', onCloseModal);
-  }
-
-  const tabs = document.querySelectorAll('.tab');
-  tabs.forEach((tab) => {
-    tab.addEventListener('click', (event) => {
-      const section = event.currentTarget.getAttribute("data-section");
-      const buttons = document.querySelectorAll("[data-section]");
-      buttons.forEach((btn) => {
-        btn.setAttribute("data-active", "false");
-        btn.classList.remove("active");
-      });
-      event.currentTarget.setAttribute("data-active", "true");
-      event.currentTarget.classList.add("active");
-
-      const sections = document.querySelectorAll(".sections > div");
-      sections.forEach((content) => {
-        if (content.id !== section) {
-          content.classList.add("hidden");
-        } else {
-          content.classList.remove("hidden");
-        }
-      });
-    });
-  });
-
-  // Open embed code modal
-  const embedCodeButton = document.getElementById('embed-code-button');
-  if (embedCodeButton) {
-    embedCodeButton.addEventListener('click', () => {
-      toggleModalVisibility('embed-code-modal', "open");
-    });
-  }
-
-  // Close embed code modal
-  const closeEmbedCodeModal = document.getElementById('close-embed-code-modal');
-  if (closeEmbedCodeModal) {
-    closeEmbedCodeModal.addEventListener('click', () => {
-      toggleModalVisibility('embed-code-modal', "close");
-    });
-  }
-
-  const embedCodeModalBackdrop = document.getElementById('backdrop-embed-code-modal');
-  if (embedCodeModalBackdrop) {
-    embedCodeModalBackdrop.addEventListener('click', () => {
-      toggleModalVisibility('embed-code-modal', "close");
-    });
-  }
+  initializeJobPreviewModal();
 </script>
-
-{% macro copy_button(name, content = "") -%}
-  <div class="relative">
-    <button id="copy-btn-{{ name }}"
-            type="button"
-            title="Copy code"
-            class="btn-primary-outline-anchor rounded-full size-[35px] xl:size-[40px] group p-1 flex items-center justify-center">
-      <div class="svg-icon size-4 md:size-5 group-hover:bg-white icon-copy"></div>
-    </button>
-    {# End Copy link -#}
-    <div id="copy-btn-{{ name }}-tooltip"
-         role="tooltip"
-         class="absolute w-[200px] top-12 end-0.5 opacity-0 inline-block px-3 py-2 text-xs xl:text-sm font-medium text-white transition-opacity duration-300 bg-stone-900/80 rounded-lg shadow-xs tooltip">
-      Code copied to clipboard!
-      <div class="h-0 w-0 border-x-[6px] border-x-transparent border-b-[6px] border-stone-900/80 absolute -top-1.5 end-3">
-      </div>
-    </div>
-  </div>
-
-  {# djlint:off #}
-  <script type="module">
-    const copyButton = document.getElementById("copy-btn-{{ name }}");
-    if (copyButton) {
-      copyButton.addEventListener("click", () => {
-        navigator.clipboard.writeText('{{ content|safe }}');
-        const tooltip = document.querySelector("#copy-btn-{{ name }}-tooltip");
-        if (tooltip) {
-          tooltip.classList.add("opacity-100", "z-10");
-          setTimeout(() => {
-            tooltip.classList.remove("opacity-100", "z-10");
-          }, 3000);
-        }
-      });
-    }
-</script>
-  {# djlint:on #}
-{% endmacro copy_button -%}

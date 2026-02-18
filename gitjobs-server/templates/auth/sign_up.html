@@ -1,10 +1,10 @@
 {% extends "common_base.html" -%}
-{% import "macros.html" as macros -%}
+{% import "macros/ui.html" as ui -%}
 
 {% block main -%}
   <div class="container max-w-md m-auto px-4 py-8 md:px-2 md:py-12">
     <div class="bg-white p-10 border border-stone-200 rounded-lg">
-      <div class="mb-8">{{ macros::form_title(title = "Sign Up") -}}</div>
+      <div class="mb-8">{{ ui::form_title(title = "Sign Up") -}}</div>
 
       <div class="flex flex-col items-center space-y-5 mb-2">
         {# Linux Foundation SSO login -#}
@@ -53,6 +53,7 @@
                 <input id="name"
                        name="name"
                        type="text"
+                       maxlength="{{ crate::validation::MAX_LEN_DISPLAY_NAME }}"
                        class="input-primary"
                        autocomplete="off"
                        autocorrect="off"
@@ -60,6 +61,7 @@
                        spellcheck="false"
                        required>
               </div>
+              <p class="form-legend">Max {{ crate::validation::MAX_LEN_DISPLAY_NAME }} characters.</p>
             </div>
             {# End name -#}
 
@@ -69,8 +71,14 @@
                 Email <span class="asterisk">*</span>
               </label>
               <div class="mt-2">
-                <input id="email" name="email" type="email" class="input-primary" required>
+                <input id="email"
+                       name="email"
+                       type="email"
+                       maxlength="{{ crate::validation::MAX_LEN_M }}"
+                       class="input-primary"
+                       required>
               </div>
+              <p class="form-legend">Max {{ crate::validation::MAX_LEN_M }} characters.</p>
             </div>
             {# End Email -#}
 
@@ -83,6 +91,7 @@
                 <input id="username"
                        name="username"
                        type="text"
+                       maxlength="{{ crate::validation::MAX_LEN_S }}"
                        class="input-primary"
                        autocomplete="off"
                        autocorrect="off"
@@ -90,6 +99,7 @@
                        spellcheck="false"
                        required>
               </div>
+              <p class="form-legend">Max {{ crate::validation::MAX_LEN_S }} characters.</p>
             </div>
             {# End Username -#}
 
@@ -102,9 +112,13 @@
                 <input type="password"
                        id="password"
                        name="password"
+                       data-password
+                       minlength="{{ crate::validation::MIN_PASSWORD_LEN }}"
+                       maxlength="{{ crate::validation::MAX_LEN_S }}"
                        class="input-primary"
                        required>
               </div>
+              <p class="form-legend">Min {{ crate::validation::MIN_PASSWORD_LEN }} characters.</p>
             </div>
             {# End Password -#}
 
@@ -117,9 +131,13 @@
                 <input type="password"
                        id="password_confirmation"
                        name="password_confirmation"
+                       data-password-confirmation
+                       minlength="{{ crate::validation::MIN_PASSWORD_LEN }}"
+                       maxlength="{{ crate::validation::MAX_LEN_S }}"
                        class="input-primary"
                        required>
               </div>
+              <p class="form-legend">Min {{ crate::validation::MIN_PASSWORD_LEN }} characters.</p>
             </div>
             {# End Repeat password -#}
           </div>
@@ -139,7 +157,7 @@
 
       {# Messages -#}
       {% if !messages.is_empty() -%}
-        {{ macros::alerts(messages) -}}
+        {{ ui::alerts(messages) -}}
       {% endif -%}
       {# End messages -#}
     </div>
@@ -149,32 +167,10 @@
       {# Osano -#}
       {%- if let Some(osano_script_url) = analytics.osano_script_url -%}
         {# Cookie preferences -#}
-        {{ macros::cookie_button(extra_styles = "mt-8") -}}
+        {{ ui::cookie_button(extra_styles = "mt-8") -}}
         {# End cookie preferences -#}
       {%- endif -%}
     {% endif -%}
     {# End analytics -#}
   </div>
-  <script type="module">
-    const signupForm = document.getElementById('sign-up-form');
-    const passwords = document.querySelectorAll('input[type="password"]');
-
-    const isValidPassword = () => {
-      const password = document.getElementById('password');
-      const passwordConfirmation = document.getElementById('password_confirmation');
-
-      // Check if passwords match
-      if (password.value !== passwordConfirmation.value) {
-        passwordConfirmation.setCustomValidity('Passwords do not match');
-      } else {
-        passwordConfirmation.setCustomValidity('');
-      }
-    }
-
-    passwords.forEach((password) => {
-      password.addEventListener('input', () => {
-        isValidPassword();
-      });
-    });
-  </script>
 {% endblock main -%}

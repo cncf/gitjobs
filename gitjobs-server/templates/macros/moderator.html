@@ -1,0 +1,222 @@
+{% import "macros/ui.html" as ui -%}
+
+{% macro jobs_table(jobs, empty_title, is_pending = false) -%}
+  <div class="hidden md:block relative overflow-visible mt-10">
+    <table class="table-fixed w-full text-xs lg:text-sm text-left rtl:text-right text-stone-500">
+      <thead class="text-xs text-stone-700 uppercase bg-stone-100 border-b border-stone-200">
+        <tr>
+          <th scope="col" class="px-3 xl:px-5 py-3 w-[20%] hidden md:table-cell">Employer</th>
+          <th scope="col" class="px-3 xl:px-5 py-3 w-[35%] lg:w-[45%]">
+            Job <span class="hidden md:inline-block">title</span>
+          </th>
+          <th scope="col"
+              class="px-3 xl:px-5 py-3 w-[212px] table-cell lg:hidden xl:table-cell">Member</th>
+          <th scope="col" class="px-3 xl:px-5 py-3 w-26 xl:w-32">Created</th>
+          <th scope="col" class="p-4 w-22 xl:w-25 text-center">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if jobs.is_empty() -%}
+          <tr class="bg-white border-b border-stone-200">
+            {# No jobs -#}
+            <td class="px-8 py-20 text-center table-cell lg:hidden xl:table-cell"
+                colspan="5">
+              {{ ui::empty_state_alert(title = empty_title,
+                            wrapper_styles = "p-0 border-0 bg-transparent",
+                            title_styles = "text-xl lg:text-2xl mb-10") -}}
+            </td>
+            <td class="px-8 py-20 text-center hidden lg:table-cell xl:hidden"
+                colspan="4">
+              {{ ui::empty_state_alert(title = empty_title,
+                            wrapper_styles = "p-0 border-0 bg-transparent",
+                            title_styles = "text-xl lg:text-2xl mb-10") -}}
+            </td>
+            {# End no jobs -#}
+          </tr>
+        {% else -%}
+          {% for job in jobs -%}
+            <tr class="odd:bg-white even:bg-stone-50/50 border-b border-stone-200">
+              {# Employer -#}
+              <td class="px-3 xl:px-5 py-4">
+                <div class="text-stone-500 text-xs uppercase font-semibold truncate">{{ job.employer.company }}</div>
+                <div class="hidden lg:inline xl:hidden mt-0 lg:mt-1 xl:mt-0 truncate">
+                  {{ employer_member_badge(employer = job.employer) -}}
+                </div>
+              </td>
+              {# End employer -#}
+
+              {# Job -#}
+              <td class="px-3 xl:px-5 py-4 font-medium text-stone-900">
+                <button hx-get="/dashboard/moderator/jobs/{{ job.employer.employer_id }}/{{ job.job_id }}/preview"
+                        hx-target="#preview-content"
+                        hx-disabled-elt="this"
+                        class="cursor-pointer preview-button max-w-full min-w-0 text-sm">
+                  <div class="max-w-full text-stone-900 text-start truncate">{{ job.title }}</div>
+                </button>
+              </td>
+              {# End job -#}
+
+              {# Member -#}
+              <td class="px-3 xl:px-5 py-4 whitespace-nowrap table-cell lg:hidden xl:table-cell">
+                {{ employer_member_badge(employer = job.employer, with_legend = false, with_popover = true) -}}
+              </td>
+              {# End member -#}
+
+              {# Created date -#}
+              <td class="px-3 xl:px-5 py-4 whitespace-nowrap">{{ job.created_at.format(DATE_FORMAT) }}</td>
+              {# End created date -#}
+
+              {# Actions -#}
+              <td class="px-3 xl:px-5">
+                <div class="flex items-center justify-center space-x-2">
+                  {% if is_pending -%}
+                    <div>
+                      <button hx-put="/dashboard/moderator/jobs/{{ job.job_id }}/approve"
+                              data-approve-job-button="true"
+                              hx-disabled-elt="this"
+                              class="btn-tertiary p-2"
+                              title="Approve">
+                        <div class="svg-icon size-3 md:size-4 icon-check"></div>
+                      </button>
+                    </div>
+                  {% endif -%}
+
+                  <div>
+                    <button data-job-id="{{ job.job_id }}"
+                            class="btn-tertiary p-2 reject-modal"
+                            title="Reject">
+                      <div class="svg-icon size-2.5 md:size-3.5 icon-cancel"></div>
+                    </button>
+                  </div>
+                </div>
+              </td>
+              {# End actions -#}
+            </tr>
+          {% endfor -%}
+        {% endif -%}
+      </tbody>
+    </table>
+  </div>
+{% endmacro jobs_table -%}
+
+{% macro mobile_job_card(job, is_pending = false) -%}
+  <div class="border border-stone-200 bg-white rounded-lg p-5">
+    <div class="flex justify-between items-center">
+      {# Company -#}
+      <div class="text-stone-500 leading-[0.7rem] text-[0.7rem] uppercase font-semibold truncate">
+        {{ job.employer.company }}
+      </div>
+      {# End company -#}
+
+      {# Created -#}
+      <div class="truncate leading-[0.7rem] w-[50px] text-[0.7rem] font-semibold tracking-wide uppercase text-end">
+        {{ job.created_at.format(DATE_FORMAT_3) }}
+      </div>
+      {# End created -#}
+    </div>
+
+    {# Job -#}
+    <button hx-get="/dashboard/moderator/jobs/{{ job.employer.employer_id }}/{{ job.job_id }}/preview"
+            hx-target="#preview-content"
+            hx-disabled-elt="this"
+            class="cursor-pointer preview-button min-w-0">
+      <div class="text-base/6 font-stretch-condensed font-medium text-start text-stone-900 line-clamp-2 my-3">
+        {{ job.title }}
+      </div>
+    </button>
+    {# End job -#}
+
+    {# Member -#}
+    <div>{{ employer_member_badge(employer = job.employer) -}}</div>
+    {# End member -#}
+
+    {# Actions -#}
+    <div class="flex items-center justify-center space-x-2 mt-4">
+      {% if is_pending -%}
+        <div>
+          <button hx-put="/dashboard/moderator/jobs/{{ job.job_id }}/approve"
+                  data-approve-job-button="true"
+                  hx-disabled-elt="this"
+                  class="btn-primary-outline btn-mini flex items-center justify-center space-x-2 group w-[95px]">
+            <div class="svg-icon size-3 icon-check group-hover:bg-white"></div>
+            <div>Approve</div>
+          </button>
+        </div>
+      {% endif -%}
+
+      <div>
+        <button data-job-id="{{ job.job_id }}"
+                class="btn-primary-outline btn-mini flex items-center justify-center space-x-2 reject-modal group w-[95px]"
+                title="Reject">
+          <div class="svg-icon size-2.5 icon-cancel group-hover:bg-white"></div>
+          <div>Reject</div>
+        </button>
+      </div>
+    </div>
+    {# End actions -#}
+  </div>
+{% endmacro mobile_job_card -%}
+
+{% macro employer_member_badge(employer, with_legend = true, with_popover = false) -%}
+  <div>
+    {# Member -#}
+    {% if let Some(members) = employer.members -%}
+      {% if members.len() > 1 -%}
+        {% if with_popover -%}
+          <div class="relative group min-w-0">
+            <div class="peer flex items-center space-x-1 rounded-md uppercase min-w-0 cursor-pointer">
+              <div class="shrink-0 size-3 flex items-center justify-center">
+                <img class="size-3 object-contain"
+                     height="auto"
+                     width="auto"
+                     src="/static/images/badge_member.png"
+                     alt="Member badge logo">
+              </div>
+
+              <div class="text-stone-600 text-[0.7rem] md:text-xs font-semibold tracking-wide uppercase truncate">
+                <span class="hidden xl:inline">Multiple memberships</span>
+                <span class="inline xl:hidden">Multiple</span>
+              </div>
+            </div>
+            {{ ui::memberships_popover(members = members) -}}
+          </div>
+        {% else -%}
+          <div class="flex items-center space-x-1 rounded-md uppercase min-w-0">
+            <div class="shrink-0 size-3 flex items-center justify-center">
+              <img class="size-3 object-contain"
+                   height="auto"
+                   width="auto"
+                   src="/static/images/badge_member.png"
+                   alt="Member badge logo">
+            </div>
+
+            <div class="text-stone-600 text-[0.7rem] md:text-xs font-semibold tracking-wide uppercase truncate">
+              <span class="hidden xl:inline">Multiple memberships</span>
+              <span class="inline xl:hidden">Multiple</span>
+            </div>
+          </div>
+        {% endif -%}
+      {% else -%}
+        {% if let Some(member) = members.first() -%}
+          <div class="flex items-center space-x-1 rounded-md uppercase min-w-0">
+            <div class="shrink-0 size-3 flex items-center justify-center">
+              <img class="size-3 object-contain"
+                   height="auto"
+                   width="auto"
+                   src="/static/images/badge_member.png"
+                   alt="Member badge logo">
+            </div>
+
+            <div class="text-stone-600 text-[0.7rem] md:text-xs font-semibold tracking-wide uppercase truncate">
+              {{ member.foundation }}
+              {% if with_legend -%}
+                member
+              {% endif -%}
+            </div>
+          </div>
+        {% endif -%}
+      {% endif -%}
+    {% endif -%}
+    {# End member -#}
+  </div>
+{% endmacro employer_member_badge -%}

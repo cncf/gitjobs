@@ -3,13 +3,13 @@ create or replace function search_applications(
     p_employer_id uuid,
     p_filters jsonb
 )
-returns table(applications json, total bigint) as $$
+returns json as $$
 declare
     v_job_id uuid := (p_filters->>'job_id')::uuid;
     v_limit int := coalesce((p_filters->>'limit')::int, 20);
     v_offset int := coalesce((p_filters->>'offset')::int, 0);
 begin
-    return query
+    return (
     with filtered_applications as (
         select
             a.application_id,
@@ -48,7 +48,8 @@ begin
             case when v_job_id is not null then
             a.job_id = v_job_id else true end
     )
-    select
+    select json_build_object(
+        'applications',
         (
             select coalesce(json_agg(json_build_object(
                 'application_id', application_id,
@@ -61,7 +62,7 @@ begin
                 'photo_id', photo_id,
                 'name', name,
                 'last_position', last_position
-            )), '[]')
+            )), '[]'::json)
             from (
                 select *
                 from filtered_applications
@@ -70,8 +71,11 @@ begin
                 offset v_offset
             ) filtered_applications_page
         ),
+        'total',
         (
             select count(*) from filtered_applications
-        );
+        )
+    )
+    );
 end
 $$ language plpgsql;

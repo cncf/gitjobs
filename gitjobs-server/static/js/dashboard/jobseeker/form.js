@@ -4,8 +4,12 @@
  */
 export const displayActiveSection = (section) => {
   const navigationButton = document.querySelector(`[data-section=${section}]`);
+  if (!navigationButton) {
+    return;
+  }
+
   const isActive = navigationButton.getAttribute("data-active");
-  if (isActive === "false" && navigationButton) {
+  if (isActive === "false") {
     const allButtons = document.querySelectorAll("[data-section]");
     allButtons.forEach((button) => {
       button.setAttribute("data-active", "false");
@@ -35,6 +39,9 @@ export const validateFormData = () => {
 
   for (const formName of formSections) {
     const formElement = document.getElementById(`${formName}-form`);
+    if (!formElement) {
+      continue;
+    }
 
     if (!formElement.checkValidity()) {
       displayActiveSection(formName);

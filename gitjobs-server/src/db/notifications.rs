@@ -1,6 +1,8 @@
 //! This module defines database functionality used to manage notifications, including
 //! enqueueing, retrieving, and updating notification records.
 
+use std::sync::Arc;
+
 use anyhow::{Result, bail};
 use async_trait::async_trait;
 use tracing::{instrument, trace};
@@ -36,16 +38,20 @@ impl DBNotifications for PgDB {
     async fn enqueue_notification(&self, notification: &NewNotification) -> Result<()> {
         trace!("db: enqueue notification");
 
+        // Nothing to enqueue
+        if notification.recipients.is_empty() {
+            trace!("db: skip enqueue notification with empty recipients");
+            return Ok(());
+        }
+
+        // Enqueue notification in database
         let db = self.pool.get().await?;
         db.execute(
-            "
-            insert into notification (kind, user_id, template_data)
-            values ($1::text, $2::uuid, $3::jsonb);
-            ",
+            "select enqueue_notification($1::text, $2::jsonb, $3::uuid[]);",
             &[
                 &notification.kind.to_string(),
-                &notification.user_id,
                 &notification.template_data,
+                &notification.recipients,
             ],
         )
         .await?;
@@ -56,29 +62,17 @@ impl DBNotifications for PgDB {
     #[instrument(skip(self), err)]
     async fn get_pending_notification(&self, client_id: Uuid) -> Result<Option<Notification>> {
         // Get transaction client
-        let clients = self.txs_clients.read().await;
-        let Some((tx, _)) = clients.get(&client_id) else {
-            bail!(TX_CLIENT_NOT_FOUND);
+        let tx = {
+            let clients = self.txs_clients.read().await;
+            let Some((tx, _)) = clients.get(&client_id) else {
+                bail!(TX_CLIENT_NOT_FOUND);
+            };
+            Arc::clone(tx)
         };
 
         // Get pending notification (if any)
         let notification = tx
-            .query_opt(
-                r#"
-                select
-                    n.kind,
-                    n.notification_id,
-                    n.template_data,
-                    u.email
-                from notification n
-                join "user" u using (user_id)
-                where processed = false
-                order by notification_id asc
-                limit 1
-                for update of n skip locked;
-                "#,
-                &[],
-            )
+            .query_opt("select * from get_pending_notification();", &[])
             .await?
             .map(|row| Notification {
                 email: row.get("email"),
@@ -106,20 +100,17 @@ impl DBNotifications for PgDB {
         trace!("db: update notification");
 
         // Get transaction client
-        let clients = self.txs_clients.read().await;
-        let Some((tx, _)) = clients.get(&client_id) else {
-            bail!(TX_CLIENT_NOT_FOUND);
+        let tx = {
+            let clients = self.txs_clients.read().await;
+            let Some((tx, _)) = clients.get(&client_id) else {
+                bail!(TX_CLIENT_NOT_FOUND);
+            };
+            Arc::clone(tx)
         };
 
         // Update notification
         tx.execute(
-            "
-            update notification set
-                processed = true,
-                processed_at = current_timestamp,
-                error = $2::text
-            where notification_id = $1::uuid;
-            ",
+            "select update_notification($1::uuid, $2::text);",
             &[&notification.notification_id, &error],
         )
         .await?;

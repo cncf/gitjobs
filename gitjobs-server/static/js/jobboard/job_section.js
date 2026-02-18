@@ -1,23 +1,57 @@
 import {
+  handleHtmxResponse,
   showConfirmAlert,
   showErrorAlert,
   showInfoAlert,
   showSuccessAlert,
 } from "/static/js/common/alerts.js";
-import { isSuccessfulXHRStatus } from "/static/js/common/common.js";
+import {
+  bindHtmxAfterRequestOnce,
+  copyToClipboard,
+  ensureElementId,
+  initializeModalCloseHandlers,
+  initializePreviewModalCloseHandlers,
+  lockBodyScroll,
+  toggleModalVisibility,
+} from "/static/js/common/common.js";
+import { shareJob } from "/static/js/jobboard/share.js";
+
+const APPLY_BUTTON_ID = "apply-button";
+const APPLY_BUTTON_SELECTOR = `#${APPLY_BUTTON_ID}`;
+const USER_DROPDOWN_BUTTON_ID = "user-dropdown-button";
+const EMBED_CODE_ID = "embed-code";
+const EMBED_IFRAME_ID = "gitjobs";
+const PREVIEW_MODAL_ID = "preview-modal";
+const PREVIEW_CONTENT_ID = "preview-content";
+const EMBED_CODE_MODAL_ID = "embed-code-modal";
+const EMBED_CODE_MODAL_SELECTOR = `#${EMBED_CODE_MODAL_ID}`;
+const EMBED_CODE_BUTTON_ID = "embed-code-button";
+const CLOSE_EMBED_CODE_MODAL_BUTTON_ID = "close-embed-code-modal";
+const BACKDROP_EMBED_CODE_MODAL_ID = "backdrop-embed-code-modal";
 
 /**
  * Initializes the job application button functionality.
  * Handles different states: logged out, external URL, no profile.
+ * @param {Document|HTMLElement} [root=document] - Root element containing the apply button
  */
-export const initializeApplyButton = () => {
-  const applyButton = document.getElementById("apply-button");
-  if (!applyButton) {
+const initializeApplyButton = (root = document) => {
+  const applyButton = root.querySelector(APPLY_BUTTON_SELECTOR);
+  if (!applyButton || applyButton.dataset.applyBound === "true") {
     return;
   }
 
+  ensureElementId({
+    element: applyButton,
+    prefix: "gitjobs-apply-button",
+    counterKey: "__gitjobsApplyButtonCounter",
+  });
+
   const applyUrl = applyButton.dataset.applyUrl;
-  const userButton = document.getElementById("user-dropdown-button");
+  const userButton = document.getElementById(USER_DROPDOWN_BUTTON_ID);
+  if (!userButton) {
+    return;
+  }
+
   const isUserLoggedIn = userButton.dataset.loggedIn;
   const hasProfile = userButton.dataset.hasProfile;
 
@@ -34,7 +68,7 @@ export const initializeApplyButton = () => {
     if (applyUrl !== "") {
       // Open external link in a new tab
       applyButton.addEventListener("click", () => {
-        window.open(applyUrl, "_blank");
+        window.open(applyUrl, "_blank", "noopener,noreferrer");
       });
     } else {
       if (hasProfile === "false") {
@@ -48,21 +82,30 @@ export const initializeApplyButton = () => {
         const jobId = applyButton.dataset.jobId;
         applyButton.setAttribute("hx-post", `/jobs/${jobId}/apply`);
         applyButton.setAttribute("hx-trigger", "confirmed");
-        htmx.process(applyButton);
+        const htmxInstance = window.htmx;
+        if (typeof htmxInstance?.process === "function") {
+          htmxInstance.process(applyButton);
+        }
         applyButton.addEventListener("click", () => {
-          showConfirmAlert("Are you sure you want to apply to this job?", "apply-button", "Yes");
+          showConfirmAlert("Are you sure you want to apply to this job?", applyButton.id, "Yes");
         });
 
-        applyButton.addEventListener("htmx:afterRequest", (e) => {
-          if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
-            showSuccessAlert("You have successfully applied to this job!");
-          } else {
-            showErrorAlert("An error occurred applying to this job, please try again later.");
-          }
+        bindHtmxAfterRequestOnce({
+          selector: `#${applyButton.id}`,
+          handler: (event) => {
+            handleHtmxResponse({
+              xhr: event.detail.xhr,
+              successMessage: "You have successfully applied to this job!",
+              errorMessage: "An error occurred applying to this job. Please try again later.",
+            });
+          },
+          boundAttribute: "applyAfterRequestBound",
         });
       }
     }
   }
+
+  applyButton.dataset.applyBound = "true";
 };
 
 /**
@@ -70,16 +113,20 @@ export const initializeApplyButton = () => {
  * Creates an iframe with current search parameters.
  */
 export const renderEmbedCode = () => {
-  const embedCode = document.getElementById("embed-code");
+  const embedCode = document.getElementById(EMBED_CODE_ID);
+  if (!embedCode) {
+    return;
+  }
+
   const params = new URLSearchParams(window.location.search);
   params.append("limit", "10");
   embedCode.textContent = `
-<iframe id="gitjobs" src="${window.location.origin}/embed?${params.toString()}" style="width:100%;max-width:870px;height:100%;display:block;border:none;"></iframe>
+<iframe id="${EMBED_IFRAME_ID}" src="${window.location.origin}/embed?${params.toString()}" style="width:100%;max-width:870px;height:100%;display:block;border:none;"></iframe>
 
 <!-- Uncomment the following lines for resizing iframes dynamically using open-iframe-resizer
 <script type="module">
   import { initialize } from "https://cdn.jsdelivr.net/npm/@open-iframe-resizer/core@latest/dist/index.js";
-  initialize({}, "#gitjobs");
+  initialize({}, "#${EMBED_IFRAME_ID}");
 </script> -->`;
 };
 
@@ -87,70 +134,134 @@ export const renderEmbedCode = () => {
  * Copies embed code to clipboard and shows success message.
  * @param {string} elementId - ID of element containing embed code
  */
-export const copyEmbedCodeToClipboard = (elementId) => {
+export const copyEmbedCodeToClipboard = async (elementId) => {
   const embedCodeElement = document.getElementById(elementId);
+  if (!embedCodeElement) {
+    return;
+  }
 
-  navigator.clipboard.writeText(embedCodeElement.textContent);
-
-  showSuccessAlert("Embed code copied to clipboard!");
+  try {
+    await copyToClipboard(embedCodeElement.textContent);
+    showSuccessAlert("Embed code copied to clipboard!");
+  } catch (error) {
+    showErrorAlert("Something went wrong copying the embed code. Please try again later.");
+  }
 };
 
 /**
- * Sets up social media sharing links for a job posting.
- * Configures share URLs for Twitter, Facebook, LinkedIn, and email.
+ * Initializes preview and embed modal interactions for job details.
  */
-export const shareJob = () => {
-  const socialLinks = document.getElementById("social-links");
-  if (socialLinks) {
-    const jobId = socialLinks.dataset.jobId;
-    const shareUrl = `${window.location.origin}?job_id=${jobId}`;
-    const subject = "Check out this job I found on GitJobs!";
-    const message = "Check out this job I found on GitJobs!";
+export const initializeJobPreviewModal = () => {
+  const previewModal = document.getElementById(PREVIEW_MODAL_ID);
+  if (
+    previewModal &&
+    previewModal.dataset.open === "true" &&
+    !previewModal.classList.contains("hidden") &&
+    previewModal.dataset.initialScrollLockApplied !== "true"
+  ) {
+    lockBodyScroll();
+    previewModal.dataset.initialScrollLockApplied = "true";
+  }
 
-    const anchorTags = socialLinks.querySelectorAll("a");
-    anchorTags.forEach((anchorTag) => {
-      const platform = anchorTag.dataset.platform;
+  initializePreviewModalCloseHandlers({
+    cleanJobIdParam: true,
+    onClose: () => {
+      if (previewModal) {
+        previewModal.dataset.initialScrollLockApplied = "false";
+      }
+    },
+  });
 
-      switch (platform) {
-        case "twitter":
-          anchorTag.setAttribute(
-            "href",
-            `https://twitter.com/intent/tweet?text=${encodeURIComponent(message)}&url=${shareUrl}`,
-          );
-          break;
-        case "facebook":
-          anchorTag.setAttribute(
-            "href",
-            `https://www.facebook.com/sharer/sharer.php?u=${shareUrl}&quote=${encodeURIComponent(message)}`,
-          );
-          break;
-        case "linkedin":
-          anchorTag.setAttribute("href", `https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}`);
-          break;
-        case "email":
-          anchorTag.setAttribute(
-            "href",
-            `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(
-              `${message} ${shareUrl}`,
-            )}`,
-          );
-          break;
+  const initializePreviewContentActions = (root) => {
+    initializeApplyButton(root);
+    shareJob(root);
+  };
+
+  const previewContent = document.getElementById(PREVIEW_CONTENT_ID);
+  if (previewContent) {
+    initializePreviewContentActions(previewContent);
+  } else {
+    initializePreviewContentActions();
+  }
+
+  const tabs = document.querySelectorAll(".tab");
+  tabs.forEach((tab) => {
+    if (tab.dataset.tabBound === "true") {
+      return;
+    }
+
+    tab.addEventListener("click", (event) => {
+      const section = event.currentTarget.getAttribute("data-section");
+      const buttons = document.querySelectorAll(`${EMBED_CODE_MODAL_SELECTOR} [data-section]`);
+      buttons.forEach((button) => {
+        button.setAttribute("data-active", "false");
+        button.classList.remove("active");
+      });
+      event.currentTarget.setAttribute("data-active", "true");
+      event.currentTarget.classList.add("active");
+
+      const sections = document.querySelectorAll(`${EMBED_CODE_MODAL_SELECTOR} .sections > div`);
+      sections.forEach((content) => {
+        if (content.id !== section) {
+          content.classList.add("hidden");
+        } else {
+          content.classList.remove("hidden");
+        }
+      });
+    });
+
+    tab.dataset.tabBound = "true";
+  });
+
+  const embedCodeButton = document.getElementById(EMBED_CODE_BUTTON_ID);
+  if (embedCodeButton && embedCodeButton.dataset.embedOpenBound !== "true") {
+    embedCodeButton.addEventListener("click", () => {
+      toggleModalVisibility(EMBED_CODE_MODAL_ID, "open");
+    });
+    embedCodeButton.dataset.embedOpenBound = "true";
+  }
+
+  initializeModalCloseHandlers({
+    modalId: EMBED_CODE_MODAL_ID,
+    triggerIds: [CLOSE_EMBED_CODE_MODAL_BUTTON_ID, BACKDROP_EMBED_CODE_MODAL_ID],
+  });
+
+  const copyButtons = document.querySelectorAll("[data-copy-button]");
+  copyButtons.forEach((copyButton) => {
+    if (copyButton.dataset.copyBound === "true") {
+      return;
+    }
+
+    copyButton.addEventListener("click", async () => {
+      const content = copyButton.dataset.copyContent || "";
+      try {
+        await copyToClipboard(content);
+      } catch (error) {
+        showErrorAlert("Something went wrong copying the code. Please try again later.");
+        return;
+      }
+
+      const tooltipId = copyButton.dataset.tooltipId;
+      if (!tooltipId) {
+        return;
+      }
+
+      const tooltip = document.getElementById(tooltipId);
+      if (tooltip) {
+        tooltip.classList.add("opacity-100", "z-10");
+        setTimeout(() => {
+          tooltip.classList.remove("opacity-100", "z-10");
+        }, 3000);
       }
     });
 
-    // Copy link to clipboard
-    const copyLink = document.querySelector("#copy-link");
-    if (copyLink) {
-      copyLink.addEventListener("click", () => {
-        navigator.clipboard.writeText(shareUrl);
-        const tooltip = document.querySelector("#copy-link-tooltip");
-        if (tooltip) {
-          tooltip.classList.add("opacity-100", "z-10");
-          setTimeout(() => {
-            tooltip.classList.remove("opacity-100", "z-10");
-          }, 3000);
-        }
-      });
-    }
+    copyButton.dataset.copyBound = "true";
+  });
+
+  if (previewContent && previewContent.dataset.previewActionsBound !== "true") {
+    previewContent.addEventListener("htmx:afterSwap", () => {
+      initializePreviewContentActions(previewContent);
+    });
+    previewContent.dataset.previewActionsBound = "true";
   }
 };

@@ -1,6 +1,6 @@
 -- Returns the jobs that match the filters provided.
 create or replace function search_jobs(p_filters jsonb)
-returns table(jobs json, total bigint) as $$
+returns json as $$
 declare
     v_benefits text[];
     v_date_from date;
@@ -64,7 +64,7 @@ begin
         ) into v_tsquery_with_prefix_matching;
     end if;
 
-    return query
+    return (
     with filtered_jobs as (
         select
             j.job_id,
@@ -211,7 +211,8 @@ begin
                 j.workplace = any(v_workplace)
             else true end
     )
-    select
+    select json_build_object(
+        'jobs',
         (
             select coalesce(json_agg(json_build_object(
                 'job_id', job_id,
@@ -232,7 +233,7 @@ begin
                 'employer', employer,
                 'location', location,
                 'projects', projects
-            )), '[]')
+            )), '[]'::json)
             from (
                 select *
                 from filtered_jobs
@@ -245,8 +246,11 @@ begin
                 offset v_offset
             ) filtered_jobs_page
         ),
+        'total',
         (
             select count(*) from filtered_jobs
-        );
+        )
+    )
+    );
 end
 $$ language plpgsql;

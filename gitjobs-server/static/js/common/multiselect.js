@@ -57,7 +57,7 @@ export class MultiSelect extends LitWrapper {
 
   disconnectedCallback() {
     super.disconnectedCallback();
-    window.addEventListener("mousedown", this._handleClickOutside);
+    window.removeEventListener("mousedown", this._handleClickOutside);
   }
 
   /**

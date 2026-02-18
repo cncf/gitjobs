@@ -1,14 +1,18 @@
 //! Templates and types for managing employers in the employer dashboard.
 
 use askama::Template;
+use garde::Validate;
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use uuid::Uuid;
 
-use crate::templates::{
-    filters,
-    helpers::build_dashboard_image_url,
-    misc::{Foundation, Location, Member},
+use crate::{
+    templates::{
+        filters,
+        helpers::build_dashboard_image_url,
+        misc::{Foundation, Location, Member},
+    },
+    validation::{MAX_LEN_DESCRIPTION, MAX_LEN_ENTITY_NAME, MAX_LEN_L, trimmed_non_empty},
 };
 
 // Pages templates.
@@ -53,21 +57,28 @@ pub(crate) struct EmployerSummary {
 
 /// Employer details for dashboard management.
 #[skip_serializing_none]
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Validate)]
 pub(crate) struct Employer {
     /// Company name.
+    #[garde(custom(trimmed_non_empty), length(max = MAX_LEN_ENTITY_NAME))]
     pub company: String,
     /// Company description.
+    #[garde(custom(trimmed_non_empty), length(max = MAX_LEN_DESCRIPTION))]
     pub description: String,
     /// Whether the employer profile is public.
+    #[garde(skip)]
     pub public: bool,
 
     /// Location of the employer, if specified.
+    #[garde(skip)]
     pub location: Option<Location>,
     /// Logo image identifier, if available.
+    #[garde(skip)]
     pub logo_id: Option<Uuid>,
     /// Associated members, if any.
+    #[garde(skip)]
     pub members: Option<Vec<Member>>,
     /// Website URL, if provided.
+    #[garde(url, length(max = MAX_LEN_L))]
     pub website_url: Option<String>,
 }

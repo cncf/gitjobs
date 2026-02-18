@@ -47,26 +47,11 @@ impl DBJobBoard for PgDB {
         trace!("db: apply to job");
 
         let db = self.pool.get().await?;
-        let num_rows_inserted = db
-            .execute(
-                "
-                insert into application (
-                    job_id,
-                    job_seeker_profile_id
-                )
-                select
-                    job_id,
-                    (select job_seeker_profile_id from job_seeker_profile where user_id = $2::uuid)
-                from job
-                where job_id = $1::uuid
-                and status = 'published'
-                on conflict (job_seeker_profile_id, job_id) do nothing;
-                ",
-                &[&job_id, &user_id],
-            )
+        let applied = db
+            .query_one("select apply_to_job($1::uuid, $2::uuid);", &[&job_id, &user_id])
             .await?;
 
-        Ok(num_rows_inserted == 1)
+        Ok(applied.get(0))
     }
 
     #[instrument(skip(self), err)]
@@ -74,147 +59,13 @@ impl DBJobBoard for PgDB {
         trace!("db: get job for jobboard");
 
         let db = self.pool.get().await?;
-        let row = db
-            .query_opt(
-                "
-                select
-                    j.description,
-                    j.job_id,
-                    j.kind,
-                    j.title,
-                    j.workplace,
-                    j.apply_instructions,
-                    j.apply_url,
-                    j.benefits,
-                    j.location_id,
-                    j.open_source,
-                    j.published_at,
-                    j.qualifications,
-                    j.responsibilities,
-                    j.salary,
-                    j.salary_currency,
-                    j.salary_min,
-                    j.salary_max,
-                    j.salary_period,
-                    j.seniority,
-                    j.skills,
-                    j.tz_end,
-                    j.tz_start,
-                    j.updated_at,
-                    j.upstream_commitment,
-                    (
-                        select nullif(jsonb_strip_nulls(jsonb_build_object(
-                            'company', e.company,
-                            'description', e.description,
-                            'employer_id', e.employer_id,
-                            'logo_id', e.logo_id,
-                            'members', members.members,
-                            'website_url', e.website_url
-                        )), '{}'::jsonb)
-                    ) as employer,
-                    (
-                        select nullif(jsonb_strip_nulls(jsonb_build_object(
-                            'location_id', l.location_id,
-                            'city', l.city,
-                            'country', l.country,
-                            'state', l.state
-                        )), '{}'::jsonb)
-                    ) as location,
-                    (
-                        select json_agg(json_build_object(
-                            'project_id', p.project_id,
-                            'foundation', p.foundation,
-                            'logo_url', p.logo_url,
-                            'maturity', p.maturity,
-                            'name', p.name
-                        ))
-                        from project p
-                        left join job_project jp using (project_id)
-                        left join job j using (job_id)
-                        where j.job_id = $1::uuid
-                    ) as projects,
-                    (
-                        select json_agg(json_build_object(
-                            'certification_id', c.certification_id,
-                            'name', c.name,
-                            'provider', c.provider,
-                            'short_name', c.short_name,
-                            'description', c.description,
-                            'logo_url', c.logo_url,
-                            'url', c.url
-                        ))
-                        from certification c
-                        left join job_certification jc using (certification_id)
-                        left join job j using (job_id)
-                        where j.job_id = $1::uuid
-                    ) as certifications
-                from job j
-                join employer e on j.employer_id = e.employer_id
-                left join lateral (
-                    select
-                        jsonb_agg(jsonb_build_object(
-                            'member_id', m.member_id,
-                            'foundation', m.foundation,
-                            'level', m.level,
-                            'logo_url', m.logo_url,
-                            'name', m.name
-                        ) order by m.foundation asc, m.name asc) as members
-                    from employer_member em
-                    join member m on em.member_id = m.member_id
-                    where em.employer_id = e.employer_id
-                ) members on true
-                left join location l on j.location_id = l.location_id
-                where job_id = $1::uuid
-                and status = 'published';
-                ",
-                &[&job_id],
-            )
-            .await?;
+        let json_data: Option<String> = db
+            .query_one("select get_job_jobboard($1::uuid)::text;", &[&job_id])
+            .await?
+            .get(0);
+        let job = json_data.map(|data| serde_json::from_str(&data)).transpose()?;
 
-        if let Some(row) = row {
-            let job = Job {
-                description: row.get("description"),
-                employer: serde_json::from_value(row.get::<_, serde_json::Value>("employer"))
-                    .expect("employer should be valid json"),
-                job_id: row.get("job_id"),
-                kind: row.get::<_, String>("kind").parse().expect("valid job kind"),
-                title: row.get("title"),
-                workplace: row.get::<_, String>("workplace").parse().expect("valid workplace"),
-                apply_instructions: row.get("apply_instructions"),
-                apply_url: row.get("apply_url"),
-                benefits: row.get("benefits"),
-                certifications: row
-                    .get::<_, Option<serde_json::Value>>("certifications")
-                    .map(|v| serde_json::from_value(v).expect("certifications should be valid json")),
-                location: row
-                    .get::<_, Option<serde_json::Value>>("location")
-                    .map(|v| serde_json::from_value(v).expect("location should be valid json")),
-                open_source: row.get("open_source"),
-                projects: row
-                    .get::<_, Option<serde_json::Value>>("projects")
-                    .map(|v| serde_json::from_value(v).expect("projects should be valid json")),
-                published_at: row.get("published_at"),
-                qualifications: row.get("qualifications"),
-                responsibilities: row.get("responsibilities"),
-                salary: row.get("salary"),
-                salary_currency: row.get("salary_currency"),
-                salary_min: row.get("salary_min"),
-                salary_max: row.get("salary_max"),
-                salary_period: row.get("salary_period"),
-                seniority: row
-                    .get::<_, Option<String>>("seniority")
-                    .map(|s| s.parse().expect("valid seniority")),
-                skills: row.get("skills"),
-                tz_end: row.get("tz_end"),
-                tz_start: row.get("tz_start"),
-                updated_at: row.get("updated_at"),
-                upstream_commitment: row.get("upstream_commitment"),
-            };
-
-            Ok(Some(job))
-        } else {
-            Ok(None)
-        }
+        Ok(job)
     }
 
     #[instrument(skip(self))]
@@ -229,26 +80,8 @@ impl DBJobBoard for PgDB {
         async fn inner(db: Object) -> Result<FiltersOptions> {
             trace!("db: get jobs filters options");
 
-            // Query database
-            let row = db
-                .query_one(
-                    "
-                    select
-                        (
-                            select json_agg(json_build_object(
-                                'name', name
-                            ) order by name asc)
-                            from foundation
-                        )::text as foundations;
-                    ",
-                    &[],
-                )
-                .await?;
-
-            // Prepare filters options
-            let filters_options = FiltersOptions {
-                foundations: serde_json::from_str(&row.get::<_, String>("foundations"))?,
-            };
+            let row = db.query_one("select get_jobs_filters_options()::text;", &[]).await?;
+            let filters_options = serde_json::from_str(&row.get::<_, String>(0))?;
 
             Ok(filters_options)
         }
@@ -279,18 +112,9 @@ impl DBJobBoard for PgDB {
         // Query database
         let db = self.pool.get().await?;
         let row = db
-            .query_one(
-                "select jobs::text, total from search_jobs($1::jsonb)",
-                &[&Json(filters)],
-            )
+            .query_one("select search_jobs($1::jsonb)::text", &[&Json(filters)])
             .await?;
-
-        // Prepare search output
-        #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
-        let output = JobsSearchOutput {
-            jobs: serde_json::from_str(&row.get::<_, String>("jobs"))?,
-            total: row.get::<_, i64>("total") as usize,
-        };
+        let output = serde_json::from_str(&row.get::<_, String>(0))?;
 
         Ok(output)
     }

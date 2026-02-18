@@ -36,6 +36,8 @@ email:
   fromAddress: ""
   # From name used in emails
   fromName: ""
+  # Optional whitelist of allowed recipient email addresses
+  rcptsWhitelist: null
   # SMTP server configuration
   smtp:
     # Hostname
@@ -89,6 +91,9 @@ server:
   # Cookie configuration
   cookie:
     secure: false
+
+  # Disable referer checks for image uploads
+  disableRefererChecks: false
 
   # Login options enabled
   login:

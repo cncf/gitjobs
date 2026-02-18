@@ -1,4 +1,4 @@
-{% import "macros.html" as macros -%}
+{% import "macros/ui.html" as ui -%}
 
 {# Update user details form -#}
 <form id="user-details-form"
@@ -9,7 +9,7 @@
       hx-disabled-elt="button[type=submit]">
   <div class="space-y-12">
     <div>
-      {{ macros::form_title(title = "Account", description = "You can update your personal user account details here.") -}}
+      {{ ui::form_title(title = "Account", description = "You can update your personal user account details here.") -}}
       <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-6 max-w-5xl">
         {# Name -#}
         <div class="col-span-3">
@@ -21,6 +21,7 @@
                    name="name"
                    id="name"
                    value="{{ user_summary.name }}"
+                   maxlength="{{ crate::validation::MAX_LEN_DISPLAY_NAME }}"
                    class="input-primary"
                    autocomplete="off"
                    autocorrect="off"
@@ -28,52 +29,17 @@
                    spellcheck="false"
                    required>
           </div>
+          <p class="form-legend">Max {{ crate::validation::MAX_LEN_DISPLAY_NAME }} characters.</p>
         </div>
         {# End name -#}
 
         <div class="col-span-3"></div>
-
-        {# Username -#}
-        <div class="col-span-3 hidden">
-          <label for="username" class="form-label">
-            Username <span class="asterisk">*</span>
-          </label>
-          <div class="mt-2">
-            <input type="hidden"
-                   name="username"
-                   id="username"
-                   value="{{ user_summary.username }}"
-                   class="input-primary"
-                   autocomplete="off"
-                   autocorrect="off"
-                   autocapitalize="off"
-                   spellcheck="false"
-                   required>
-          </div>
-        </div>
-        {# End username -#}
-
-        {# Email -#}
-        <div class="col-span-3 hidden">
-          <label for="email" class="form-label">
-            Email <span class="asterisk">*</span>
-          </label>
-          <div class="mt-2">
-            <input type="hidden"
-                   name="email"
-                   id="email"
-                   value="{{ user_summary.email }}"
-                   class="input-primary"
-                   required>
-          </div>
-        </div>
-        {# End email -#}
       </div>
     </div>
 
     <div class="mt-6">
       <button type="submit" class="btn-primary">
-        {{ macros::btn_spinner(id = "save-user-spinner", spinner_type = "2") -}}
+        {{ ui::btn_spinner(id = "save-user-spinner", spinner_type = "2") -}}
         Save
       </button>
     </div>
@@ -95,7 +61,7 @@
         hx-disabled-elt="button[type=submit]">
     <div class="space-y-12">
       <div>
-        {{ macros::form_title(title = "Update password", description = "After updating your password all your current sessions will be terminated and you will need to log back in.") -}}
+        {{ ui::form_title(title = "Update password", description = "After updating your password all your current sessions will be terminated and you will need to log back in.") -}}
 
         <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-6 max-w-5xl">
           <div class="col-span-3">
@@ -106,9 +72,12 @@
               <input type="password"
                      id="old_password"
                      name="old_password"
+                     minlength="{{ crate::validation::MIN_PASSWORD_LEN }}"
+                     maxlength="{{ crate::validation::MAX_LEN_M }}"
                      class="input-primary"
                      required>
             </div>
+            <p class="form-legend">Min {{ crate::validation::MIN_PASSWORD_LEN }} characters.</p>
           </div>
 
           <div class="col-span-3"></div>
@@ -121,9 +90,13 @@
               <input type="password"
                      id="new_password"
                      name="new_password"
+                     data-password
+                     minlength="{{ crate::validation::MIN_PASSWORD_LEN }}"
+                     maxlength="{{ crate::validation::MAX_LEN_S }}"
                      class="input-primary"
                      required>
             </div>
+            <p class="form-legend">Min {{ crate::validation::MIN_PASSWORD_LEN }} characters.</p>
           </div>
 
           <div class="col-span-3">
@@ -134,16 +107,20 @@
               <input type="password"
                      id="password_confirmation"
                      name="password_confirmation"
+                     data-password-confirmation
+                     minlength="{{ crate::validation::MIN_PASSWORD_LEN }}"
+                     maxlength="{{ crate::validation::MAX_LEN_S }}"
                      class="input-primary"
                      required>
             </div>
+            <p class="form-legend">Min {{ crate::validation::MIN_PASSWORD_LEN }} characters.</p>
           </div>
         </div>
       </div>
 
       <div class="mt-6 items-center">
         <button type="submit" class="btn-primary">
-          {{ macros::btn_spinner(id = "update-password-spinner", spinner_type = "2") -}}
+          {{ ui::btn_spinner(id = "update-password-spinner", spinner_type = "2") -}}
           Save
         </button>
       </div>
@@ -154,43 +131,8 @@
 
 <script type="module">
   import {
-    showErrorAlert
-  } from '/static/js/common/alerts.js';
-  import {
-    isSuccessfulXHRStatus
-  } from '/static/js/common/common.js';
+    initializeAccountUpdateForms
+  } from '/static/js/dashboard/account.js';
 
-  const userDetailsForm = document.getElementById('user-details-form');
-  const passwordForm = document.getElementById('password-form');
-
-  if (userDetailsForm) {
-    userDetailsForm.addEventListener('htmx:afterRequest', (e) => {
-      if (!isSuccessfulXHRStatus(e.detail.xhr.status)) {
-        showErrorAlert('Something went wrong updating the user details, please try again later.');
-      }
-    });
-  }
-
-  if (passwordForm) {
-    const password = document.getElementById('new_password');
-    const passwordConfirmation = document.getElementById('password_confirmation');
-
-    const isValidPassword = () => {
-      // Check if passwords match
-      if (password.value !== passwordConfirmation.value) {
-        passwordConfirmation.setCustomValidity('Passwords do not match');
-      } else {
-        passwordConfirmation.setCustomValidity('');
-      }
-    };
-
-    password.addEventListener('input', isValidPassword);
-    passwordConfirmation.addEventListener('input', isValidPassword);
-
-    passwordForm.addEventListener('htmx:afterRequest', (e) => {
-      if (!isSuccessfulXHRStatus(e.detail.xhr.status)) {
-        showErrorAlert('Something went wrong updating the password, please try again later.');
-      }
-    });
-  }
+  initializeAccountUpdateForms();
 </script>

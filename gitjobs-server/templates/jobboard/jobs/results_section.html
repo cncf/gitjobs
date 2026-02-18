@@ -1,6 +1,5 @@
-{% import "macros.html" as macros -%}
-{% import "jobboard/jobs/jobs_macros.html" as jobs_macros -%}
-{% import "misc/job_preview.html" as macros_preview -%}
+{% import "macros/jobboard.html" as jobboard -%}
+{% import "macros/pagination.html" as pagination -%}
 
 <div class="flex flex-col mt-5 md:mt-7 space-y-4">
   {% if jobs.len() == 0 -%}
@@ -21,17 +20,6 @@
         </div>
       </div>
     </div>
-    <script type="module">
-      import {
-        resetForm
-      } from '/static/js/jobboard/filters.js';
-
-      const resetDesktopFilters = document.getElementById('reset-link-desktop-filters');
-      resetDesktopFilters.addEventListener('click', () => resetForm('desktop-jobs-form'));
-
-      const resetMobileFilters = document.getElementById('reset-link-mobile-filters');
-      resetMobileFilters.addEventListener('click', () => resetForm('mobile-jobs-form'));
-    </script>
     {# End placeholder cards -#}
   {% else -%}
     {# Cards -#}
@@ -50,7 +38,7 @@
               hx-indicator="#spinner-{{ job.job_id }}"
               class="relative md:mx-7 text-start bg-white enabled:cursor-pointer border rounded-lg enabled:hover:outline enabled:hover:outline-1 p-5 md:p-7 {%- if upstream_commitment > 0 %} border-lime-500 bg-lime-50/20 enabled:hover:outline-lime-500{%- else if open_source > 0 %} border-lime-300 bg-lime-50/20 enabled:hover:outline-lime-300{%- else %} border-stone-200 enabled:hover:outline-stone-200{%- endif -%}"
               hx-disabled-elt="[data-preview-job]"
-              hx-boost="true">{{ job_card(job = job) -}}</button>
+              hx-boost="true">{{ jobboard::job_card(job = job) -}}</button>
     {% endfor -%}
     {# End cards -#}
   {% endif -%}
@@ -63,280 +51,17 @@
 {# djlint:off #}
 <script type="module">
   import {
-    updateResults
-  } from '/static/js/jobboard/filters.js';
-  import {
-    toggleModalVisibility,
-    isSuccessfulXHRStatus,
-    addParamToQueryString,
-    trackerJobView,
-    trackSearchAppearances
-  } from '/static/js/common/common.js';
-  import {
-    showErrorAlert,
-  } from '/static/js/common/alerts.js';
+    initializeJobboardResults
+  } from '/static/js/jobboard/results.js';
 
-  const previewBtns = document.querySelectorAll('[data-preview-job]');
-
-  previewBtns.forEach((btn) => {
-    btn.addEventListener('htmx:afterRequest', (e) => {
-      if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
-        const job_id =  btn.dataset.jobId
-        addParamToQueryString('job_id',job_id, { modal_preview: true });
-        // Register views for the job on click and open-modal events
-        // This is to avoid registering the view when the modal is opened
-        // from going back in history
-        if (['open-modal', 'click'].includes(e.detail.requestConfig.triggeringEvent.type)) {
-          trackerJobView(job_id);
-        }
-      } else {
-        // When the preview is not available, show an error message
-        showErrorAlert('This job is no longer available. It may have been removed recently.');
-      }
-    });
+  initializeJobboardResults({
+    hasJobs: {% if jobs.len() > 0 -%}true{%- else -%}false{%- endif %},
+    currentPageContent: '{{ pagination::range_display(
+      offset = offset,
+      count = jobs.len(),
+      total = total
+    ) -}}'
   });
-
-  {% if jobs.len() > 0 -%}
-    updateResults('{{ jobs_macros::current_page(total, jobs.len(), offset) -}}');
-
-    // Track search appearances for all visible jobs
-    const jobButtons = document.querySelectorAll('[data-job-id]');
-    const jobIds = Array.from(jobButtons).map(btn => btn.dataset.jobId);
-    if (jobIds.length > 0) {
-      trackSearchAppearances(jobIds);
-    }
-  {% else -%}
-    updateResults('');
-  {% endif -%}
 </script>
 {# djlint:on #}
 {# End list view -#}
-
-{% macro job_card(job) -%}
-  {% let open_source = job.open_source.unwrap_or_default() -%}
-  {% let upstream_commitment = job.upstream_commitment.unwrap_or_default() -%}
-  {% let is_open_source = open_source > 0 || upstream_commitment > 0 -%}
-
-  {# Job title -#}
-  <div class="flex flex-1 flex-row items-stretch space-x-4 w-full">
-    {# Company logo -#}
-    <div class="hidden sm:flex justify-center items-center shrink-0 size-10 md:size-13 p-1 bg-white border border-stone-200">
-      {% if let Some(logo_id) = job.employer.logo_id -%}
-        {% let logo = &self::build_jobboard_image_url(logo_id, "medium") -%}
-        {% let logo_small = &self::build_jobboard_image_url(logo_id, "small") -%}
-        <img loading="lazy"
-             class="size-full object-contain flex"
-             height="auto"
-             width="auto"
-             srcset="{{ logo_small }}, {{ logo }} 2x"
-             src="{{ logo }}"
-             alt="{{ job.employer.company }} image">
-      {% else -%}
-        <div class="svg-icon size-6 md:size-8 icon-company bg-stone-300 m-auto"></div>
-      {% endif -%}
-    </div>
-    {# End company logo -#}
-
-    {# Info -#}
-    <div class="grow min-w-0 flex flex-col content-between md:pt-1 md:pb-0.5">
-      {# Company and member -#}
-      <div class="flex justify-between items-center space-x-5">
-        {# Company -#}
-        <div class="truncate text-stone-500/75 text-[0.7rem] md:text-xs uppercase">{{ job.employer.company }}</div>
-        {# End company -#}
-
-        <div class="shrink-0 flex items-center md:space-x-16">
-          <div class="hidden md:flex">
-            {# Member -#}
-            {% if let Some(members) = job.employer.members -%}
-              {% if members.len() > 1 -%}
-                <div class="relative group">
-                  <div class="peer flex items-center space-x-1 rounded-md uppercase">
-                    <div class="shrink-0 size-3 flex items-center justify-center">
-                      <img class="size-3 object-contain"
-                           height="auto"
-                           width="auto"
-                           src="/static/images/badge_member.png"
-                           alt="Member badge logo">
-                    </div>
-
-                    <div class="leading-3 text-stone-600 text-xs tracking-wide font-semibold uppercase">
-                      Multiple memberships
-                    </div>
-                  </div>
-                  {{ macros::memberships_popover(members = members) -}}
-                </div>
-              {% else -%}
-                {% if let Some(member) = members.first() -%}
-                  <div class="flex items-center space-x-1 rounded-md uppercase">
-                    <div class="shrink-0 size-3 flex items-center justify-center">
-                      <img class="size-3 object-contain"
-                           height="auto"
-                           width="auto"
-                           src="/static/images/badge_member.png"
-                           alt="Member badge logo">
-                    </div>
-
-                    <div class="leading-3 text-stone-600 text-xs tracking-wide font-semibold uppercase">
-                      {{ member.foundation }} member
-                    </div>
-                  </div>
-                {% endif -%}
-              {% endif -%}
-            {% endif -%}
-            {# End member -#}
-          </div>
-
-          {# Published date -#}
-          <div class="truncate w-[50px] text-[0.7rem] md:text-xs tracking-wide uppercase text-end">
-            {{ job.published_at.format(DATE_FORMAT_3) }}
-          </div>
-          {# End published date -#}
-        </div>
-      </div>
-
-      <div class="flex space-x-3 items-center mt-2 sm:mt-1 md:mt-auto">
-        <div class="flex items-center space-x-4 min-w-0 md:h-[22px]">
-          {# Title -#}
-          <div class="text-base font-stretch-condensed font-medium text-stone-900 line-clamp-2 md:line-clamp-1">
-            {# Truncate job title to 50 characters -#}
-            {{ job.title|truncate(50) }}
-          </div>
-          {# End title -#}
-        </div>
-      </div>
-    </div>
-    {# End info -#}
-  </div>
-
-  <div class="flex justify-between items-end gap-x-2 md:gap-x-6 w-full mt-6 sm:ps-14 md:ps-17">
-    {# Tags -#}
-    <div class="flex flex-col md:flex-row gap-x-8 gap-y-6 xl:gap-10 w-full text-[0.8rem] text-stone-700">
-      {% let kind = job.kind.to_string() -%}
-      {% let workplace = job.workplace.to_string() -%}
-
-      <div class="flex items-center gap-x-8 xl:gap-x-10 min-w-0">
-        {# Job type -#}
-        <div class="flex flex-col space-y-1 min-w-[70px] md:min-w-auto">
-          {{ mini_title("Job type") -}}
-          <div class="capitalize text-nowrap">{{ kind|unnormalize }}</div>
-        </div>
-        {# End job type -#}
-
-        {# Location -#}
-        <div class="flex flex-1 min-w-0 flex-col space-y-1">
-          {{ mini_title("Location") -}}
-          <div class="capitalize text-nowrap truncate">
-            {% if let Some(location) = job.location -%}
-              {% let current_location = format!("{}, {}", location.city, location.country) -%}
-              {{ current_location }}
-              {% if job.workplace == Workplace::Remote -%}
-                <span class="text-stone-500 text-[0.75rem] uppercase">(remote)</span>
-              {% else if job.workplace == Workplace::Hybrid %}
-                <span class="text-stone-500 text-[0.75rem] uppercase">(hybrid)</span>
-              {% endif -%}
-            {% else if job.workplace == Workplace::Remote -%}
-              Remote
-            {% else -%}
-              Not provided
-            {% endif -%}
-          </div>
-        </div>
-        {# End location -#}
-      </div>
-
-      <div class="flex items-center gap-x-8 xl:gap-x-10">
-        {# Seniority -#}
-        {% if let Some(seniority) = job.seniority -%}
-          <div class="flex flex-col space-y-1 min-w-[70px] md:min-w-auto">
-            {% let seniority = seniority.to_string() -%}
-            {{ mini_title("Seniority") -}}
-            <div class="capitalize text-nowrap">{{ seniority|unnormalize }}</div>
-          </div>
-        {% endif -%}
-        {# End seniority -#}
-
-        {# Salary -#}
-        <div class="flex flex-col space-y-1">
-          {{ mini_title("Salary") -}}
-          <div class="capitalize text-nowrap">
-            {% if let Some(salary) = job.salary -%}
-              {% if let Some(salary_currency) = job.salary_currency -%}
-                {{ salary_currency }}
-              {% endif -%}
-              {{ salary|humanize_salary }}
-              {%- if let Some(salary_period) = job.salary_period -%}
-                <span class="lowercase ms-1">/ {{ salary_period }}</span>
-              {%- endif -%}
-            {% else if let Some(salary_min) = job.salary_min -%}
-              {% if let Some(salary_currency) = job.salary_currency -%}
-                {{ salary_currency }}
-              {% endif -%}
-              {{ salary_min|humanize_salary }}
-              {%- if let Some(salary_max) = job.salary_max %}
-                - {{ salary_max|humanize_salary }}
-              {% endif -%}
-              {%- if let Some(salary_period) = job.salary_period -%}
-                <span class="lowercase ms-1">/ {{ salary_period }}</span>
-              {%- endif -%}
-            {% else -%}
-              Not provided
-            {% endif -%}
-          </div>
-        </div>
-        {# End salary -#}
-      </div>
-    </div>
-    {# End tags -#}
-  </div>
-
-  {% if is_open_source -%}
-    <div class="flex flex-col md:flex-row gap-y-6 gap-x-8 xl:gap-x-10 mt-6 sm:ps-14 md:ps-17">
-      {# Open source -#}
-      <div class="block">
-        {{ mini_title(content = "Time working on open source") -}}
-        <div class="mt-2 min-w-[220px]">
-          {{ macros_preview::badge_percentage_bar(percentage = open_source, bar_margin = "my-0") -}}
-        </div>
-      </div>
-      {# End open source -#}
-
-      {# Upstream commitment -#}
-      <div class="block">
-        {{ mini_title(content = "Time working on upstream projects") -}}
-        <div class="mt-2 min-w-[220px]">
-          {{ macros_preview::badge_percentage_bar(percentage = upstream_commitment, type = "upstream_commitment", bar_margin = "my-0") -}}
-        </div>
-      </div>
-      {# End Upstream commitment -#}
-    </div>
-  {% endif -%}
-
-  {% if let Some(skills) = job.skills -%}
-    {# Skills -#}
-    <div class="flex flex-col space-y-1 mt-6 sm:ps-14 md:ps-17">
-      {{ mini_title("Required skills") -}}
-      <div class="flex flex-wrap capitalize text-[0.7rem] text-stone-700 uppercase h-[16px] overflow-hidden">
-        {% for skill in skills.iter().take(12) -%}
-          <div>
-            {%- if !loop.first -%}
-              <span class="mx-1">·</span>
-            {% endif -%}
-            {{ skill|unnormalize }}
-          </div>
-        {% endfor -%}
-      </div>
-    </div>
-    {# End skills -#}
-  {% endif -%}
-
-  {# Spinner -#}
-  <div id="spinner-{{ job.job_id }}"
-       class="hx-spinner absolute rounded-lg top-0 left-0 h-full w-full rounded-lg box-animated {%- if upstream_commitment > 0 %} box-animated-lime{%- else if open_source > 0 %} box-animated-lime-light{%- endif -%}">
-  </div>
-  {# End spinner -#}
-{% endmacro job_card -%}
-
-{% macro mini_title(content) -%}
-  <div class="text-stone-400 text-[0.65rem] uppercase text-nowrap">{{ content }}</div>
-{% endmacro mini_title -%}

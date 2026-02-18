@@ -1,91 +1,125 @@
 import { getBarStatsOptions, gitjobsChartTheme } from "/static/js/jobboard/stats.js";
-import { prettifyNumber, toggleModalVisibility } from "/static/js/common/common.js";
-import { showErrorAlert, showInfoAlert } from "/static/js/common/alerts.js";
+import {
+  initializeButtonDropdown,
+  initializeModalCloseHandlers,
+  prettifyNumber,
+  registerChartResizeHandler,
+  toggleModalVisibility,
+} from "/static/js/common/common.js";
+import { initializeConfirmHtmxButtons, showErrorAlert, showInfoAlert } from "/static/js/common/alerts.js";
+import { initializeDashboardActionButton } from "/static/js/dashboard/employer/dashboard-actions.js";
+
+const STATS_MODAL_ID = "stats-modal";
+const JOB_CHART_VIEWS_ID = "job-chart-views";
+const JOB_CHART_SEARCH_APPEARANCES_ID = "job-chart-search-appearances";
+const TOTAL_VIEWS_ID = "total-views";
+const TOTAL_SEARCH_APPEARANCES_ID = "total-search-appearances";
+const CLOSE_STATS_MODAL_BUTTON_ID = "close-stats-modal";
+const BACKDROP_STATS_MODAL_ID = "backdrop-stats-modal";
+const ADD_JOB_BUTTON_ID = "add-job-button";
+const CLEAN_SEARCH_JOBS_BUTTON_ID = "clean-search-jobs";
+const SEARCH_JOBS_INPUT_ID = "search_jobs";
+const JOBS_STATS_CHART_IDS = [JOB_CHART_VIEWS_ID, JOB_CHART_SEARCH_APPEARANCES_ID];
+const STATS_FETCH_ERROR_MESSAGE = "Something went wrong fetching the stats. Please try again later.";
 
 /**
  * Shows statistics for a specific job in a modal
  * @param {string} id - The ID of the job to display stats for
  */
-export const showStats = async (id) => {
+const showStats = async (id) => {
   // Get loading spinner reference
   const spinnerStats = document.getElementById(`spinner-stats-${id}`);
 
-  // Fetch job statistics from the API
-  const response = await fetch(`/dashboard/employer/jobs/${id}/stats`, {
-    method: "GET",
-  });
-  if (!response.ok) {
+  try {
+    // Fetch job statistics from the API
+    const response = await fetch(`/dashboard/employer/jobs/${id}/stats`, {
+      method: "GET",
+    });
+    if (!response.ok) {
+      if (spinnerStats) {
+        spinnerStats.classList.add("hidden");
+      }
+      showErrorAlert(STATS_FETCH_ERROR_MESSAGE);
+      return;
+    }
+
+    const data = await response.json();
     if (spinnerStats) {
       spinnerStats.classList.add("hidden");
     }
-    showErrorAlert("Something went wrong fetching the stats, please try again later.");
-    return;
-  }
-  const data = await response.json();
-  if (spinnerStats) {
-    spinnerStats.classList.add("hidden");
-  }
 
-  // Process and display the statistics data
-  if (data) {
-    const hasViewsData = data.views_daily && data.views_daily.length > 0;
-    const hasSearchAppearancesData =
-      data.search_appearances_daily && data.search_appearances_daily.length > 0;
+    // Process and display the statistics data
+    if (data) {
+      const viewsChartWrapper = document.querySelector('[data-chart="views"]');
+      if (viewsChartWrapper) {
+        viewsChartWrapper.classList.remove("hidden");
+      }
+      const searchAppearancesChartWrapper = document.querySelector('[data-chart="search-appearances"]');
+      if (searchAppearancesChartWrapper) {
+        searchAppearancesChartWrapper.classList.remove("hidden");
+      }
 
-    if (hasViewsData || hasSearchAppearancesData) {
-      // Open the statistics modal if we have data for at least one chart
-      toggleModalVisibility(`stats-modal`, "open");
+      const hasViewsData = data.views_daily && data.views_daily.length > 0;
+      const hasSearchAppearancesData =
+        data.search_appearances_daily && data.search_appearances_daily.length > 0;
 
-      // Render views chart if data exists
-      if (hasViewsData) {
-        renderChart(data.views_daily, "job-chart-views", "views");
-        if (data.views_total_last_month !== undefined) {
-          const totalViewsElement = document.getElementById("total-views");
-          if (totalViewsElement) {
-            totalViewsElement.textContent = prettifyNumber(data.views_total_last_month);
+      if (hasViewsData || hasSearchAppearancesData) {
+        // Open the statistics modal if we have data for at least one chart
+        toggleModalVisibility(STATS_MODAL_ID, "open");
+
+        // Render views chart if data exists
+        if (hasViewsData) {
+          renderChart(data.views_daily, JOB_CHART_VIEWS_ID, "views");
+          if (data.views_total_last_month !== undefined) {
+            const totalViewsElement = document.getElementById(TOTAL_VIEWS_ID);
+            if (totalViewsElement) {
+              totalViewsElement.textContent = prettifyNumber(data.views_total_last_month);
+            }
+          }
+        } else {
+          // Hide views chart if no data is available
+          if (viewsChartWrapper) {
+            viewsChartWrapper.classList.add("hidden");
+          }
+        }
+
+        // Render search appearances chart if data exists
+        if (hasSearchAppearancesData) {
+          renderChart(data.search_appearances_daily, JOB_CHART_SEARCH_APPEARANCES_ID, "search_appearances");
+          if (data.search_appearances_total_last_month !== undefined) {
+            const totalSearchElement = document.getElementById(TOTAL_SEARCH_APPEARANCES_ID);
+            if (totalSearchElement) {
+              totalSearchElement.textContent = prettifyNumber(data.search_appearances_total_last_month);
+            }
+          }
+        } else {
+          // Hide search appearances chart if no data is available
+          if (searchAppearancesChartWrapper) {
+            searchAppearancesChartWrapper.classList.add("hidden");
           }
         }
       } else {
-        // Hide views chart if no data is available
-        const viewsChartWrapper = document.querySelector('[data-chart="views"]');
-        if (viewsChartWrapper) {
-          viewsChartWrapper.classList.add("hidden");
-        }
+        // Show message when no data is available for either chart
+        showInfoAlert(
+          'We don\'t have statistics data for this job yet.<div class="mt-2">Please check again later.</div>',
+          true,
+        );
       }
-
-      // Render search appearances chart if data exists
-      if (hasSearchAppearancesData) {
-        renderChart(data.search_appearances_daily, "job-chart-search-appearances", "search_appearances");
-        if (data.search_appearances_total_last_month !== undefined) {
-          const totalSearchElement = document.getElementById("total-search-appearances");
-          if (totalSearchElement) {
-            totalSearchElement.textContent = prettifyNumber(data.search_appearances_total_last_month);
-          }
-        }
-      } else {
-        // Hide search appearances chart if no data is available
-        const searchAppearancesChartWrapper = document.querySelector('[data-chart="search-appearances"]');
-        if (searchAppearancesChartWrapper) {
-          searchAppearancesChartWrapper.classList.add("hidden");
-        }
-      }
-    } else {
-      // Show message when no data is available for either chart
-      showInfoAlert(
-        'We don\'t have statistics data for this job yet.<div class="mt-2">Please check again later.</div>',
-        true,
-      );
     }
+  } catch (error) {
+    if (spinnerStats) {
+      spinnerStats.classList.add("hidden");
+    }
+    showErrorAlert(STATS_FETCH_ERROR_MESSAGE);
   }
 };
 
 /**
  * Closes the statistics modal and cleans up resources
  */
-export const closeStats = () => {
+const closeStats = () => {
   // Dispose of all chart instances to free up memory
-  const chartIds = ["job-chart-views", "job-chart-search-appearances"];
-  chartIds.forEach((id) => {
+  JOBS_STATS_CHART_IDS.forEach((id) => {
     const chartDom = document.getElementById(id);
     if (chartDom) {
       const chartInstance = echarts.getInstanceByDom(chartDom);
@@ -96,14 +130,14 @@ export const closeStats = () => {
   });
 
   // Close the modal
-  toggleModalVisibility(`stats-modal`, "close");
+  toggleModalVisibility(STATS_MODAL_ID, "close");
 
   // Clear the statistics counters
-  const totalViewsElement = document.getElementById(`total-views`);
+  const totalViewsElement = document.getElementById(TOTAL_VIEWS_ID);
   if (totalViewsElement) {
     totalViewsElement.textContent = "";
   }
-  const totalSearchElement = document.getElementById(`total-search-appearances`);
+  const totalSearchElement = document.getElementById(TOTAL_SEARCH_APPEARANCES_ID);
   if (totalSearchElement) {
     totalSearchElement.textContent = "";
   }
@@ -133,24 +167,21 @@ const renderChart = (data, chartId, chartType) => {
   const month = min.getMonth();
   min.setMonth(min.getMonth() - 1);
   // Handle edge case when today is the first day of the month
-  if (min.getMonth() == month) min.setDate(0);
+  if (min.getMonth() === month) min.setDate(0);
   min.setHours(0, 0, 0, 0);
 
   // Get the chart container element
   const chartDom = document.getElementById(chartId);
   if (!chartDom) return;
 
-  // Initialize the ECharts instance
-  const chart = echarts.init(chartDom, "gitjobs", {
-    renderer: "svg",
-    useDirtyRect: false,
-  });
+  // Initialize or reuse the ECharts instance
+  const chart =
+    echarts.getInstanceByDom(chartDom) ||
+    echarts.init(chartDom, "gitjobs", {
+      renderer: "svg",
+      useDirtyRect: false,
+    });
   chart.clear();
-
-  // Add responsive resize handler
-  window.addEventListener("resize", function () {
-    chart.resize();
-  });
 
   // Configure chart options
   const option = {
@@ -187,13 +218,136 @@ const renderChart = (data, chartId, chartType) => {
   };
 
   // Render the chart with the configured options
-  option && chart.setOption(option);
+  chart.setOption(option);
 };
 
 /**
  * Registers the GitJobs theme for ECharts
  */
-export const registerEchartsTheme = () => {
+const registerEchartsTheme = () => {
   // Register the custom GitJobs theme for consistent chart styling
   echarts.registerTheme("gitjobs", gitjobsChartTheme);
+};
+
+/**
+ * Initializes action handlers for the employer jobs table.
+ */
+export const initializeEmployerJobsListTable = () => {
+  const statsButtons = document.querySelectorAll("[data-job-stats-button]");
+  statsButtons.forEach((button) => {
+    if (button.dataset.statsBound === "true") {
+      return;
+    }
+
+    button.addEventListener("click", () => {
+      const jobId = button.dataset.jobId;
+      if (!jobId) {
+        return;
+      }
+
+      const spinnerStats = document.getElementById(`spinner-stats-${jobId}`);
+      if (spinnerStats) {
+        spinnerStats.classList.remove("hidden");
+      }
+
+      showStats(jobId);
+    });
+
+    button.dataset.statsBound = "true";
+  });
+
+  initializeConfirmHtmxButtons({
+    selector: "[data-delete-job-button]",
+    confirmMessage: "Are you sure you wish to delete this job?",
+    successMessage: "You have successfully deleted the job.",
+    errorMessage: "An error occurred deleting this job. Please try again later.",
+  });
+
+  const actionButtons = document.querySelectorAll(".btn-actions");
+  actionButtons.forEach((actionButton) => {
+    if (actionButton.dataset.actionDropdownBound === "true") {
+      return;
+    }
+
+    const jobId = actionButton.dataset.jobId;
+    if (!jobId || !actionButton.id) {
+      return;
+    }
+
+    const dropdownId = `dropdown-actions-${jobId}`;
+    const dropdownActions = document.getElementById(dropdownId);
+    if (!dropdownActions) {
+      return;
+    }
+
+    initializeButtonDropdown({
+      buttonId: actionButton.id,
+      dropdownId,
+      guardKey: `__gitjobsJobActionsDropdownBound:${jobId}`,
+      closeOnItemClickSelector: "button, a",
+      beforeOpen: () => {
+        const allActionDropdowns = document.querySelectorAll('[id^="dropdown-actions-"]');
+        allActionDropdowns.forEach((dropdown) => {
+          if (dropdown.id === dropdownId) {
+            return;
+          }
+
+          dropdown.classList.add("hidden");
+          dropdown.setAttribute("aria-hidden", "true");
+
+          const openJobId = dropdown.id.replace("dropdown-actions-", "");
+          const openActionButton = document.querySelector(`.btn-actions[data-job-id="${openJobId}"]`);
+          if (openActionButton) {
+            openActionButton.setAttribute("aria-expanded", "false");
+          }
+        });
+      },
+    });
+
+    actionButton.dataset.actionDropdownBound = "true";
+  });
+};
+
+/**
+ * Initializes stats modal controls and chart theme registration.
+ */
+export const initializeEmployerJobsStats = () => {
+  initializeModalCloseHandlers({
+    modalId: STATS_MODAL_ID,
+    triggerIds: [CLOSE_STATS_MODAL_BUTTON_ID, BACKDROP_STATS_MODAL_ID],
+    closeHandler: closeStats,
+  });
+
+  if (!window.echarts?.__gitjobsEchartsThemeRegistered) {
+    registerEchartsTheme();
+    window.echarts.__gitjobsEchartsThemeRegistered = true;
+  }
+
+  registerChartResizeHandler({
+    chartIds: JOBS_STATS_CHART_IDS,
+    guardKey: "__gitjobsStatsChartsResizeBound",
+  });
+};
+
+/**
+ * Initializes employer jobs list header controls.
+ */
+export const initializeEmployerJobsListHeader = () => {
+  initializeDashboardActionButton({
+    buttonId: ADD_JOB_BUTTON_ID,
+    errorMessage: "Something went wrong loading the add job form. Please try again later.",
+    pushStateTitle: "Jobs list",
+    pushStateUrl: "/dashboard/employer?tab=jobs",
+  });
+
+  const cleanSearchJobs = document.getElementById(CLEAN_SEARCH_JOBS_BUTTON_ID);
+  if (cleanSearchJobs && cleanSearchJobs.dataset.cleanSearchBound !== "true") {
+    cleanSearchJobs.addEventListener("click", () => {
+      const searchJobsInput = document.getElementById(SEARCH_JOBS_INPUT_ID);
+      if (searchJobsInput) {
+        searchJobsInput.value = "";
+      }
+    });
+    cleanSearchJobs.dataset.cleanSearchBound = "true";
+  }
 };

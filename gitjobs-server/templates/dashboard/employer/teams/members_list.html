@@ -1,7 +1,7 @@
-{% import "macros.html" as macros -%}
+{% import "macros/ui.html" as ui -%}
 
 <div class="flex justify-between items-center">
-  <div>{{ macros::form_title(title = "Team") -}}</div>
+  <div>{{ ui::form_title(title = "Team") -}}</div>
 
   <div>
     {# Add member button -#}
@@ -44,6 +44,7 @@
               {# Disabled button on approved member when approved members number of team is 1 -#}
               {% let disabledButton = approved_members_count == 1 && member.approved -%}
               <button id="remove-member-{{ member.user_id }}"
+                      data-remove-member-button="true"
                       hx-delete="/dashboard/employer/team/members/{{ member.user_id }}/delete"
                       hx-disabled-elt="this"
                       hx-trigger="confirmed"
@@ -56,28 +57,6 @@
                       {% endif -%}>
                 <div class="svg-icon size-4 icon-trash"></div>
               </button>
-              <script type="module">
-                import {
-                  showConfirmAlert,
-                  showErrorAlert,
-                  showSuccessAlert,
-                } from '/static/js/common/alerts.js';
-                import {
-                  isSuccessfulXHRStatus
-                } from '/static/js/common/common.js';
-                const removeMemberButton = document.getElementById('remove-member-{{ member.user_id }}');
-                if (removeMemberButton) {
-                  removeMemberButton.addEventListener('click', (event) => {
-                    showConfirmAlert("Are you sure you would like to delete this team member?", "remove-member-{{ member.user_id }}", "Yes");
-                  });
-
-                  removeMemberButton.addEventListener("htmx:afterRequest", (e) => {
-                    if (!isSuccessfulXHRStatus(e.detail.xhr.status)) {
-                      showErrorAlert("Something went wrong deleting this team member. Please try again later.");
-                    }
-                  });
-                }
-              </script>
             </div>
           </td>
           {# End actions -#}
@@ -119,7 +98,7 @@
         <form id="add-member-form"
               hx-post="/dashboard/employer/team/members/add"
               hx-disabled-elt="#add-member-submit-button"
-              hx-spinner="#add-member-spinner"
+              hx-indicator="#add-member-spinner"
               hx-trigger="submit">
           <div class="mb-6">
             <div class="border border-primary-500 rounded-lg mb-10 mt-2 px-7 py-5 bg-primary-50/20"
@@ -134,13 +113,17 @@
               </ul>
             </div>
 
-            <label for="reject-reason"
-                   class="block mb-4 text-sm font-medium text-stone-900">Email</label>
-            <input id="email" name="email" type="email" class="input-primary">
+            <label for="email" class="block mb-4 text-sm font-medium text-stone-900">Email</label>
+            <input id="email"
+                   name="email"
+                   type="email"
+                   maxlength="{{ crate::validation::MAX_LEN_M }}"
+                   class="input-primary">
+            <p class="form-legend mt-3">Max {{ crate::validation::MAX_LEN_M }} characters.</p>
           </div>
           <div class="flex justify-end">
             <button id="add-member-submit-button" type="submit" class="btn-primary my-2">
-              {{ macros::btn_spinner(id = "add-member-spinner", spinner_type = "2") -}}
+              {{ ui::btn_spinner(id = "add-member-spinner", spinner_type = "2") -}}
               Add
             </button>
           </div>
@@ -154,29 +137,8 @@
 
 <script type="module">
   import {
-    toggleModalVisibility,
-  } from '/static/js/common/common.js';
+    initializeEmployerTeamMembersList
+  } from '/static/js/dashboard/employer/team.js';
 
-  const addMemberButton = document.getElementById('add-member-button');
-  if (addMemberButton) {
-    addMemberButton.addEventListener('click', () => {
-      toggleModalVisibility('add-member-modal', "open");
-    });
-  }
-
-  // Close the add member modal on backdrop click
-  const backdropAddMemberModal = document.querySelector('#backdrop-add-member-modal');
-  if (backdropAddMemberModal) {
-    backdropAddMemberModal.addEventListener('click', () => {
-      toggleModalVisibility('add-member-modal', "close");
-    });
-  }
-
-  // Close the add member modal on close button click
-  const closeAddMemberModal = document.querySelector('#close-add-member-modal');
-  if (closeAddMemberModal) {
-    closeAddMemberModal.addEventListener('click', () => {
-      toggleModalVisibility('add-member-modal', "close");
-    });
-  }
+  initializeEmployerTeamMembersList();
 </script>

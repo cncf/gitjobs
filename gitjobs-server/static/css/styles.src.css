@@ -26,11 +26,11 @@
 
 @layer components {
   .btn-primary {
-    @apply enabled:cursor-pointer rounded-full text-center bg-primary-600 border border-primary-600 px-5 py-2 text-sm text-white hover:enabled:bg-primary-900 hover:enabled:border-primary-900 focus:ring-0 focus:outline-none focus:ring-transparent relative overflow-hidden;
+    @apply enabled:cursor-pointer rounded-full text-center bg-primary-600 border border-primary-600 px-5 py-2 text-sm text-white transition-colors hover:enabled:bg-primary-900 hover:enabled:border-primary-900 focus:ring-0 focus:outline-none focus:ring-transparent relative overflow-hidden;
   }
 
   .btn-primary-anchor {
-    @apply cursor-pointer rounded-full text-center bg-primary-600 border border-primary-600 px-5 py-2 text-sm text-white hover:bg-primary-900 hover:border-primary-900 focus:ring-0 focus:outline-none focus:ring-transparent relative overflow-hidden;
+    @apply cursor-pointer rounded-full text-center bg-primary-600 border border-primary-600 px-5 py-2 text-sm text-white transition-colors hover:bg-primary-900 hover:border-primary-900 focus:ring-0 focus:outline-none focus:ring-transparent relative overflow-hidden;
   }
 
   .btn-primary .svg-icon,
@@ -39,7 +39,7 @@
   }
 
   .btn-secondary {
-    @apply enabled:cursor-pointer rounded-full text-center bg-primary-50 border border-primary-900 px-5 py-2 text-sm text-primary-900 hover:enabled:bg-primary-100 hover:enabled:border-primary-900 focus:ring-0 focus:outline-none focus:ring-transparent relative overflow-hidden;
+    @apply enabled:cursor-pointer rounded-full text-center bg-primary-50 border border-primary-900 px-5 py-2 text-sm text-primary-900 transition-colors hover:enabled:bg-primary-100 hover:enabled:border-primary-900 focus:ring-0 focus:outline-none focus:ring-transparent relative overflow-hidden;
   }
 
   .btn-secondary .svg-icon {
@@ -47,11 +47,11 @@
   }
 
   .btn-tertiary {
-    @apply enabled:cursor-pointer text-center text-sm/6 text-stone-900 px-5 py-2 border-transparent rounded-full focus:ring-0 focus:outline-none focus:ring-transparent hover:enabled:bg-stone-50 hover:enabled:border-stone-50 relative overflow-hidden;
+    @apply enabled:cursor-pointer text-center text-sm/6 text-stone-900 px-5 py-2 border-transparent transition-colors rounded-full focus:ring-0 focus:outline-none focus:ring-transparent hover:enabled:bg-stone-50 hover:enabled:border-stone-50 relative overflow-hidden;
   }
 
   .btn-tertiary-anchor {
-    @apply cursor-pointer text-center text-sm/6 text-stone-900 px-5 py-2 border-transparent rounded-full focus:ring-0 focus:outline-none focus:ring-transparent hover:bg-stone-50 hover:border-stone-50 relative overflow-hidden;
+    @apply cursor-pointer text-center text-sm/6 text-stone-900 px-5 py-2 border-transparent transition-colors rounded-full focus:ring-0 focus:outline-none focus:ring-transparent hover:bg-stone-50 hover:border-stone-50 relative overflow-hidden;
   }
 
   .btn-tertiary .svg-icon,
@@ -60,16 +60,16 @@
   }
 
   .btn-primary-outline {
-    @apply enabled:cursor-pointer text-center text-primary-600 border border-primary-600 bg-white rounded-full hover:enabled:text-white hover:enabled:bg-primary-900 hover:enabled:border-primary-900 focus:ring-0 focus:outline-none focus:ring-transparent text-sm px-5 py-2 relative overflow-hidden;
+    @apply enabled:cursor-pointer text-center text-primary-600 border border-primary-600 transition-colors bg-white rounded-full hover:enabled:text-white hover:enabled:bg-primary-900 hover:enabled:border-primary-900 focus:ring-0 focus:outline-none focus:ring-transparent text-sm px-5 py-2 relative overflow-hidden;
   }
 
   .btn-primary-outline-anchor {
-    @apply cursor-pointer text-center text-primary-600 border border-primary-600 bg-white rounded-full hover:text-white hover:bg-primary-900 hover:border-primary-900 focus:ring-0 focus:outline-none focus:ring-transparent text-sm px-5 py-2 relative overflow-hidden;
+    @apply cursor-pointer text-center text-primary-600 border border-primary-600 transition-colors bg-white rounded-full hover:text-white hover:bg-primary-900 hover:border-primary-900 focus:ring-0 focus:outline-none focus:ring-transparent text-sm px-5 py-2 relative overflow-hidden;
   }
 
   .btn-primary-outline .svg-icon,
   .btn-primary-outline-anchor .svg-icon {
-    @apply bg-primary-600;
+    @apply bg-current;
   }
 
   .btn-mini {
@@ -298,6 +298,26 @@ input[type="range"]:focus-visible {
 /* End input styles */
 
 
+/* Generic styles */
+
+button:enabled {
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.5;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 0;
+}
+
+/* End generic styles */
+
+
 /* Icons */
 
 .svg-icon {
@@ -381,6 +401,11 @@ input[type="range"]:focus-visible {
 .icon-clipboard {
   mask-image: url("/static/images/icons/clipboard.svg");
   -webkit-mask-image: url("/static/images/icons/clipboard.svg");
+}
+
+.icon-clock {
+  mask-image: url("/static/images/icons/clock.svg");
+  -webkit-mask-image: url("/static/images/icons/clock.svg");
 }
 
 .icon-close {
@@ -730,6 +755,21 @@ input[type="range"]:focus-visible {
 /* Hide separator when empty block of icons */
 .EasyMDEContainer .editor-toolbar .separator + .separator {
   display: none;
+}
+
+/* Disabled state */
+textarea:disabled + .EasyMDEContainer {
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+textarea:disabled + .EasyMDEContainer .CodeMirror {
+  background-color: var(--color-stone-100);
+  color: var(--color-stone-500);
+}
+
+textarea:disabled + .EasyMDEContainer .editor-toolbar button {
+  color: var(--color-stone-500);
 }
 
 /* End EasyMD Editor */

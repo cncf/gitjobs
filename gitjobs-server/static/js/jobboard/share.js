@@ -1,0 +1,109 @@
+import "/static/vendor/js/sharer.v0.5.3.min.js";
+import { showErrorAlert } from "/static/js/common/alerts.js";
+import { copyToClipboard } from "/static/js/common/common.js";
+
+/**
+ * Builds share metadata and fallback links for a job ID.
+ * @param {string} jobId - Job identifier used in the share URL
+ * @returns {{message: string, subject: string, shareUrl: string, fallbackLinks: Object}}
+ */
+const getShareMetadata = (jobId) => {
+  const shareUrl = `${window.location.origin}?job_id=${encodeURIComponent(jobId)}`;
+  const encodedShareUrl = encodeURIComponent(shareUrl);
+  const subject = "Check out this job I found on GitJobs!";
+  const message = "Check out this job I found on GitJobs!";
+  return {
+    message,
+    subject,
+    shareUrl,
+    fallbackLinks: {
+      twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(message)}&url=${encodedShareUrl}`,
+      facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedShareUrl}&quote=${encodeURIComponent(message)}`,
+      linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedShareUrl}`,
+      email: `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`${message} ${shareUrl}`)}`,
+    },
+  };
+};
+
+/**
+ * Sets up social media sharing links for a job posting.
+ * Configures sharer metadata and fallback URLs for each platform.
+ * @param {Document|HTMLElement} root - Root element containing share links
+ */
+export const shareJob = (root = document) => {
+  const socialLinksElements = root.querySelectorAll("#social-links");
+  if (socialLinksElements.length === 0) {
+    return;
+  }
+
+  socialLinksElements.forEach((socialLinks) => {
+    const jobId = socialLinks.dataset.jobId;
+    if (!jobId) {
+      return;
+    }
+
+    const { message, subject, shareUrl, fallbackLinks } = getShareMetadata(jobId);
+
+    const anchorTags = socialLinks.querySelectorAll("a[data-platform]");
+    anchorTags.forEach((anchorTag) => {
+      const platform = anchorTag.dataset.platform;
+      const fallbackLink = fallbackLinks[platform];
+      if (!fallbackLink) {
+        return;
+      }
+
+      anchorTag.setAttribute("href", fallbackLink);
+      anchorTag.setAttribute("data-sharer", platform);
+      anchorTag.setAttribute("data-title", message);
+      anchorTag.setAttribute("data-url", shareUrl);
+      if (platform === "email") {
+        anchorTag.setAttribute("data-subject", subject);
+        anchorTag.removeAttribute("target");
+        anchorTag.removeAttribute("rel");
+      } else {
+        anchorTag.setAttribute("target", "_blank");
+        anchorTag.setAttribute("rel", "noopener noreferrer");
+      }
+
+      if (anchorTag.dataset.sharerInitialized === "true" || !window.Sharer) {
+        return;
+      }
+
+      anchorTag.addEventListener("click", (event) => {
+        event.preventDefault();
+        const sharerInstance = new window.Sharer(anchorTag);
+        sharerInstance.share();
+      });
+      anchorTag.dataset.sharerInitialized = "true";
+    });
+
+    // Copy link to clipboard
+    const copyLink = socialLinks.querySelector("#copy-link");
+    if (copyLink) {
+      copyLink.setAttribute("href", shareUrl);
+      copyLink.dataset.shareUrl = shareUrl;
+
+      if (copyLink.dataset.copyInitialized !== "true") {
+        copyLink.addEventListener("click", async (event) => {
+          event.preventDefault();
+          const currentShareUrl = copyLink.dataset.shareUrl || shareUrl;
+          try {
+            await copyToClipboard(currentShareUrl);
+          } catch {
+            showErrorAlert("Something went wrong copying the link. Please try again later.");
+            return;
+          }
+
+          const tooltip = socialLinks.querySelector("#copy-link-tooltip");
+          if (tooltip) {
+            tooltip.classList.add("opacity-100", "z-10");
+            setTimeout(() => {
+              tooltip.classList.remove("opacity-100", "z-10");
+            }, 3000);
+          }
+        });
+        copyLink.dataset.copyInitialized = "true";
+      }
+    }
+  });
+};

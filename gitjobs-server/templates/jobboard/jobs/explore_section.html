@@ -1,11 +1,13 @@
-{% import "jobboard/jobs/jobs_macros.html" as jobs_macros -%}
-{% import "macros.html" as macros -%}
+{% import "macros/jobboard.html" as jobboard -%}
+{% import "macros/ui.html" as ui -%}
+{% import "macros/pagination.html" as pagination -%}
 
 {# Mobile filters -#}
 <div id="drawer-filters"
      class="fixed top-0 left-0 z-[1100] h-dvh overflow-y-auto -translate-x-full bg-white w-80 border border-r border-stone-200 shadow-lg"
      role="dialog"
      data-open="false"
+     aria-hidden="true"
      tabindex="-1"
      aria-labelledby="drawer-label">
   {# Close button -#}
@@ -27,7 +29,6 @@
         hx-include="#searchbar,#sort-mobile"
         hx-ext="no-empty-vals"
         hx-indicator="#mobile-jobs-spinner"
-        hx-on::after-request="window.scrollTo({top: 0, behavior: 'instant'})"
         hx-boost="true">
   </form>
 
@@ -36,12 +37,12 @@
     <div class="flex space-x-3 relative">
       <div class="font-semibold text-sm text-black">Filters</div>
       <div id="mobile-jobs-spinner" class="hx-spinner absolute start-12 top-0">
-        {{ macros::spinner(size = "size-5") -}}
+        {{ ui::spinner(size = "size-5") -}}
       </div>
     </div>
   </div>
   {# End header filters -#}
-  {{ jobs_macros::filters(form = "mobile-jobs-form", device = "mobile") -}}
+  {{ jobboard::filters(form = "mobile-jobs-form", device = "mobile") -}}
   {# End filters content -#}
 
   <div class="text-end p-5">
@@ -71,7 +72,6 @@
             hx-include="#searchbar,#sort-desktop"
             hx-ext="no-empty-vals"
             hx-indicator="#desktop-jobs-spinner"
-            hx-on::after-request="window.scrollTo({top: 0, behavior: 'instant'})"
             hx-boost="true">
       </form>
 
@@ -81,14 +81,14 @@
 
         <div class="flex space-x-3 relative">
           <div id="desktop-jobs-spinner"
-               class="hx-spinner absolute -start-8 top-0.5">{{ macros::spinner(size = "size-5") -}}</div>
+               class="hx-spinner absolute -start-8 top-0.5">{{ ui::spinner(size = "size-5") -}}</div>
 
           <button id="reset-desktop-filters" class="btn-primary-outline btn-mini">Reset</button>
         </div>
       </div>
       {# End header -#}
 
-      {{ jobs_macros::filters(form = "desktop-jobs-form") -}}
+      {{ jobboard::filters(form = "desktop-jobs-form") -}}
     </div>
     {# End filters -#}
 
@@ -149,9 +149,10 @@
           {# Results -#}
           <div id="results"
                class="flex flex-row items-center justify-between text-xs md:text-sm font-semibold">
-            {% if results_section.jobs.len() > 0 -%}
-              {{ jobs_macros::current_page(total = results_section.total, items_number = results_section.jobs.len() , offset_value = results_section.offset) -}}
-            {% endif -%}
+            {{ pagination::range_display(offset = results_section.offset,
+                        count = results_section.jobs.len() ,
+            total = results_section.total
+            ) -}}
           </div>
           {# End results -#}
 
@@ -165,38 +166,19 @@
             <select id="sort-desktop"
                     name="sort"
                     class="hidden md:block w-[185px] py-1 px-3 text-[0.8rem] leading-none h-[30px] text-stone-900 bg-white border border-stone-300 rounded-full focus:outline-none focus:ring-0 focus:border-stone-300 hover:border-primary-500 focus:hover:border-primary-500">
-              {{ macros::select_option(value = "date", label = "Date", selected = selected_sort) -}}
-              {{ macros::select_option(value = "open-source", label = "Open Source", selected = selected_sort) -}}
-              {{ macros::select_option(value = "salary", label = "Salary", selected = selected_sort) -}}
-              {{ macros::select_option(value = "upstream-commitment", label = "Upstream Commitment", selected = selected_sort) -}}
+              {{ ui::select_option(value = "date", label = "Date", selected = selected_sort) -}}
+              {{ ui::select_option(value = "open-source", label = "Open Source", selected = selected_sort) -}}
+              {{ ui::select_option(value = "salary", label = "Salary", selected = selected_sort) -}}
+              {{ ui::select_option(value = "upstream-commitment", label = "Upstream Commitment", selected = selected_sort) -}}
             </select>
             <select id="sort-mobile"
                     name="sort"
                     class="block md:hidden w-[175px] py-1 px-3 text-xs leading-none h-[30px] text-stone-900 bg-white border border-stone-300 rounded-full focus:outline-none focus:ring-0 focus:border-stone-300 hover:border-primary-500 focus:hover:border-primary-500">
-              {{ macros::select_option(value = "date", label = "Date", selected = selected_sort) -}}
-              {{ macros::select_option(value = "open-source", label = "Open Source", selected = selected_sort) -}}
-              {{ macros::select_option(value = "salary", label = "Salary", selected = selected_sort) -}}
-              {{ macros::select_option(value = "upstream-commitment", label = "Upstream Commitment", selected = selected_sort) -}}
+              {{ ui::select_option(value = "date", label = "Date", selected = selected_sort) -}}
+              {{ ui::select_option(value = "open-source", label = "Open Source", selected = selected_sort) -}}
+              {{ ui::select_option(value = "salary", label = "Salary", selected = selected_sort) -}}
+              {{ ui::select_option(value = "upstream-commitment", label = "Upstream Commitment", selected = selected_sort) -}}
             </select>
-            <script type="module">
-              import {
-                triggerActionOnForm
-              } from '/static/js/jobboard/filters.js';
-
-              const sortSelectDesktop = document.getElementById('sort-desktop');
-              if (sortSelectDesktop) {
-                sortSelectDesktop.addEventListener('change', () => {
-                  triggerActionOnForm("desktop-jobs-form", "submit");
-                });
-              }
-
-              const sortSelectMobile = document.getElementById('sort-mobile');
-              if (sortSelectMobile) {
-                sortSelectMobile.addEventListener('change', () => {
-                  triggerActionOnForm("mobile-jobs-form", "submit");
-                });
-              }
-            </script>
           </div>
           {# End sort by -#}
         </div>
@@ -265,121 +247,8 @@
 
 <script type="module">
   import {
-    openFiltersDrawer,
-    closeFiltersDrawer,
-    searchOnEnter,
-    cleanInputField,
-    resetForm,
-    triggerActionOnForm
-  } from '/static/js/jobboard/filters.js';
-  import {
-    shouldDisplayJobModal,
-    toggleModalVisibility
-  } from '/static/js/common/common.js';
-  import {
-    copyEmbedCodeToClipboard,
-    renderEmbedCode
-  } from '/static/js/jobboard/job_section.js';
+    initializeJobboardExplore
+  } from '/static/js/jobboard/explore.js';
 
-  const openFiltersBtn = document.getElementById('open-filters');
-  if (openFiltersBtn) {
-    openFiltersBtn.addEventListener('click', openFiltersDrawer);
-  }
-
-  const closeFiltersBtn = document.getElementById('close-filters');
-  if (closeFiltersBtn) {
-    closeFiltersBtn.addEventListener('click', closeFiltersDrawer);
-  }
-
-  const backdropFilters = document.getElementById('drawer-backdrop');
-  if (backdropFilters) {
-    backdropFilters.addEventListener('click', closeFiltersDrawer);
-  }
-
-  const searchInput = document.getElementById('searchbar');
-  if (searchInput) {
-    searchInput.addEventListener('keydown', () => searchOnEnter(event, 'desktop-jobs-form'));
-  }
-
-  const cleanSearch = document.getElementById('clean-search-jobs');
-  if (cleanSearch) {
-    cleanSearch.addEventListener('click', () => cleanInputField('searchbar', 'desktop-jobs-form'));
-  }
-
-  const searchJobsBtn = document.getElementById('search-jobs-btn');
-  if (searchJobsBtn) {
-    searchJobsBtn.addEventListener('click', () => triggerActionOnForm('desktop-jobs-form', "submit", true));
-  }
-
-  const searchJobsBtnMobile = document.getElementById('search-jobs-btn-mobile');
-  if (searchJobsBtnMobile) {
-    searchJobsBtnMobile.addEventListener('click', () => triggerActionOnForm('mobile-jobs-form', "submit", true));
-  }
-
-  const formItems = document.querySelectorAll("[data-trigger-form]");
-  formItems.forEach((item) => {
-    item.addEventListener("change", (event) => {
-      // If the item is a select element, blur it to trigger the change event
-      if (item.tagName === "SELECT") {
-        item.blur();
-      }
-      const form = item.getAttribute("form");
-      // Trigger the form submit event
-      if (form) {
-        triggerActionOnForm(form, "submit");
-      }
-    });
-  });
-
-  const resetDesktopFilters = document.getElementById('reset-desktop-filters');
-  if (resetDesktopFilters) {
-    resetDesktopFilters.addEventListener('click', () => resetForm('desktop-jobs-form'));
-  }
-
-  const resetMobileFilters = document.getElementById('reset-mobile-filters');
-  if (resetMobileFilters) {
-    resetMobileFilters.addEventListener('click', () => resetForm('mobile-jobs-form'));
-  }
-
-  // Embed buttons
-  const embedButtons = document.querySelectorAll("[data-embed]");
-  embedButtons.forEach((button) => {
-    button.addEventListener("click", (event) => {
-      // Set the embed code in the textarea
-      renderEmbedCode();
-      toggleModalVisibility('embed-modal', "open");
-
-      const device = button.getAttribute("data-device");
-      if (device === "mobile") {
-        // Close the mobile filters drawer
-        closeFiltersDrawer();
-      }
-    });
-  });
-
-  // Copy embed code
-  const copyEmbedCode = document.getElementById('copy-embed-code');
-  if (copyEmbedCode) {
-    copyEmbedCode.addEventListener('click', () => {
-      copyEmbedCodeToClipboard("embed-code");
-    });
-  }
-
-  // Close embed modal
-  const closeEmbedModal = document.getElementById('close-embed-modal');
-  if (closeEmbedModal) {
-    closeEmbedModal.addEventListener('click', () => {
-      toggleModalVisibility('embed-modal', "close");
-    });
-  }
-
-  const backdropEmbedModal = document.getElementById('backdrop-embed-modal');
-  if (backdropEmbedModal) {
-    backdropEmbedModal.addEventListener('click', () => {
-      toggleModalVisibility('embed-modal', "close");
-    });
-  }
-
-  // Display job modal if the job_id is present in the query string
-  shouldDisplayJobModal(true);
+  initializeJobboardExplore();
 </script>

@@ -1,0 +1,503 @@
+{% import "macros/ui.html" as ui -%}
+{% import "macros/job_preview.html" as job_preview -%}
+
+{% macro job_card(job) -%}
+  {% let open_source = job.open_source.unwrap_or_default() -%}
+  {% let upstream_commitment = job.upstream_commitment.unwrap_or_default() -%}
+  {% let is_open_source = open_source > 0 || upstream_commitment > 0 -%}
+
+  {# Job title -#}
+  <div class="flex flex-1 flex-row items-stretch space-x-4 w-full">
+    {# Company logo -#}
+    <div class="hidden sm:flex justify-center items-center shrink-0 size-10 md:size-13 p-1 bg-white border border-stone-200">
+      {% if let Some(logo_id) = job.employer.logo_id -%}
+        {% let logo = &self::build_jobboard_image_url(logo_id, "medium") -%}
+        {% let logo_small = &self::build_jobboard_image_url(logo_id, "small") -%}
+        <img loading="lazy"
+             class="size-full object-contain flex"
+             height="auto"
+             width="auto"
+             srcset="{{ logo_small }}, {{ logo }} 2x"
+             src="{{ logo }}"
+             alt="{{ job.employer.company }} image">
+      {% else -%}
+        <div class="svg-icon size-6 md:size-8 icon-company bg-stone-300 m-auto"></div>
+      {% endif -%}
+    </div>
+    {# End company logo -#}
+
+    {# Info -#}
+    <div class="grow min-w-0 flex flex-col content-between md:pt-1 md:pb-0.5">
+      {# Company and member -#}
+      <div class="flex justify-between items-center space-x-5">
+        {# Company -#}
+        <div class="truncate text-stone-500/75 text-[0.7rem] md:text-xs uppercase">{{ job.employer.company }}</div>
+        {# End company -#}
+
+        <div class="shrink-0 flex items-center md:space-x-16">
+          <div class="hidden md:flex">
+            {# Member -#}
+            {% if let Some(members) = job.employer.members -%}
+              {% if members.len() > 1 -%}
+                <div class="relative group">
+                  <div class="peer flex items-center space-x-1 rounded-md uppercase">
+                    <div class="shrink-0 size-3 flex items-center justify-center">
+                      <img class="size-3 object-contain"
+                           height="auto"
+                           width="auto"
+                           src="/static/images/badge_member.png"
+                           alt="Member badge logo">
+                    </div>
+
+                    <div class="leading-3 text-stone-600 text-xs tracking-wide font-semibold uppercase">
+                      Multiple memberships
+                    </div>
+                  </div>
+                  {{ ui::memberships_popover(members = members) -}}
+                </div>
+              {% else -%}
+                {% if let Some(member) = members.first() -%}
+                  <div class="flex items-center space-x-1 rounded-md uppercase">
+                    <div class="shrink-0 size-3 flex items-center justify-center">
+                      <img class="size-3 object-contain"
+                           height="auto"
+                           width="auto"
+                           src="/static/images/badge_member.png"
+                           alt="Member badge logo">
+                    </div>
+
+                    <div class="leading-3 text-stone-600 text-xs tracking-wide font-semibold uppercase">
+                      {{ member.foundation }} member
+                    </div>
+                  </div>
+                {% endif -%}
+              {% endif -%}
+            {% endif -%}
+            {# End member -#}
+          </div>
+
+          {# Published date -#}
+          <div class="truncate w-[50px] text-[0.7rem] md:text-xs tracking-wide uppercase text-end">
+            {{ job.published_at.format(DATE_FORMAT_3) }}
+          </div>
+          {# End published date -#}
+        </div>
+      </div>
+
+      <div class="flex space-x-3 items-center mt-2 sm:mt-1 md:mt-auto">
+        <div class="flex items-center space-x-4 min-w-0 md:h-[22px]">
+          {# Title -#}
+          <div data-testid="job-card-title"
+               class="text-base font-stretch-condensed font-medium text-stone-900 line-clamp-2 md:line-clamp-1">
+            {# Truncate job title to 50 characters -#}
+            {{ job.title|truncate(50) }}
+          </div>
+          {# End title -#}
+        </div>
+      </div>
+    </div>
+    {# End info -#}
+  </div>
+
+  <div class="flex justify-between items-end gap-x-2 md:gap-x-6 w-full mt-6 sm:ps-14 md:ps-17">
+    {# Tags -#}
+    <div class="flex flex-col md:flex-row gap-x-8 gap-y-6 xl:gap-10 w-full text-[0.8rem] text-stone-700">
+      {% let kind = job.kind.to_string() -%}
+      <div class="flex items-center gap-x-8 xl:gap-x-10 min-w-0">
+        {# Job type -#}
+        <div class="flex flex-col space-y-1 min-w-[70px] md:min-w-auto">
+          {{ mini_title("Job type") -}}
+          <div class="capitalize text-nowrap">{{ kind|unnormalize }}</div>
+        </div>
+        {# End job type -#}
+
+        {# Location -#}
+        <div class="flex flex-1 min-w-0 flex-col space-y-1">
+          {{ mini_title("Location") -}}
+          <div class="capitalize text-nowrap truncate">
+            {% if let Some(location) = job.location -%}
+              {% let current_location = format!("{}, {}", location.city, location.country) -%}
+              {{ current_location }}
+              {% if job.workplace == Workplace::Remote -%}
+                <span class="text-stone-500 text-[0.75rem] uppercase">(remote)</span>
+              {% else if job.workplace == Workplace::Hybrid %}
+                <span class="text-stone-500 text-[0.75rem] uppercase">(hybrid)</span>
+              {% endif -%}
+            {% else if job.workplace == Workplace::Remote -%}
+              Remote
+            {% else -%}
+              Not provided
+            {% endif -%}
+          </div>
+        </div>
+        {# End location -#}
+      </div>
+
+      <div class="flex items-center gap-x-8 xl:gap-x-10">
+        {# Seniority -#}
+        {% if let Some(seniority) = job.seniority -%}
+          <div class="flex flex-col space-y-1 min-w-[70px] md:min-w-auto">
+            {% let seniority = seniority.to_string() -%}
+            {{ mini_title("Seniority") -}}
+            <div class="capitalize text-nowrap">{{ seniority|unnormalize }}</div>
+          </div>
+        {% endif -%}
+        {# End seniority -#}
+
+        {# Salary -#}
+        <div class="flex flex-col space-y-1">
+          {{ mini_title("Salary") -}}
+          <div data-testid="job-card-salary" class="capitalize text-nowrap">
+            {% if let Some(salary) = job.salary -%}
+              {% if let Some(salary_currency) = job.salary_currency -%}
+                {{ salary_currency }}
+              {% endif -%}
+              {{ salary|humanize_salary }}
+              {%- if let Some(salary_period) = job.salary_period -%}
+                <span class="lowercase ms-1">/ {{ salary_period }}</span>
+              {%- endif -%}
+            {% else if let Some(salary_min) = job.salary_min -%}
+              {% if let Some(salary_currency) = job.salary_currency -%}
+                {{ salary_currency }}
+              {% endif -%}
+              {{ salary_min|humanize_salary }}
+              {%- if let Some(salary_max) = job.salary_max %}
+                - {{ salary_max|humanize_salary }}
+              {% endif -%}
+              {%- if let Some(salary_period) = job.salary_period -%}
+                <span class="lowercase ms-1">/ {{ salary_period }}</span>
+              {%- endif -%}
+            {% else -%}
+              Not provided
+            {% endif -%}
+          </div>
+        </div>
+        {# End salary -#}
+      </div>
+    </div>
+    {# End tags -#}
+  </div>
+
+  {% if is_open_source -%}
+    <div class="flex flex-col md:flex-row gap-y-6 gap-x-8 xl:gap-x-10 mt-6 sm:ps-14 md:ps-17">
+      {# Open source -#}
+      <div class="block">
+        {{ mini_title(content = "Time working on open source") -}}
+        <div class="mt-2 min-w-[220px]">
+          {{ job_preview::badge_percentage_bar(percentage = open_source, bar_margin = "my-0") -}}
+        </div>
+      </div>
+      {# End open source -#}
+
+      {# Upstream commitment -#}
+      <div class="block">
+        {{ mini_title(content = "Time working on upstream projects") -}}
+        <div class="mt-2 min-w-[220px]">
+          {{ job_preview::badge_percentage_bar(percentage = upstream_commitment, type = "upstream_commitment", bar_margin = "my-0") -}}
+        </div>
+      </div>
+      {# End Upstream commitment -#}
+    </div>
+  {% endif -%}
+
+  {% if let Some(skills) = job.skills -%}
+    {# Skills -#}
+    <div class="flex flex-col space-y-1 mt-6 sm:ps-14 md:ps-17">
+      {{ mini_title("Required skills") -}}
+      <div class="flex flex-wrap capitalize text-[0.7rem] text-stone-700 uppercase h-[16px] overflow-hidden">
+        {% for skill in skills.iter().take(12) -%}
+          <div>
+            {%- if !loop.first -%}
+              <span class="mx-1">·</span>
+            {% endif -%}
+            {{ skill|unnormalize }}
+          </div>
+        {% endfor -%}
+      </div>
+    </div>
+    {# End skills -#}
+  {% endif -%}
+
+  {# Spinner -#}
+  <div id="spinner-{{ job.job_id }}"
+       class="hx-spinner absolute rounded-lg top-0 left-0 h-full w-full rounded-lg box-animated {%- if upstream_commitment > 0 %} box-animated-lime{%- else if open_source > 0 %} box-animated-lime-light{%- endif -%}">
+  </div>
+  {# End spinner -#}
+{% endmacro job_card -%}
+
+{% macro mini_title(content) -%}
+  <div class="text-stone-400 text-[0.65rem] uppercase text-nowrap">{{ content }}</div>
+{% endmacro mini_title -%}
+
+{% macro copy_button(name, content) -%}
+  <div class="relative">
+    <button id="copy-btn-{{ name }}"
+            type="button"
+            data-copy-button="true"
+            data-tooltip-id="copy-btn-{{ name }}-tooltip"
+            data-copy-content="{{ content }}"
+            title="Copy code"
+            class="btn-primary-outline-anchor rounded-full size-[35px] xl:size-[40px] group p-1 flex items-center justify-center">
+      <div class="svg-icon size-4 md:size-5 group-hover:bg-white icon-copy"></div>
+    </button>
+    {# End Copy link -#}
+    <div id="copy-btn-{{ name }}-tooltip"
+         role="tooltip"
+         class="absolute w-[200px] top-12 end-0.5 opacity-0 inline-block px-3 py-2 text-xs xl:text-sm font-medium text-white transition-opacity duration-300 bg-stone-900/80 rounded-lg shadow-xs tooltip">
+      Code copied to clipboard!
+      <div class="h-0 w-0 border-x-[6px] border-x-transparent border-b-[6px] border-stone-900/80 absolute -top-1.5 end-3">
+      </div>
+    </div>
+  </div>
+{% endmacro copy_button -%}
+{# Filters -#}
+{% macro filters(form, device = "desktop") -%}
+  <div class="pt-3 md:pt-5 px-6">{{ filters_title(text = "Type and location") -}}</div>
+
+  <div class="p-6 pb-4 md:pb-6 pt-3 flex flex-col space-y-5">
+    {# Job type -#}
+    <div>
+      {{ filters_subtitle(text = "Job type") -}}
+      <div class="grid grid-cols-2 w-full gap-2 mt-3">
+        {# Full time -#}
+        {{ checkbox(form = form, name = "kind[]", value = JobKind::FullTime, label = "Full Time", icon = "signature", active_filters = filters.kind, device = device) -}}
+        {# End Full time -#}
+
+        {# Part time -#}
+        {{ checkbox(form = form, name = "kind[]", value = JobKind::PartTime, label = "Part Time", icon = "hour_glass", active_filters = filters.kind, device = device) -}}
+        {# End Part time -#}
+
+        {# Contractor -#}
+        {{ checkbox(form = form, name = "kind[]", value = JobKind::Contractor, label = "Contractor", icon = "clipboard", active_filters = filters.kind, device = device) -}}
+        {# End Contractor -#}
+
+        {# Internship -#}
+        {{ checkbox(form = form, name = "kind[]", value = JobKind::Internship, label = "Internship", icon = "graduation_cap", active_filters = filters.kind, device = device) -}}
+        {# End Internship -#}
+      </div>
+    </div>
+    {# End job type -#}
+
+    {# Workplace -#}
+    <div>
+      {{ filters_subtitle(text = "Workplace") -}}
+      <div class="grid grid-cols-2 w-full gap-2 mt-3">
+        {# On site -#}
+        {{ checkbox(form = form, name = "workplace[]", value = Workplace::OnSite, label = "On Site", icon = "office_chair", active_filters = filters.workplace, device = device) -}}
+        {# End On site -#}
+
+        {# Remote -#}
+        {{ checkbox(form = form, name = "workplace[]", value = Workplace::Remote, label = "Remote", icon = "remote", active_filters = filters.workplace, device = device) -}}
+        {# End Remote -#}
+
+        {# Hybrid -#}
+        {{ checkbox(form = form, name = "workplace[]", value = Workplace::Hybrid, label = "Hybrid", icon = "buildings", active_filters = filters.workplace, device = device) -}}
+        {# End Hybrid -#}
+      </div>
+    </div>
+    {# End workplace -#}
+
+    <div class="grid grid-cols-2 w-full gap-2">
+      {# Seniority -#}
+      <div>
+        {{ filters_subtitle(text = "Seniority level") -}}
+        <div class="mt-2">
+          {%- let selected_seniority = filters.seniority|display_some -%}
+          <select form="{{ form }}"
+                  data-trigger-form="true"
+                  name="seniority"
+                  class="select-primary py-0.5 text-[0.775rem]/6 text-stone-700">
+            {{ ui::select_option(value = "", label = "Any", selected = selected_seniority) -}}
+            {{ ui::select_option(value = "entry", label = "Entry", selected = selected_seniority) -}}
+            {{ ui::select_option(value = "junior", label = "Junior", selected = selected_seniority) -}}
+            {{ ui::select_option(value = "mid", label = "Mid", selected = selected_seniority) -}}
+            {{ ui::select_option(value = "senior", label = "Senior", selected = selected_seniority) -}}
+            {{ ui::select_option(value = "lead", label = "Lead", selected = selected_seniority) -}}
+          </select>
+        </div>
+      </div>
+      {# End seniority -#}
+
+      {# Published date -#}
+      <div>
+        {{ filters_subtitle(text = "Published") -}}
+        <div class="mt-2 relative">
+          {%- let selected_date_range = filters.date_range.clone().unwrap_or_default().to_string() -%}
+          <select form="{{ form }}"
+                  name="date_range"
+                  data-trigger-form="true"
+                  class="select-primary py-0.5 text-[0.775rem]/6 text-stone-700">
+            {{ ui::select_option(value = "last-day", label = "Last day", selected = selected_date_range) -}}
+            {{ ui::select_option(value = "last3-days", label = "Last 3 days", selected = selected_date_range) -}}
+            {{ ui::select_option(value = "last7-days", label = "Last week", selected = selected_date_range) -}}
+            {{ ui::select_option(value = "last30-days", label = "Last month", selected = selected_date_range) -}}
+          </select>
+        </div>
+      </div>
+      {# End published date -#}
+    </div>
+
+    {# Location -#}
+    <div>
+      {{ filters_subtitle(text = "Location") -}}
+      {% if let Some(location) = filters.location -%}
+        <search-location form="{{ form }}" device="{{ device }}" locationId="{{ location.location_id }}" city="{{ location.city }}" state="{{ location.state|display_some }}" country="{{ location.country }}" withDistance="true" distance="{{ filters.max_distance|display_some }}" size="small"></search-location>
+      {% else -%}
+        <search-location form="{{ form }}" device="{{ device }}" withDistance="true" distance="{{ filters.max_distance|display_some }}" size="small"></search-location>
+      {% endif -%}
+    </div>
+    {# End location -#}
+  </div>
+
+  {# Open source section -#}
+  <div class="pt-4 md:pt-6 mt-2 px-6 border-t border-stone-100">
+    {{ filters_title(text = "Open source") -}}
+  </div>
+
+  <div class="p-6 pb-4 md:pb-6 pt-3 flex flex-col space-y-5">
+    {# Foundation -#}
+    <div>
+      {{ filters_subtitle(text = "Projects you'd like to work on") -}}
+
+      <div class="text-xs/6 text-stone-500/75">
+        Any project from the <span class="inline-block lg:hidden xl:inline-block">following</span> foundation
+      </div>
+
+      <div class="mt-2.5">
+        {%- let selected_foundation = filters.foundation|display_some -%}
+        <select id="{{ device }}-foundation"
+                form="{{ form }}"
+                data-trigger-form="true"
+                name="foundation"
+                class="select-primary py-0.5 text-[0.775rem]/6 text-stone-700">
+          {{ ui::select_option(value = "", label = "Any foundation", selected = selected_foundation) -}}
+          {% for foundation in filters_options.foundations -%}
+            {{ ui::select_option(value = foundation.name.as_str() , label = foundation.name|upper, selected = selected_foundation) -}}
+          {% endfor -%}
+        </select>
+      </div>
+    </div>
+    {# End foundation -#}
+
+    {# Projects -#}
+    <div>
+      <div class="text-xs/6 text-stone-500/75 -mt-2 mb-2">or select specific projects</div>
+      <search-projects foundations="{{ filters_options.foundations|json }}" viewType="rows" form="{{ device }}-jobs-form" {%- if let Some(filters_projects) = filters.projects %}selected="{{ filters_projects|json }}"{%- endif -%}></search-projects>
+    </div>
+    {# End projects -#}
+
+    {# Open source -#}
+    <div>
+      {{ filters_subtitle(text = "Time working on open source") -}}
+      <div class="mt-1">
+        <input-range form="{{ form }}" name="open_source" value="{{ filters.open_source|display_some_or(0) }}" step="5" type="type-3">
+      </input-range>
+    </div>
+  </div>
+  {# End open source -#}
+
+  {# Upstream commitment -#}
+  <div>
+    {{ filters_subtitle(text = "Time working on upstream projects") -}}
+    <div class="mt-1">
+      <input-range form="{{ form }}" name="upstream_commitment" value="{{ filters.upstream_commitment|display_some_or(0) }}" step="5" type="type-2">
+    </div>
+  </div>
+  {# End upstream commitment -#}
+</div>
+{# End open source section -#}
+
+{# Compensation section -#}
+<div class="pt-4 md:pt-6 px-6 border-t border-stone-100">{{ filters_title(text = "Compensation") -}}</div>
+
+<div class="p-6 pb-4 md:pb-6 pt-3 flex flex-col space-y-5">
+  {# Salary -#}
+  <div>
+    {{ filters_subtitle(text = "Minimum salary (USD / year)") -}}
+    <div class="mt-1">
+      <input-range form="{{ form }}" name="salary_min" value="{{ filters.salary_min|display_some_or(0) }}" max="250000" step="5000" unit="K" prefix="$" legendsNumber="6">
+    </div>
+  </div>
+  {# End salary -#}
+
+  {# Benefits -#}
+  <div>
+    {{ filters_subtitle(text = "Benefits") -}}
+    <searchable-filter name="benefits" viewType="rows" form="{{ device }}-jobs-form" {%- if let Some(filters_benefits) = filters.benefits %}selected="{{ filters_benefits|json }}"{%- endif -%}></searchable-filter>
+  </div>
+  {# End benefits -#}
+</div>
+{# End compensation section -#}
+
+{# Membership section -#}
+<div class="pt-4 md:pt-6 px-6 border-t border-stone-100">{{ filters_title(text = "Membership") -}}</div>
+
+<div class="p-6 pb-4 md:pb-6 pt-3 flex flex-col space-y-5">
+  {# Membership foundation -#}
+  <div>
+    {{ filters_subtitle(text = "Jobs from foundation members") -}}
+
+    <div class="mt-2.5">
+      {%- let selected_membership = filters.membership|display_some -%}
+      <select id="{{ device }}-membership"
+              form="{{ form }}"
+              data-trigger-form="true"
+              name="membership"
+              class="select-primary py-0.5 text-[0.775rem]/6 text-stone-700">
+        {{ ui::select_option(value = "", label = "Any foundation", selected = selected_membership) -}}
+        {% for foundation in filters_options.foundations -%}
+          {{ ui::select_option(value = foundation.name.as_str() , label = foundation.name|upper, selected = selected_membership) -}}
+        {% endfor -%}
+      </select>
+    </div>
+  </div>
+  {# End membership foundation -#}
+</div>
+{# End membership section -#}
+
+{# Embed button -#}
+<div class="pt-4 md:pt-6 px-6 md:mb-1 border-t border-stone-100 flex justify-center">
+  <button class="btn-primary-outline btn-mini"
+          data-embed="true"
+          data-device="{{ device }}">Get embed code</button>
+</div>
+{# End embed button -#}
+{% endmacro filters -%}
+{# End filters -#}
+
+{# Filters title -#}
+{% macro filters_title(text) -%}
+  <div class="text-xs/6 text-primary-500 uppercase font-semibold">{{ text }}</div>
+{% endmacro filters_title -%}
+{# End filters title -#}
+
+{# Filters subtitle -#}
+{% macro filters_subtitle(text) -%}
+  <div class="font-semibold leading-4 md:leading-8 text-[0.775rem] text-stone-700">{{ text }}</div>
+{% endmacro filters_subtitle -%}
+{# End filters subtitle -#}
+
+{# Checkbox -#}
+{% macro checkbox(form, name, value, label, icon, active_filters, device) -%}
+  <div class="group">
+    <input id="{%- if !device.is_empty() -%}{{ device }}-{%- endif -%}{{ name }}-{{ value }}"
+           form="{{ form }}"
+           type="checkbox"
+           name="{{ name }}"
+           value="{{ value }}"
+           data-trigger-form="true"
+           class="hidden peer"
+           {%- if let Some(active_filters) = active_filters -%}
+           {%- if active_filters.contains(value) -%}
+           checked
+           {%- endif -%}
+           {%- endif %}>
+    <label for="{%- if !device.is_empty() -%}{{ device }}-{%- endif -%}{{ name }}-{{ value }}"
+           class="inline-flex items-center justify-center w-full px-2 py-1 space-x-2 bg-white border border-stone-200 text-stone-700 rounded-md cursor-pointer select-none peer-checked:border-primary-500 peer-checked:text-primary-500 hover:bg-stone-50">
+      <div class="svg-icon size-3 icon-{{ icon }} bg-stone-500 cursor-pointer group-has-[input:checked]:bg-primary-500">
+      </div>
+      <div class="text-[0.775rem] text-center text-nowrap relative">{{ label }}</div>
+    </label>
+  </div>
+{% endmacro checkbox -%}
+{# End checkbox -#}

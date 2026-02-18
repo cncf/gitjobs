@@ -17,7 +17,11 @@ use uuid::Uuid;
 
 use crate::{
     db::DynDB,
-    handlers::{error::HandlerError, extractors::SelectedEmployerIdRequired, prepare_headers},
+    handlers::{
+        error::HandlerError,
+        extractors::{SelectedEmployerIdRequired, ValidatedFormQs},
+        prepare_headers,
+    },
     templates::dashboard::employer::jobs::{self, Job, JobStatus},
 };
 
@@ -51,15 +55,10 @@ pub(crate) async fn list_page(
 #[instrument(skip_all, err)]
 pub(crate) async fn preview_page_w_job(
     State(db): State<DynDB>,
-    State(serde_qs_de): State<serde_qs::Config>,
     SelectedEmployerIdRequired(employer_id): SelectedEmployerIdRequired,
-    body: String,
+    ValidatedFormQs(mut job): ValidatedFormQs<Job>,
 ) -> Result<impl IntoResponse, HandlerError> {
-    // Get job information from body
-    let mut job: Job = match serde_qs_de.deserialize_str(&body).map_err(anyhow::Error::new) {
-        Ok(profile) => profile,
-        Err(e) => return Ok((StatusCode::UNPROCESSABLE_ENTITY, e.to_string()).into_response()),
-    };
+    // Normalize job information from body
     job.normalize().await;
     job.published_at = Some(Utc::now());
     job.updated_at = Some(Utc::now());
@@ -110,15 +109,10 @@ pub(crate) async fn update_page(
 #[instrument(skip_all, err)]
 pub(crate) async fn add(
     State(db): State<DynDB>,
-    State(serde_qs_de): State<serde_qs::Config>,
     SelectedEmployerIdRequired(employer_id): SelectedEmployerIdRequired,
-    body: String,
+    ValidatedFormQs(mut job): ValidatedFormQs<Job>,
 ) -> Result<impl IntoResponse, HandlerError> {
-    // Get job information from body
-    let mut job: Job = match serde_qs_de.deserialize_str(&body).map_err(anyhow::Error::new) {
-        Ok(profile) => profile,
-        Err(e) => return Ok((StatusCode::UNPROCESSABLE_ENTITY, e.to_string()).into_response()),
-    };
+    // Normalize job information from body
     job.normalize().await;
 
     // Make sure the status provided is valid
@@ -184,15 +178,10 @@ pub(crate) async fn stats(
 #[instrument(skip_all, err)]
 pub(crate) async fn update(
     State(db): State<DynDB>,
-    State(serde_qs_de): State<serde_qs::Config>,
     Path(job_id): Path<Uuid>,
-    body: String,
+    ValidatedFormQs(mut job): ValidatedFormQs<Job>,
 ) -> Result<impl IntoResponse, HandlerError> {
-    // Get job information from body
-    let mut job: Job = match serde_qs_de.deserialize_str(&body).map_err(anyhow::Error::new) {
-        Ok(profile) => profile,
-        Err(e) => return Ok((StatusCode::UNPROCESSABLE_ENTITY, e.to_string()).into_response()),
-    };
+    // Normalize job information from body
     job.normalize().await;
 
     // Make sure the status provided is valid
@@ -207,4 +196,429 @@ pub(crate) async fn update(
     db.update_job(&job_id, &job).await?;
 
     Ok((StatusCode::NO_CONTENT, [("HX-Trigger", "refresh-jobs-table")]).into_response())
+}
+
+// Tests.
+
+#[cfg(test)]
+mod tests {
+    use std::sync::Arc;
+
+    use axum::{
+        body::Body,
+        extract::{Path, State},
+        http::{Request, header::COOKIE},
+        response::IntoResponse,
+    };
+    use axum_login::tower_sessions::session;
+    use tower::ServiceExt;
+    use uuid::Uuid;
+
+    use crate::{
+        db::{DynDB, mock::MockDB},
+        handlers::tests::{
+            TestRouterBuilder, sample_auth_user, sample_certifications, sample_employer, sample_employer_job,
+            sample_employer_job_summary, sample_foundations, sample_job_stats, sample_session_record,
+        },
+        notifications::MockNotificationsManager,
+    };
+
+    use super::*;
+
+    #[tokio::test]
+    async fn test_add_page_renders_successfully() {
+        // Setup database mock
+        let mut db = MockDB::new();
+        db.expect_list_certifications()
+            .times(1)
+            .returning(|| Ok(sample_certifications()));
+        db.expect_list_foundations()
+            .times(1)
+            .returning(|| Ok(sample_foundations()));
+        let db: DynDB = Arc::new(db);
+
+        // Execute handler
+        let response = add_page(State(db)).await.unwrap().into_response();
+
+        // Check response matches expectations
+        assert_eq!(response.status(), StatusCode::OK);
+    }
+
+    #[tokio::test]
+    async fn test_add_rejects_invalid_status() {
+        // Setup database mock
+        let db: DynDB = Arc::new(MockDB::new());
+        let mut job = sample_employer_job(Uuid::new_v4());
+        job.status = JobStatus::Published;
+
+        // Execute handler
+        let response = add(
+            State(db),
+            crate::handlers::extractors::SelectedEmployerIdRequired(Uuid::new_v4()),
+            ValidatedFormQs(job),
+        )
+        .await
+        .unwrap()
+        .into_response();
+
+        // Check response matches expectations
+        assert_eq!(response.status(), StatusCode::UNPROCESSABLE_ENTITY);
+    }
+
+    #[tokio::test]
+    async fn test_add_returns_unprocessable_entity_for_invalid_body() {
+        // Setup identifiers and data structures
+        let auth_hash = "hash";
+        let employer_id = Uuid::new_v4();
+        let session_id = session::Id::default();
+        let user_id = Uuid::new_v4();
+        let session_record = sample_session_record(session_id, user_id, auth_hash, Some(employer_id));
+
+        // Setup database mock
+        let mut db = MockDB::new();
+        db.expect_get_session()
+            .times(1)
+            .withf(move |id| *id == session_id)
+            .returning(move |_| Ok(Some(session_record.clone())));
+        db.expect_get_user_by_id()
+            .times(1)
+            .withf(move |id| *id == user_id)
+            .returning(move |_| Ok(Some(sample_auth_user(user_id, auth_hash))));
+        db.expect_user_owns_employer()
+            .times(1)
+            .withf(move |id, employer| *id == user_id && *employer == employer_id)
+            .returning(|_, _| Ok(true));
+        db.expect_add_job().times(0);
+        db.expect_update_session().times(0..).returning(|_| Ok(()));
+
+        // Setup router and send request
+        let router = TestRouterBuilder::new(db, MockNotificationsManager::new())
+            .build()
+            .await;
+        let request = Request::builder()
+            .method("POST")
+            .uri("/dashboard/employer/jobs/add")
+            .header(COOKIE, format!("id={session_id}"))
+            .body(Body::from("invalid-body"))
+            .unwrap();
+        let response = router.oneshot(request).await.unwrap();
+
+        // Check response matches expectations
+        assert_eq!(response.status(), StatusCode::UNPROCESSABLE_ENTITY);
+    }
+
+    #[tokio::test]
+    async fn test_add_returns_created_for_valid_job() {
+        // Setup identifiers and data structures
+        let employer_id = Uuid::new_v4();
+        let job = sample_employer_job(Uuid::new_v4());
+
+        // Setup database mock
+        let mut db = MockDB::new();
+        db.expect_add_job()
+            .times(1)
+            .withf(move |id, _job| *id == employer_id)
+            .returning(|_, _| Ok(()));
+        let db: DynDB = Arc::new(db);
+
+        // Execute handler
+        let response = add(
+            State(db),
+            crate::handlers::extractors::SelectedEmployerIdRequired(employer_id),
+            ValidatedFormQs(job),
+        )
+        .await
+        .unwrap()
+        .into_response();
+
+        // Check response matches expectations
+        assert_eq!(response.status(), StatusCode::CREATED);
+    }
+
+    #[tokio::test]
+    async fn test_archive_returns_no_content() {
+        // Setup identifiers and data structures
+        let job_id = Uuid::new_v4();
+
+        // Setup database mock
+        let mut db = MockDB::new();
+        db.expect_archive_job()
+            .times(1)
+            .withf(move |id| *id == job_id)
+            .returning(|_| Ok(()));
+        let db: DynDB = Arc::new(db);
+
+        // Execute handler
+        let response = archive(State(db), Path(job_id)).await.unwrap().into_response();
+
+        // Check response matches expectations
+        assert_eq!(response.status(), StatusCode::NO_CONTENT);
+    }
+
+    #[tokio::test]
+    async fn test_archive_route_checks_ownership_middleware() {
+        // Setup identifiers and data structures
+        let auth_hash = "hash";
+        let job_id = Uuid::new_v4();
+        let selected_employer_id = Uuid::new_v4();
+        let session_id = session::Id::default();
+        let user_id = Uuid::new_v4();
+        let session_record =
+            sample_session_record(session_id, user_id, auth_hash, Some(selected_employer_id));
+
+        // Setup database mock
+        let mut db = MockDB::new();
+        db.expect_get_session()
+            .times(1)
+            .withf(move |id| *id == session_id)
+            .returning(move |_| Ok(Some(session_record.clone())));
+        db.expect_get_user_by_id()
+            .times(1)
+            .withf(move |id| *id == user_id)
+            .returning(move |_| Ok(Some(sample_auth_user(user_id, auth_hash))));
+        db.expect_user_owns_employer()
+            .times(1)
+            .withf(move |id, employer| *id == user_id && *employer == selected_employer_id)
+            .returning(|_, _| Ok(true));
+        db.expect_user_owns_job()
+            .times(1)
+            .withf(move |id, job| *id == user_id && *job == job_id)
+            .returning(|_, _| Ok(true));
+        db.expect_archive_job()
+            .times(1)
+            .withf(move |id| *id == job_id)
+            .returning(|_| Ok(()));
+
+        // Setup router and send request
+        let router = TestRouterBuilder::new(db, MockNotificationsManager::new())
+            .build()
+            .await;
+        let request = Request::builder()
+            .method("PUT")
+            .uri(format!("/dashboard/employer/jobs/{job_id}/archive"))
+            .header(COOKIE, format!("id={session_id}"))
+            .body(Body::empty())
+            .unwrap();
+        let response = router.oneshot(request).await.unwrap();
+
+        // Check response matches expectations
+        assert_eq!(response.status(), StatusCode::NO_CONTENT);
+    }
+
+    #[tokio::test]
+    async fn test_delete_returns_no_content() {
+        // Setup identifiers and data structures
+        let job_id = Uuid::new_v4();
+
+        // Setup database mock
+        let mut db = MockDB::new();
+        db.expect_delete_job()
+            .times(1)
+            .withf(move |id| *id == job_id)
+            .returning(|_| Ok(()));
+        let db: DynDB = Arc::new(db);
+
+        // Execute handler
+        let response = delete(State(db), Path(job_id)).await.unwrap().into_response();
+
+        // Check response matches expectations
+        assert_eq!(response.status(), StatusCode::NO_CONTENT);
+    }
+
+    #[tokio::test]
+    async fn test_list_page_renders_successfully() {
+        // Setup identifiers and data structures
+        let employer_id = Uuid::new_v4();
+        let job_id = Uuid::new_v4();
+
+        // Setup database mock
+        let mut db = MockDB::new();
+        db.expect_list_employer_jobs()
+            .times(1)
+            .withf(move |id| *id == employer_id)
+            .returning(move |_| Ok(vec![sample_employer_job_summary(job_id)]));
+        let db: DynDB = Arc::new(db);
+
+        // Execute handler
+        let response = list_page(
+            State(db),
+            crate::handlers::extractors::SelectedEmployerIdRequired(employer_id),
+        )
+        .await
+        .unwrap()
+        .into_response();
+
+        // Check response matches expectations
+        assert_eq!(response.status(), StatusCode::OK);
+    }
+
+    #[tokio::test]
+    async fn test_preview_page_w_job_renders_successfully() {
+        // Setup identifiers and data structures
+        let employer_id = Uuid::new_v4();
+        let job = sample_employer_job(Uuid::new_v4());
+
+        // Setup database mock
+        let mut db = MockDB::new();
+        db.expect_get_employer()
+            .times(1)
+            .withf(move |id| *id == employer_id)
+            .returning(move |_| Ok(sample_employer(employer_id)));
+        let db: DynDB = Arc::new(db);
+
+        // Execute handler
+        let response = preview_page_w_job(
+            State(db),
+            crate::handlers::extractors::SelectedEmployerIdRequired(employer_id),
+            ValidatedFormQs(job),
+        )
+        .await
+        .unwrap()
+        .into_response();
+
+        // Check response matches expectations
+        assert_eq!(response.status(), StatusCode::OK);
+    }
+
+    #[tokio::test]
+    async fn test_preview_page_wo_job_renders_successfully() {
+        // Setup identifiers and data structures
+        let employer_id = Uuid::new_v4();
+        let job_id = Uuid::new_v4();
+
+        // Setup database mock
+        let mut db = MockDB::new();
+        db.expect_get_employer()
+            .times(1)
+            .withf(move |id| *id == employer_id)
+            .returning(move |_| Ok(sample_employer(employer_id)));
+        db.expect_get_job_dashboard()
+            .times(1)
+            .withf(move |id| *id == job_id)
+            .returning(move |_| Ok(sample_employer_job(job_id)));
+        let db: DynDB = Arc::new(db);
+
+        // Execute handler
+        let response = preview_page_wo_job(
+            State(db),
+            Path(job_id),
+            crate::handlers::extractors::SelectedEmployerIdRequired(employer_id),
+        )
+        .await
+        .unwrap()
+        .into_response();
+
+        // Check response matches expectations
+        assert_eq!(response.status(), StatusCode::OK);
+    }
+
+    #[tokio::test]
+    async fn test_publish_returns_no_content() {
+        // Setup identifiers and data structures
+        let job_id = Uuid::new_v4();
+
+        // Setup database mock
+        let mut db = MockDB::new();
+        db.expect_publish_job()
+            .times(1)
+            .withf(move |id| *id == job_id)
+            .returning(|_| Ok(()));
+        let db: DynDB = Arc::new(db);
+
+        // Execute handler
+        let response = publish(State(db), Path(job_id)).await.unwrap().into_response();
+
+        // Check response matches expectations
+        assert_eq!(response.status(), StatusCode::NO_CONTENT);
+    }
+
+    #[tokio::test]
+    async fn test_stats_returns_json() {
+        // Setup identifiers and data structures
+        let job_id = Uuid::new_v4();
+
+        // Setup database mock
+        let mut db = MockDB::new();
+        db.expect_get_job_stats()
+            .times(1)
+            .withf(move |id| *id == job_id)
+            .returning(|_| Ok(sample_job_stats()));
+        let db: DynDB = Arc::new(db);
+
+        // Execute handler
+        let response = stats(State(db), Path(job_id)).await.unwrap().into_response();
+
+        // Check response matches expectations
+        assert_eq!(response.status(), StatusCode::OK);
+    }
+
+    #[tokio::test]
+    async fn test_update_page_renders_successfully() {
+        // Setup identifiers and data structures
+        let job_id = Uuid::new_v4();
+
+        // Setup database mock
+        let mut db = MockDB::new();
+        db.expect_list_certifications()
+            .times(1)
+            .returning(|| Ok(sample_certifications()));
+        db.expect_list_foundations()
+            .times(1)
+            .returning(|| Ok(sample_foundations()));
+        db.expect_get_job_dashboard()
+            .times(1)
+            .withf(move |id| *id == job_id)
+            .returning(move |_| Ok(sample_employer_job(job_id)));
+        let db: DynDB = Arc::new(db);
+
+        // Execute handler
+        let response = update_page(State(db), Path(job_id)).await.unwrap().into_response();
+
+        // Check response matches expectations
+        assert_eq!(response.status(), StatusCode::OK);
+    }
+
+    #[tokio::test]
+    async fn test_update_returns_no_content_for_valid_job() {
+        // Setup identifiers and data structures
+        let job_id = Uuid::new_v4();
+        let job = sample_employer_job(job_id);
+
+        // Setup database mock
+        let mut db = MockDB::new();
+        db.expect_update_job()
+            .times(1)
+            .withf(move |id, _job| *id == job_id)
+            .returning(|_, _| Ok(()));
+        let db: DynDB = Arc::new(db);
+
+        // Execute handler
+        let response = update(State(db), Path(job_id), ValidatedFormQs(job))
+            .await
+            .unwrap()
+            .into_response();
+
+        // Check response matches expectations
+        assert_eq!(response.status(), StatusCode::NO_CONTENT);
+    }
+
+    #[tokio::test]
+    async fn test_update_returns_unprocessable_entity_for_invalid_status() {
+        // Setup identifiers and data structures
+        let job_id = Uuid::new_v4();
+        let mut job = sample_employer_job(job_id);
+        job.status = JobStatus::Published;
+
+        // Setup database mock
+        let db: DynDB = Arc::new(MockDB::new());
+
+        // Execute handler
+        let response = update(State(db), Path(job_id), ValidatedFormQs(job))
+            .await
+            .unwrap()
+            .into_response();
+
+        // Check response matches expectations
+        assert_eq!(response.status(), StatusCode::UNPROCESSABLE_ENTITY);
+    }
 }

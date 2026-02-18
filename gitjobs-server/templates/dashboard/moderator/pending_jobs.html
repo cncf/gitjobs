@@ -1,54 +1,5 @@
-{% import "macros.html" as macros -%}
-{% import "dashboard/moderator/moderator_macros.html" as moderator_macros -%}
+{% let title = "Moderation pending jobs" -%}
+{% let empty_title = "There are no moderation pending jobs at the moment." -%}
+{% let is_pending = true -%}
 
-<div class="flex items-center">
-  {# Mobile filters button -#}
-  <div class="flex shrink-0 me-3 md:me-6 lg:hidden">
-    <button id="open-menu-button"
-            class="btn-primary-outline group size-[40px] p-0 items-center flex justify-center">
-      <div class="svg-icon size-4 icon-menu group-hover:bg-white shrink-0"></div>
-    </button>
-    <script type="module">
-      import {
-        openNavigationDrawer
-      } from '/static/js/dashboard/base.js';
-
-      const openMenuButton = document.getElementById('open-menu-button');
-      if (openMenuButton) {
-        openMenuButton.addEventListener('click', openNavigationDrawer);
-      }
-    </script>
-  </div>
-  {# End mobile filters button -#}
-  {{ macros::form_title(title = "Moderation pending jobs") -}}
-</div>
-
-{# Pending jobs Table -#}
-{{ moderator_macros::jobs_table(jobs = jobs, kind = "pending") -}}
-{# End pending jobs Table -#}
-
-{# Mobile pending jobs cards -#}
-<div class="flex flex-col space-y-4 md:hidden mt-6">
-  {% if jobs.is_empty() -%}
-    <div class="border border-primary-500 rounded-lg mt-10 p-5 bg-primary-50/20"
-         role="alert">
-      <div class="text-lg mb-6">
-        <div>There are no moderation pending jobs at the moment.</div>
-      </div>
-      <p class="text-stone-700">Thanks for checking, please come back later :)</p>
-    </div>
-  {% else -%}
-    {% for job in jobs -%}
-      {{ moderator_macros::mobile_job_card(job = job, kind = "pending") -}}
-    {% endfor -%}
-  {% endif -%}
-</div>
-{# End mobile pending jobs cards -#}
-
-{# Preview modal -#}
-{{ moderator_macros::preview_modal() -}}
-{# End preview modal -#}
-
-{# Reject modal -#}
-{{ moderator_macros::reject_modal() -}}
-{# End reject modal -#}
+{% include "misc/moderator_jobs_page.html" -%}

@@ -1,7 +1,6 @@
 import { html, nothing } from "/static/vendor/js/lit-all.v3.3.1.min.js";
 import { LitWrapper } from "/static/js/common/lit-wrapper.js";
-import { debounce } from "/static/js/common/common.js";
-import { triggerActionOnForm } from "/static/js/jobboard/filters.js";
+import { debounce, triggerActionOnForm } from "/static/js/common/common.js";
 
 /**
  * Location search component with autocomplete and distance filter.
@@ -60,6 +59,7 @@ export class SearchLocation extends LitWrapper {
     this.isLoading = false;
     this.activeIndex = null;
     this.defaultDistance = "100000";
+    this._debouncedFetchData = debounce((value) => this._fetchData(value), 300);
   }
 
   connectedCallback() {
@@ -70,6 +70,7 @@ export class SearchLocation extends LitWrapper {
 
   disconnectedCallback() {
     super.disconnectedCallback();
+    this._debouncedFetchData.cancel?.();
     window.removeEventListener("mousedown", this._handleClickOutside);
   }
 
@@ -77,6 +78,8 @@ export class SearchLocation extends LitWrapper {
    * Public method to reset location state.
    */
   async cleanLocation() {
+    this._debouncedFetchData.cancel?.();
+    this.isLoading = false;
     this.locationId = "";
     this.city = "";
     this.state = "";
@@ -112,6 +115,8 @@ export class SearchLocation extends LitWrapper {
    */
   _handleClickOutside = (event) => {
     if (!this.contains(event.target)) {
+      this._debouncedFetchData.cancel?.();
+      this.isLoading = false;
       if (this.locationId !== "") {
         this.value = this._formatLocation(this.city, this.state, this.country);
       } else {
@@ -128,6 +133,7 @@ export class SearchLocation extends LitWrapper {
    * @private
    */
   async _fetchData(value) {
+    const requestValue = value;
     const url = `/locations/search?ts_query=${encodeURIComponent(value)}`;
     try {
       const response = await fetch(url);
@@ -136,10 +142,19 @@ export class SearchLocation extends LitWrapper {
       }
 
       const json = await response.json();
+      if (this.value !== requestValue || requestValue.length <= 2) {
+        return;
+      }
       this.options = json;
     } catch (error) {
-      // TODO: Implement error handling
+      if (this.value !== requestValue) {
+        return;
+      }
+      this.options = [];
     } finally {
+      if (this.value !== requestValue) {
+        return;
+      }
       this.isLoading = false;
     }
   }
@@ -150,12 +165,18 @@ export class SearchLocation extends LitWrapper {
    * @private
    */
   _onInputChange(event) {
-    this._isLoading = true;
     const value = event.target.value;
     this.value = value;
     if (value.length > 2) {
-      debounce(this._fetchData(value), 300);
+      this.isLoading = true;
+      this._debouncedFetchData(value);
+      return;
     }
+
+    this._debouncedFetchData.cancel?.();
+    this.isLoading = false;
+    this.options = null;
+    this.activeIndex = null;
   }
 
   /**
@@ -216,6 +237,8 @@ export class SearchLocation extends LitWrapper {
    * @private
    */
   async _selectLocation(location) {
+    this._debouncedFetchData.cancel?.();
+    this.isLoading = false;
     this.locationId = location.location_id;
     this.city = location.city;
     this.state = location.state;
@@ -258,6 +281,8 @@ export class SearchLocation extends LitWrapper {
    * @private
    */
   async _cleanInput() {
+    this._debouncedFetchData.cancel?.();
+    this.isLoading = false;
     this.locationId = "";
     this.city = "";
     this.state = "";

@@ -1,5 +1,4 @@
-{% import "macros.html" as macros -%}
-{% import "misc/preview_modal.html" as preview -%}
+{% import "macros/ui.html" as ui -%}
 
 {% let profile = profile.clone().unwrap_or_default() -%}
 
@@ -59,13 +58,14 @@
                 hx-target="#preview-content"
                 hx-indicator="#preview-spinner"
                 hx-disabled-elt="#update-profile-button, #preview-button"
+                data-skip-validation="true"
                 type="button"
                 class="group btn-primary-outline w-24">
           <span class="hidden md:block">Preview</span>
           <span class="block md:hidden">
             <div class="svg-icon size-3 icon-eye group-hover:bg-white"></div>
           </span>
-          {{ macros::btn_spinner(id = "preview-spinner") -}}
+          {{ ui::btn_spinner(id = "preview-spinner") -}}
         </button>
         {# End preview button -#}
       </div>
@@ -79,12 +79,22 @@
                 hx-ext="no-empty-vals"
                 hx-include="[name=photo_id], #profile-form, #experience-form, #education-form, #projects-form"
                 hx-indicator="#dashboard-spinner, #save-spinner"
-                hx-disabled-elt="#update-profile-button, #preview-button">
-          {{ macros::btn_spinner(id = "save-spinner", spinner_type = "2") -}}
+                hx-disabled-elt="#update-profile-button, #preview-button"
+                data-skip-validation="true">
+          {{ ui::btn_spinner(id = "save-spinner", spinner_type = "2") -}}
           Save
         </button>
       </div>
       {# End save button -#}
+    </div>
+  </div>
+
+  <div id="pending-changes-alert" class="hidden">
+    <div class="flex flex-wrap items-center justify-between gap-3 rounded-md border border-primary-200 bg-primary-50 px-4 py-3 text-primary-900">
+      <div class="flex min-w-0 flex-1 items-start gap-3">
+        <div class="svg-icon size-5 bg-primary-700 icon-clock mt-0.5 shrink-0"></div>
+        <p class="text-sm/6">You have pending changes. If you leave without saving, changes will be lost.</p>
+      </div>
     </div>
   </div>
 
@@ -100,9 +110,9 @@
         <div class="col-span-full">
           {% if let Some(photo_id) = profile.photo_id -%}
             {% let image = &self::build_dashboard_image_url(photo_id, "small") -%}
-            {{ macros::images_form(label = "Photo", name = "photo_id", icon = "user", value = photo_id.to_string() , url_image = image) -}}
+            {{ ui::images_form(label = "Photo", name = "photo_id", icon = "user", target = "photo", value = photo_id.to_string() , url_image = image) -}}
           {% else -%}
-            {{ macros::images_form(label = "Photo", name = "photo_id", icon = "user") -}}
+            {{ ui::images_form(label = "Photo", name = "photo_id", icon = "user", target = "photo") -}}
           {% endif -%}
         </div>
         {# End form image -#}
@@ -120,6 +130,7 @@
                        name="name"
                        id="name"
                        value="{{ profile.name }}"
+                       maxlength="{{ crate::validation::MAX_LEN_DISPLAY_NAME }}"
                        class="input-primary"
                        autocomplete="off"
                        autocorrect="off"
@@ -127,6 +138,7 @@
                        spellcheck="false"
                        required>
               </div>
+              <p class="form-legend">Max {{ crate::validation::MAX_LEN_DISPLAY_NAME }} characters.</p>
             </div>
             {# End name -#}
 
@@ -138,12 +150,14 @@
                        name="phone"
                        id="phone"
                        value="{{ profile.phone|display_some }}"
+                       maxlength="{{ crate::validation::MAX_LEN_M }}"
                        class="input-primary"
                        autocomplete="off"
                        autocorrect="off"
                        autocapitalize="off"
                        spellcheck="false">
               </div>
+              <p class="form-legend">Max {{ crate::validation::MAX_LEN_M }} characters.</p>
             </div>
             {# End phone -#}
 
@@ -157,9 +171,11 @@
                        name="email"
                        id="email"
                        value="{{ profile.email }}"
+                       maxlength="{{ crate::validation::MAX_LEN_M }}"
                        class="input-primary"
                        required>
               </div>
+              <p class="form-legend">Max {{ crate::validation::MAX_LEN_M }} characters.</p>
             </div>
             {# End email -#}
 
@@ -180,9 +196,11 @@
                 Summary <span class="asterisk">*</span>
               </label>
               <div class="mt-2">
-                <markdown-editor id="summary" content="{{ profile.summary }}" required></markdown-editor>
+                <markdown-editor id="summary" content="{{ profile.summary }}" maxlength="{{ crate::validation::MAX_LEN_BIO }}" required></markdown-editor>
               </div>
-              <p class="form-legend">A short introduction of yourself. You can use markdown to format the text.</p>
+              <p class="form-legend">
+                A short introduction of yourself. You can use markdown to format the text. Max {{ crate::validation::MAX_LEN_BIO }} characters.
+              </p>
             </div>
             {# End Summary -#}
 
@@ -195,7 +213,7 @@
             {# Open to relocation -#}
             <div class="col-span-full">
               <label class="inline-flex items-center cursor-pointer">
-                {{ macros::toggle_checkbox(id = "open_to_relocation", checked = profile.open_to_relocation.unwrap_or(false) ) -}}
+                {{ ui::toggle_checkbox(id = "open_to_relocation", checked = profile.open_to_relocation.unwrap_or(false) ) -}}
                 <span class="ms-3 text-sm font-medium text-stone-900">Open to relocation</span>
               </label>
             </div>
@@ -204,7 +222,7 @@
             {# Open to remote -#}
             <div class="col-span-full">
               <label class="inline-flex items-center cursor-pointer">
-                {{ macros::toggle_checkbox(id = "open_to_remote", checked = profile.open_to_remote.unwrap_or(false) ) -}}
+                {{ ui::toggle_checkbox(id = "open_to_remote", checked = profile.open_to_remote.unwrap_or(false) ) -}}
                 <span class="ms-3 text-sm font-medium text-stone-900">Open to remote work</span>
               </label>
             </div>
@@ -213,14 +231,14 @@
             {# Public -#}
             <div class="col-span-full">
               <label class="inline-flex items-center cursor-pointer">
-                {{ macros::toggle_checkbox(id = "public", checked = profile.public) -}}
+                {{ ui::toggle_checkbox(id = "public", checked = profile.public) -}}
                 <span class="ms-3 text-sm font-medium text-stone-900">Display profile publicly in the profiles list of the site</span>
               </label>
             </div>
             {# End Public -#}
           </div>
           <div class="border-t border-stone-900/10 pt-12">
-            {{ macros::form_title(title = "Links", description = "Some links where employers can find out more about you and your work.") -}}
+            {{ ui::form_title(title = "Links", description = "Some links where employers can find out more about you and your work.") -}}
 
             <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 max-w-5xl">
               {# Website URL -#}
@@ -355,63 +373,13 @@
 </div>
 
 {# Preview modal -#}
-{{ preview::modal() -}}
+{% include "misc/preview_modal.html" -%}
 {# End preview modal -#}
 
 <script type="module">
   import {
-    toggleModalVisibility,
-    isSuccessfulXHRStatus
-  } from '/static/js/common/common.js';
-  import {
-    showErrorAlert,
-    showSuccessAlert
-  } from '/static/js/common/alerts.js';
-  import {
-    displayActiveSection,
-    validateFormData
-  } from '/static/js/dashboard/jobseeker/form.js';
+    initializeJobSeekerProfileUpdate
+  } from '/static/js/dashboard/jobseeker/profile-update.js';
 
-  const sectionsBtn = document.querySelectorAll('[data-section]');
-  sectionsBtn.forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const section = btn.getAttribute('data-section');
-      displayActiveSection(section);
-    });
-  });
-
-  // On update button click, validate the form
-  const updateBtn = document.getElementById('update-profile-button');
-  if (updateBtn) {
-    updateBtn.addEventListener('htmx:beforeRequest', (e) => {
-      if (!validateFormData()) {
-        e.preventDefault();
-      }
-    });
-
-    updateBtn.addEventListener('htmx:afterRequest', (e) => {
-      if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
-        showSuccessAlert('Profile updated successfully.');
-      } else {
-        showErrorAlert('Something went wrong updating the profile, please try again later.');
-      }
-    });
-  }
-
-  // On preview button click, show the preview modal
-  const previewButton = document.getElementById('preview-button');
-  if (previewButton) {
-    previewButton.addEventListener('htmx:afterRequest', (e) => {
-      if (isSuccessfulXHRStatus(e.detail.xhr.status)) {
-        toggleModalVisibility('preview-modal', "open");
-      } else {
-        // When the preview is not available, show an error message
-        if (e.detail.xhr.status == 422) {
-          showErrorAlert('You must fill in all required fields to be able to preview the profile.');
-        } else {
-          showErrorAlert('Something went wrong previewing the data, please try again later.');
-        }
-      }
-    });
-  }
+  initializeJobSeekerProfileUpdate();
 </script>

@@ -19,19 +19,7 @@ impl DBWorkers for PgDB {
     #[instrument(skip(self), err)]
     async fn archive_expired_jobs(&self) -> Result<()> {
         let db = self.pool.get().await?;
-        db.execute(
-            "
-            update job
-            set
-                status = 'archived',
-                archived_at = current_timestamp,
-                updated_at = current_timestamp
-            where status = 'published'
-            and published_at + '30 days'::interval < current_timestamp;
-            ",
-            &[],
-        )
-        .await?;
+        db.execute("select archive_expired_jobs()", &[]).await?;
 
         Ok(())
     }

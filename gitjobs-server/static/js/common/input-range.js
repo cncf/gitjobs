@@ -1,6 +1,6 @@
 import { html, createRef, ref, nothing } from "/static/vendor/js/lit-all.v3.3.1.min.js";
 import { LitWrapper } from "/static/js/common/lit-wrapper.js";
-import { triggerActionOnForm } from "/static/js/jobboard/filters.js";
+import { triggerActionOnForm } from "/static/js/common/common.js";
 
 /**
  * Custom range input component with visual feedback and legends.
@@ -141,7 +141,7 @@ export class InputRange extends LitWrapper {
    */
   _prettyNumber(value) {
     if (value > 1000) {
-      return parseInt(value / 1000);
+      return Math.trunc(value / 1000);
     }
     return value;
   }

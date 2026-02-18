@@ -1,18 +1,15 @@
+import { setDrawerVisibility, triggerActionOnForm as triggerFormAction } from "/static/js/common/common.js";
+
+const DRAWER_FILTERS_ID = "drawer-filters";
+const SEARCHBAR_ID = "searchbar";
+const RESULTS_CONTAINER_ID = "results";
+
 /**
  * Opens the mobile filters drawer.
  * Adds transition effects and manages backdrop visibility.
  */
 export const openFiltersDrawer = () => {
-  const filtersDrawer = document.getElementById("drawer-filters");
-  if (filtersDrawer) {
-    filtersDrawer.classList.add("transition-transform");
-    filtersDrawer.classList.remove("-translate-x-full");
-    filtersDrawer.dataset.open = "true";
-  }
-  const backdrop = document.getElementById("drawer-backdrop");
-  if (backdrop) {
-    backdrop.classList.remove("hidden");
-  }
+  setDrawerVisibility({ drawerId: DRAWER_FILTERS_ID, open: true });
 };
 
 /**
@@ -20,17 +17,7 @@ export const openFiltersDrawer = () => {
  * Removes transition effects and resets scroll position.
  */
 export const closeFiltersDrawer = () => {
-  const filtersDrawer = document.getElementById("drawer-filters");
-  if (filtersDrawer) {
-    filtersDrawer.classList.add("-translate-x-full");
-    filtersDrawer.classList.remove("transition-transform");
-    filtersDrawer.dataset.open = "false";
-    filtersDrawer.scrollTop = 0;
-  }
-  const backdrop = document.getElementById("drawer-backdrop");
-  if (backdrop) {
-    backdrop.classList.add("hidden");
-  }
+  setDrawerVisibility({ drawerId: DRAWER_FILTERS_ID, open: false });
 };
 
 /**
@@ -42,16 +29,15 @@ export const closeFiltersDrawer = () => {
 export const triggerActionOnForm = (formId, action, fromSearch) => {
   // Prevent empty search submissions
   if (fromSearch) {
-    const searchInput = document.getElementById("searchbar");
-    if (searchInput.value === "") {
+    const searchInput = document.getElementById(SEARCHBAR_ID);
+    if (!searchInput || searchInput.value.trim() === "") {
       return;
     }
+
+    searchInput.value = searchInput.value.trim();
   }
 
-  const form = document.getElementById(formId);
-  if (form) {
-    htmx.trigger(form, action);
-  }
+  triggerFormAction(formId, action);
 };
 
 /**
@@ -64,9 +50,9 @@ export const searchOnEnter = (event, formId) => {
     if (formId) {
       triggerActionOnForm(formId, "submit");
     } else {
-      const searchValue = event.currentTarget.value;
+      const searchValue = event.currentTarget.value.trim();
       if (searchValue !== "") {
-        document.location.href = `/jobs?ts_query=${searchValue}`;
+        document.location.href = `/jobs?ts_query=${encodeURIComponent(searchValue)}`;
       }
     }
     event.currentTarget.blur();
@@ -80,6 +66,10 @@ export const searchOnEnter = (event, formId) => {
  */
 export const cleanInputField = (inputId, formId) => {
   const input = document.getElementById(inputId);
+  if (!input) {
+    return;
+  }
+
   input.value = "";
 
   if (formId) {
@@ -92,7 +82,11 @@ export const cleanInputField = (inputId, formId) => {
  * @param {string} content - HTML content to display
  */
 export const updateResults = (content) => {
-  const resultsContainer = document.getElementById("results");
+  const resultsContainer = document.getElementById(RESULTS_CONTAINER_ID);
+  if (!resultsContainer) {
+    return;
+  }
+
   resultsContainer.innerHTML = content;
 };
 
@@ -154,7 +148,7 @@ export const resetForm = async (formId) => {
     }
 
     // Clear main search input
-    const searchBar = document.getElementById("searchbar");
+    const searchBar = document.getElementById(SEARCHBAR_ID);
     if (searchBar) {
       searchBar.value = "";
     }

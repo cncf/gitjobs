@@ -1,4 +1,4 @@
-{% import "jobboard/jobs/results_section.html" as macros -%}
+{% import "macros/jobboard.html" as jobboard -%}
 <!DOCTYPE html>
 {# djlint:off H030 H031 #}
 <html lang="en">
@@ -47,23 +47,20 @@
             <a href="{{ base_url }}/?job_id={{ job.job_id }}"
                target="_blank"
                rel="noopener noreferrer"
-               class="relative mx-4 md:mx-7 text-start bg-white cursor-pointer border rounded-lg hover:outline hover:outline-1 p-5 md:p-7 {%- if upstream_commitment > 0 %} border-lime-500 bg-lime-50/20 hover:outline-lime-500{%- else if open_source > 0 %} border-lime-300 bg-lime-50/20 hover:outline-lime-300{%- else %} border-stone-200 hover:outline-stone-200{%- endif -%}">{{ macros::job_card(job = job) -}}</a>
+               class="relative mx-4 md:mx-7 text-start bg-white cursor-pointer border rounded-lg hover:outline hover:outline-1 p-5 md:p-7 {%- if upstream_commitment > 0 %} border-lime-500 bg-lime-50/20 hover:outline-lime-500{%- else if open_source > 0 %} border-lime-300 bg-lime-50/20 hover:outline-lime-300{%- else %} border-stone-200 hover:outline-stone-200{%- endif -%}">{{ jobboard::job_card(job = job) -}}</a>
           {% endfor -%}
 
           {# djlint:off #}
           <script type="module">
             import {
-              trackSearchAppearances
-            } from '{{ base_url }}/static/js/common/common.js';
+              initializeEmbedJobsPage
+            } from '{{ base_url }}/static/js/jobboard/embed_jobs_page.js';
 
-            // Track search appearances for all visible jobs in embed
-            const jobIds = [
+            initializeEmbedJobsPage([
               {%- for job in jobs -%}
                 "{{ job.job_id }}"{% if !loop.last %},{% endif %}
               {%- endfor -%}
-            ];
-
-            trackSearchAppearances(jobIds);
+            ]);
 </script>
           {# djlint:on #}
         {% endif -%}

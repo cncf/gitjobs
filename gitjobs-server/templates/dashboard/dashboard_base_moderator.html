@@ -1,5 +1,5 @@
 {% extends "base.html" -%}
-{% import "macros.html" as macros -%}
+{% import "macros/ui.html" as ui -%}
 
 {% block content -%}
   {# Lit components -#}
@@ -15,9 +15,13 @@
   {# End lit components -#}
 
   {# Header -#}
-  <nav class="bg-white fixed w-full z-20 top-0 start-0 border-b border-stone-200 h-20 drop-shadow-sm flex items-center justify-between px-3 lg:px-5">
-    {% include "header.html" -%}
-  </nav>
+  <header id="header" class="w-full" role="banner">
+    <nav class="bg-white fixed w-full z-20 top-0 start-0 border-b border-stone-200 h-20 drop-shadow-sm flex items-center justify-between px-3 lg:px-5"
+         role="navigation"
+         aria-label="Main navigation">
+      {% include "header.html" -%}
+    </nav>
+  </header>
   {# End Header -#}
 
   {# Mobile menu -#}
@@ -25,6 +29,7 @@
        class="fixed top-0 left-0 z-[1100] h-dvh overflow-y-auto -translate-x-full bg-white w-80 border border-r border-stone-200 shadow-lg"
        role="dialog"
        data-open="false"
+       aria-hidden="true"
        tabindex="-1"
        aria-labelledby="drawer-label">
     {# Close button -#}
@@ -48,7 +53,7 @@
           {# Osano -#}
           {%- if let Some(osano_script_url) = analytics.osano_script_url -%}
             {# Cookie preferences -#}
-            {{ macros::cookie_button(id = "btn-cookies-mobile", close_drawer = true, extra_styles = "mt-4 mb-8") -}}
+            {{ ui::cookie_button(id = "btn-cookies-mobile", close_drawer = true, extra_styles = "mt-4 mb-8") -}}
             {# End cookie preferences -#}
           {%- endif -%}
         {% endif -%}
@@ -73,21 +78,7 @@
   {# End overlay -#}
   {# End mobile menu -#}
 
-  <script type="module">
-    import {
-      closeNavigationDrawer
-    } from '/static/js/dashboard/base.js';
-
-    const closeMenuBtn = document.getElementById('close-menu');
-    if (closeMenuBtn) {
-      closeMenuBtn.addEventListener('click', closeNavigationDrawer);
-    }
-
-    const backdropMenu = document.getElementById('drawer-backdrop');
-    if (backdropMenu) {
-      backdropMenu.addEventListener('click', closeNavigationDrawer);
-    }
-  </script>
+  <script type="module" src="/static/js/dashboard/moderator/base.js"></script>
 
   {# Main Content -#}
   <div class="flex">
@@ -102,7 +93,7 @@
             {# Osano -#}
             {%- if let Some(osano_script_url) = analytics.osano_script_url -%}
               {# Cookie preferences -#}
-              {{ macros::cookie_button(extra_styles = "mt-4 mb-8") -}}
+              {{ ui::cookie_button(extra_styles = "mt-4 mb-8") -}}
               {# End cookie preferences -#}
             {%- endif -%}
           {% endif -%}
@@ -122,7 +113,9 @@
     </aside>
     {# End sticky menu -#}
 
-    <main class="w-full lg:w-[calc(100%-300px)] md:bg-white md:border md:border-stone-200 md:rounded-lg md:m-5 lg:ms-0 mt-[5.5rem] md:mt-[6.25rem] relative">
+    <main id="main-content"
+          class="w-full lg:w-[calc(100%-300px)] md:bg-white md:border md:border-stone-200 md:rounded-lg md:m-5 lg:ms-0 mt-[5.5rem] md:mt-[6.25rem] relative"
+          role="main">
       {% block dashboard_main -%}
       {% endblock dashboard_main -%}
     </main>

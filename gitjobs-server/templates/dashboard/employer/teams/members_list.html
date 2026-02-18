@@ -98,7 +98,7 @@
         <form id="add-member-form"
               hx-post="/dashboard/employer/team/members/add"
               hx-disabled-elt="#add-member-submit-button"
-              hx-spinner="#add-member-spinner"
+              hx-indicator="#add-member-spinner"
               hx-trigger="submit">
           <div class="mb-6">
             <div class="border border-primary-500 rounded-lg mb-10 mt-2 px-7 py-5 bg-primary-50/20"
@@ -113,8 +113,7 @@
               </ul>
             </div>
 
-            <label for="reject-reason"
-                   class="block mb-4 text-sm font-medium text-stone-900">Email</label>
+            <label for="email" class="block mb-4 text-sm font-medium text-stone-900">Email</label>
             <input id="email"
                    name="email"
                    type="email"

@@ -14,7 +14,8 @@
   <div class="flex justify-center">
     <button hx-get="/dashboard/employer/employers/add"
             hx-trigger="click"
-            hx-target="#dashboard-content, #initial-spinner"
+            hx-target="#dashboard-content"
+            hx-indicator="#initial-spinner"
             hx-disabled-elt="this"
             class="btn-primary">
       {{ ui::btn_spinner(id = "initial-spinner", spinner_type = "2") -}}

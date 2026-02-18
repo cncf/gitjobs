@@ -240,13 +240,18 @@
             <div class="flex items-center gap-x-3">
               <input id="fixed"
                      name="salary_kind"
+                     value="fixed"
                      type="radio"
                      checked
                      class="radio-primary">
               <label for="fixed" class="form-label">Fixed</label>
             </div>
             <div class="flex items-center gap-x-3">
-              <input id="range" name="salary_kind" type="radio" class="radio-primary">
+              <input id="range"
+                     name="salary_kind"
+                     value="range"
+                     type="radio"
+                     class="radio-primary">
               <label for="range" class="form-label">Range</label>
             </div>
           </div>
@@ -346,9 +351,7 @@
         <div class="col-span-full lg:col-span-3">
           <label for="upstream_commitment" class="form-label">Upstream commitment</label>
           <div class="mt-2 me-8">
-            <div class="mt-2 me-8">
-              <input-range name="upstream_commitment" step="5" type="type-2">
-            </div>
+            <input-range name="upstream_commitment" step="5" type="type-2">
           </div>
           <p class="form-legend">
             Percentage of time working on upstream open source projects the company depends on.
@@ -378,11 +381,10 @@
                 hx-ext="no-empty-vals"
                 hx-target="#preview-content"
                 hx-indicator="#preview-spinner"
-                type="button"
                 class="group btn-primary-outline">
           <span class="hidden md:block">Preview</span>
           <span class="block md:hidden">
-            <div class="svg-icon size-3 icon-eye group-hover:bg-white"></div>
+            <span class="svg-icon size-3 icon-eye group-hover:bg-white"></span>
           </span>
           {{ ui::btn_spinner(id = "preview-spinner") -}}
         </button>

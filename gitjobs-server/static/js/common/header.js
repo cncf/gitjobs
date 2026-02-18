@@ -37,7 +37,7 @@ const bindLifecycleListeners = () => {
   document.addEventListener("htmx:historyRestore", initUserDropdown);
   document.addEventListener("htmx:afterSwap", initUserDropdown);
   document.addEventListener("htmx:afterSwap", scrollToTopOnDashboardSwap);
-  window.addEventListener("pageshow", () => initUserDropdown());
+  window.addEventListener("pageshow", initUserDropdown);
 
   lifecycleListenersBound = true;
 };

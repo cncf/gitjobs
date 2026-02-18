@@ -81,8 +81,6 @@ export const shareJob = (root = document) => {
     const copyLink = socialLinks.querySelector("#copy-link");
     if (copyLink) {
       copyLink.setAttribute("href", shareUrl);
-      copyLink.setAttribute("target", "_blank");
-      copyLink.setAttribute("rel", "noopener noreferrer");
       copyLink.dataset.shareUrl = shareUrl;
 
       if (copyLink.dataset.copyInitialized !== "true") {
@@ -91,7 +89,7 @@ export const shareJob = (root = document) => {
           const currentShareUrl = copyLink.dataset.shareUrl || shareUrl;
           try {
             await copyToClipboard(currentShareUrl);
-          } catch (error) {
+          } catch {
             showErrorAlert("Something went wrong copying the link. Please try again later.");
             return;
           }

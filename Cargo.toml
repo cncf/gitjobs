@@ -13,24 +13,24 @@ rust-version = "1.93.1"
 
 [workspace.dependencies]
 anyhow = "1.0.102"
-askama = { version = "0.15.4", features = ["serde_json"] }
+askama = { version = "0.15.6", features = ["serde_json"] }
 async-trait = "0.1.89"
 axum = { version = "0.8.8", features = ["macros", "multipart"] }
 axum-login = "0.18.0"
 axum-extra = { version = "0.12.5", features = ["form", "typed-header"] }
 axum-messages = "0.8.0"
-cached = { version = "0.56.0", features = ["async"] }
+cached = { version = "0.59.0", features = ["async"] }
 chrono = { version = "0.4.44", features = ["serde"] }
 chrono-tz = { version = "0.10.4", features = ["serde"] }
-clap = { version = "4.5.60", features = ["derive"] }
+clap = { version = "4.6.0", features = ["derive"] }
 deadpool-postgres = { version = "0.14.1", features = ["serde"] }
 emojis = "0.8.0"
 figment = { version = "0.10.19", features = ["yaml", "env"] }
 futures = "0.3.32"
 garde = { version = "0.22.1", features = ["derive", "url", "email"] }
 human_format = "1.2.1"
-image = "0.25.9"
-lettre = { version = "0.11.19", default-features = false, features = ["builder", "hostname", "pool", "smtp-transport", "tokio1-rustls-tls"] }
+image = "0.25.10"
+lettre = { version = "0.11.20", default-features = false, features = ["builder", "hostname", "pool", "smtp-transport", "tokio1-rustls-tls"] }
 markdown = "1.0.0-alpha.24"
 mime_guess = "2.0.5"
 minify-html = "0.18.1"
@@ -38,11 +38,11 @@ mockall = "0.14.0"
 num-format = "0.4.4"
 oauth2 = "5.0.0"
 openidconnect = { version = "4.0.1", features = ["accept-rfc3339-timestamps"] }
-openssl = { version = "0.10.75", features = ["vendored"] }
+openssl = { version = "0.10.76", features = ["vendored"] }
 palette = "0.7.6"
 password-auth = "1.0.0"
 percent-encoding = "2.3.2"
-postgres-openssl = "0.5.2"
+postgres-openssl = "0.5.3"
 quick-xml = "0.39.2"
 rand = "0.10.0"
 regex = "1.12.3"
@@ -51,9 +51,9 @@ rust-embed = "8.11.0"
 serde = { version = "1.0.228", features = ["derive"] }
 serde_html_form = "0.4.0"
 serde_json = "1.0.149"
-serde_qs = { version = "1.0.0", features = ["axum"] }
-serde_with = "3.17.0"
-sha2 = "0.10.9"
+serde_qs = { version = "1.1.0", features = ["axum"] }
+serde_with = "3.18.0"
+sha2 = "0.11.0"
 strum = { version = "0.28.0", features = ["derive"] }
 thiserror = "2.0.18"
 time = "0.3.47"
@@ -65,7 +65,7 @@ tokio = { version = "1.50.0", features = [
     "sync",
     "time",
 ] }
-tokio-postgres = { version = "0.7.16", features = [
+tokio-postgres = { version = "0.7.17", features = [
     "with-chrono-0_4",
     "with-serde_json-1",
     "with-time-0_3",
@@ -74,9 +74,9 @@ tokio-postgres = { version = "0.7.16", features = [
 tokio-util = { version = "0.7.18", features = ["full"] }
 tower = "0.5.3"
 tower-http = { version = "0.6.8", features = ["auth", "fs", "set-header", "trace"] }
-tower-sessions = { version = "0.14.0", features = ["signed"] }
+tower-sessions = { version = "0.15.0", features = ["signed"] }
 tracing = "0.1.44"
-tracing-subscriber = { version = "0.3.22", features = ["env-filter", "json"] }
-unicode-segmentation = "1.12.0"
-uuid = { version = "1.22.0", features = ["serde", "v4"] }
-which = "8.0.1"
+tracing-subscriber = { version = "0.3.23", features = ["env-filter", "json"] }
+unicode-segmentation = "1.13.2"
+uuid = { version = "1.23.0", features = ["serde", "v4"] }
+which = "8.0.2"

@@ -273,14 +273,16 @@ export class MultiSelect extends LitWrapper {
               </li>`;
             })}
           </ul>
-          ${this.enteredValue.length > 0
-            ? html`<div class="flex items-center justify-between py-1 px-4">
-                <div class="truncate text-sm leading-[27px] ps-5">${this.enteredValue}</div>
-                <button type="button" @click=${() => this._onClickOption()} class="btn-primary btn-mini">
-                  Add
-                </button>
-              </div>`
-            : ""}
+          ${
+            this.enteredValue.length > 0
+              ? html`<div class="flex items-center justify-between py-1 px-4">
+                  <div class="truncate text-sm leading-[27px] ps-5">${this.enteredValue}</div>
+                  <button type="button" @click=${() => this._onClickOption()} class="btn-primary btn-mini">
+                    Add
+                  </button>
+                </div>`
+              : ""
+          }
         </div>
       </div>
       ${this.selected.map((option) => html`<input type="hidden" name="${this.name}[]" value="${option}" />`)}

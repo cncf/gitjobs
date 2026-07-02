@@ -197,27 +197,32 @@ export class InputRange extends LitWrapper {
           max="${this.max}"
           step="${this.step}"
           value="${this.value}"
-          class="w-full h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer ${this.colors[this.type]
-            .thumb}"
-          style="background-image: linear-gradient(90deg, ${this.colors[this.type][
-            "progress-line"
-          ]} 0%, ${this.colors[this.type]["progress-line"]} ${this
-            .percentValue}%, rgb(231 229 228 / var(--tw-bg-opacity, 1)) ${this
-            .percentValue}%, rgb(231 229 228 / var(--tw-bg-opacity, 1)) 100%);"
+          class="w-full h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer ${
+            this.colors[this.type].thumb
+          }"
+          style="background-image: linear-gradient(90deg, ${
+            this.colors[this.type]["progress-line"]
+          } 0%, ${this.colors[this.type]["progress-line"]} ${
+            this.percentValue
+          }%, rgb(231 229 228 / var(--tw-bg-opacity, 1)) ${
+            this.percentValue
+          }%, rgb(231 229 228 / var(--tw-bg-opacity, 1)) 100%);"
         />
         <div
           role="tooltip"
-          class="duration-100 transition-opacity ${this.visibleTooltip
-            ? ""
-            : "opacity-0"} absolute z-10 inline-block px-2 py-1 text-sm font-medium text-white text-center ${this
-            .colors[this.type]["bg-color"]} rounded-lg shadow-xs tooltip top-8 start-[8.5px] -ms-8 w-16"
+          class="duration-100 transition-opacity ${
+            this.visibleTooltip ? "" : "opacity-0"
+          } absolute z-10 inline-block px-2 py-1 text-sm font-medium text-white text-center ${
+            this.colors[this.type]["bg-color"]
+          } rounded-lg shadow-xs tooltip top-8 start-[8.5px] -ms-8 w-16"
           style="left: calc(${this.percentValue}% + ${this.offset}px);"
         >
           <small>${this.prefix}</small><span>${this._prettyNumber(this.value)}</span
           ><small>${this.unit}</small>
           <div
-            class="h-0 w-0 border-x-[6px] border-x-transparent border-b-[6px] ${this.colors[this.type]
-              .peak} absolute -top-1.5 start-[calc(50%-6px)]"
+            class="h-0 w-0 border-x-[6px] border-x-transparent border-b-[6px] ${
+              this.colors[this.type].peak
+            } absolute -top-1.5 start-[calc(50%-6px)]"
           ></div>
         </div>
         <div class="mx-[15px]">

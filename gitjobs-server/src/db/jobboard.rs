@@ -1,10 +1,8 @@
 //! This module defines some database functionality for the job board.
 
-use std::time::Duration;
-
 use anyhow::Result;
 use async_trait::async_trait;
-use cached::proc_macro::cached;
+use cached::macros::cached;
 use deadpool_postgres::Object;
 use serde::{Deserialize, Serialize};
 use tokio_postgres::types::Json;
@@ -71,11 +69,10 @@ impl DBJobBoard for PgDB {
     #[instrument(skip(self))]
     async fn get_jobs_filters_options(&self) -> Result<FiltersOptions> {
         #[cached(
-            time = 3600,
+            ttl = 3600,
             key = "&str",
             convert = r#"{ "jobs_filters_options" }"#,
-            sync_writes = "by_key",
-            result = true
+            sync_writes = "by_key"
         )]
         async fn inner(db: Object) -> Result<FiltersOptions> {
             trace!("db: get jobs filters options");

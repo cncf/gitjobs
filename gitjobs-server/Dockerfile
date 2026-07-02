@@ -1,5 +1,5 @@
 # Build server
-FROM rust:1-alpine3.23 AS builder
+FROM rust:1.96.1-alpine3.24 AS builder
 RUN apk --no-cache add musl-dev perl make
 RUN wget -O /usr/local/bin/tailwindcss https://github.com/tailwindlabs/tailwindcss/releases/download/v4.0.17/tailwindcss-linux-x64-musl
 RUN chmod +x /usr/local/bin/tailwindcss
@@ -9,10 +9,10 @@ COPY docs/about.md docs/about.md
 COPY gitjobs-server gitjobs-server
 COPY gitjobs-syncer/Cargo.* gitjobs-syncer
 WORKDIR /gitjobs/gitjobs-server
-RUN cargo build --release
+RUN cargo build --release --locked
 
 # Final stage
-FROM alpine:3.23.3
+FROM alpine:3.24.1
 RUN apk --no-cache add ca-certificates && addgroup -S gitjobs && adduser -S gitjobs -G gitjobs
 USER gitjobs
 WORKDIR /home/gitjobs

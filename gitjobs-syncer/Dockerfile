@@ -3,7 +3,7 @@ FROM rust:1.96.1-alpine3.24 AS builder
 RUN apk --no-cache add musl-dev perl make
 WORKDIR /gitjobs
 COPY Cargo.* ./
-COPY gitjobs-server/Cargo.* gitjobs-server
+COPY gitjobs-server gitjobs-server
 COPY gitjobs-syncer gitjobs-syncer
 WORKDIR /gitjobs/gitjobs-syncer
 RUN cargo build --release --locked

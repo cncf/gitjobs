@@ -1,4 +1,4 @@
-use std::{collections::HashMap, fs, path::Path, process::Command};
+use std::{collections::HashMap, fmt::Write, fs, path::Path, process::Command};
 
 use anyhow::{Result, bail};
 use sha2::{Digest, Sha256};
@@ -142,7 +142,12 @@ fn add_file_to_manifest(path: &Path, manifest: &mut HashMap<String, String>) -> 
 fn calculate_hash(content: &[u8]) -> String {
     let mut hasher = Sha256::new();
     hasher.update(content);
-    format!("{:x}", hasher.finalize())
+
+    let mut hash = String::with_capacity(64);
+    for byte in hasher.finalize() {
+        write!(&mut hash, "{byte:02x}").expect("writing to string should not fail");
+    }
+    hash
 }
 
 /// Helper function to copy a directory recursively.

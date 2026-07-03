@@ -6,7 +6,7 @@ use axum::{
     extract::State,
     response::{Html, IntoResponse},
 };
-use cached::proc_macro::cached;
+use cached::macros::cached;
 use chrono::Duration;
 use tower_sessions::Session;
 use tracing::instrument;
@@ -39,12 +39,7 @@ pub(crate) async fn page(
 }
 
 /// Prepares and caches the about page content as HTML from Markdown source.
-#[cached(
-    key = "&str",
-    convert = r#"{ "about_content" }"#,
-    sync_writes = "by_key",
-    result = true
-)]
+#[cached(key = "&str", convert = r#"{ "about_content" }"#, sync_writes = "by_key")]
 pub(crate) fn prepare_content() -> Result<String> {
     let md = include_str!("../../../../docs/about.md");
     let options = markdown::Options::gfm();

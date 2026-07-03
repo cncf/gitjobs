@@ -1,6 +1,9 @@
 import { test, expect } from "@playwright/test";
 import { loginWithCredentials } from "../../shared/utils";
-import { navigateHomeWithRetries } from "../../shared/helpers";
+import {
+  navigateHomeWithRetries,
+  navigateWithRetries,
+} from "../../shared/helpers";
 
 test.describe("GitJobs - Job Seeker Profile", () => {
   test.beforeEach(async ({ page }) => {
@@ -28,7 +31,11 @@ test.describe("GitJobs - Job Seeker Profile", () => {
     };
 
     await loginWithCredentials(page, "test", "test1234");
-    await page.goto("/dashboard/job-seeker", { waitUntil: "domcontentloaded" });
+    await navigateWithRetries(
+      page,
+      "/dashboard/job-seeker",
+      "job seeker dashboard",
+    );
     await page.locator("#name").waitFor({ state: "visible", timeout: 10000 });
 
     await page.locator("#name").fill("Test User");

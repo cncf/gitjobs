@@ -1,6 +1,9 @@
 import { test, expect } from "@playwright/test";
 import { loginWithCredentials } from "../../shared/utils";
-import { navigateHomeWithRetries } from "../../shared/helpers";
+import {
+  navigateHomeWithRetries,
+  navigateWithRetries,
+} from "../../shared/helpers";
 
 test.describe("GitJobs - Employer Applications", () => {
   test.beforeEach(async ({ page }) => {
@@ -11,7 +14,11 @@ test.describe("GitJobs - Employer Applications", () => {
     page,
   }) => {
     await loginWithCredentials(page, "test", "test1234");
-    await page.goto("/dashboard/employer?tab=applications");
+    await navigateWithRetries(
+      page,
+      "/dashboard/employer?tab=applications",
+      "employer applications dashboard",
+    );
 
     const jobsButton = page.locator("#jobs-btn");
     await expect(jobsButton).toHaveCount(1);
@@ -37,7 +44,11 @@ test.describe("GitJobs - Employer Applications", () => {
     page,
   }) => {
     await loginWithCredentials(page, "test", "test1234");
-    await page.goto("/dashboard/employer?tab=applications");
+    await navigateWithRetries(
+      page,
+      "/dashboard/employer?tab=applications",
+      "employer applications dashboard",
+    );
 
     const jobsButton = page.locator("#jobs-btn");
     await expect(jobsButton).toHaveCount(1);
@@ -61,7 +72,11 @@ test.describe("GitJobs - Employer Applications", () => {
     page,
   }) => {
     await loginWithCredentials(page, "test", "test1234");
-    await page.goto("/dashboard/employer?tab=applications");
+    await navigateWithRetries(
+      page,
+      "/dashboard/employer?tab=applications",
+      "employer applications dashboard",
+    );
 
     const jobsButton = page.locator("#jobs-btn");
     await expect(jobsButton).toHaveCount(1);

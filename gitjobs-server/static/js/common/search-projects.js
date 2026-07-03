@@ -290,9 +290,9 @@ export class SearchProjects extends LitWrapper {
           @input=${this._onInputChange}
           type="text"
           .value="${this.enteredValue}"
-          class="input-primary py-0.5 peer ps-9 rounded-lg text-[0.775rem]/6 text-stone-700 ${isDisabled
-            ? "opacity-50"
-            : ""}"
+          class="input-primary py-0.5 peer ps-9 rounded-lg text-[0.775rem]/6 text-stone-700 ${
+            isDisabled ? "opacity-50" : ""
+          }"
           placeholder="Search projects"
           autocomplete="off"
           autocorrect="off"
@@ -308,96 +308,100 @@ export class SearchProjects extends LitWrapper {
         </div>
         <div class="absolute z-10 start-0 end-0 ${this.alignment === "top" ? "-top-[193px] h-[186px]" : ""}">
           <div
-            class="${this.alignment === "top" ? "h-full" : ""} ${!this.visibleDropdown
-              ? "hidden"
-              : ""} bg-white divide-y divide-stone-100 rounded-lg shadow w-full border border-stone-200 mt-1"
+            class="${this.alignment === "top" ? "h-full" : ""} ${
+              !this.visibleDropdown ? "hidden" : ""
+            } bg-white divide-y divide-stone-100 rounded-lg shadow w-full border border-stone-200 mt-1"
           >
-            ${this.visibleOptions !== null && this.visibleOptions.length > 0 && this.visibleDropdown
-              ? html`<ul class="text-sm text-stone-700 overflow-auto max-h-[180px]">
-                  ${this.visibleOptions.map((option, index) => {
-                    const isSelected = this.selected.some(
-                      (item) => item.name === option.name && item.foundation === option.foundation,
-                    );
-                    return html`<li
-                      class="group ${this.activeIndex === index ? "active" : ""}"
-                      data-index="${index}"
-                    >
-                      <button
-                        type="button"
-                        @click=${() => this._onSelect(option)}
-                        @mouseover=${() => (this.activeIndex = index)}
-                        class=${`group-[.active]:bg-stone-100 ${
-                          isSelected ? "bg-stone-100 opacity-50" : "cursor-pointer hover:bg-stone-100"
-                        } capitalize block w-full text-left px-3 py-1`}
-                        ?disabled="${isSelected}"
+            ${
+              this.visibleOptions !== null && this.visibleOptions.length > 0 && this.visibleDropdown
+                ? html`<ul class="text-sm text-stone-700 overflow-auto max-h-[180px]">
+                    ${this.visibleOptions.map((option, index) => {
+                      const isSelected = this.selected.some(
+                        (item) => item.name === option.name && item.foundation === option.foundation,
+                      );
+                      return html`<li
+                        class="group ${this.activeIndex === index ? "active" : ""}"
+                        data-index="${index}"
                       >
-                        <div class="flex items-center space-x-3">
-                          <div class="size-8 shrink-0 flex items-center justify-center">
-                            <img
-                              loading="lazy"
-                              class="size-8 object-contain"
-                              height="auto"
-                              width="auto"
-                              src="${option.logo_url}"
-                              alt="${option.name} logo"
-                            />
-                          </div>
-                          <div class="flex flex-col justify-start min-w-0">
-                            <div class="truncate text-start text-xs/5 text-stone-700 font-medium">
-                              ${option.name}
+                        <button
+                          type="button"
+                          @click=${() => this._onSelect(option)}
+                          @mouseover=${() => (this.activeIndex = index)}
+                          class=${`group-[.active]:bg-stone-100 ${
+                            isSelected ? "bg-stone-100 opacity-50" : "cursor-pointer hover:bg-stone-100"
+                          } capitalize block w-full text-left px-3 py-1`}
+                          ?disabled="${isSelected}"
+                        >
+                          <div class="flex items-center space-x-3">
+                            <div class="size-8 shrink-0 flex items-center justify-center">
+                              <img
+                                loading="lazy"
+                                class="size-8 object-contain"
+                                height="auto"
+                                width="auto"
+                                src="${option.logo_url}"
+                                alt="${option.name} logo"
+                              />
                             </div>
-                            <div class="inline-flex">
-                              <div
-                                class="truncate text-nowrap uppercase max-w-[100%] text-[0.65rem] font-medium text-stone-500/75"
-                              >
-                                ${option.maturity}
+                            <div class="flex flex-col justify-start min-w-0">
+                              <div class="truncate text-start text-xs/5 text-stone-700 font-medium">
+                                ${option.name}
+                              </div>
+                              <div class="inline-flex">
+                                <div
+                                  class="truncate text-nowrap uppercase max-w-[100%] text-[0.65rem] font-medium text-stone-500/75"
+                                >
+                                  ${option.maturity}
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
-                      </button>
-                    </li>`;
-                  })}
-                </ul>`
-              : html`<div class="px-8 py-4 text-sm/6 text-stone-600 italic">No projects found</div>`}
+                        </button>
+                      </li>`;
+                    })}
+                  </ul>`
+                : html`<div class="px-8 py-4 text-sm/6 text-stone-600 italic">No projects found</div>`
+            }
           </div>
         </div>
-        ${this.selected.length > 0
-          ? html`<div class="flex gap-2 mt-4 ${this.viewType === "rows" ? "flex-col" : "flex-wrap"}">
-              ${this.selected.map(
-                (opt, index) =>
-                  html` <button
-                      type="button"
-                      @click=${() => this._onRemove(opt.name)}
-                      class="inline-flex items-center justify-between ps-2 pe-1 py-1 bg-white border rounded-lg cursor-pointer select-none border-primary-500 text-primary-500 max-w-full group"
-                    >
-                      <div class="flex items-center justify-between space-x-3 w-full">
-                        <div class="text-[0.8rem] text-center text-nowrap capitalize truncate">
-                          <span class="uppercase text-[0.65rem] font-medium text-stone-500/75"
-                            >${opt.foundation}:</span
-                          >
-                          ${unnormalize(opt.name)}
+        ${
+          this.selected.length > 0
+            ? html`<div class="flex gap-2 mt-4 ${this.viewType === "rows" ? "flex-col" : "flex-wrap"}">
+                ${this.selected.map(
+                  (opt, index) =>
+                    html` <button
+                        type="button"
+                        @click=${() => this._onRemove(opt.name)}
+                        class="inline-flex items-center justify-between ps-2 pe-1 py-1 bg-white border rounded-lg cursor-pointer select-none border-primary-500 text-primary-500 max-w-full group"
+                      >
+                        <div class="flex items-center justify-between space-x-3 w-full">
+                          <div class="text-[0.8rem] text-center text-nowrap capitalize truncate">
+                            <span class="uppercase text-[0.65rem] font-medium text-stone-500/75"
+                              >${opt.foundation}:</span
+                            >
+                            ${unnormalize(opt.name)}
+                          </div>
+                          <div
+                            class="svg-icon size-4 icon-close bg-stone-500 group-hover:bg-stone-800 shrink-0"
+                          ></div>
                         </div>
-                        <div
-                          class="svg-icon size-4 icon-close bg-stone-500 group-hover:bg-stone-800 shrink-0"
-                        ></div>
-                      </div>
-                    </button>
-                    <input
-                      type="hidden"
-                      form="${this.form}"
-                      name="projects[${index}][name]"
-                      value="${opt.name}"
-                    />
-                    <input
-                      type="hidden"
-                      form="${this.form}"
-                      name="projects[${index}][foundation]"
-                      value="${opt.foundation}"
-                    />`,
-              )}
-            </div>`
-          : ""}
+                      </button>
+                      <input
+                        type="hidden"
+                        form="${this.form}"
+                        name="projects[${index}][name]"
+                        value="${opt.name}"
+                      />
+                      <input
+                        type="hidden"
+                        form="${this.form}"
+                        name="projects[${index}][foundation]"
+                        value="${opt.foundation}"
+                      />`,
+                )}
+              </div>`
+            : ""
+        }
       </div>`;
   }
 }

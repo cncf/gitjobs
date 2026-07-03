@@ -33,7 +33,7 @@ pub(crate) async fn archiver(db: DynDB, cancellation_token: CancellationToken) {
 
         // Pause for a while before the next iteration
         tokio::select! {
-            () = sleep(Duration::from_secs(60*60)) => {},
+            () = sleep(Duration::from_hours(1)) => {},
             () = cancellation_token.cancelled() => break,
         }
     }

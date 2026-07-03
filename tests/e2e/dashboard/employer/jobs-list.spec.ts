@@ -4,7 +4,10 @@ import {
   openEmployerActionsDropdown,
   switchEmployerIfAvailable,
 } from "../../shared/utils";
-import { navigateHomeWithRetries } from "../../shared/helpers";
+import {
+  navigateHomeWithRetries,
+  navigateWithRetries,
+} from "../../shared/helpers";
 
 test.describe("GitJobs - Employer Jobs List", () => {
   test.beforeEach(async ({ page }) => {
@@ -15,7 +18,11 @@ test.describe("GitJobs - Employer Jobs List", () => {
     page,
   }) => {
     await loginWithCredentials(page, "test", "test1234");
-    await page.goto("/dashboard/employer?tab=jobs");
+    await navigateWithRetries(
+      page,
+      "/dashboard/employer?tab=jobs",
+      "employer jobs dashboard",
+    );
 
     const actionsDropdown = await openEmployerActionsDropdown(page);
     if (!actionsDropdown) {
@@ -39,7 +46,11 @@ test.describe("GitJobs - Employer Jobs List", () => {
     page,
   }) => {
     await loginWithCredentials(page, "test", "test1234");
-    await page.goto("/dashboard/employer?tab=jobs");
+    await navigateWithRetries(
+      page,
+      "/dashboard/employer?tab=jobs",
+      "employer jobs dashboard",
+    );
 
     const actionsDropdown = await openEmployerActionsDropdown(page);
     if (!actionsDropdown) {
@@ -62,7 +73,11 @@ test.describe("GitJobs - Employer Jobs List", () => {
     page,
   }) => {
     await loginWithCredentials(page, "test", "test1234");
-    await page.goto("/dashboard/employer?tab=jobs");
+    await navigateWithRetries(
+      page,
+      "/dashboard/employer?tab=jobs",
+      "employer jobs dashboard",
+    );
 
     const actionsDropdown = await openEmployerActionsDropdown(page);
     if (!actionsDropdown) {
@@ -90,7 +105,11 @@ test.describe("GitJobs - Employer Jobs List", () => {
     page,
   }) => {
     await loginWithCredentials(page, "test", "test1234");
-    await page.goto("/dashboard/employer?tab=jobs");
+    await navigateWithRetries(
+      page,
+      "/dashboard/employer?tab=jobs",
+      "employer jobs dashboard",
+    );
 
     let actionButtons = page.locator(
       '.btn-actions[data-action-dropdown-bound="true"]:visible',

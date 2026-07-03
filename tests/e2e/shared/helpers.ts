@@ -1,11 +1,14 @@
 import { expect, Page } from "@playwright/test";
 
-export const navigateHomeWithRetries = async (page: Page): Promise<void> => {
+export const navigateWithRetries = async (
+  page: Page,
+  path: string,
+  label = path,
+): Promise<void> => {
   let lastError: unknown;
   for (let attempt = 0; attempt < 3; attempt++) {
     try {
-      await page.goto("/", { timeout: 9000 });
-      await page.waitForLoadState("domcontentloaded");
+      await page.goto(path, { timeout: 9000, waitUntil: "domcontentloaded" });
       return;
     } catch (error) {
       lastError = error;
@@ -13,8 +16,12 @@ export const navigateHomeWithRetries = async (page: Page): Promise<void> => {
   }
 
   throw new Error(
-    `Failed to navigate to home page after 3 attempts: ${String(lastError)}`,
+    `Failed to navigate to ${label} after 3 attempts: ${String(lastError)}`,
   );
+};
+
+export const navigateHomeWithRetries = async (page: Page): Promise<void> => {
+  await navigateWithRetries(page, "/", "home page");
 };
 
 export const countVisibleNoDataMessages = async (

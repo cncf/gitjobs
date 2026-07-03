@@ -3,7 +3,7 @@
 use std::{collections::HashMap, sync::LazyLock, time::Duration};
 
 use anyhow::Result;
-use cached::proc_macro::cached;
+use cached::macros::cached;
 use regex::Regex;
 use serde::{Deserialize, Deserializer};
 use tracing::{debug, warn};
@@ -136,7 +136,7 @@ pub(crate) async fn normalize_salary(
 
 /// Return current exchange rates, defaulting to backup ones if the current
 /// ones aren't available. Rates will be cached for 1 day.
-#[cached(time = 86400, sync_writes = "by_key")]
+#[cached(ttl = 86400, sync_writes = "by_key")]
 async fn get_exchange_rates() -> HashMap<String, f64> {
     // Exchange rates as of 2024-04-28.
     let backup_exchange_rates = HashMap::from([

@@ -12,7 +12,7 @@ use async_trait::async_trait;
 use mockall::automock;
 use time::{
     OffsetDateTime,
-    format_description::{self, FormatItem},
+    format_description::{self, OwnedFormatItem},
 };
 use tokio::{
     sync::mpsc,
@@ -26,13 +26,14 @@ use crate::db::event_tracker::DynDBEventTracker;
 
 /// Format used to represent the date in the tracker.
 /// The format is `[year]-[month]-[day]`, e.g., "2024-06-01".
-static DATE_FORMAT: LazyLock<Vec<FormatItem<'static>>> =
-    LazyLock::new(|| format_description::parse("[year]-[month]-[day]").expect("format to be valid"));
+static DATE_FORMAT: LazyLock<OwnedFormatItem> = LazyLock::new(|| {
+    format_description::parse_owned::<1>("[year]-[month]-[day]").expect("format to be valid")
+});
 
 /// How often events will be written to the database.
 /// In production, this is 5 minutes; in tests, 100ms.
 #[cfg(not(test))]
-const FLUSH_FREQUENCY: Duration = Duration::from_secs(300);
+const FLUSH_FREQUENCY: Duration = Duration::from_mins(5);
 #[cfg(test)]
 const FLUSH_FREQUENCY: Duration = Duration::from_millis(100);
 

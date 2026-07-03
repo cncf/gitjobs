@@ -8,6 +8,7 @@ import {
 } from "../shared/utils";
 import {
   navigateHomeWithRetries,
+  navigateWithRetries,
   waitForOnlyJobTypeResults,
   waitForOnlyJobTypeSetResults,
 } from "../shared/helpers";
@@ -22,7 +23,7 @@ test.describe("GitJobs - Jobboard", () => {
   const previewTitle = (page: Page) => page.getByTestId("preview-job-title");
 
   const openFirstPageWithPagination = async (page: Page): Promise<void> => {
-    await page.goto("/?limit=1");
+    await navigateWithRetries(page, "/?limit=1", "jobboard first page");
     await expect(page.locator("#results")).toHaveText(
       /^1 - 1 of \d+ results$/,
       {

@@ -1,11 +1,9 @@
 //! This module provides database operations for authentication and authorization.
 
-use std::time::Duration;
-
 use anyhow::Result;
 use async_trait::async_trait;
 use axum_login::tower_sessions::session;
-use cached::proc_macro::cached;
+use cached::macros::cached;
 use deadpool_postgres::Object;
 use tokio_postgres::types::Json;
 use tracing::{instrument, trace};
@@ -233,11 +231,10 @@ impl DBAuth for PgDB {
     #[instrument(skip(self), err)]
     async fn is_image_public(&self, image_id: &Uuid) -> Result<bool> {
         #[cached(
-            time = 86400,
+            ttl = 86400,
             key = "Uuid",
             convert = r#"{ image_id.clone() }"#,
-            sync_writes = "by_key",
-            result = true
+            sync_writes = "by_key"
         )]
         async fn inner(db: Object, image_id: &Uuid) -> Result<bool> {
             trace!("db: check if image is public");

@@ -1,6 +1,9 @@
 import { test, expect } from "@playwright/test";
 import { loginWithCredentials } from "../../shared/utils";
-import { navigateHomeWithRetries } from "../../shared/helpers";
+import {
+  navigateHomeWithRetries,
+  navigateWithRetries,
+} from "../../shared/helpers";
 
 test.describe("GitJobs - Moderator Jobs", () => {
   test.beforeEach(async ({ page }) => {
@@ -12,7 +15,11 @@ test.describe("GitJobs - Moderator Jobs", () => {
   }) => {
     await loginWithCredentials(page, "test", "test1234");
     await page.setViewportSize({ width: 375, height: 667 });
-    await page.goto("/dashboard/moderator", { waitUntil: "domcontentloaded" });
+    await navigateWithRetries(
+      page,
+      "/dashboard/moderator",
+      "moderator dashboard",
+    );
 
     const openMenuButton = page.locator("#open-menu-button");
     await expect(openMenuButton).toBeVisible();

@@ -1,6 +1,9 @@
 import { test, expect } from "@playwright/test";
 import { loginWithCredentials } from "../../shared/utils";
-import { navigateHomeWithRetries } from "../../shared/helpers";
+import {
+  navigateHomeWithRetries,
+  navigateWithRetries,
+} from "../../shared/helpers";
 
 test.describe("GitJobs - Employer Jobs Form", () => {
   test.beforeEach(async ({ page }) => {
@@ -9,17 +12,21 @@ test.describe("GitJobs - Employer Jobs Form", () => {
 
   test("should add a new job", async ({ page }) => {
     await loginWithCredentials(page, "test", "test1234");
-    await page.goto("/dashboard/employer/jobs/add", {
-      waitUntil: "domcontentloaded",
-    });
+    await navigateWithRetries(
+      page,
+      "/dashboard/employer/jobs/add",
+      "add employer job page",
+    );
 
     const titleField = page.locator("#title");
     try {
       await titleField.waitFor({ state: "visible", timeout: 5000 });
     } catch {
-      await page.goto("/dashboard/employer?tab=jobs", {
-        waitUntil: "domcontentloaded",
-      });
+      await navigateWithRetries(
+        page,
+        "/dashboard/employer?tab=jobs",
+        "employer jobs dashboard",
+      );
       const addJobButton = page.getByRole("button", { name: "Add Job" });
       await addJobButton.waitFor({ state: "visible", timeout: 10000 });
       await addJobButton.click();

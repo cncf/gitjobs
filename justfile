@@ -134,8 +134,8 @@ syncer-watch:
 
 # Frontend
 
-e2e-tests:
-    npx playwright test
+e2e-tests *args:
+    npx playwright test --config tests/e2e/playwright.config.ts {{ args }}
 
 # Format and lint frontend code.
 frontend-fmt-and-lint:

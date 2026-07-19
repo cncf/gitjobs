@@ -125,7 +125,7 @@ export const renderEmbedCode = () => {
 
 <!-- Uncomment the following lines for resizing iframes dynamically using open-iframe-resizer
 <script type="module">
-  import { initialize } from "https://cdn.jsdelivr.net/npm/@open-iframe-resizer/core@latest/dist/index.js";
+  import { initialize } from "https://cdn.jsdelivr.net/npm/@open-iframe-resizer/core@latest/dist/index.min.js";
   initialize({}, "#${EMBED_IFRAME_ID}");
 </script> -->`;
 };

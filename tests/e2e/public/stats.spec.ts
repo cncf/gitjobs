@@ -1,44 +1,51 @@
 import { test, expect } from "@playwright/test";
 import {
-  navigateHomeWithRetries,
   countVisibleNoDataMessages,
+  navigateHomeWithRetries,
+  navigateWithRetries,
 } from "../shared/helpers";
 
 test.describe("GitJobs - Stats", () => {
-  test.beforeEach(async ({ page }) => {
-    await navigateHomeWithRetries(page);
-  });
+  test("should show loading indicators until charts render", async ({
+    baseURL,
+    browser,
+    page,
+  }) => {
+    if (!baseURL) {
+      throw new Error("Playwright baseURL is required for the stats test");
+    }
 
-  test("should show loading indicators until charts render", async ({ page }) => {
-    // Pause chart initialization to verify the server-rendered loading state
-    let releaseStatsScript = () => {};
-    const statsScriptBlocked = new Promise<void>((resolve) => {
-      releaseStatsScript = () => resolve();
+    const loadingContext = await browser.newContext({
+      baseURL,
+      javaScriptEnabled: false,
     });
+    try {
+      const loadingPage = await loadingContext.newPage();
+      await navigateWithRetries(loadingPage, "/stats", "stats page");
 
-    await page.route("**/static/js/jobboard/stats.js", async (route) => {
-      await statsScriptBlocked;
-      await route.continue();
-    });
+      const loadingChartContainers = loadingPage.locator(
+        "#line-chart, #bar-daily, #bar-monthly",
+      );
+      const loadingIndicators = loadingPage.locator("[data-chart-loading]");
+      await expect(loadingChartContainers).toHaveCount(3);
+      await expect(loadingIndicators).toHaveCount(3);
+      for (const chartContainer of await loadingChartContainers.all()) {
+        await expect(chartContainer).toHaveAttribute("aria-busy", "true");
+      }
+      for (const loadingIndicator of await loadingIndicators.all()) {
+        await expect(loadingIndicator).toBeVisible();
+      }
+    } finally {
+      await loadingContext.close();
+    }
 
-    const navigationPromise = page.getByRole("link", { name: "Stats" }).click();
-    await page.waitForURL(/\/stats/);
-
-    const chartContainers = page.locator("#line-chart, #bar-daily, #bar-monthly");
+    await navigateWithRetries(page, "/stats", "stats page");
+    const chartContainers = page.locator(
+      "#line-chart, #bar-daily, #bar-monthly",
+    );
     const chartLoadingIndicators = page.locator("[data-chart-loading]");
     await expect(chartContainers).toHaveCount(3);
     await expect(chartLoadingIndicators).toHaveCount(3);
-    for (const chartContainer of await chartContainers.all()) {
-      await expect(chartContainer).toHaveAttribute("aria-busy", "true");
-    }
-    for (const loadingIndicator of await chartLoadingIndicators.all()) {
-      await expect(loadingIndicator).toBeVisible();
-    }
-
-    // Resume chart initialization and verify every chart reaches its ready state
-    releaseStatsScript();
-    await navigationPromise;
-
     for (const loadingIndicator of await chartLoadingIndicators.all()) {
       await expect(loadingIndicator).toBeHidden({ timeout: 15000 });
     }
@@ -51,6 +58,8 @@ test.describe("GitJobs - Stats", () => {
     page,
     browserName,
   }) => {
+    await navigateHomeWithRetries(page);
+
     await page.getByRole("link", { name: "Stats" }).click();
     await expect(page).toHaveURL(/\/stats/);
 

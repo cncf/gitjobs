@@ -53,7 +53,29 @@ jobs:
         uses: creyD/prettier_action@v4.6
         with:
           dry: true
-          prettier_options: --check gitjobs-server/static/js/**/*.js --config gitjobs-server/static/js/.prettierrc.yaml
+          prettier_options: --check gitjobs-server/static/js/**/*.js tests/unit/**/*.js tests/unit/**/*.mjs --config gitjobs-server/static/js/.prettierrc.yaml
+
+  test-frontend-unit:
+    runs-on:
+      labels: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: tests/unit/package-lock.json
+      - name: Install dependencies
+        working-directory: tests/unit
+        run: npm ci
+      - name: Install Chromium
+        working-directory: tests/unit
+        run: npx playwright install --with-deps chromium
+      - name: Run frontend unit tests
+        working-directory: tests/unit
+        run: npm test
 
   test-database:
     runs-on:

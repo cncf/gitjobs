@@ -8,4 +8,6 @@ gitjobs-server/static/css/styles.css
 node_modules
 package-lock.json
 package.json
+!tests/e2e/package-lock.json
+!tests/e2e/package.json
 test-results

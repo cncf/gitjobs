@@ -50,14 +50,14 @@ jobs:
       - name: Set up Node.js environment
         uses: actions/setup-node@v5
         with:
-          node-version: '20'
+          node-version: "20"
 
-      - name: Initialize npm and install dependencies
-        run: |
-          npm init -y
-          npm install -D @playwright/test wait-on
+      - name: Install E2E dependencies
+        working-directory: tests/e2e
+        run: npm ci
 
       - name: Install Playwright Browsers
+        working-directory: tests/e2e
         run: npx playwright install --with-deps
 
       - name: Install Tailwind CSS
@@ -125,6 +125,7 @@ jobs:
           log-output-if: true
 
       - name: Run Playwright tests
-        run: npx playwright test --config tests/e2e/playwright.config.ts
+        working-directory: tests/e2e
+        run: npx playwright test --config playwright.config.js
         env:
           BASE_URL: http://127.0.0.1:8080

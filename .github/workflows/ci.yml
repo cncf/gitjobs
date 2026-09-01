@@ -35,7 +35,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v5
       - name: Install djlint
-        run: pip install djlint==1.36.4
+        run: pip install djlint==1.44.2
       - name: Run djlint
         run: |
           djlint \

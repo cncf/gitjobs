@@ -144,9 +144,11 @@
     <div>
       {{ filters_subtitle(text = "Location") -}}
       {% if let Some(location) = filters.location -%}
-        <search-location form="{{ form }}" device="{{ device }}" locationId="{{ location.location_id }}" city="{{ location.city }}" state="{{ location.state|display_some }}" country="{{ location.country }}" withDistance="true" distance="{{ filters.max_distance|display_some }}" size="small"></search-location>
+        <search-location form="{{ form }}" device="{{ device }}" locationId="{{ location.location_id }}" city="{{ location.city }}" state="{{ location.state|display_some }}" country="{{ location.country }}" withDistance="true" distance="{{ filters.max_distance|display_some }}" size="small">
+        </search-location>
       {% else -%}
-        <search-location form="{{ form }}" device="{{ device }}" withDistance="true" distance="{{ filters.max_distance|display_some }}" size="small"></search-location>
+        <search-location form="{{ form }}" device="{{ device }}" withDistance="true" distance="{{ filters.max_distance|display_some }}" size="small">
+        </search-location>
       {% endif -%}
     </div>
     {# End location -#}
@@ -185,7 +187,8 @@
     {# Projects -#}
     <div>
       <div class="text-xs/6 text-stone-500/75 -mt-2 mb-2">or select specific projects</div>
-      <search-projects foundations="{{ filters_options.foundations|json }}" viewType="rows" form="{{ device }}-jobs-form" {%- if let Some(filters_projects) = filters.projects %}selected="{{ filters_projects|json }}"{%- endif -%}></search-projects>
+      <search-projects foundations="{{ filters_options.foundations|json }}" viewType="rows" form="{{ device }}-jobs-form" {%- if let Some(filters_projects) = filters.projects %} selected="{{ filters_projects|json }}" {%- endif -%}>
+      </search-projects>
     </div>
     {# End projects -#}
 
@@ -194,77 +197,80 @@
       {{ filters_subtitle(text = "Time working on open source") -}}
       <div class="mt-1">
         <input-range form="{{ form }}" name="open_source" value="{{ filters.open_source|display_some_or(0) }}" step="5" type="type-3">
-      </input-range>
+        </input-range>
+      </div>
     </div>
-  </div>
-  {# End open source -#}
+    {# End open source -#}
 
-  {# Upstream commitment -#}
-  <div>
-    {{ filters_subtitle(text = "Time working on upstream projects") -}}
-    <div class="mt-1">
-      <input-range form="{{ form }}" name="upstream_commitment" value="{{ filters.upstream_commitment|display_some_or(0) }}" step="5" type="type-2">
+    {# Upstream commitment -#}
+    <div>
+      {{ filters_subtitle(text = "Time working on upstream projects") -}}
+      <div class="mt-1">
+        <input-range form="{{ form }}" name="upstream_commitment" value="{{ filters.upstream_commitment|display_some_or(0) }}" step="5" type="type-2">
+        </input-range>
+      </div>
     </div>
+    {# End upstream commitment -#}
   </div>
-  {# End upstream commitment -#}
-</div>
-{# End open source section -#}
+  {# End open source section -#}
 
-{# Compensation section -#}
-<div class="pt-4 md:pt-6 px-6 border-t border-stone-100">{{ filters_title(text = "Compensation") -}}</div>
+  {# Compensation section -#}
+  <div class="pt-4 md:pt-6 px-6 border-t border-stone-100">{{ filters_title(text = "Compensation") -}}</div>
 
-<div class="p-6 pb-4 md:pb-6 pt-3 flex flex-col space-y-5">
-  {# Salary -#}
-  <div>
-    {{ filters_subtitle(text = "Minimum salary (USD / year)") -}}
-    <div class="mt-1">
-      <input-range form="{{ form }}" name="salary_min" value="{{ filters.salary_min|display_some_or(0) }}" max="250000" step="5000" unit="K" prefix="$" legendsNumber="6">
+  <div class="p-6 pb-4 md:pb-6 pt-3 flex flex-col space-y-5">
+    {# Salary -#}
+    <div>
+      {{ filters_subtitle(text = "Minimum salary (USD / year)") -}}
+      <div class="mt-1">
+        <input-range form="{{ form }}" name="salary_min" value="{{ filters.salary_min|display_some_or(0) }}" max="250000" step="5000" unit="K" prefix="$" legendsNumber="6">
+        </input-range>
+      </div>
     </div>
-  </div>
-  {# End salary -#}
+    {# End salary -#}
 
-  {# Benefits -#}
-  <div>
-    {{ filters_subtitle(text = "Benefits") -}}
-    <searchable-filter name="benefits" viewType="rows" form="{{ device }}-jobs-form" {%- if let Some(filters_benefits) = filters.benefits %}selected="{{ filters_benefits|json }}"{%- endif -%}></searchable-filter>
-  </div>
-  {# End benefits -#}
-</div>
-{# End compensation section -#}
-
-{# Membership section -#}
-<div class="pt-4 md:pt-6 px-6 border-t border-stone-100">{{ filters_title(text = "Membership") -}}</div>
-
-<div class="p-6 pb-4 md:pb-6 pt-3 flex flex-col space-y-5">
-  {# Membership foundation -#}
-  <div>
-    {{ filters_subtitle(text = "Jobs from foundation members") -}}
-
-    <div class="mt-2.5">
-      {%- let selected_membership = filters.membership|display_some -%}
-      <select id="{{ device }}-membership"
-              form="{{ form }}"
-              data-trigger-form="true"
-              name="membership"
-              class="select-primary py-0.5 text-[0.775rem]/6 text-stone-700">
-        {{ ui::select_option(value = "", label = "Any foundation", selected = selected_membership) -}}
-        {% for foundation in filters_options.foundations -%}
-          {{ ui::select_option(value = foundation.name.as_str() , label = foundation.name|upper, selected = selected_membership) -}}
-        {% endfor -%}
-      </select>
+    {# Benefits -#}
+    <div>
+      {{ filters_subtitle(text = "Benefits") -}}
+      <searchable-filter name="benefits" viewType="rows" form="{{ device }}-jobs-form" {%- if let Some(filters_benefits) = filters.benefits %} selected="{{ filters_benefits|json }}" {%- endif -%}>
+      </searchable-filter>
     </div>
+    {# End benefits -#}
   </div>
-  {# End membership foundation -#}
-</div>
-{# End membership section -#}
+  {# End compensation section -#}
 
-{# Embed button -#}
-<div class="pt-4 md:pt-6 px-6 md:mb-1 border-t border-stone-100 flex justify-center">
-  <button class="btn-primary-outline btn-mini"
-          data-embed="true"
-          data-device="{{ device }}">Get embed code</button>
-</div>
-{# End embed button -#}
+  {# Membership section -#}
+  <div class="pt-4 md:pt-6 px-6 border-t border-stone-100">{{ filters_title(text = "Membership") -}}</div>
+
+  <div class="p-6 pb-4 md:pb-6 pt-3 flex flex-col space-y-5">
+    {# Membership foundation -#}
+    <div>
+      {{ filters_subtitle(text = "Jobs from foundation members") -}}
+
+      <div class="mt-2.5">
+        {%- let selected_membership = filters.membership|display_some -%}
+        <select id="{{ device }}-membership"
+                form="{{ form }}"
+                data-trigger-form="true"
+                name="membership"
+                class="select-primary py-0.5 text-[0.775rem]/6 text-stone-700">
+          {{ ui::select_option(value = "", label = "Any foundation", selected = selected_membership) -}}
+          {% for foundation in filters_options.foundations -%}
+            {{ ui::select_option(value = foundation.name.as_str() , label = foundation.name|upper, selected = selected_membership) -}}
+          {% endfor -%}
+        </select>
+      </div>
+    </div>
+    {# End membership foundation -#}
+  </div>
+  {# End membership section -#}
+
+  {# Embed button -#}
+  <div class="pt-4 md:pt-6 px-6 md:mb-1 border-t border-stone-100 flex justify-center">
+    <button class="btn-primary-outline btn-mini"
+            data-embed="true"
+            data-device="{{ device }}">Get embed code</button>
+  </div>
+  {# End embed button -#}
 {% endmacro filters -%}
 {# End filters -#}
 

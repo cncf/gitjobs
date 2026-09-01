@@ -1,23 +1,27 @@
-{# Spinner -#}
-{% macro spinner(size = "size-4", spinner_type = "1", extra_styles = "", htmx = true) -%}
-  <div role="status"
-       class="{% if htmx -%}
-                flex
-              {% else -%}
-                hidden group-[.is-loading]:flex
-              {% endif -%}
-              {{ size }} {{ extra_styles }}">
-    <img src="/static/images/spinner/spinner_{{ spinner_type }}.svg"
-         height="auto"
-         width="auto"
-         alt="Loading spinner"
-         class="size-auto animate-spin" />
-    <span class="sr-only">Loading...</span>
-  </div>
-{% endmacro spinner -%}
-{# End spinner -#}
+{# Alerts #}
+{# Used by authentication and dashboard pages to expose server messages. -#}
+{# djlint:off #}
+{% macro alerts(messages) -%}
+  <script type="module">
+    import { showErrorAlert, showSuccessAlert } from '/static/js/common/alerts.js';
+
+    {% for message in messages -%}
+      {% match message.level -%}
+        {% when Level::Success -%}
+          showSuccessAlert('{{ message }}');
+        {% when Level::Error -%}
+          showErrorAlert('{{ message }}');
+        {% when _ -%}
+          {# Do nothing #}
+      {% endmatch -%}
+    {% endfor -%}
+</script>
+{% endmacro alerts -%}
+{# djlint:on #}
+{# End alerts #}
 
 {# Button spinner #}
+{# Used by forms and actions for button-level loading feedback. -#}
 {% macro btn_spinner(id, size = "size-5", spinner_type = "1", htmx = true) -%}
   <div id="{{ id }}"
        class="absolute inset-0 bg-inherit {%- if htmx %} hx-spinner{%- endif -%}">
@@ -28,98 +32,111 @@
 {% endmacro btn_spinner -%}
 {# End button spinner #}
 
-{# Job status badge -#}
-{% macro job_status_badge(status, size = "text-xs") -%}
-  {# djlint:off H008,H020 #}
-  {% match status -%}
-  {% when JobStatus::Archived -%}
-  <span class='bg-orange-100 text-orange-800 {{ size }} {%- if size == "text-xs" %} px-2.5 py-0.5 {%- else %} px-3 py-1 {%- endif %} rounded-full capitalize tracking-wide'>{{ status }}</span>
-  {% when JobStatus::Draft -%}
-  <span class='bg-blue-100 text-blue-800 {{ size }} {%- if size == "text-xs" %} px-2.5 py-0.5 {%- else %} px-3 py-1 {%- endif %} rounded-full capitalize tracking-wide'>{{ status }}</span>
-  {% when JobStatus::Published -%}
-  <span class='bg-green-100 text-green-800 {{ size }} {%- if size == "text-xs" %} px-2.5 py-0.5 {%- else %} px-3 py-1 {%- endif %} rounded-full capitalize tracking-wide'>{{ status }}</span>
-  {% when JobStatus::PendingApproval -%}
-  {% let status_ = status.to_string() %}
-  <span class='bg-yellow-100 text-yellow-800 {{ size }} {%- if size == "text-xs" %} px-2.5 py-0.5 {%- else %} px-3 py-1 {%- endif %} rounded-full capitalize tracking-wide'>{{ status_|unnormalize }}</span>
-  {% when JobStatus::Rejected -%}
-  <span class='bg-red-100 text-red-800 {{ size }} {%- if size == "text-xs" %} px-2.5 py-0.5 {%- else %} px-3 py-1 {%- endif %} rounded-full capitalize tracking-wide'>{{ status }}</span>
-  {% when JobStatus::Deleted -%}
-  {# H020: Intentionally empty for deleted jobs #}
-  <span></span>
-{% endmatch -%}
-{# djlint:on H008,H020 #}
-{% endmacro job_status_badge -%}
-{# End job status badge -#}
+{# Certification card -#}
+{# Used by job previews to display certification details. -#}
+{% macro certification_card(certification) -%}
+  <div class="border border-stone-200 rounded-lg p-2 text-sm/5 bg-white w-full"
+       {% if let Some(description) = certification.description %}title="{{ description }}"{% endif %}>
+    {# Certification card content #}
+    <div class="flex items-center space-x-3">
+      {% if let Some(logo_url) = certification.logo_url -%}
+        <div class="flex justify-center items-center shrink-0 size-8 lg:size-10 shrink-0">
+          <img src="{{ logo_url }}"
+               loading="lazy"
+               class="size-8 lg:size-10 object-contain"
+               height="auto"
+               width="auto"
+               alt="{{ certification.short_name }} logo">
+        </div>
+      {% else -%}
+        <div class="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center shrink-0">
+          <span class="text-xs font-bold text-primary-600 p-1">{{ certification.short_name }}</span>
+        </div>
+      {% endif -%}
+      <div class="flex flex-col justify-start min-w-0">
+        {% if let Some(url) = certification.url -%}
+          <a href="{{ url }}"
+             target="_blank"
+             rel="noopener noreferrer"
+             class="inline-flex items-center max-w-full truncate text-start text-stone-700 font-medium text-sm mb-[2px] hover:underline">
+            <span class="truncate">{{ certification.short_name }}</span>
+            <div class="svg-icon size-2 icon-external_link bg-stone-500 ms-2 srink-0 mb-[2px]"></div>
+          </a>
+        {% else -%}
+          <div class="truncate text-start text-stone-700 font-medium text-sm mb-[2px]">
+            {{ certification.short_name }}
+          </div>
+        {% endif -%}
+        <div class="truncate text-nowrap max-w-[100%] text-xs text-stone-500/75">{{ certification.provider }}</div>
+      </div>
+    </div>
+  </div>
+{% endmacro certification_card -%}
+{# End certification card -#}
 
-{# Modal header -#}
-{% macro modal_header(title, close_button_id) -%}
-  <div class="flex items-center justify-between p-4 md:p-5 border-b border-stone-200 rounded-t">
-    <h3 class="text-xl font-semibold text-stone-900">{{ title }}</h3>
-    <button id="{{ close_button_id }}"
-            type="button"
-            class="group bg-transparent hover:bg-stone-200 rounded-full text-sm size-8 ms-auto inline-flex justify-center items-center cursor-pointer">
-      <div class="svg-icon size-5 bg-stone-400 group-hover:bg-stone-700 icon-close"></div>
-      <span class="sr-only">Close modal</span>
+{# Osano cookie btn #}
+{# Used by public and dashboard layouts to open cookie preferences. -#}
+{% macro cookie_button(id = "btn-cookies", close_drawer = false, extra_styles = "") -%}
+  <div class="flex items-center justify-center {{ extra_styles }}">
+    <button id="{{ id }}"
+            class="text-xs text-stone-400 hover:text-stine-600 text-center cursor-pointer">
+      Cookie Preferences
     </button>
+    {# djlint:off #}
+      <script type="module">
+        import {
+          initializeCookiePreferencesButton
+        } from '/static/js/common/common.js';
+
+        initializeCookiePreferencesButton({
+          buttonId: "{{ id }}",
+          closeDrawer: {% if close_drawer -%}true{%- else -%}false{%- endif %}
+        });
+</script>
+    {# djlint:on #}
   </div>
-{% endmacro modal_header -%}
-{# End modal header -#}
+{% endmacro cookie_button -%}
+{# End Osano cookie btn #}
 
-{# Toggle checkbox #}
-{% macro toggle_checkbox(id, checked = false) -%}
-  <input id="toggle_{{ id }}"
-         name="toggle_{{ id }}"
-         value="{{ id }}"
-         type="checkbox"
-         class="sr-only peer"
-         {% if checked %}checked{% endif %}>
-  <input type="hidden" id="{{ id }}" name="{{ id }}" value="{{ checked }}">
-  <div class="relative w-11 h-6 bg-stone-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-stone-300 after:border after:border-stone-200 after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600">
-  </div>
-
-  <script type="module">
-    import {
-      bindToggleCheckbox
-    } from '/static/js/common/common.js';
-
-    bindToggleCheckbox({
-      toggleId: 'toggle_{{ id }}',
-      hiddenInputId: '{{ id }}'
-    });
-  </script>
-{% endmacro toggle_checkbox -%}
-{# End toggle checkbox #}
-
-{# Select option #}
-{% macro select_option(value, label, selected = "", disabled = false) -%}
-  <option value="{{ value }}"
-          {% if value == selected %}selected{% endif %}
-          {% if disabled %}disabled{% endif %}>{{ label }}</option>
-{% endmacro select_option -%}
-{# End select option #}
-
-{# Memberships popover #}
-{% macro memberships_popover(members, width_styles = "min-w-[220px] max-w-[320px]") -%}
-  <div class="absolute left-0 top-full z-20 w-max {{ width_styles }} opacity-0 pointer-events-none transition-opacity duration-150 group-hover:opacity-100 group-hover:pointer-events-auto">
-    <div class="absolute size-2.5 pointer-events-none bg-white border-l border-t border-stone-200 rotate-45 top-1 left-4">
+{# Dropdown card #}
+{# Used by job previews and employer selectors for compact entity summaries. -#}
+{% macro dropdown_card(name, label, logo_url, font_size = "text-xs/6") -%}
+  <div class="flex items-center space-x-3">
+    <div class="flex justify-center items-center shrink-0 size-8 lg:size-10 shrink-0">
+      <img loading="lazy"
+           class="size-8 lg:size-10 object-contain"
+           height="auto"
+           width="auto"
+           src="{{ logo_url }}"
+           alt="{{ name }} logo">
     </div>
-    <div class="mt-2 rounded-lg border border-stone-200 bg-white shadow-xs overflow-hidden">
-      <ul class="divide-y divide-stone-100 max-h-48 overflow-y-auto">
-        {% for member in members -%}
-          <li class="px-3 py-2">
-            <div class="text-[0.82rem] leading-4 font-semibold uppercase text-stone-700">{{ member.foundation }}</div>
-            <div class="text-[0.68rem] leading-4 font-semibold tracking-wide uppercase text-stone-500/90">
-              {{ member.level }} member
-            </div>
-          </li>
-        {% endfor -%}
-      </ul>
+    <div class="flex flex-col justify-start min-w-0">
+      <div class="truncate text-start text-stone-700 font-medium">{{ name }}</div>
+      <div class="inline-flex">
+        <div class="truncate text-nowrap uppercase max-w-[100%] {{ font_size }} font-medium text-stone-500/75">
+          {{ label }}
+        </div>
+      </div>
     </div>
   </div>
-{% endmacro memberships_popover -%}
-{# End memberships popover #}
+{% endmacro dropdown_card -%}
+{# End dropdown card #}
+
+{# Empty state alert #}
+{# Used by public and dashboard lists for empty-result feedback. -#}
+{% macro empty_state_alert(title, description = "Thanks for checking, please come back later :)", wrapper_styles = "mt-10 p-5", title_styles = "text-lg mb-6", description_styles = "text-stone-700") -%}
+  <div class="border border-primary-500 rounded-lg bg-primary-50/20 {{ wrapper_styles }}"
+       role="alert">
+    <div class="{{ title_styles }}">
+      <div>{{ title }}</div>
+    </div>
+    <p class="{{ description_styles }}">{{ description }}</p>
+  </div>
+{% endmacro empty_state_alert -%}
+{# End empty state alert #}
 
 {# Form title #}
+{# Used by authentication and dashboard forms for section introductions. -#}
 {% macro form_title(title, description = "", button = "") -%}
   <div>
     <div class="text-xl lg:text-2xl font-medium text-stone-900 h-[38px]">{{ title }}</div>
@@ -137,36 +154,8 @@
 {% endmacro form_title -%}
 {# End form title #}
 
-{# Empty state alert #}
-{% macro empty_state_alert(title, description = "Thanks for checking, please come back later :)", wrapper_styles = "mt-10 p-5", title_styles = "text-lg mb-6", description_styles = "text-stone-700") -%}
-  <div class="border border-primary-500 rounded-lg bg-primary-50/20 {{ wrapper_styles }}"
-       role="alert">
-    <div class="{{ title_styles }}">
-      <div>{{ title }}</div>
-    </div>
-    <p class="{{ description_styles }}">{{ description }}</p>
-  </div>
-{% endmacro empty_state_alert -%}
-{# End empty state alert #}
-
-{# Radio box #}
-{% macro radio_box(name, value, label, icon, checked = "", required = false) -%}
-  <div class="flex items-center px-3 py-2 border border-stone-200 rounded-md">
-    <div class="hidden lg:block svg-icon size-4 icon-{{ icon }} bg-stone-600 cursor-pointer"></div>
-    <label for="{{ name }}-{{ value }}"
-           class="ms-2 text-xs lg:text-sm text-stone-900 grow cursor-pointer">{{ label }}</label>
-    <input id="{{ name }}-{{ value }}"
-           type="radio"
-           value="{{ value }}"
-           name="{{ name }}"
-           class="radio-primary"
-           {% if value == checked %}checked{% endif %}
-           {% if required %}required{% endif %}>
-  </div>
-{% endmacro radio_box -%}
-{# End radio box #}
-
 {# Form image #}
+{# Used by employer and job seeker forms for image uploads and removal. -#}
 {% macro images_form(label, name, icon = "company", target = "logo", value = "", url_image = "") -%}
   {% let empty_image = value.is_empty() -%}
   {# Images form #}
@@ -243,109 +232,136 @@
 {% endmacro images_form -%}
 {# End form image #}
 
-{# Dropdown card #}
-{% macro dropdown_card(name, label, logo_url, font_size = "text-xs/6") -%}
-  <div class="flex items-center space-x-3">
-    <div class="flex justify-center items-center shrink-0 size-8 lg:size-10 shrink-0">
-      <img loading="lazy"
-           class="size-8 lg:size-10 object-contain"
-           height="auto"
-           width="auto"
-           src="{{ logo_url }}"
-           alt="{{ name }} logo">
+{# Job status badge -#}
+{# Used by employer job lists and previews to display publication state. -#}
+{% macro job_status_badge(status, size = "text-xs") -%}
+  {# djlint:off H008,H020 #}
+  {% match status -%}
+  {% when JobStatus::Archived -%}
+  <span class='bg-orange-100 text-orange-800 {{ size }} {%- if size == "text-xs" %} px-2.5 py-0.5 {%- else %} px-3 py-1 {%- endif %} rounded-full capitalize tracking-wide'>{{ status }}</span>
+  {% when JobStatus::Draft -%}
+  <span class='bg-blue-100 text-blue-800 {{ size }} {%- if size == "text-xs" %} px-2.5 py-0.5 {%- else %} px-3 py-1 {%- endif %} rounded-full capitalize tracking-wide'>{{ status }}</span>
+  {% when JobStatus::Published -%}
+  <span class='bg-green-100 text-green-800 {{ size }} {%- if size == "text-xs" %} px-2.5 py-0.5 {%- else %} px-3 py-1 {%- endif %} rounded-full capitalize tracking-wide'>{{ status }}</span>
+  {% when JobStatus::PendingApproval -%}
+  {% let status_ = status.to_string() %}
+  <span class='bg-yellow-100 text-yellow-800 {{ size }} {%- if size == "text-xs" %} px-2.5 py-0.5 {%- else %} px-3 py-1 {%- endif %} rounded-full capitalize tracking-wide'>{{ status_|unnormalize }}</span>
+  {% when JobStatus::Rejected -%}
+  <span class='bg-red-100 text-red-800 {{ size }} {%- if size == "text-xs" %} px-2.5 py-0.5 {%- else %} px-3 py-1 {%- endif %} rounded-full capitalize tracking-wide'>{{ status }}</span>
+  {% when JobStatus::Deleted -%}
+  {# H020: Intentionally empty for deleted jobs #}
+  <span></span>
+{% endmatch -%}
+{# djlint:on H008,H020 #}
+{% endmacro job_status_badge -%}
+{# End job status badge -#}
+
+{# Memberships popover #}
+{# Used by job and employer views to list foundation memberships. -#}
+{% macro memberships_popover(members, width_styles = "min-w-[220px] max-w-[320px]") -%}
+  <div class="absolute left-0 top-full z-20 w-max {{ width_styles }} opacity-0 pointer-events-none transition-opacity duration-150 group-hover:opacity-100 group-hover:pointer-events-auto">
+    <div class="absolute size-2.5 pointer-events-none bg-white border-l border-t border-stone-200 rotate-45 top-1 left-4">
     </div>
-    <div class="flex flex-col justify-start min-w-0">
-      <div class="truncate text-start text-stone-700 font-medium">{{ name }}</div>
-      <div class="inline-flex">
-        <div class="truncate text-nowrap uppercase max-w-[100%] {{ font_size }} font-medium text-stone-500/75">
-          {{ label }}
-        </div>
-      </div>
+    <div class="mt-2 rounded-lg border border-stone-200 bg-white shadow-xs overflow-hidden">
+      <ul class="divide-y divide-stone-100 max-h-48 overflow-y-auto">
+        {% for member in members -%}
+          <li class="px-3 py-2">
+            <div class="text-[0.82rem] leading-4 font-semibold uppercase text-stone-700">{{ member.foundation }}</div>
+            <div class="text-[0.68rem] leading-4 font-semibold tracking-wide uppercase text-stone-500/90">
+              {{ member.level }} member
+            </div>
+          </li>
+        {% endfor -%}
+      </ul>
     </div>
   </div>
-{% endmacro dropdown_card -%}
-{# End dropdown card #}
+{% endmacro memberships_popover -%}
+{# End memberships popover #}
 
-{# Certification card -#}
-{% macro certification_card(certification) -%}
-  <div class="border border-stone-200 rounded-lg p-2 text-sm/5 bg-white w-full"
-       {% if let Some(description) = certification.description %}title="{{ description }}"{% endif %}>
-    {# Certification card content #}
-    <div class="flex items-center space-x-3">
-      {% if let Some(logo_url) = certification.logo_url -%}
-        <div class="flex justify-center items-center shrink-0 size-8 lg:size-10 shrink-0">
-          <img src="{{ logo_url }}"
-               loading="lazy"
-               class="size-8 lg:size-10 object-contain"
-               height="auto"
-               width="auto"
-               alt="{{ certification.short_name }} logo">
-        </div>
-      {% else -%}
-        <div class="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center shrink-0">
-          <span class="text-xs font-bold text-primary-600 p-1">{{ certification.short_name }}</span>
-        </div>
-      {% endif -%}
-      <div class="flex flex-col justify-start min-w-0">
-        {% if let Some(url) = certification.url -%}
-          <a href="{{ url }}"
-             target="_blank"
-             rel="noopener noreferrer"
-             class="inline-flex items-center max-w-full truncate text-start text-stone-700 font-medium text-sm mb-[2px] hover:underline">
-            <span class="truncate">{{ certification.short_name }}</span>
-            <div class="svg-icon size-2 icon-external_link bg-stone-500 ms-2 srink-0 mb-[2px]"></div>
-          </a>
-        {% else -%}
-          <div class="truncate text-start text-stone-700 font-medium text-sm mb-[2px]">
-            {{ certification.short_name }}
-          </div>
-        {% endif -%}
-        <div class="truncate text-nowrap max-w-[100%] text-xs text-stone-500/75">{{ certification.provider }}</div>
-      </div>
-    </div>
-  </div>
-{% endmacro certification_card -%}
-
-{# Osano cookie btn #}
-{% macro cookie_button(id = "btn-cookies", close_drawer = false, extra_styles = "") -%}
-  <div class="flex items-center justify-center {{ extra_styles }}">
-    <button id="{{ id }}"
-            class="text-xs text-stone-400 hover:text-stine-600 text-center cursor-pointer">
-      Cookie Preferences
+{# Modal header -#}
+{# Used by public and dashboard modals for consistent titles and close controls. -#}
+{% macro modal_header(title, close_button_id) -%}
+  <div class="flex items-center justify-between p-4 md:p-5 border-b border-stone-200 rounded-t">
+    <h3 class="text-xl font-semibold text-stone-900">{{ title }}</h3>
+    <button id="{{ close_button_id }}"
+            type="button"
+            class="group bg-transparent hover:bg-stone-200 rounded-full text-sm size-8 ms-auto inline-flex justify-center items-center cursor-pointer">
+      <div class="svg-icon size-5 bg-stone-400 group-hover:bg-stone-700 icon-close"></div>
+      <span class="sr-only">Close modal</span>
     </button>
-    {# djlint:off #}
-      <script type="module">
-        import {
-          initializeCookiePreferencesButton
-        } from '/static/js/common/common.js';
-
-        initializeCookiePreferencesButton({
-          buttonId: "{{ id }}",
-          closeDrawer: {% if close_drawer -%}true{%- else -%}false{%- endif %}
-        });
-</script>
-    {# djlint:on #}
   </div>
-{% endmacro cookie_button -%}
-{# End Osano cookie btn #}
+{% endmacro modal_header -%}
+{# End modal header -#}
 
-{# Alerts #}
-{# djlint:off #}
-{% macro alerts(messages) -%}
+{# Radio box #}
+{# Used by dashboard forms for icon-labelled radio options. -#}
+{% macro radio_box(name, value, label, icon, checked = "", required = false) -%}
+  <div class="flex items-center px-3 py-2 border border-stone-200 rounded-md">
+    <div class="hidden lg:block svg-icon size-4 icon-{{ icon }} bg-stone-600 cursor-pointer"></div>
+    <label for="{{ name }}-{{ value }}"
+           class="ms-2 text-xs lg:text-sm text-stone-900 grow cursor-pointer">{{ label }}</label>
+    <input id="{{ name }}-{{ value }}"
+           type="radio"
+           value="{{ value }}"
+           name="{{ name }}"
+           class="radio-primary"
+           {% if value == checked %}checked{% endif %}
+           {% if required %}required{% endif %}>
+  </div>
+{% endmacro radio_box -%}
+{# End radio box #}
+
+{# Select option #}
+{# Used by filters and forms to render selected option elements. -#}
+{% macro select_option(value, label, selected = "", disabled = false) -%}
+  <option value="{{ value }}"
+          {% if value == selected %}selected{% endif %}
+          {% if disabled %}disabled{% endif %}>{{ label }}</option>
+{% endmacro select_option -%}
+{# End select option #}
+
+{# Spinner -#}
+{# Used by public and dashboard interfaces for loading feedback. -#}
+{% macro spinner(size = "size-4", spinner_type = "1", extra_styles = "", htmx = true) -%}
+  <div role="status"
+       class="{% if htmx -%}
+                flex
+              {% else -%}
+                hidden group-[.is-loading]:flex
+              {% endif -%}
+              {{ size }} {{ extra_styles }}">
+    <img src="/static/images/spinner/spinner_{{ spinner_type }}.svg"
+         height="auto"
+         width="auto"
+         alt="Loading spinner"
+         class="size-auto animate-spin" />
+    <span class="sr-only">Loading...</span>
+  </div>
+{% endmacro spinner -%}
+{# End spinner -#}
+
+{# Toggle checkbox #}
+{# Used by dashboard forms for boolean settings. -#}
+{% macro toggle_checkbox(id, checked = false) -%}
+  <input id="toggle_{{ id }}"
+         name="toggle_{{ id }}"
+         value="{{ id }}"
+         type="checkbox"
+         class="sr-only peer"
+         {% if checked %}checked{% endif %}>
+  <input type="hidden" id="{{ id }}" name="{{ id }}" value="{{ checked }}">
+  <div class="relative w-11 h-6 bg-stone-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-stone-300 after:border after:border-stone-200 after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600">
+  </div>
+
   <script type="module">
-    import { showErrorAlert, showSuccessAlert } from '/static/js/common/alerts.js';
+    import {
+      bindToggleCheckbox
+    } from '/static/js/common/common.js';
 
-    {% for message in messages -%}
-      {% match message.level -%}
-        {% when Level::Success -%}
-          showSuccessAlert('{{ message }}');
-        {% when Level::Error -%}
-          showErrorAlert('{{ message }}');
-        {% when _ -%}
-          {# Do nothing #}
-      {% endmatch -%}
-    {% endfor -%}
-</script>
-{% endmacro alerts -%}
-{# djlint:on #}
-{# End alerts #}
+    bindToggleCheckbox({
+      toggleId: 'toggle_{{ id }}',
+      hiddenInputId: '{{ id }}'
+    });
+  </script>
+{% endmacro toggle_checkbox -%}
+{# End toggle checkbox #}

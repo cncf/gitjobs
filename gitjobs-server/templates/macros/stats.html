@@ -1,5 +1,7 @@
 {% import "macros/ui.html" as ui -%}
 
+{# Chart -#}
+{# Used by the public stats page for chart rendering and loading feedback. -#}
 {% macro chart(id, extra_styles = "") -%}
   <div class="relative h-[300px] border border-stone-200 {{ extra_styles }}">
     <div id="{{ id }}"
@@ -12,3 +14,4 @@
     </div>
   </div>
 {% endmacro chart -%}
+{# End chart -#}

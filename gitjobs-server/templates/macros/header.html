@@ -1,3 +1,5 @@
+{# Header link -#}
+{# Used by the public header for primary navigation links. -#}
 {% macro link(text, href, active) -%}
   <a href="{{ href }}"
      hx-boost="true"
@@ -7,8 +9,10 @@
             {% if active -%}
               border-primary-500{%- else -%}border-transparent hover:border-primary-300{%- endif -%}">{{ text }}</a>
 {% endmacro link -%}
+{# End header link -#}
 
 {# Header user menu -#}
+{# Used by public and dashboard headers for authenticated account navigation. -#}
 {% macro user_menu(user, auth_provider) -%}
   {% if user.logged_in -%}
     <button id="user-dropdown-button"
@@ -262,3 +266,4 @@
   </script>
   {# End dropdown script -#}
 {% endmacro user_menu -%}
+{# End header user menu -#}

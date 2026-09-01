@@ -1,5 +1,74 @@
 {% import "macros/ui.html" as ui -%}
 
+{# Employer member badge -#}
+{# Used by moderator job views to show employer foundation memberships. -#}
+{% macro employer_member_badge(employer, with_legend = true, with_popover = false) -%}
+  <div>
+    {# Member -#}
+    {% if let Some(members) = employer.members -%}
+      {% if members.len() > 1 -%}
+        {% if with_popover -%}
+          <div class="relative group min-w-0">
+            <div class="peer flex items-center space-x-1 rounded-md uppercase min-w-0 cursor-pointer">
+              <div class="shrink-0 size-3 flex items-center justify-center">
+                <img class="size-3 object-contain"
+                     height="auto"
+                     width="auto"
+                     src="/static/images/badge_member.png"
+                     alt="Member badge logo">
+              </div>
+
+              <div class="text-stone-600 text-[0.7rem] md:text-xs font-semibold tracking-wide uppercase truncate">
+                <span class="hidden xl:inline">Multiple memberships</span>
+                <span class="inline xl:hidden">Multiple</span>
+              </div>
+            </div>
+            {{ ui::memberships_popover(members = members) -}}
+          </div>
+        {% else -%}
+          <div class="flex items-center space-x-1 rounded-md uppercase min-w-0">
+            <div class="shrink-0 size-3 flex items-center justify-center">
+              <img class="size-3 object-contain"
+                   height="auto"
+                   width="auto"
+                   src="/static/images/badge_member.png"
+                   alt="Member badge logo">
+            </div>
+
+            <div class="text-stone-600 text-[0.7rem] md:text-xs font-semibold tracking-wide uppercase truncate">
+              <span class="hidden xl:inline">Multiple memberships</span>
+              <span class="inline xl:hidden">Multiple</span>
+            </div>
+          </div>
+        {% endif -%}
+      {% else -%}
+        {% if let Some(member) = members.first() -%}
+          <div class="flex items-center space-x-1 rounded-md uppercase min-w-0">
+            <div class="shrink-0 size-3 flex items-center justify-center">
+              <img class="size-3 object-contain"
+                   height="auto"
+                   width="auto"
+                   src="/static/images/badge_member.png"
+                   alt="Member badge logo">
+            </div>
+
+            <div class="text-stone-600 text-[0.7rem] md:text-xs font-semibold tracking-wide uppercase truncate">
+              {{ member.foundation }}
+              {% if with_legend -%}
+                member
+              {% endif -%}
+            </div>
+          </div>
+        {% endif -%}
+      {% endif -%}
+    {% endif -%}
+    {# End member -#}
+  </div>
+{% endmacro employer_member_badge -%}
+{# End employer member badge -#}
+
+{# Jobs table -#}
+{# Used by moderator pages for pending and live job tables. -#}
 {% macro jobs_table(jobs, empty_title, is_pending = false) -%}
   <div class="hidden md:block relative overflow-visible mt-10">
     <table class="table-fixed w-full text-xs lg:text-sm text-left rtl:text-right text-stone-500">
@@ -98,7 +167,10 @@
     </table>
   </div>
 {% endmacro jobs_table -%}
+{# End jobs table -#}
 
+{# Mobile job card -#}
+{# Used by moderator pages for responsive job listings. -#}
 {% macro mobile_job_card(job, is_pending = false) -%}
   <div class="border border-stone-200 bg-white rounded-lg p-5">
     <div class="flex justify-between items-center">
@@ -156,67 +228,4 @@
     {# End actions -#}
   </div>
 {% endmacro mobile_job_card -%}
-
-{% macro employer_member_badge(employer, with_legend = true, with_popover = false) -%}
-  <div>
-    {# Member -#}
-    {% if let Some(members) = employer.members -%}
-      {% if members.len() > 1 -%}
-        {% if with_popover -%}
-          <div class="relative group min-w-0">
-            <div class="peer flex items-center space-x-1 rounded-md uppercase min-w-0 cursor-pointer">
-              <div class="shrink-0 size-3 flex items-center justify-center">
-                <img class="size-3 object-contain"
-                     height="auto"
-                     width="auto"
-                     src="/static/images/badge_member.png"
-                     alt="Member badge logo">
-              </div>
-
-              <div class="text-stone-600 text-[0.7rem] md:text-xs font-semibold tracking-wide uppercase truncate">
-                <span class="hidden xl:inline">Multiple memberships</span>
-                <span class="inline xl:hidden">Multiple</span>
-              </div>
-            </div>
-            {{ ui::memberships_popover(members = members) -}}
-          </div>
-        {% else -%}
-          <div class="flex items-center space-x-1 rounded-md uppercase min-w-0">
-            <div class="shrink-0 size-3 flex items-center justify-center">
-              <img class="size-3 object-contain"
-                   height="auto"
-                   width="auto"
-                   src="/static/images/badge_member.png"
-                   alt="Member badge logo">
-            </div>
-
-            <div class="text-stone-600 text-[0.7rem] md:text-xs font-semibold tracking-wide uppercase truncate">
-              <span class="hidden xl:inline">Multiple memberships</span>
-              <span class="inline xl:hidden">Multiple</span>
-            </div>
-          </div>
-        {% endif -%}
-      {% else -%}
-        {% if let Some(member) = members.first() -%}
-          <div class="flex items-center space-x-1 rounded-md uppercase min-w-0">
-            <div class="shrink-0 size-3 flex items-center justify-center">
-              <img class="size-3 object-contain"
-                   height="auto"
-                   width="auto"
-                   src="/static/images/badge_member.png"
-                   alt="Member badge logo">
-            </div>
-
-            <div class="text-stone-600 text-[0.7rem] md:text-xs font-semibold tracking-wide uppercase truncate">
-              {{ member.foundation }}
-              {% if with_legend -%}
-                member
-              {% endif -%}
-            </div>
-          </div>
-        {% endif -%}
-      {% endif -%}
-    {% endif -%}
-    {# End member -#}
-  </div>
-{% endmacro employer_member_badge -%}
+{# End mobile job card -#}

@@ -1,6 +1,7 @@
 {% import "macros/ui.html" as ui -%}
 
 {# Pagination -#}
+{# Used by public and dashboard lists for paginated navigation. -#}
 {% macro navigation_links(links, hx_target, hx_swap) -%}
   {% let first_spinner_id = "pagination-first-spinner" -%}
   {% let prev_spinner_id = "pagination-prev-spinner" -%}
@@ -111,8 +112,10 @@
     </div>
   </div>
 {%- endmacro navigation_links %}
+{# End pagination -#}
 
 {# Range display -#}
+{# Used by public job results to show the visible result range. -#}
 {% macro range_display(offset, count, total) -%}
   {%- if count > 0 -%}
     {%- if let Some(offset_number) = offset -%}

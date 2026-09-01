@@ -1,3 +1,5 @@
+{# Location -#}
+{# Used by the job seeker profile preview to format workplace and location details. -#}
 {% macro location(workplace, job_location) -%}
   <div class="text-xs/4 text-stone-500 max-w-full truncate">
     {% if let Some(job_location) = job_location -%}
@@ -12,18 +14,20 @@
     {% endif -%}
   </div>
 {% endmacro location -%}
+{# End location -#}
 
+{# Main badge -#}
+{# Used by the job seeker profile preview to display primary contact details. -#}
 {% macro main_badge(content, icon) -%}
   <div class="border border-stone-200 rounded-full px-4 flex items-center text-stone-600 text-xs/6 xl:text-sm/6 space-x-2">
     <div class="svg-icon size-4 icon-{{ icon }} bg-stone-500"></div>
     <div>{{ content }}</div>
   </div>
 {% endmacro main_badge -%}
+{# End main badge -#}
 
-{% macro title(content) -%}
-  <div class="uppercase text-stone-800 tracking-[0.25rem] font-semibold mb-4">{{ content }}</div>
-{% endmacro title -%}
-
+{# Social link -#}
+{# Used by the job seeker profile preview for contact and social links. -#}
 {% macro social_link(url, icon, is_email = false) -%}
   <a href="{%- if is_email -%}mailto:{%- endif -%}{{ url }}"
      class="btn-tertiary-anchor border border-stone-200 btn-mini flex items-center space-x-2"
@@ -33,7 +37,10 @@
     <div class="truncate">{{ url }}</div>
   </a>
 {% endmacro social_link -%}
+{# End social link -#}
 
+{# Timeline item -#}
+{# Used by the job seeker profile preview for experience and education entries. -#}
 {% macro timeline_item(title, entity, description, start_date, end_date) -%}
   <li class="mb-10 ms-4">
     <div class="absolute size-3 bg-stone-300 rounded-full mt-1 -start-1.5 border border-white"></div>
@@ -43,7 +50,17 @@
     <div class="text-sm/6 text-stone-600 markdown">{{ description|md_to_html|safe }}</div>
   </li>
 {% endmacro timeline_item -%}
+{# End timeline item -#}
 
+{# Title -#}
+{# Used by the job seeker profile preview for section headings. -#}
+{% macro title(content) -%}
+  <div class="uppercase text-stone-800 tracking-[0.25rem] font-semibold mb-4">{{ content }}</div>
+{% endmacro title -%}
+{# End title -#}
+
+{# Toggle option -#}
+{# Used by the job seeker profile preview for availability preferences. -#}
 {% macro toggle_option(title, status) -%}
   <div class="flex space-x-2 items-center">
     <div class="w-4">
@@ -56,3 +73,4 @@
     <div class="text-xs/6">{{ title }}</div>
   </div>
 {% endmacro toggle_option -%}
+{# End toggle option -#}

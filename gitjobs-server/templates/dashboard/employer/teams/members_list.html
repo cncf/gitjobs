@@ -76,22 +76,7 @@
        class="modal-overlay absolute w-full h-full bg-stone-950 opacity-[.35]"></div>
   <div class="relative px-4 py-8 w-full max-w-3xl max-h-full overflow-auto">
     <div class="relative bg-white rounded-lg shadow">
-      {# Modal header -#}
-      <div class="flex items-center justify-between p-4 md:p-5 border-b border-stone-200 rounded-t">
-        {# Title -#}
-        <h3 class="text-xl font-semibold text-stone-900">Add member</h3>
-        {# End title -#}
-
-        {# Close button -#}
-        <button id="close-add-member-modal"
-                type="button"
-                class="group bg-transparent hover:bg-stone-200 rounded-full text-sm size-8 ms-auto inline-flex justify-center items-center cursor-pointer">
-          <div class="svg-icon size-5 bg-stone-400 group-hover:bg-stone-700 icon-close"></div>
-          <span class="sr-only">Close modal</span>
-        </button>
-        {# End close button -#}
-      </div>
-      {# End modal header -#}
+      {{ ui::modal_header(title = "Add member", close_button_id = "close-add-member-modal") -}}
 
       {# Modal content -#}
       <div class="p-4 md:p-8">

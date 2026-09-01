@@ -50,9 +50,24 @@
           </div>
         </li>
 
-        {# Stats page for mobile -#}
+        {# Jobs page for mobile -#}
         <li class="border-t border-stone-200 mt-2 pt-2 block md:hidden"
             role="none">
+          <a hx-boost="true"
+             href="/"
+             hx-target="body"
+             class="inline-block w-full text-start px-4 py-2 hover:bg-stone-100"
+             role="menuitem">
+            <div class="flex items-center">
+              <div class="svg-icon size-4 icon-briefcase bg-stone-600"></div>
+              <div class="ms-2 text-xs/6">Jobs</div>
+            </div>
+          </a>
+        </li>
+        {# End jobs page for mobile -#}
+
+        {# Stats page for mobile -#}
+        <li class="block md:hidden" role="none">
           <a hx-boost="true"
              href="/stats"
              hx-target="body"
@@ -159,6 +174,21 @@
          aria-labelledby="user-dropdown-button"
          aria-hidden="true">
       <ul class="text-stone-700 my-2" role="none">
+        {# Jobs page for mobile -#}
+        <li class="block xl:hidden" role="none">
+          <a hx-boost="true"
+             href="/"
+             hx-target="body"
+             class="inline-block w-full text-start px-4 py-2 hover:bg-stone-100"
+             role="menuitem">
+            <div class="flex items-center">
+              <div class="svg-icon size-4 icon-briefcase bg-stone-600"></div>
+              <div class="ms-2 text-xs/6">Jobs</div>
+            </div>
+          </a>
+        </li>
+        {# End jobs page for mobile -#}
+
         {# Stats page for mobile -#}
         <li class="block xl:hidden" role="none">
           <a hx-boost="true"

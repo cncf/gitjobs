@@ -518,6 +518,7 @@ const renderLineChart = (data) => {
     ],
   };
 
+  finishChartLoadingWhenRendered(myChart, LINE_CHART_ID);
   myChart.setOption(option);
 };
 
@@ -640,6 +641,7 @@ const renderBarDailyChart = (data, max, min) => {
       max: getMaxDateValue(data, max),
     },
   };
+  finishChartLoadingWhenRendered(myChart, BAR_DAILY_CHART_ID);
   myChart.setOption(option);
 };
 
@@ -690,6 +692,7 @@ const renderBarMonthlyChart = (data, max, min) => {
       max: getMaxDateValue(data, max),
     },
   };
+  finishChartLoadingWhenRendered(myChart, BAR_MONTHLY_CHART_ID);
   myChart.setOption(option);
 };
 
@@ -728,6 +731,7 @@ export const renderStats = () => {
     const chartDom = document.getElementById(LINE_CHART_ID);
     if (chartDom) {
       chartDom.innerHTML = `<div>${MESSAGE_EMPTY_STATS}</div>`;
+      finishChartLoading(LINE_CHART_ID);
     }
   } else {
     renderLineChart(stats.jobs.published_running_total);
@@ -737,6 +741,7 @@ export const renderStats = () => {
     const chartDom = document.getElementById(BAR_DAILY_CHART_ID);
     if (chartDom) {
       chartDom.innerHTML = `<div>${MESSAGE_EMPTY_STATS}</div>`;
+      finishChartLoading(BAR_DAILY_CHART_ID);
     }
   } else {
     renderBarDailyChart(stats.jobs.views_daily, stats.ts_now, stats.ts_one_month_ago);
@@ -746,8 +751,34 @@ export const renderStats = () => {
     const chartDom = document.getElementById(BAR_MONTHLY_CHART_ID);
     if (chartDom) {
       chartDom.innerHTML = `<div>${MESSAGE_EMPTY_STATS}</div>`;
+      finishChartLoading(BAR_MONTHLY_CHART_ID);
     }
   } else {
     renderBarMonthlyChart(stats.jobs.views_monthly, stats.ts_now, stats.ts_two_years_ago);
   }
+};
+
+/**
+ * Hides a chart loading overlay and marks the chart as ready.
+ * @param {string} chartId - Chart container ID
+ */
+const finishChartLoading = (chartId) => {
+  const chartDom = document.getElementById(chartId);
+  const loadingOverlay = document.getElementById(`${chartId}-loading`);
+  loadingOverlay?.classList.add("hidden");
+  chartDom?.setAttribute("aria-busy", "false");
+};
+
+/**
+ * Keeps a chart loading overlay visible until ECharts finishes rendering.
+ * @param {Object} chart - ECharts instance
+ * @param {string} chartId - Chart container ID
+ */
+const finishChartLoadingWhenRendered = (chart, chartId) => {
+  const handleFinished = () => {
+    chart.off("finished", handleFinished);
+    finishChartLoading(chartId);
+  };
+
+  chart.on("finished", handleFinished);
 };

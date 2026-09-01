@@ -72,6 +72,25 @@ test.describe("GitJobs - Auth and Nav", () => {
     await page.waitForURL(/\/log-in(?:\?.*)?$/);
   });
 
+  test("should navigate to jobs from the mobile user menu", async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 667 });
+    await loginWithCredentials(page, "test", "test1234");
+
+    await openUserMenu(page);
+    await clickUserMenuItem(page, "About");
+    await expect(page).toHaveURL(/\/about(?:\?.*)?$/);
+
+    await openUserMenu(page);
+    const jobsMenuItem = page
+      .locator("#dropdown-user")
+      .getByRole("menuitem", { name: "Jobs", exact: true });
+    await expect(jobsMenuItem).toBeVisible();
+    await expect(jobsMenuItem).toHaveAttribute("href", "/");
+    await jobsMenuItem.click();
+
+    await expect(page).toHaveURL(/\/(?:\?.*)?$/);
+  });
+
   test("should close user menu on Escape and restore focus", async ({
     page,
   }) => {

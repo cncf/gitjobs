@@ -1,6 +1,16 @@
 INSERT INTO "user" (user_id, auth_hash, created_at, email, email_verified, name, username, password, moderator)
 VALUES ('f39a95c8-9903-4537-8873-2d81bfb86b35', gen_random_bytes(32), '2025-08-25 08:43:11.605766+02', 'test@t.com', true, 'test', 'test', '$argon2id$v=19$m=19456,t=2,p=1$bw1sZnCys+4fBpkaFqAEsQ$OnYSK/WUXUMJTsnSmJw3oPnT9skGNMtIwlqPy0EvCoA', true);
 
+INSERT INTO "user" (user_id, auth_hash, created_at, email, email_verified, name, username, password, moderator)
+VALUES
+('11111111-1111-4111-8111-111111111101', gen_random_bytes(32), '2025-08-25 08:44:11.605766+02', 'employer@t.com', true, 'E2E Employer', 'employer', '$argon2id$v=19$m=19456,t=2,p=1$bw1sZnCys+4fBpkaFqAEsQ$OnYSK/WUXUMJTsnSmJw3oPnT9skGNMtIwlqPy0EvCoA', false),
+('11111111-1111-4111-8111-111111111102', gen_random_bytes(32), '2025-08-25 08:45:11.605766+02', 'jobseeker@t.com', true, 'E2E Job Seeker', 'jobseeker', '$argon2id$v=19$m=19456,t=2,p=1$bw1sZnCys+4fBpkaFqAEsQ$OnYSK/WUXUMJTsnSmJw3oPnT9skGNMtIwlqPy0EvCoA', false),
+('11111111-1111-4111-8111-111111111103', gen_random_bytes(32), '2025-08-25 08:46:11.605766+02', 'moderator@t.com', true, 'E2E Moderator', 'moderator', '$argon2id$v=19$m=19456,t=2,p=1$bw1sZnCys+4fBpkaFqAEsQ$OnYSK/WUXUMJTsnSmJw3oPnT9skGNMtIwlqPy0EvCoA', true),
+('11111111-1111-4111-8111-111111111104', gen_random_bytes(32), '2025-08-25 08:47:11.605766+02', 'applicant@t.com', true, 'E2E Applicant', 'applicant', '$argon2id$v=19$m=19456,t=2,p=1$bw1sZnCys+4fBpkaFqAEsQ$OnYSK/WUXUMJTsnSmJw3oPnT9skGNMtIwlqPy0EvCoA', false);
+
+INSERT INTO job_seeker_profile (job_seeker_profile_id, user_id, email, name, public, summary)
+VALUES ('11111111-1111-4111-8111-111111111204', '11111111-1111-4111-8111-111111111104', 'applicant@t.com', 'E2E Applicant', false, 'Seeded profile for application lifecycle coverage.');
+
 INSERT INTO employer (employer_id, company, created_at, description, public)
 VALUES ('18fff2d7-c794-4130-85e4-76b9d7c60b72', 'Test Inc.', '2025-08-25 09:20:05.88454+02', 'test', false);
 
@@ -18,6 +28,11 @@ VALUES ('f39a95c8-9903-4537-8873-2d81bfb86b35', '18fff2d7-c794-4130-85e4-76b9d7c
 
 INSERT INTO employer_team (user_id, employer_id, approved)
 VALUES ('f39a95c8-9903-4537-8873-2d81bfb86b35', '8e2fe443-0f7c-4fe3-95dc-c4b39b5c4d10', true);
+
+INSERT INTO employer_team (user_id, employer_id, approved)
+VALUES
+('11111111-1111-4111-8111-111111111101', '18fff2d7-c794-4130-85e4-76b9d7c60b72', true),
+('11111111-1111-4111-8111-111111111101', '8e2fe443-0f7c-4fe3-95dc-c4b39b5c4d10', true);
 
 INSERT INTO job (employer_id, title, description, kind, seniority, workplace, status, salary, salary_max_usd_year, salary_currency, salary_period, skills, published_at) VALUES
 ('18fff2d7-c794-4130-85e4-76b9d7c60b72', 'Frontend Developer', 'React expert', 'full-time', 'senior', 'remote', 'published', 120000, 120000, 'USD', 'year', '{"React", "TypeScript", "JavaScript"}', CURRENT_TIMESTAMP),
@@ -42,3 +57,8 @@ INSERT INTO job (employer_id, title, description, kind, seniority, workplace, st
 ('18fff2d7-c794-4130-85e4-76b9d7c60b72', 'Job 20', 'Description for Job 20', 'full-time', 'lead', 'remote', 'published', 95000, 95000, 'USD', 'year', '{"Cybersecurity", "CISSP"}', CURRENT_TIMESTAMP),
 ('18fff2d7-c794-4130-85e4-76b9d7c60b72', 'Job 21', 'Description for Job 21', 'full-time', 'senior', 'on-site', 'published', 100000, 100000, 'USD', 'year', '{"TypeScript", "PostgreSQL"}', CURRENT_TIMESTAMP),
 ('8e2fe443-0f7c-4fe3-95dc-c4b39b5c4d10', 'Platform Engineer', 'Second employer seeded job', 'full-time', 'mid', 'remote', 'published', 105000, 105000, 'USD', 'year', '{"Go", "Kubernetes", "PostgreSQL"}', CURRENT_TIMESTAMP);
+
+INSERT INTO job (job_id, employer_id, title, description, kind, seniority, workplace, status, skills)
+VALUES
+('22222222-2222-4222-8222-222222222201', '18fff2d7-c794-4130-85e4-76b9d7c60b72', 'E2E job awaiting approval', 'Pending job used by moderator approval coverage.', 'full-time', 'mid', 'remote', 'pending-approval', '{"Playwright"}'),
+('22222222-2222-4222-8222-222222222202', '18fff2d7-c794-4130-85e4-76b9d7c60b72', 'E2E job awaiting rejection', 'Pending job used by moderator rejection coverage.', 'full-time', 'mid', 'remote', 'pending-approval', '{"Playwright"}');

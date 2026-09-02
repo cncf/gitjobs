@@ -135,9 +135,9 @@ syncer-watch:
 # Frontend
 
 e2e-tests *args:
-    npx playwright test --config tests/e2e/playwright.config.ts {{ args }}
+    npm --prefix tests/e2e test -- {{ args }}
 
 # Format and lint frontend code.
 frontend-fmt-and-lint:
-    prettier --config gitjobs-server/static/js/.prettierrc.yaml --write "gitjobs-server/static/js/**/*.js"
+    prettier --config gitjobs-server/static/js/.prettierrc.yaml --write "gitjobs-server/static/js/**/*.js" "tests/e2e/**/*.js"
     djlint --check --configuration gitjobs-server/templates/.djlintrc gitjobs-server/templates

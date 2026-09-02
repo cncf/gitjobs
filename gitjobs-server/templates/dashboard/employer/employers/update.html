@@ -55,20 +55,19 @@
       <div class="col-span-3"></div>
 
       {# Member -#}
-      <dashboard-search type="members" foundations="{{ foundations|json }}"
-      {% if let Some(members) = employer.members -%}
-        selected="{{ members|json }}"
-      {% endif -%}
-      class="col-span-full"></dashboard-search>
+      <dashboard-search type="members" foundations="{{ foundations|json }}" {% if let Some(members) = employer.members -%} selected="{{ members|json }}" {% endif -%} class="col-span-full">
+      </dashboard-search>
       {# End member -#}
 
       {# Location -#}
       <div class="col-span-full lg:col-span-3">
         <label for="ts_query" class="form-label">Location</label>
         {% if let Some(location) = employer.location -%}
-          <search-location locationId="{{ location.location_id }}" city="{{ location.city }}" state="{{ location.state|display_some }}" country="{{ location.country }}"></search-location>
+          <search-location locationId="{{ location.location_id }}" city="{{ location.city }}" state="{{ location.state|display_some }}" country="{{ location.country }}">
+          </search-location>
         {% else -%}
-          <search-location></search-location>
+          <search-location>
+          </search-location>
         {% endif -%}
         <p class="form-legend">Location of the headquarters of your company.</p>
       </div>
@@ -94,7 +93,8 @@
           Description <span class="asterisk">*</span>
         </label>
         <div class="mt-2">
-          <markdown-editor id="description" content="{{ employer.description }}" maxlength="{{ crate::validation::MAX_LEN_DESCRIPTION }}" required></markdown-editor>
+          <markdown-editor id="description" content="{{ employer.description }}" maxlength="{{ crate::validation::MAX_LEN_DESCRIPTION }}" required>
+          </markdown-editor>
         </div>
         <p class="form-legend">
           A short introduction of your company. You can use markdown to format the text. Max {{ crate::validation::MAX_LEN_DESCRIPTION }} characters.

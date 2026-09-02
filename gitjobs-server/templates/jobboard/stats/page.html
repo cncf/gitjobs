@@ -1,4 +1,5 @@
 {% extends "common_base.html" -%}
+{% import "macros/stats.html" as stats_ui -%}
 
 {% block main -%}
   <script src="/static/vendor/js/echarts.v6.0.0.min.js"></script>
@@ -18,28 +19,17 @@
         </div>
 
         <div class="font-semibold text-stone-700 text-center mb-9 mt-10">Jobs published over time</div>
-        <div class="flex flex-row h-[300px]">
-          {# Published jobs total - line chart -#}
-          <div class="flex items-center justify-center w-full h-full border border-stone-200 text-stone-500"
-               id="line-chart"></div>
-          {# End published jobs total - line chart -#}
-        </div>
+        {{ stats_ui::chart(id = "line-chart", extra_styles = "flex flex-row") -}}
 
         <div class="flex flex-col gap-16">
           <div>
             <div class="font-semibold text-stone-700 text-center mb-9 mt-16">Jobs daily views</div>
-            {# Views daily - bar chart -#}
-            <div class="flex items-center justify-center h-[300px] border border-stone-200 text-stone-500"
-                 id="bar-daily"></div>
-            {# End views daily - bar chart -#}
+            {{ stats_ui::chart(id = "bar-daily") -}}
           </div>
 
           <div>
             <div class="font-semibold text-stone-700 text-center mb-9">Jobs monthly views</div>
-            {# Views monthly - bar chart -#}
-            <div class="flex items-center justify-center h-[300px] border border-stone-200 text-stone-500"
-                 id="bar-monthly"></div>
-            {# End views monthly - bar chart -#}
+            {{ stats_ui::chart(id = "bar-monthly") -}}
           </div>
 
           {# Foundations table -#}

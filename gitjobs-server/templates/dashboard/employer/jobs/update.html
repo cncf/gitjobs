@@ -60,9 +60,11 @@
         <div class="col-span-full lg:col-span-3">
           <label for="ts_query" class="form-label">Location</label>
           {% if let Some(location) = job.location -%}
-            <search-location locationId="{{ location.location_id }}" city="{{ location.city }}" state="{{ location.state|display_some }}" country="{{ location.country }}"></search-location>
+            <search-location locationId="{{ location.location_id }}" city="{{ location.city }}" state="{{ location.state|display_some }}" country="{{ location.country }}">
+            </search-location>
           {% else -%}
-            <search-location></search-location>
+            <search-location>
+            </search-location>
           {% endif -%}
           <p class="form-legend">Location of the job.</p>
         </div>
@@ -163,7 +165,8 @@
             Description <span class="asterisk">*</span>
           </label>
           <div class="mt-2">
-            <markdown-editor id="description" content="{{ job.description }}" maxlength="{{ crate::validation::MAX_LEN_DESCRIPTION }}" required></markdown-editor>
+            <markdown-editor id="description" content="{{ job.description }}" maxlength="{{ crate::validation::MAX_LEN_DESCRIPTION }}" required>
+            </markdown-editor>
           </div>
           <p class="form-legend">
             Description of the job. You can use markdown to format the text. Max {{ crate::validation::MAX_LEN_DESCRIPTION }} characters.
@@ -195,7 +198,8 @@
         <div class="col-span-full">
           <label for="responsibilities" class="form-label">Responsibilities</label>
           <div class="mt-2">
-            <markdown-editor id="responsibilities" content="{{ job.responsibilities|display_some }}" maxlength="{{ crate::validation::MAX_LEN_DESCRIPTION }}"></markdown-editor>
+            <markdown-editor id="responsibilities" content="{{ job.responsibilities|display_some }}" maxlength="{{ crate::validation::MAX_LEN_DESCRIPTION }}">
+            </markdown-editor>
           </div>
           <p class="form-legend">
             Explain to potential candidates what they will do at this job and what their responsibilities will be. Max {{ crate::validation::MAX_LEN_DESCRIPTION }} characters.
@@ -207,7 +211,8 @@
         <div class="col-span-full">
           <label for="qualifications" class="form-label">Qualifications</label>
           <div class="mt-2">
-            <markdown-editor id="qualifications" content="{{ job.qualifications|display_some }}" maxlength="{{ crate::validation::MAX_LEN_DESCRIPTION }}"></markdown-editor>
+            <markdown-editor id="qualifications" content="{{ job.qualifications|display_some }}" maxlength="{{ crate::validation::MAX_LEN_DESCRIPTION }}">
+            </markdown-editor>
           </div>
           <p class="form-legend">
             Education, experience and skills required for the job. Max {{ crate::validation::MAX_LEN_DESCRIPTION }} characters.
@@ -216,14 +221,14 @@
         {# End Job qualifications -#}
 
         {# Certifications -#}
-        <dashboard-search type="certifications" certifications="{{ certifications|json }}" {%- if let Some(job_certifications) = job.certifications %} selected="{{ job_certifications|json }}"{%- endif %} class="col-span-full"></dashboard-search>
+        <dashboard-search type="certifications" certifications="{{ certifications|json }}" {%- if let Some(job_certifications) = job.certifications %} selected="{{ job_certifications|json }}" {%- endif %} class="col-span-full">
+        </dashboard-search>
         {# End certifications -#}
 
         {# Job skills -#}
         <div class="col-span-full">
-          <multi-select name="skills" label="Skills"
-          {% if let Some(job_skills) = job.skills %}selected="{{ job_skills|json }}"{% endif %}
-          legend="Relevant skills for this job position."></multi-select>
+          <multi-select name="skills" label="Skills" {% if let Some(job_skills) = job.skills %}selected="{{ job_skills|json }}"{% endif %} legend="Relevant skills for this job position.">
+          </multi-select>
         </div>
         {# End job skills -#}
 
@@ -231,7 +236,8 @@
         <div class="col-span-full">
           <label for="apply_instructions" class="form-label">Apply instructions</label>
           <div class="mt-2">
-            <markdown-editor id="apply_instructions" content="{{ job.apply_instructions|display_some }}" maxlength="{{ crate::validation::MAX_LEN_DESCRIPTION }}"></markdown-editor>
+            <markdown-editor id="apply_instructions" content="{{ job.apply_instructions|display_some }}" maxlength="{{ crate::validation::MAX_LEN_DESCRIPTION }}">
+            </markdown-editor>
           </div>
           <p class="form-legend">
             Additional instructions on how to apply to the job position. Max {{ crate::validation::MAX_LEN_DESCRIPTION }} characters.
@@ -368,9 +374,8 @@
 
         {# Job benefits -#}
         <div class="col-span-full">
-          <multi-select name="benefits" label="Benefits"
-          {% if let Some(job_benefits) = job.benefits %}selected="{{ job_benefits|json }}"{% endif %}
-          legend="Benefits and perks for employees."></multi-select>
+          <multi-select name="benefits" label="Benefits" {% if let Some(job_benefits) = job.benefits %}selected="{{ job_benefits|json }}"{% endif %} legend="Benefits and perks for employees.">
+          </multi-select>
         </div>
         {# End job benefits -#}
       </div>
@@ -387,6 +392,7 @@
           <label for="open_source" class="form-label">Open source</label>
           <div class="mt-2 me-8">
             <input-range name="open_source" value="{{ job.open_source|display_some_or(0) }}" step="5" type="type-3">
+            </input-range>
           </div>
           <p class="form-legend">Percentage of time working on open source projects.</p>
         </div>
@@ -397,6 +403,7 @@
           <label for="upstream_commitment" class="form-label">Upstream commitment</label>
           <div class="mt-2 me-8">
             <input-range name="upstream_commitment" value="{{ job.upstream_commitment|display_some_or(0) }}" step="5" type="type-2">
+            </input-range>
           </div>
           <p class="form-legend">
             Percentage of time working on upstream open source projects the company depends on.
@@ -405,77 +412,77 @@
         {# End Upstream commitment -#}
 
         {# Projects -#}
-        <dashboard-search foundations="{{ foundations|json }}"
-        {% if let Some(projects) = job.projects -%}selected="{{ projects|json }}"{%- endif %} class="col-span-full"></dashboard-search>
-          {# End projects -#}
-        </div>
-      </div>
-      {# End Open Source -#}
-
-      {# Job status -#}
-      <input type="hidden"
-             name="status"
-             value="{%- if job.status == JobStatus::Rejected || job.status == JobStatus::Published -%}pending-approval{%- else -%}{{ job.status }}{%- endif -%}">
-      {# End job status -#}
-
-      <div class="mt-6 flex justify-between items-center">
-        {# Preview -#}
-        <div class="flex items-center gap-x-6">
-          {# Preview button -#}
-          <button id="preview-button"
-                  type="button"
-                  hx-post="/dashboard/employer/jobs/preview"
-                  hx-include="#jobs-form"
-                  hx-ext="no-empty-vals"
-                  hx-target="#preview-content"
-                  hx-indicator="#preview-spinner"
-                  class="group btn-primary-outline">
-            <span class="hidden md:block">Preview</span>
-            <span class="block md:hidden">
-              <div class="svg-icon size-3 icon-eye group-hover:bg-white"></div>
-            </span>
-            {{ ui::btn_spinner(id = "preview-spinner") -}}
-          </button>
-          {# End preview button -#}
-        </div>
-        {# End preview -#}
-
-        <div class="flex items-center justify-end gap-x-6 relative">
-          {# Cancel button -#}
-          <button id="cancel-button"
-                  type="button"
-                  hx-get="/dashboard/employer?tab=jobs"
-                  hx-target="body"
-                  hx-indicator="#dashboard-spinner"
-                  class="btn-primary-outline">Cancel</button>
-          {# End cancel button -#}
-
-          {# Save button -#}
-          <button type="submit" class="btn-primary">
-            {{ ui::btn_spinner(id = "save-spinner", spinner_type = "2") -}}
-            Save
-          </button>
-          {# End save button -#}
-        </div>
+        <dashboard-search foundations="{{ foundations|json }}" {% if let Some(projects) = job.projects -%} selected="{{ projects|json }}" {%- endif %} class="col-span-full">
+        </dashboard-search>
+        {# End projects -#}
       </div>
     </div>
+    {# End Open Source -#}
 
-  </form>
+    {# Job status -#}
+    <input type="hidden"
+           name="status"
+           value="{%- if job.status == JobStatus::Rejected || job.status == JobStatus::Published -%}pending-approval{%- else -%}{{ job.status }}{%- endif -%}">
+    {# End job status -#}
 
-  {# Preview modal -#}
-  {% include "misc/preview_modal.html" -%}
-  {# End preview modal -#}
+    <div class="mt-6 flex justify-between items-center">
+      {# Preview -#}
+      <div class="flex items-center gap-x-6">
+        {# Preview button -#}
+        <button id="preview-button"
+                type="button"
+                hx-post="/dashboard/employer/jobs/preview"
+                hx-include="#jobs-form"
+                hx-ext="no-empty-vals"
+                hx-target="#preview-content"
+                hx-indicator="#preview-spinner"
+                class="group btn-primary-outline">
+          <span class="hidden md:block">Preview</span>
+          <span class="block md:hidden">
+            <div class="svg-icon size-3 icon-eye group-hover:bg-white"></div>
+          </span>
+          {{ ui::btn_spinner(id = "preview-spinner") -}}
+        </button>
+        {# End preview button -#}
+      </div>
+      {# End preview -#}
 
-  <script type="module">
-    import {
-      initializeEmployerJobForm,
-      initializeSalaryKindToggle
-    } from '/static/js/dashboard/employer/jobs.js';
+      <div class="flex items-center justify-end gap-x-6 relative">
+        {# Cancel button -#}
+        <button id="cancel-button"
+                type="button"
+                hx-get="/dashboard/employer?tab=jobs"
+                hx-target="body"
+                hx-indicator="#dashboard-spinner"
+                class="btn-primary-outline">Cancel</button>
+        {# End cancel button -#}
 
-    initializeSalaryKindToggle();
-    initializeEmployerJobForm({
-      successMessage: 'Job updated successfully.',
-      errorMessage: 'Something went wrong updating the job. Please try again later.'
-    });
-  </script>
-  {# End Jobs form -#}
+        {# Save button -#}
+        <button type="submit" class="btn-primary">
+          {{ ui::btn_spinner(id = "save-spinner", spinner_type = "2") -}}
+          Save
+        </button>
+        {# End save button -#}
+      </div>
+    </div>
+  </div>
+
+</form>
+
+{# Preview modal -#}
+{% include "misc/preview_modal.html" -%}
+{# End preview modal -#}
+
+<script type="module">
+  import {
+    initializeEmployerJobForm,
+    initializeSalaryKindToggle
+  } from '/static/js/dashboard/employer/jobs.js';
+
+  initializeSalaryKindToggle();
+  initializeEmployerJobForm({
+    successMessage: 'Job updated successfully.',
+    errorMessage: 'Something went wrong updating the job. Please try again later.'
+  });
+</script>
+{# End Jobs form -#}

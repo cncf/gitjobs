@@ -183,9 +183,11 @@
             <div class="col-span-full lg:col-span-3">
               <label for="ts_query" class="form-label">Location</label>
               {% if let Some(location) = profile.location -%}
-                <search-location locationId="{{ location.location_id }}" city="{{ location.city }}" state="{{ location.state|display_some }}" country="{{ location.country }}"></search-location>
+                <search-location locationId="{{ location.location_id }}" city="{{ location.city }}" state="{{ location.state|display_some }}" country="{{ location.country }}">
+                </search-location>
               {% else -%}
-                <search-location></search-location>
+                <search-location>
+                </search-location>
               {% endif -%}
             </div>
             {# End location -#}
@@ -196,7 +198,8 @@
                 Summary <span class="asterisk">*</span>
               </label>
               <div class="mt-2">
-                <markdown-editor id="summary" content="{{ profile.summary }}" maxlength="{{ crate::validation::MAX_LEN_BIO }}" required></markdown-editor>
+                <markdown-editor id="summary" content="{{ profile.summary }}" maxlength="{{ crate::validation::MAX_LEN_BIO }}" required>
+                </markdown-editor>
               </div>
               <p class="form-legend">
                 A short introduction of yourself. You can use markdown to format the text. Max {{ crate::validation::MAX_LEN_BIO }} characters.
@@ -206,170 +209,175 @@
 
             {# Skills -#}
             <div class="col-span-full">
-              <multi-select name="skills" label="Skills" legend="Indicate your top skills." {%+ if let Some(skills) = profile.skills -%} selected="{{ skills|json }}"{%- endif -%}></multi-select>
-            </div>
-            {# End skills -#}
-
-            {# Open to relocation -#}
-            <div class="col-span-full">
-              <label class="inline-flex items-center cursor-pointer">
-                {{ ui::toggle_checkbox(id = "open_to_relocation", checked = profile.open_to_relocation.unwrap_or(false) ) -}}
-                <span class="ms-3 text-sm font-medium text-stone-900">Open to relocation</span>
-              </label>
-            </div>
-            {# End open to relocation -#}
-
-            {# Open to remote -#}
-            <div class="col-span-full">
-              <label class="inline-flex items-center cursor-pointer">
-                {{ ui::toggle_checkbox(id = "open_to_remote", checked = profile.open_to_remote.unwrap_or(false) ) -}}
-                <span class="ms-3 text-sm font-medium text-stone-900">Open to remote work</span>
-              </label>
-            </div>
-            {# End open to remote -#}
-
-            {# Public -#}
-            <div class="col-span-full">
-              <label class="inline-flex items-center cursor-pointer">
-                {{ ui::toggle_checkbox(id = "public", checked = profile.public) -}}
-                <span class="ms-3 text-sm font-medium text-stone-900">Display profile publicly in the profiles list of the site</span>
-              </label>
-            </div>
-            {# End Public -#}
+              <multi-select name="skills" label="Skills" legend="Indicate your top skills." {%+ if let Some(skills) = profile.skills -%} selected="{{ skills|json }}" {%- endif -%}>
+            </multi-select>
           </div>
-          <div class="border-t border-stone-900/10 pt-12">
-            {{ ui::form_title(title = "Links", description = "Some links where employers can find out more about you and your work.") -}}
+          {# End skills -#}
 
-            <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 max-w-5xl">
-              {# Website URL -#}
-              <div class="col-span-3">
-                <label for="website_url" class="form-label">Website URL</label>
-                <div class="mt-2 relative">
-                  <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
-                    <div class="svg-icon size-4 icon-link bg-stone-300"></div>
-                  </div>
-                  <input type="url"
-                         name="website_url"
-                         id="website_url"
-                         value="{{ profile.website_url|display_some }}"
-                         class="input-primary ps-10">
-                </div>
-              </div>
-              {# End website url -#}
+          {# Open to relocation -#}
+          <div class="col-span-full">
+            <label class="inline-flex items-center cursor-pointer">
+              {{ ui::toggle_checkbox(id = "open_to_relocation", checked = profile.open_to_relocation.unwrap_or(false) ) -}}
+              <span class="ms-3 text-sm font-medium text-stone-900">Open to relocation</span>
+            </label>
+          </div>
+          {# End open to relocation -#}
 
-              {# Facebook url -#}
-              <div class="col-span-3">
-                <label for="facebook_url" class="form-label">Facebook url</label>
-                <div class="mt-2 relative">
-                  <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
-                    <div class="svg-icon size-4 icon-facebook bg-stone-300"></div>
-                  </div>
-                  <input type="url"
-                         name="facebook_url"
-                         id="facebook_url"
-                         value="{{ profile.facebook_url|display_some }}"
-                         class="input-primary ps-10">
-                </div>
-              </div>
-              {# End facebook url -#}
+          {# Open to remote -#}
+          <div class="col-span-full">
+            <label class="inline-flex items-center cursor-pointer">
+              {{ ui::toggle_checkbox(id = "open_to_remote", checked = profile.open_to_remote.unwrap_or(false) ) -}}
+              <span class="ms-3 text-sm font-medium text-stone-900">Open to remote work</span>
+            </label>
+          </div>
+          {# End open to remote -#}
 
-              {# GitHub url -#}
-              <div class="col-span-3">
-                <label for="github_url" class="form-label">GitHub url</label>
-                <div class="mt-2 relative">
-                  <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
-                    <div class="svg-icon size-4 icon-github bg-stone-300"></div>
-                  </div>
-                  <input type="url"
-                         name="github_url"
-                         id="github_url"
-                         value="{{ profile.github_url|display_some }}"
-                         class="input-primary ps-10">
-                </div>
-              </div>
-              {# End github url -#}
+          {# Public -#}
+          <div class="col-span-full">
+            <label class="inline-flex items-center cursor-pointer">
+              {{ ui::toggle_checkbox(id = "public", checked = profile.public) -}}
+              <span class="ms-3 text-sm font-medium text-stone-900">Display profile publicly in the profiles list of the site</span>
+            </label>
+          </div>
+          {# End Public -#}
+        </div>
+        <div class="border-t border-stone-900/10 pt-12">
+          {{ ui::form_title(title = "Links", description = "Some links where employers can find out more about you and your work.") -}}
 
-              {# LinkedIn url -#}
-              <div class="col-span-3">
-                <label for="linkedin_url" class="form-label">LinkedIn url</label>
-                <div class="mt-2 relative">
-                  <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
-                    <div class="svg-icon size-4 icon-linkedin bg-stone-300"></div>
-                  </div>
-                  <input type="url"
-                         name="linkedin_url"
-                         id="linkedin_url"
-                         value="{{ profile.linkedin_url|display_some }}"
-                         class="input-primary ps-10">
+          <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 max-w-5xl">
+            {# Website URL -#}
+            <div class="col-span-3">
+              <label for="website_url" class="form-label">Website URL</label>
+              <div class="mt-2 relative">
+                <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
+                  <div class="svg-icon size-4 icon-link bg-stone-300"></div>
                 </div>
+                <input type="url"
+                       name="website_url"
+                       id="website_url"
+                       value="{{ profile.website_url|display_some }}"
+                       class="input-primary ps-10">
               </div>
-              {# End linkedIn url -#}
-
-              {# Twitter url -#}
-              <div class="col-span-3">
-                <label for="twitter_url" class="form-label">Twitter url</label>
-                <div class="mt-2 relative">
-                  <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
-                    <div class="svg-icon size-4 icon-twitter bg-stone-300"></div>
-                  </div>
-                  <input type="url"
-                         name="twitter_url"
-                         id="twitter_url"
-                         value="{{ profile.twitter_url|display_some }}"
-                         class="input-primary ps-10">
-                </div>
-              </div>
-              {# End twitter url -#}
-
-              {# BlueSky url -#}
-              <div class="col-span-3">
-                <label for="bluesky_url" class="form-label">BlueSky url</label>
-                <div class="mt-2 relative">
-                  <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
-                    <div class="svg-icon size-4 icon-bluesky bg-stone-300"></div>
-                  </div>
-                  <input type="url"
-                         name="bluesky_url"
-                         id="bluesky_url"
-                         value="{{ profile.bluesky_url|display_some }}"
-                         class="input-primary ps-10">
-                </div>
-              </div>
-              {# End BlueSky url -#}
             </div>
+            {# End website url -#}
+
+            {# Facebook url -#}
+            <div class="col-span-3">
+              <label for="facebook_url" class="form-label">Facebook url</label>
+              <div class="mt-2 relative">
+                <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
+                  <div class="svg-icon size-4 icon-facebook bg-stone-300"></div>
+                </div>
+                <input type="url"
+                       name="facebook_url"
+                       id="facebook_url"
+                       value="{{ profile.facebook_url|display_some }}"
+                       class="input-primary ps-10">
+              </div>
+            </div>
+            {# End facebook url -#}
+
+            {# GitHub url -#}
+            <div class="col-span-3">
+              <label for="github_url" class="form-label">GitHub url</label>
+              <div class="mt-2 relative">
+                <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
+                  <div class="svg-icon size-4 icon-github bg-stone-300"></div>
+                </div>
+                <input type="url"
+                       name="github_url"
+                       id="github_url"
+                       value="{{ profile.github_url|display_some }}"
+                       class="input-primary ps-10">
+              </div>
+            </div>
+            {# End github url -#}
+
+            {# LinkedIn url -#}
+            <div class="col-span-3">
+              <label for="linkedin_url" class="form-label">LinkedIn url</label>
+              <div class="mt-2 relative">
+                <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
+                  <div class="svg-icon size-4 icon-linkedin bg-stone-300"></div>
+                </div>
+                <input type="url"
+                       name="linkedin_url"
+                       id="linkedin_url"
+                       value="{{ profile.linkedin_url|display_some }}"
+                       class="input-primary ps-10">
+              </div>
+            </div>
+            {# End linkedIn url -#}
+
+            {# Twitter url -#}
+            <div class="col-span-3">
+              <label for="twitter_url" class="form-label">Twitter url</label>
+              <div class="mt-2 relative">
+                <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
+                  <div class="svg-icon size-4 icon-twitter bg-stone-300"></div>
+                </div>
+                <input type="url"
+                       name="twitter_url"
+                       id="twitter_url"
+                       value="{{ profile.twitter_url|display_some }}"
+                       class="input-primary ps-10">
+              </div>
+            </div>
+            {# End twitter url -#}
+
+            {# BlueSky url -#}
+            <div class="col-span-3">
+              <label for="bluesky_url" class="form-label">BlueSky url</label>
+              <div class="mt-2 relative">
+                <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
+                  <div class="svg-icon size-4 icon-bluesky bg-stone-300"></div>
+                </div>
+                <input type="url"
+                       name="bluesky_url"
+                       id="bluesky_url"
+                       value="{{ profile.bluesky_url|display_some }}"
+                       class="input-primary ps-10">
+              </div>
+            </div>
+            {# End BlueSky url -#}
           </div>
         </div>
-      </form>
-    </div>
-    {# End profile -#}
-
-    {# Experience -#}
-    <div data-content="experience" class="hidden">
-      <form id="experience-form">
-        <experience-section experience=" {%- if let Some(experience) = profile.experience -%}{{ experience|json }}{%- endif -%} "></experience-section>
-      </form>
-    </div>
-    {# End experience -#}
-
-    {# Education and certifications -#}
-    <div data-content="education" class="hidden">
-      <form id="education-form">
-        <div class="flex flex-col space-y-12">
-          <education-section education="{%- if let Some(education) = profile.education -%}{{ education|json }}{%- endif -%}"></education-section>
-          <certifications-section certifications="{%- if let Some(certifications) = profile.certifications -%}{{ certifications|json }}{%- endif -%}"></certifications-section>
-        </div>
-      </form>
-    </div>
-    {# End education and certifications -#}
-
-    {# Projects -#}
-    <div data-content="projects" class="hidden">
-      <form id="projects-form">
-        <projects-section projects="{%- if let Some(projects) = profile.projects -%}{{ projects|json }}{%- endif -%}"></projects-section>
-      </form>
-    </div>
-    {# End projects -#}
+      </div>
+    </form>
   </div>
+  {# End profile -#}
+
+  {# Experience -#}
+  <div data-content="experience" class="hidden">
+    <form id="experience-form">
+      <experience-section experience=" {%- if let Some(experience) = profile.experience -%}{{ experience|json }}{%- endif -%} ">
+      </experience-section>
+    </form>
+  </div>
+  {# End experience -#}
+
+  {# Education and certifications -#}
+  <div data-content="education" class="hidden">
+    <form id="education-form">
+      <div class="flex flex-col space-y-12">
+        <education-section education="{%- if let Some(education) = profile.education -%}{{ education|json }}{%- endif -%}">
+        </education-section>
+        <certifications-section certifications="{%- if let Some(certifications) = profile.certifications -%}{{ certifications|json }}{%- endif -%}">
+        </certifications-section>
+      </div>
+    </form>
+  </div>
+  {# End education and certifications -#}
+
+  {# Projects -#}
+  <div data-content="projects" class="hidden">
+    <form id="projects-form">
+      <projects-section projects="{%- if let Some(projects) = profile.projects -%}{{ projects|json }}{%- endif -%}">
+      </projects-section>
+    </form>
+  </div>
+  {# End projects -#}
+</div>
 </div>
 
 {# Preview modal -#}

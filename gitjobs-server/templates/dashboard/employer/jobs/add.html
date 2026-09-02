@@ -43,7 +43,8 @@
         {# Job location -#}
         <div class="col-span-full lg:col-span-3">
           <label for="ts_query" class="form-label">Location</label>
-          <search-location></search-location>
+          <search-location>
+          </search-location>
           <p class="form-legend">Location of the job.</p>
         </div>
         {# End Job location -#}
@@ -141,7 +142,8 @@
             Description <span class="asterisk">*</span>
           </label>
           <div class="mt-2">
-            <markdown-editor id="description" maxlength="{{ crate::validation::MAX_LEN_DESCRIPTION }}" required></markdown-editor>
+            <markdown-editor id="description" maxlength="{{ crate::validation::MAX_LEN_DESCRIPTION }}" required>
+            </markdown-editor>
           </div>
           <p class="form-legend">
             Description of the job. You can use markdown to format the text. Max {{ crate::validation::MAX_LEN_DESCRIPTION }} characters.
@@ -172,7 +174,8 @@
         <div class="col-span-full">
           <label for="responsibilities" class="form-label">Responsibilities</label>
           <div class="mt-2">
-            <markdown-editor id="responsibilities" maxlength="{{ crate::validation::MAX_LEN_DESCRIPTION }}"></markdown-editor>
+            <markdown-editor id="responsibilities" maxlength="{{ crate::validation::MAX_LEN_DESCRIPTION }}">
+            </markdown-editor>
           </div>
           <p class="form-legend">
             Explain to potential candidates what they will do at this job and what their responsibilities will be. Max {{ crate::validation::MAX_LEN_DESCRIPTION }} characters.
@@ -184,7 +187,8 @@
         <div class="col-span-full">
           <label for="qualifications" class="form-label">Qualifications</label>
           <div class="mt-2">
-            <markdown-editor id="qualifications" maxlength="{{ crate::validation::MAX_LEN_DESCRIPTION }}"></markdown-editor>
+            <markdown-editor id="qualifications" maxlength="{{ crate::validation::MAX_LEN_DESCRIPTION }}">
+            </markdown-editor>
           </div>
           <p class="form-legend">
             Education, experience and skills required for the job. Max {{ crate::validation::MAX_LEN_DESCRIPTION }} characters.
@@ -193,12 +197,14 @@
         {# End Job qualifications -#}
 
         {# Certifications -#}
-        <dashboard-search type="certifications" certifications="{{ certifications|json }}" class="col-span-full"></dashboard-search>
+        <dashboard-search type="certifications" certifications="{{ certifications|json }}" class="col-span-full">
+        </dashboard-search>
         {# End certifications -#}
 
         {# Job skills -#}
         <div class="col-span-full">
-          <multi-select name="skills" label="Skills" legend="Relevant skills for this job position."></multi-select>
+          <multi-select name="skills" label="Skills" legend="Relevant skills for this job position.">
+          </multi-select>
         </div>
         {# End job skills -#}
 
@@ -206,7 +212,8 @@
         <div class="col-span-full">
           <label for="apply_instructions" class="form-label">Apply instructions</label>
           <div class="mt-2">
-            <markdown-editor id="apply_instructions" maxlength="{{ crate::validation::MAX_LEN_DESCRIPTION }}"></markdown-editor>
+            <markdown-editor id="apply_instructions" maxlength="{{ crate::validation::MAX_LEN_DESCRIPTION }}">
+            </markdown-editor>
           </div>
           <p class="form-legend">
             Additional instructions on how to apply to the job position. Max {{ crate::validation::MAX_LEN_DESCRIPTION }} characters.
@@ -325,7 +332,8 @@
 
         {# Job benefits -#}
         <div class="col-span-full">
-          <multi-select name="benefits" label="Benefits" legend="Benefits and perks for employees."></multi-select>
+          <multi-select name="benefits" label="Benefits" legend="Benefits and perks for employees.">
+          </multi-select>
         </div>
         {# End job benefits -#}
       </div>
@@ -342,6 +350,7 @@
           <label for="open_source" class="form-label">Open source</label>
           <div class="mt-2 me-8">
             <input-range name="open_source" step="5" type="type-3">
+            </input-range>
           </div>
           <p class="form-legend">Percentage of time working on open source projects.</p>
         </div>
@@ -352,6 +361,7 @@
           <label for="upstream_commitment" class="form-label">Upstream commitment</label>
           <div class="mt-2 me-8">
             <input-range name="upstream_commitment" step="5" type="type-2">
+            </input-range>
           </div>
           <p class="form-legend">
             Percentage of time working on upstream open source projects the company depends on.
@@ -360,7 +370,8 @@
         {# End Upstream commitment -#}
 
         {# Projects -#}
-        <dashboard-search foundations="{{ foundations|json }}" class="col-span-full"></dashboard-search>
+        <dashboard-search foundations="{{ foundations|json }}" class="col-span-full">
+        </dashboard-search>
         {# End projects -#}
       </div>
     </div>

@@ -137,11 +137,21 @@ test.describe("GitJobs - Jobboard", () => {
     page,
   }) => {
     await page.setViewportSize({ width: 375, height: 667 });
-    await page.locator("#open-filters").click();
+    const mobileFiltersIndicator = page.locator("#mobile-filters-indicator");
+    const openFiltersButton = page.locator("#open-filters");
+    await expect(mobileFiltersIndicator).toBeHidden();
+    await expect(openFiltersButton).toHaveAttribute("aria-label", "Open filters");
+
+    await openFiltersButton.click();
     await page.waitForSelector("#drawer-filters", { state: "visible" });
     await mobileKindFilter(page, "full-time").click();
     await page.locator("#close-filters").click();
     await expect(page).toHaveURL(/full-time/);
+    await expect(mobileFiltersIndicator).toBeVisible();
+    await expect(openFiltersButton).toHaveAttribute(
+      "aria-label",
+      "Open filters, filters selected",
+    );
     await waitForOnlyJobTypeResults(page, "full time");
 
     const jobTypeButtonsList = await jobTypeButtons(page).all();
@@ -151,6 +161,17 @@ test.describe("GitJobs - Jobboard", () => {
         await expect(jobTypeElement).toHaveText("full time");
       }
     }
+
+    await openFiltersButton.click();
+    const filtersDrawer = page.locator("#drawer-filters");
+    await expect(filtersDrawer).toHaveAttribute("data-open", "true");
+    await page.locator("#reset-mobile-filters").click();
+
+    await expect(filtersDrawer).toHaveAttribute("aria-hidden", "true");
+    await expect(filtersDrawer).toHaveAttribute("data-open", "false");
+    await expect(openFiltersButton).toBeFocused();
+    await expect(page).not.toHaveURL(/full-time/);
+    await expect(mobileFiltersIndicator).toBeHidden();
   });
 
   test("should close mobile filters drawer on Escape", async ({ page }) => {

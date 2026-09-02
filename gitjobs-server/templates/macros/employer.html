@@ -1,3 +1,5 @@
+{# Company item -#}
+{# Used by employer selectors to render company identity options. -#}
 {% macro company_item(company, logo_id) -%}
   {% if let Some(logo_id) = logo_id -%}
     {% let logo = &self::build_dashboard_image_url(logo_id, "small") -%}
@@ -15,7 +17,10 @@
   {% endif -%}
   <div class="truncate">{{ company }}</div>
 {% endmacro company_item -%}
+{# End company item -#}
 
+{# Location -#}
+{# Used by employer job lists to format workplace location details. -#}
 {% macro location(job) -%}
   {% if let Some(city) = job.city -%}
     {% let location_text = &self::format_location(job.city.as_deref(), None, job.country.as_deref())|display_some -%}
@@ -29,3 +34,4 @@
     No location provided
   {% endif -%}
 {% endmacro location -%}
+{# End location -#}

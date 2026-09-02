@@ -14,36 +14,43 @@ import {
 } from "/static/js/common/common.js";
 import { copyEmbedCodeToClipboard, renderEmbedCode } from "/static/js/jobboard/job_section.js";
 
-const DESKTOP_JOBS_FORM_ID = "desktop-jobs-form";
-const MOBILE_JOBS_FORM_ID = "mobile-jobs-form";
-const SEARCHBAR_ID = "searchbar";
-const EMBED_MODAL_ID = "embed-modal";
-const DRAWER_FILTERS_ID = "drawer-filters";
-const OPEN_FILTERS_BUTTON_ID = "open-filters";
-const CLOSE_FILTERS_BUTTON_ID = "close-filters";
-const DRAWER_BACKDROP_ID = "drawer-backdrop";
-const SORT_DESKTOP_ID = "sort-desktop";
-const SORT_MOBILE_ID = "sort-mobile";
+const BACKDROP_EMBED_MODAL_ID = "backdrop-embed-modal";
 const CLEAN_SEARCH_JOBS_BUTTON_ID = "clean-search-jobs";
-const SEARCH_JOBS_BUTTON_ID = "search-jobs-btn";
-const SEARCH_JOBS_MOBILE_BUTTON_ID = "search-jobs-btn-mobile";
+const CLOSE_EMBED_MODAL_BUTTON_ID = "close-embed-modal";
+const CLOSE_FILTERS_BUTTON_ID = "close-filters";
+const COPY_EMBED_CODE_BUTTON_ID = "copy-embed-code";
+const DEFAULT_DATE_RANGE = "last30-days";
+const DESKTOP_JOBS_FORM_ID = "desktop-jobs-form";
+const DRAWER_BACKDROP_ID = "drawer-backdrop";
+const DRAWER_FILTERS_ID = "drawer-filters";
+const EMBED_CODE_ID = "embed-code";
+const EMBED_MODAL_ID = "embed-modal";
+const MOBILE_FILTERS_INDICATOR_ID = "mobile-filters-indicator";
+const MOBILE_JOBS_FORM_ID = "mobile-jobs-form";
+const NON_FILTER_PARAMETER_NAMES = new Set(["limit", "offset", "sort", "ts_query"]);
+const OPEN_FILTERS_BUTTON_ID = "open-filters";
 const RESET_DESKTOP_FILTERS_ID = "reset-desktop-filters";
 const RESET_MOBILE_FILTERS_ID = "reset-mobile-filters";
-const COPY_EMBED_CODE_BUTTON_ID = "copy-embed-code";
-const EMBED_CODE_ID = "embed-code";
-const CLOSE_EMBED_MODAL_BUTTON_ID = "close-embed-modal";
-const BACKDROP_EMBED_MODAL_ID = "backdrop-embed-modal";
+const SEARCH_JOBS_BUTTON_ID = "search-jobs-btn";
+const SEARCH_JOBS_MOBILE_BUTTON_ID = "search-jobs-btn-mobile";
+const SEARCHBAR_ID = "searchbar";
+const SORT_DESKTOP_ID = "sort-desktop";
+const SORT_MOBILE_ID = "sort-mobile";
 
 /**
  * Initializes jobboard explore page controls and modals.
  */
 export const initializeJobboardExplore = () => {
+  updateMobileFiltersIndicator();
+
   bindHtmxAfterRequestOnce({
     selector: `#${DESKTOP_JOBS_FORM_ID}, #${MOBILE_JOBS_FORM_ID}`,
-    handler: () => {
+    handler: (event) => {
       if (typeof window.scrollTo === "function") {
         window.scrollTo({ top: 0, behavior: "auto" });
       }
+
+      updateMobileFiltersIndicator(event.detail.pathInfo.finalRequestPath);
     },
     boundAttribute: "jobboardFiltersAfterRequestScrollBound",
   });
@@ -152,7 +159,11 @@ export const initializeJobboardExplore = () => {
 
   const resetMobileFilters = document.getElementById(RESET_MOBILE_FILTERS_ID);
   if (resetMobileFilters && resetMobileFilters.dataset.boundResetMobile !== "true") {
-    resetMobileFilters.addEventListener("click", () => resetForm(MOBILE_JOBS_FORM_ID));
+    resetMobileFilters.addEventListener("click", () => {
+      resetForm(MOBILE_JOBS_FORM_ID);
+      closeFiltersDrawer();
+      openFiltersButton?.focus();
+    });
     resetMobileFilters.dataset.boundResetMobile = "true";
   }
 
@@ -189,4 +200,40 @@ export const initializeJobboardExplore = () => {
   });
 
   shouldDisplayJobModal(true);
+};
+
+/**
+ * Returns whether a URL contains any non-default job filters.
+ * @param {string} [url=window.location.href] - URL to inspect
+ * @returns {boolean} Whether filters are selected
+ */
+const hasSelectedFilters = (url = window.location.href) => {
+  const queryParameters = new URL(url, window.location.origin).searchParams;
+
+  return [...queryParameters.entries()].some(([name, value]) => {
+    if (NON_FILTER_PARAMETER_NAMES.has(name)) {
+      return false;
+    }
+
+    return name !== "date_range" || value !== DEFAULT_DATE_RANGE;
+  });
+};
+
+/**
+ * Synchronizes the mobile filters button with the active filter state.
+ * @param {string} [url] - URL containing the current filter state
+ */
+const updateMobileFiltersIndicator = (url) => {
+  const indicator = document.getElementById(MOBILE_FILTERS_INDICATOR_ID);
+  const openFiltersButton = document.getElementById(OPEN_FILTERS_BUTTON_ID);
+  if (!indicator || !openFiltersButton) {
+    return;
+  }
+
+  const filtersSelected = hasSelectedFilters(url);
+  indicator.classList.toggle("hidden", !filtersSelected);
+  openFiltersButton.setAttribute(
+    "aria-label",
+    filtersSelected ? "Open filters, filters selected" : "Open filters",
+  );
 };

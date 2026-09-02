@@ -1,0 +1,17 @@
+{% import "macros/ui.html" as ui -%}
+
+{# Chart -#}
+{# Used by the public stats page for chart rendering and loading feedback. -#}
+{% macro chart(id, extra_styles = "") -%}
+  <div class="relative h-[300px] border border-stone-200 {{ extra_styles }}">
+    <div id="{{ id }}"
+         class="flex items-center justify-center w-full h-full text-stone-500"
+         aria-busy="true"></div>
+    <div id="{{ id }}-loading"
+         data-chart-loading="{{ id }}"
+         class="absolute inset-0 z-10 flex items-center justify-center bg-white">
+      {{ ui::spinner(size = "size-8") -}}
+    </div>
+  </div>
+{% endmacro chart -%}
+{# End chart -#}

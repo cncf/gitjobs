@@ -137,7 +137,10 @@ syncer-watch:
 e2e-tests *args:
     npm --prefix tests/e2e test -- {{ args }}
 
+frontend-unit-tests *args:
+    npm --prefix tests/unit test -- {{ args }}
+
 # Format and lint frontend code.
 frontend-fmt-and-lint:
-    prettier --config gitjobs-server/static/js/.prettierrc.yaml --write "gitjobs-server/static/js/**/*.js" "tests/e2e/**/*.js"
+    prettier --config gitjobs-server/static/js/.prettierrc.yaml --write "gitjobs-server/static/js/**/*.js" "tests/e2e/**/*.js" "tests/unit/**/*.js" "tests/unit/**/*.mjs"
     djlint --check --configuration gitjobs-server/templates/.djlintrc gitjobs-server/templates

@@ -10,4 +10,6 @@ package-lock.json
 package.json
 !tests/e2e/package-lock.json
 !tests/e2e/package.json
+!tests/unit/package-lock.json
+!tests/unit/package.json
 test-results

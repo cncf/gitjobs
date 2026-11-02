@@ -231,9 +231,9 @@ impl DBAuth for PgDB {
     #[instrument(skip(self), err)]
     async fn is_image_public(&self, image_id: &Uuid) -> Result<bool> {
         #[cached(
-            ttl = 86400,
+            ttl_secs = 86400,
             key = "Uuid",
-            convert = r#"{ image_id.clone() }"#,
+            convert = r#"{ *image_id }"#,
             sync_writes = "by_key"
         )]
         async fn inner(db: Object, image_id: &Uuid) -> Result<bool> {

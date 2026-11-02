@@ -93,7 +93,7 @@ mod tests {
     fn test_prepare_content_renders_html() {
         let html = prepare_content().unwrap();
 
-        assert!(!html.is_empty());
+        assert_ne!(html, "");
         assert!(html.contains('<'));
     }
 }

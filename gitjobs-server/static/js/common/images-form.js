@@ -36,7 +36,7 @@ export const initializeImagesForm = ({
         errorMessage:
           "Something went wrong adding the image. Please try again later." +
           '<br /><br /><div class="text-sm text-stone-500">' +
-          "Images must be at least 400x400, preferably in square format. " +
+          "Images must be exactly 400x400 pixels (except SVG). " +
           "Maximum file size: 1MB. Formats supported: SVG, PNG, JPEG, GIF, WEBP and TIFF." +
           "</div>",
         errorWithHtml: true,

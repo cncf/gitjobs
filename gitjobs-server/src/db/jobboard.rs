@@ -69,7 +69,7 @@ impl DBJobBoard for PgDB {
     #[instrument(skip(self))]
     async fn get_jobs_filters_options(&self) -> Result<FiltersOptions> {
         #[cached(
-            ttl = 3600,
+            ttl_secs = 3600,
             key = "&str",
             convert = r#"{ "jobs_filters_options" }"#,
             sync_writes = "by_key"

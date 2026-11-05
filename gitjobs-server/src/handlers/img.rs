@@ -227,13 +227,14 @@ fn is_svg(bytes: &[u8], extension: &str) -> bool {
                 let tag_name = event.name();
 
                 if !in_root {
-                    if tag_name.as_ref() != b"svg" {
+                    if tag_name.as_ref().as_bytes() != b"svg" {
                         return false;
                     }
 
                     let has_svg_namespace = event.attributes().filter_map(Result::ok).any(|attr| {
-                        (attr.key.as_ref() == b"xmlns" || attr.key.local_name().as_ref() == b"xmlns")
-                            && attr.value.as_ref() == SVG_NAMESPACE
+                        (attr.key.as_ref().as_bytes() == b"xmlns"
+                            || attr.key.local_name().as_ref().as_bytes() == b"xmlns")
+                            && attr.value.as_bytes() == SVG_NAMESPACE
                     });
 
                     if !has_svg_namespace {
@@ -245,14 +246,14 @@ fn is_svg(bytes: &[u8], extension: &str) -> bool {
                 }
 
                 for dangerous in DANGEROUS_ELEMENTS {
-                    if tag_name.as_ref().eq_ignore_ascii_case(dangerous) {
+                    if tag_name.as_ref().as_bytes().eq_ignore_ascii_case(dangerous) {
                         return false;
                     }
                 }
 
                 for attr in event.attributes().filter_map(Result::ok) {
-                    let key = attr.key.as_ref();
-                    let value = attr.value.as_ref();
+                    let key = attr.key.as_ref().as_bytes();
+                    let value = attr.value.as_bytes();
 
                     if key.len() >= 2 && key[..2].eq_ignore_ascii_case(b"on") {
                         return false;

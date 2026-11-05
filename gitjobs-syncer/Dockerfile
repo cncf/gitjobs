@@ -1,5 +1,5 @@
 # Build syncer
-FROM rust:1.96.1-alpine3.24 AS builder
+FROM rust:1.99.1-alpine3.24 AS builder
 RUN apk --no-cache add musl-dev perl make
 WORKDIR /gitjobs
 COPY Cargo.* ./
@@ -9,7 +9,7 @@ WORKDIR /gitjobs/gitjobs-syncer
 RUN cargo build --release --locked
 
 # Final stage
-FROM alpine:3.24.1
+FROM alpine:3.24.3
 RUN apk --no-cache add ca-certificates && addgroup -S gitjobs && adduser -S gitjobs -G gitjobs
 USER gitjobs
 WORKDIR /home/gitjobs

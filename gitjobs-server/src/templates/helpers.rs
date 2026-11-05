@@ -37,7 +37,7 @@ where
 {
     let value = Option::<String>::deserialize(deserializer)?;
 
-    Ok(value.and_then(|value| if value.is_empty() { None } else { Some(value) }))
+    Ok(value.filter(|value| !value.is_empty()))
 }
 
 /// Find an employer by id in a list of employers.
@@ -136,7 +136,7 @@ pub(crate) async fn normalize_salary(
 
 /// Return current exchange rates, defaulting to backup ones if the current
 /// ones aren't available. Rates will be cached for 1 day.
-#[cached(ttl = 86400, sync_writes = "by_key")]
+#[cached(ttl_secs = 86400, sync_writes = "by_key")]
 async fn get_exchange_rates() -> HashMap<String, f64> {
     // Exchange rates as of 2024-04-28.
     let backup_exchange_rates = HashMap::from([

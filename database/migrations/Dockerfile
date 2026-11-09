@@ -4,7 +4,7 @@ RUN apk --no-cache add git
 RUN go install github.com/jackc/tern@latest
 
 # Build final image
-FROM alpine:3.24.3
+FROM alpine:3.24.4
 RUN addgroup -S gitjobs && adduser -S gitjobs -G gitjobs
 USER gitjobs
 WORKDIR /home/gitjobs

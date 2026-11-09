@@ -9,7 +9,7 @@ WORKDIR /gitjobs/gitjobs-syncer
 RUN cargo build --release --locked
 
 # Final stage
-FROM alpine:3.24.3
+FROM alpine:3.24.4
 RUN apk --no-cache add ca-certificates && addgroup -S gitjobs && adduser -S gitjobs -G gitjobs
 USER gitjobs
 WORKDIR /home/gitjobs

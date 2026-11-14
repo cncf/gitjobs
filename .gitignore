@@ -13,3 +13,5 @@ package.json
 !tests/unit/package-lock.json
 !tests/unit/package.json
 test-results
+playwright-report
+test-output.log

@@ -142,5 +142,5 @@ frontend-unit-tests *args:
 
 # Format and lint frontend code.
 frontend-fmt-and-lint:
-    prettier --config gitjobs-server/static/js/.prettierrc.yaml --write "gitjobs-server/static/js/**/*.js" "tests/e2e/**/*.js" "tests/unit/**/*.js" "tests/unit/**/*.mjs"
+    npx --yes prettier@3.10.1 --config gitjobs-server/static/js/.prettierrc.yaml --write "gitjobs-server/static/js/**/*.js" "tests/e2e/**/*.js" "tests/unit/**/*.js" "tests/unit/**/*.mjs"
     djlint --check --configuration gitjobs-server/templates/.djlintrc gitjobs-server/templates

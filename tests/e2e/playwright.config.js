@@ -9,11 +9,17 @@ const smokeSpecPaths = [
   "workflows/auth/auth.spec.js",
 ];
 
+const isCI = Boolean(process.env.CI);
+
 export default defineConfig({
   fullyParallel: false,
-  retries: 0,
+  forbidOnly: isCI,
+  retries: isCI ? 1 : 0,
   testDir: ".",
   workers: 1,
+  expect: {
+    timeout: 10000,
+  },
   use: {
     baseURL: process.env.BASE_URL || "http://localhost:9000",
     locale: "en-US",
@@ -21,7 +27,7 @@ export default defineConfig({
     timezoneId: "UTC",
     trace: "retain-on-failure",
   },
-  reporter: "list",
+  reporter: isCI ? [["list"], ["html", { open: "never", onlyFailures: true }]] : "list",
   projects: [
     {
       name: "chromium-smoke",
